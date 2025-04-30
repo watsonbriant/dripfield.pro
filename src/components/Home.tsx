@@ -721,7 +721,7 @@ export function Home() {
         
         <div className="text-center flex-grow">
           <h1 className="text-3xl font-bold text-[#ffffff]">
-            <span className="hidden md:inline">Welcome to </span>
+            <span className="hidden md:inline">Hey there to </span>
             Dripfield.pro<span className="hidden md:inline">!</span>
           </h1>
           
