@@ -1,0 +1,101 @@
+setlist_entry_guests
+setlist_entry_id (type: uuid) (foreign key to “entry_id” column in “setlist_entries” table)
+guest_id (type: uuid) (foreign key to “guest_id” column in “guests” table)
+
+guests
+guest (type: text)
+guest_category (type: text)
+guest_instrument (type: text)
+guest_displayname (type: text)
+guest_id (type: uuid)
+guest_canonid (type: int2)
+
+setlist_entries
+entry_set (type: text) (foreign key to “set” column in “sets” table)
+entry_setnum (type: int4) (foreign key to “setnums” column in “setnums” table)
+entry_song (type: text) (foreign key to “song” column in “songs” table)
+entry_short (type: text) (foreign key to “song_shorts” column in “song_shorts” table)
+entry_segue (type: text) (foreign key to “segues” column in “segues” table)
+entry_length (type: interval)
+entry_placement (type: text) (foreign key to “placements” column in “placements” table)
+entry_coachnotes (type: text)
+entry_id (type: uuid)
+entry_show (type: uuid) (foreign key to “show_id” column in “shows” table)
+
+setlist_callbacks
+show_id (type: uuid) (foreign key to “show_id” column in “shows” table)
+callback_html (type: text)
+callbackshow_id (type: uuid) (foreign key to “show_id” column in “shows” table)
+callback_orderid (type: int2)
+
+placements
+placements (type: text)
+placement_order (type: int2)
+
+segues
+segues (type: text)
+
+setnums
+setnums (type: int4)
+
+sets
+set (type: text)
+
+songs
+song_categoryorder (type: int2)
+song (type: text)
+song_category (type: text) (foreign key to “category” column in “categories” table)
+song_id (type: uuid)
+song_originalartist (type: text) (foreign key to “artist” column in “artists” table)
+song_coachnotes (type: text)
+
+song_shorts
+song_shorts (type: text)
+
+shows
+show_coachnotes (type: text)
+show_date (type: date)
+show_group (type: text) (foreign key to “group” column in “groups” table)
+show_tour (type: text) (foreign key to “tour” column in “tours” table)
+show_subvenue (type: text) (foreign key to “subvenue” column in “subvenues” table)
+show_iscanon (type: bool)
+show_alert (type: text)
+show_detail (type: text)
+show_canonid (type: int4)
+show_year (type: text) (foreign key to “year” column in “years” table)
+show_id (type: uuid)
+
+artists
+artist (type: text)
+artist_id (type: uuid)
+
+categories
+category_type (type: text)
+category_canonid (type: int2)
+category (type: text)
+category_id (type: uuid)
+
+groups
+group (type: text)
+group_id (type: uuid)
+
+tours
+tour (type: text)
+tour_canonid (type: int2)
+tour_id (type: uuid)
+
+years
+year (type: text)
+year_id (type: uuid)
+
+subvenues
+subvenue (type: text)
+subvenue_id (type: uuid)
+subvenue_venue (type: text) (foreign key to “venue” column in “venues” table)
+subvenue_startdate (type: date)
+subvenue_enddate (type: date)
+
+venues
+venue (type: text)
+venue_location (type: text)
+venue_id (type: uuid)
