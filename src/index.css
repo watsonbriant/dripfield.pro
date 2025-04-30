@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base link styles */
+a:not(.no-underline):hover,
+.table-link:hover {
+  text-decoration: underline;
+}
+
+/* Button link hover styles */
+button:not(.no-underline):not([class*="bg-"]):hover span,
+button:not(.no-underline):not([class*="bg-"]).table-link:hover {
+  text-decoration: underline;
+}
+
+:root {
+  font-feature-settings: "tnum" 1;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
