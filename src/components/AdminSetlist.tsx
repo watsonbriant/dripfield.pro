@@ -78,7 +78,6 @@ export const AdminSetlist: React.FC = () => {
           const storedShow = shows.find(show => show.show_id === storedShowId);
           
           if (storedShow) {
-            console.log('Restoring previously selected show:', storedShow);
             setSelectedShow(storedShow);
             fetchSetlistEntries(storedShowId);
           }
@@ -95,7 +94,6 @@ export const AdminSetlist: React.FC = () => {
       if (document.visibilityState === 'visible') {
         // If we have a selected show, refresh its entries
         if (selectedShow) {
-          console.log('Tab became visible, refreshing setlist entries for:', selectedShow.show_id);
           fetchSetlistEntries(selectedShow.show_id);
         }
       }
@@ -145,7 +143,6 @@ export const AdminSetlist: React.FC = () => {
       const pageSize = 1000; // Adjust based on your database size
       
       while (hasMore) {
-        console.log(`Fetching page ${page} of shows...`);
         
         const { data, error } = await supabase
           .from('shows')
@@ -169,7 +166,6 @@ export const AdminSetlist: React.FC = () => {
         }
       }
       
-      console.log(`Fetched a total of ${allShowsData.length} shows across ${page} pages`);
       setShows(allShowsData || []);
       
       setLoadingProgress(100);

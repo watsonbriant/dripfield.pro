@@ -90,7 +90,6 @@ export function Guest() {
       if (!guestId) return;
 
       try {
-        console.log("Fetching data for guest ID:", guestId);
         setLoadingProgress(5);
         
         // First get the guest info
@@ -108,8 +107,6 @@ export function Guest() {
         if (guestError) throw guestError;
         setGuest(guestData);
         setLoadingProgress(20);
-        
-        console.log("Guest data:", guestData);
 
         // Reset selected group when changing guests
         setSelectedGroup(null);
@@ -121,7 +118,6 @@ export function Guest() {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of guest performances...`);
           
           const { data: showsData, error: showsError, count } = await supabase
             .from('setlist_entry_guests')
@@ -161,7 +157,6 @@ export function Guest() {
         }
         
         setLoadingProgress(75);
-        console.log(`Fetched a total of ${allShows.length} guest performances across ${page} pages`);
         
         // Process the joined data to get unique shows
         const uniqueShowsMap = {};
@@ -185,15 +180,12 @@ export function Guest() {
         // Convert to array
         const uniqueShows = Object.values(uniqueShowsMap);
         
-        console.log("Processed unique shows:", uniqueShows.length);
-        
         // Log shows by year
         const showsByYear = {};
         uniqueShows.forEach(show => {
           const year = show.show_date.split('-')[0];
           showsByYear[year] = (showsByYear[year] || 0) + 1;
         });
-        console.log("Shows by year:", showsByYear);
         
         // Sort by date string
         uniqueShows.sort((a, b) => a.show_date.localeCompare(b.show_date));
@@ -209,7 +201,6 @@ export function Guest() {
       if (!guestId) return;
       
       try {
-        console.log("Fetching song-to-show mapping for guest ID:", guestId);
         
         let allEntries = [];
         let page = 0;
@@ -217,7 +208,6 @@ export function Guest() {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of song-to-show mapping...`);
           
           const { data, error } = await supabase
             .from('setlist_entry_guests')
@@ -265,7 +255,6 @@ export function Guest() {
           }
         });
         
-        console.log(`Mapped ${Object.keys(songShowMapping).length} songs to their shows`);
         setSongShowMap(songShowMapping);
         setLoadingProgress(100);
         

@@ -112,7 +112,6 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -135,8 +134,6 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allAttendedShows.length} attended shows across ${page} pages`);
         
         if (allAttendedShows.length === 0) {
           setShowData([]);
@@ -167,7 +164,6 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
           hasMore = true;
           
           while (hasMore) {
-            console.log(`Fetching page ${page} of show details for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('shows')
@@ -195,7 +191,6 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allShowDetails.length} show details`);
         setLoadingProgress(95);
         
         // Process data to group by year and show_group

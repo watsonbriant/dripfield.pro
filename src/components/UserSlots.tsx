@@ -138,7 +138,6 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows for slots...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -162,7 +161,6 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allAttendedShows.length} attended shows across ${page} pages for slots`);
         setLoadingProgress(25);
         
         const showIds = allAttendedShows.map(item => item.show_id);
@@ -199,7 +197,6 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of song IDs for slots...`);
           
           const { data, error } = await supabase
             .from('songs')
@@ -222,8 +219,6 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allSongData.length} song IDs across ${page} pages`);
         
         const songMap: { [songName: string]: string } = {};
         allSongData?.forEach(songData => {
@@ -269,8 +264,6 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
         showIdChunks.push(showIds.slice(i, i + chunkSize));
       }
       
-      console.log(`Split ${showIds.length} show IDs into ${showIdChunks.length} chunks for slots data`);
-      
       // Get slots data for all attended shows with pagination and chunking
       let allSlotsData = [];
       
@@ -280,10 +273,7 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
         let hasMore = true;
         const pageSize = 1000;
         
-        console.log(`Processing chunk ${i+1}/${showIdChunks.length} for slots data...`);
-        
         while (hasMore) {
-          console.log(`Fetching page ${page} of slots data for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('shows')
@@ -321,8 +311,6 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
           }
         }
       }
-      
-      console.log(`Fetched a total of ${allSlotsData.length} shows with setlist entries across all chunks`);
       
       // Process slots data
       setLoadingProgress(95);

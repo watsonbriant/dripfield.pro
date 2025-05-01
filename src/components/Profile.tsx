@@ -41,18 +41,12 @@ export const Profile: React.FC = () => {
           .select('*')
           .eq('user_id', '75f1ef5d-6b9a-4064-9b21-8b8550dc34bc');
         
-        console.log('Records found in database for known ID:', data);
-        console.log('Any errors?', error);
-        
         if (user) {
           // Also check with the current logged-in user ID
           const { data: userData, error: userError } = await supabase
             .from('user_attended_shows')
             .select('*')
             .eq('user_id', user.id);
-          
-          console.log('Records found for current logged-in user ID:', userData);
-          console.log('Any errors for current user?', userError);
         }
       } catch (e) {
         console.error('Error checking database records:', e);

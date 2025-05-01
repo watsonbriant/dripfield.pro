@@ -36,6 +36,7 @@ interface SongStat {
   song: string;
   count: number;
   percentage: number;
+  categoryId?: number; // Added to store the category_canonid
 }
 
 interface UserPick {
@@ -277,6 +278,7 @@ export function SetlistGameShowPage() {
 
   // Fetch top picked songs
   useEffect(() => {
+    // Updated fetchTopSongs function with multiple sorting criteria
     async function fetchTopSongs() {
       if (!showId) return;
 
@@ -320,15 +322,59 @@ export function SetlistGameShowPage() {
           songCounts[pick.song]++;
         });
 
-        // Convert to array and sort by count
-        const songStatsArray: SongStat[] = Object.entries(songCounts).map(([song, count]) => ({
+        // Get unique song names
+        const songNames = Object.keys(songCounts);
+
+        // Fetch song categories for all the picked songs
+        const { data: songData, error: songError } = await supabase
+          .from('songs')
+          .select(`
+            song, 
+            song_category,
+            categories(
+              category,
+              category_canonid
+            )
+          `)
+          .in('song', songNames);
+
+        if (songError) {
+          console.error('Error fetching song categories:', songError);
+          return;
+        }
+
+        // Create a map of song to category_canonid
+        const songCategoryMap: Record<string, number> = {};
+        songData?.forEach(song => {
+          songCategoryMap[song.song] = song.categories?.category_canonid || 0;
+        });
+
+        // Convert to array with category information
+        const songStatsArray: (SongStat & { categoryId?: number })[] = Object.entries(songCounts).map(([song, count]) => ({
           song,
           count,
-          percentage: Math.round((count / submissionsData.length) * 100)
+          percentage: Math.round((count / submissionsData.length) * 100),
+          categoryId: songCategoryMap[song] || 0 // Default to 0 if category not found
         }));
 
-        // Sort by count descending
-        const sortedSongs = [...songStatsArray].sort((a, b) => b.count - a.count);
+        // Sort using multiple criteria:
+        // 1. By count (descending)
+        // 2. By category_canonid (ascending)
+        // 3. Alphabetically by song name (ascending)
+        const sortedSongs = [...songStatsArray].sort((a, b) => {
+          // First sort by count (descending)
+          if (b.count !== a.count) {
+            return b.count - a.count;
+          }
+          
+          // Then by category_canonid (ascending)
+          if (a.categoryId !== b.categoryId) {
+            return a.categoryId - b.categoryId;
+          }
+          
+          // Finally by song name (alphabetically)
+          return a.song.localeCompare(b.song);
+        });
 
         // Get top 10 songs
         const top10Songs = sortedSongs.slice(0, 10);

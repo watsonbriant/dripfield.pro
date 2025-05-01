@@ -123,7 +123,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows for guests...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -147,8 +146,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allAttendedShows.length} attended shows across ${page} pages for guests`);
-        
         if (!allAttendedShows || allAttendedShows.length === 0) {
           setLoadingProgress(100);
           setTimeout(() => setLoading(false), 500);
@@ -165,8 +162,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           showIdChunks.push(showIds.slice(i, i + chunkSize));
         }
         
-        console.log(`Split ${showIds.length} show IDs into ${showIdChunks.length} chunks for guests data`);
-        
         // 2. Get setlist entries for those shows with pagination and chunking
         let allSetlistEntries = [];
         
@@ -175,10 +170,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           page = 0;
           hasMore = true;
           
-          console.log(`Processing chunk ${i+1}/${showIdChunks.length} for setlist entries...`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of setlist entries for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('setlist_entries')
@@ -206,8 +198,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allSetlistEntries.length} setlist entries across all chunks`);
-        
         if (!allSetlistEntries || allSetlistEntries.length === 0) {
           setLoadingProgress(100);
           setTimeout(() => setLoading(false), 500);
@@ -229,8 +219,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           entryIdChunks.push(entryIds.slice(i, i + chunkSize));
         }
         
-        console.log(`Split ${entryIds.length} entry IDs into ${entryIdChunks.length} chunks for guest joins`);
-        
         // 3. Get guest appearances for those setlist entries with pagination and chunking
         let allGuestJoins = [];
         
@@ -239,10 +227,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           page = 0;
           hasMore = true;
           
-          console.log(`Processing chunk ${i+1}/${entryIdChunks.length} for guest joins...`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of guest joins for chunk ${i+1}/${entryIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('setlist_entry_guests')
@@ -270,8 +255,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allGuestJoins.length} guest joins across all chunks`);
-        
         if (!allGuestJoins || allGuestJoins.length === 0) {
           setLoadingProgress(100);
           setTimeout(() => setLoading(false), 500);
@@ -288,8 +271,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           guestIdChunks.push(guestIds.slice(i, i + chunkSize));
         }
         
-        console.log(`Split ${guestIds.length} guest IDs into ${guestIdChunks.length} chunks for guest details`);
-        
         // 4. Get guest details with pagination and chunking
         let allGuests = [];
         
@@ -298,10 +279,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           page = 0;
           hasMore = true;
           
-          console.log(`Processing chunk ${i+1}/${guestIdChunks.length} for guest details...`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of guest details for chunk ${i+1}/${guestIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('guests')
@@ -328,8 +306,6 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
             }
           }
         }
-        
-        console.log(`Fetched a total of ${allGuests.length} guest details across all chunks`);
         
         if (!allGuests || allGuests.length === 0) {
           setLoadingProgress(100);

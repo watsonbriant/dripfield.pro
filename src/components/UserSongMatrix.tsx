@@ -156,7 +156,6 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows for matrix...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -179,8 +178,6 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allAttendedShows.length} attended shows across ${page} pages for matrix`);
         
         setLoadingProgress(25);
         
@@ -215,10 +212,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
           page = 0;
           hasMore = true;
           
-          console.log(`Processing shows chunk ${i+1}/${showIdChunks.length} with ${currentChunk.length} show IDs`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of show details for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('shows')
@@ -246,8 +240,6 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             }
           }
         }
-        
-        console.log(`Fetched a total of ${allShowsData.length} show details across ${showIdChunks.length} chunks`);
         
         // Sort shows by date
         allShowsData.sort((a, b) => new Date(a.show_date).getTime() - new Date(b.show_date).getTime());
@@ -301,10 +293,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
           let hasMore = true;
           const pageSize = 1000;
           
-          console.log(`Processing setlist entries chunk ${i+1}/${showIdChunks.length} with ${currentChunk.length} show IDs`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of setlist entries for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('setlist_entries')
@@ -348,8 +337,6 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             }
           }
         }
-        
-        console.log(`Fetched a total of ${allEntriesData.length} setlist entries across ${showIdChunks.length} chunks`);
         
         setLoadingProgress(85);
 

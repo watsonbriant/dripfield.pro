@@ -193,7 +193,6 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -216,8 +215,6 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allAttendanceData.length} attended shows across ${page} pages`);
         
         // If the user hasn't attended any shows, return early
         if (allAttendanceData.length === 0) {
@@ -248,10 +245,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
           page = 0;
           hasMore = true;
           
-          console.log(`Processing chunk ${i+1}/${showIdChunks.length} with ${currentChunk.length} show IDs`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of show details for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('shows')
@@ -297,8 +291,6 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
             }
           }
         }
-        
-        console.log(`Fetched a total of ${allShowData.length} show details across ${showIdChunks.length} chunks`);
         setLoadingProgress(80);
         
         // Combine the attendance records with the show details and calculate length and rarity

@@ -35,7 +35,6 @@ export function Admin() {
   useEffect(() => {
     function handleVisibilityChange() {
       if (document.visibilityState === 'visible') {
-        console.log('Tab is now visible - maintaining current state');
         
         // Ensure the active tab matches what's in localStorage
         // This helps if the app got refreshed in the background

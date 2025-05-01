@@ -145,8 +145,6 @@ export const AdminSong: React.FC = () => {
         song_coachnotes: editedSong.song_coachnotes === '' ? null : editedSong.song_coachnotes
       };
       
-      console.log('Updating song with data:', songToUpdate);
-      
       // Use the RPC function you created in Supabase
       const { error } = await supabase.rpc('update_song', {
         song_id_param: songToUpdate.song_id,
@@ -170,7 +168,6 @@ export const AdminSong: React.FC = () => {
       // Refresh the songs list
       fetchAllSongs();
       
-      console.log('Song updated successfully');
     } catch (error) {
       console.error('Error updating song:', error);
     } finally {

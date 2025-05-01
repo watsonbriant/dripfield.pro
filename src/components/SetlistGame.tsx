@@ -320,7 +320,6 @@ export function SetlistGame() {
 
     try {
       setIsScoring(true);
-      console.log('Starting scoring for show ID:', selectedShowToScore);
 
       // Step 1: Count total songs played at this show
       const { data: setlistData, error: setlistError } = await supabase
@@ -334,7 +333,6 @@ export function SetlistGame() {
       }
 
       const totalSongsPlayed = setlistData.length;
-      console.log(`Total songs played: ${totalSongsPlayed}`);
 
       // Step 2: Find the last song of the show
       const { data: lastSongData, error: lastSongError } = await supabase
@@ -351,7 +349,6 @@ export function SetlistGame() {
       }
 
       const lastSong = lastSongData[0]?.entry_song || '';
-      console.log(`Last song played: ${lastSong}`);
 
       // Step 3: Get all submissions for this show
       const { data: submissionsData, error: submissionsError } = await supabase
@@ -363,8 +360,6 @@ export function SetlistGame() {
         console.error('Error fetching submissions:', submissionsError);
         throw submissionsError;
       }
-
-      console.log(`Processing ${submissionsData.length} submissions`);
 
       // Step 4: For each submission, update total_songs_played and score picks
       for (const submission of submissionsData) {
@@ -500,7 +495,6 @@ export function SetlistGame() {
         throw updateError;
       }
 
-      console.log('Successfully scored submissions, refreshing data');
       setScoringComplete(true);
 
       // Step 6: Refresh the list of shows to update UI
@@ -526,7 +520,6 @@ export function SetlistGame() {
 
     try {
       setLoadingPicks(true);
-      console.log("Fetching submission details for", show);
 
       // Fetch the user's picks for this show with all columns we need
       const { data: picksData, error: picksError } = await supabase
@@ -538,8 +531,6 @@ export function SetlistGame() {
         console.error('Error fetching picks:', picksError);
         return;
       }
-
-      console.log("Fetched picks:", picksData);
 
       // Important: Set the userPicks state with this data
       setUserPicks(picksData || []);

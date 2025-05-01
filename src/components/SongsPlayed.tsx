@@ -99,10 +99,7 @@ export function SongsPlayed({
         let hasMore = true;
         const pageSize = 1000;
         
-        console.log(`Fetching song data for guest ID: ${guestId}`);
-        
         while (hasMore) {
-          console.log(`Fetching page ${page} of songs data...`);
           
           const { data, error, count } = await supabase
             .from('setlist_entry_guests')
@@ -142,7 +139,6 @@ export function SongsPlayed({
         }
         
         setLoadingProgress(75);
-        console.log(`Fetched a total of ${allEntries.length} song entries across ${page} pages`);
         
         // Process data to count song occurrences and get song categories
         const songData: Record<string, { 
@@ -199,8 +195,6 @@ export function SongsPlayed({
           category_canonid: data.categoryCanonId || categoryCanonIds[data.category] || 9999, // Default high value for sorting unknown categories last
           original_artist: data.originalArtist
         }));
-        
-        console.log(`Processed ${songsArray.length} unique songs with category information`);
         
         setSongs(songsArray);
         setLoadingProgress(95);

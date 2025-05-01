@@ -80,10 +80,8 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
           release_order: item.release_order
         }));
         
-        console.log(`Found ${formattedReleases.length} releases for showId: ${showId}`);
         return formattedReleases;
       } else {
-        console.log(`No release associations found for showId: ${showId}`);
         return [];
       }
     } catch (error) {

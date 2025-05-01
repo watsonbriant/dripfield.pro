@@ -186,7 +186,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of categories...`);
           
           const { data, error } = await supabase
             .from('categories')
@@ -209,8 +208,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allCategoriesData.length} categories across ${page} pages`);
         setLoadingProgress(20);
         
         // Fetch all songs with pagination
@@ -219,7 +216,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
         hasMore = true;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of songs...`);
           
           const { data, error } = await supabase
             .from('songs')
@@ -242,8 +238,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allSongsData.length} songs across ${page} pages`);
+
         setLoadingProgress(45);
 
         // Fetch user's attended shows with pagination
@@ -252,7 +247,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
         hasMore = true;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -276,8 +270,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allAttendedShowsData.length} attended shows across ${page} pages`);
-        
         setLoadingProgress(65);
         
         // If user has attended shows, get song stats
@@ -300,10 +292,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
             page = 0;
             hasMore = true;
             
-            console.log(`Processing chunk ${i+1}/${showIdChunks.length} for setlist entries...`);
-            
             while (hasMore) {
-              console.log(`Fetching page ${page} of setlist entries for chunk ${i+1}/${showIdChunks.length}...`);
               
               const { data, error } = await supabase
                 .from('setlist_entries')
@@ -331,8 +320,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
             }
           }
           
-          console.log(`Fetched a total of ${allEntriesData.length} setlist entries across all chunks`);
-          
           // Get shows data to know when each song was seen with pagination and chunking
           let allShowsData = [];
           
@@ -341,10 +328,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
             page = 0;
             hasMore = true;
             
-            console.log(`Processing chunk ${i+1}/${showIdChunks.length} for shows data...`);
-            
             while (hasMore) {
-              console.log(`Fetching page ${page} of shows data for chunk ${i+1}/${showIdChunks.length}...`);
               
               const { data, error } = await supabase
                 .from('shows')
@@ -372,8 +356,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
             }
           }
           
-          console.log(`Fetched a total of ${allShowsData.length} show records across all chunks`);
-          
           // Create a map of show IDs to dates
           const showDates: Record<string, string> = {};
           allShowsData.forEach(show => {
@@ -399,10 +381,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
             page = 0;
             hasMore = true;
             
-            console.log(`Processing chunk ${i+1}/${songNameChunks.length} for song mappings...`);
-            
             while (hasMore) {
-              console.log(`Fetching page ${page} of song mappings for chunk ${i+1}/${songNameChunks.length}...`);
               
               const { data, error } = await supabase
                 .from('songs')
@@ -429,8 +408,6 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
               }
             }
           }
-          
-          console.log(`Fetched a total of ${allSongMappingData.length} song mappings across all chunks`);
           
           // Create a mapping from song name to song_id
           const songNameToId: Record<string, string> = {};

@@ -110,8 +110,6 @@ export const AdminGuest: React.FC = () => {
         guest_category: editedGuest.guest_category === '' ? null : editedGuest.guest_category,
       };
       
-      console.log('Updating guest with data:', guestToUpdate);
-      
       // Perform the update
       const { error } = await supabase
         .from('guests')
@@ -136,7 +134,6 @@ export const AdminGuest: React.FC = () => {
       // Refresh the guests list
       fetchAllGuests();
       
-      console.log('Guest updated successfully');
     } catch (error) {
       console.error('Error updating guest:', error);
     } finally {

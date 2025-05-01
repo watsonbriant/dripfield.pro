@@ -79,7 +79,6 @@ export const PublicProfile: React.FC = () => {
         if (showsError) {
           console.error('Error checking attended shows:', showsError);
         } else {
-          console.log('Shows data for public profile:', showsData);
           setHasAttendedShows(showsData && showsData.length > 0);
         }
         

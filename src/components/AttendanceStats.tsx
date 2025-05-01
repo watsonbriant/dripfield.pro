@@ -126,7 +126,6 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows for stats...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -150,7 +149,6 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allAttendedShows.length} attended shows across ${page} pages for stats`);
         setLoadingProgress(22);
         
         if (!allAttendedShows || allAttendedShows.length === 0) {
@@ -174,7 +172,6 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           showIdChunks.push(showIds.slice(i, i + chunkSize));
         }
         
-        console.log(`Split ${showIds.length} show IDs into ${showIdChunks.length} chunks`);
         setLoadingProgress(30);
 
         // Count unique venues with pagination and chunking
@@ -185,10 +182,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           page = 0;
           hasMore = true;
           
-          console.log(`Processing venues chunk ${i+1}/${showIdChunks.length} with ${currentChunk.length} show IDs`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of venue data for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('shows')
@@ -223,8 +217,6 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allVenueData.length} venue records`);
-        
         // Get unique venues
         const uniqueVenues = new Set();
         allVenueData.forEach(show => {
@@ -244,10 +236,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           page = 0;
           hasMore = true;
           
-          console.log(`Processing songs chunk ${i+1}/${showIdChunks.length} with ${currentChunk.length} show IDs`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of song data for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('setlist_entries')
@@ -275,8 +264,6 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           }
         }
         
-        console.log(`Fetched a total of ${allSongData.length} song entries`);
-        
         // Get unique songs
         const uniqueSongs = new Set();
         allSongData.forEach(entry => {
@@ -296,10 +283,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           page = 0;
           hasMore = true;
           
-          console.log(`Processing tours chunk ${i+1}/${showIdChunks.length} with ${currentChunk.length} show IDs`);
-          
           while (hasMore) {
-            console.log(`Fetching page ${page} of tour data for chunk ${i+1}/${showIdChunks.length}...`);
             
             const { data, error } = await supabase
               .from('shows')
@@ -334,8 +318,6 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
             }
           }
         }
-        
-        console.log(`Fetched a total of ${allTourData.length} tour records`);
 
         // Count shows per tour
         const tourCountMap: Record<string, { count: number; tour: string; tour_canonid: number; tour_id: string }> = {};

@@ -134,7 +134,6 @@ export function SongSelectionModal({
   // Add this useEffect specifically for view mode
   useEffect(() => {
     if (viewMode && existingPicks && existingPicks.length > 0) {
-      console.log("Setting up view mode with existing picks:", existingPicks);
       
       // Get unique sets from existing picks, sorted in correct order
       const uniqueSets = [...new Set(existingPicks.map(pick => pick.set))].sort((a, b) => {
@@ -1104,7 +1103,6 @@ export function SongSelectionModal({
       // If editing, update the existing submission and delete only the picks
       if (isEditing && show.submission_id) {
         submissionId = show.submission_id;
-        console.log('Editing existing submission:', submissionId);
         
         // Delete existing picks but KEEP the submission
         const { error: picksDeleteError } = await supabase
@@ -1116,8 +1114,6 @@ export function SongSelectionModal({
           console.error('Error deleting existing picks:', picksDeleteError);
           throw picksDeleteError;
         }
-        
-        console.log('Successfully deleted old picks, keeping submission');
         
         // Update the existing submission record
         const { error: updateError } = await supabase
@@ -1132,8 +1128,7 @@ export function SongSelectionModal({
           console.error('Error updating submission:', updateError);
           throw updateError;
         }
-        
-        console.log('Successfully updated submission');
+
       } else {
         // Create a new submission record
         const { data: submissionData, error: submissionError } = await supabase
@@ -1154,7 +1149,6 @@ export function SongSelectionModal({
         }
         
         submissionId = submissionData.submission_id;
-        console.log('Created new submission:', submissionId);
       }
       
       // Group songs by set for proper numbering
@@ -1191,8 +1185,6 @@ export function SongSelectionModal({
         });
       });
       
-      console.log('Inserting picks:', picksToInsert.length);
-      
       const { error: picksError } = await supabase
         .from('setlist_game_picks')
         .insert(picksToInsert);
@@ -1202,7 +1194,6 @@ export function SongSelectionModal({
         throw picksError;
       }
       
-      console.log('Successfully inserted picks');
       setSuccess(true);
       
       // Close modal after a brief delay

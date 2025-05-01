@@ -88,7 +88,6 @@ export function Bugs() {
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'bugs' },
         payload => {
-          console.log('Bug table change detected:', payload);
           fetchBugs(); // Refetch all bugs on any change
         }
       )
@@ -152,9 +151,6 @@ export function Bugs() {
           ? { ...bug, bug_completion: true } 
           : bug
       ));
-      
-      // Log success to confirm the update happened
-      console.log(`Bug ${selectedBug.bug_id} marked as resolved`);
       
       handleModalClose();
     } catch (err) {

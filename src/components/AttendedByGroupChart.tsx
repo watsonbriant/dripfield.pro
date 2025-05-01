@@ -115,7 +115,6 @@ const AttendedByGroupChart: React.FC<AttendedByGroupChartProps> = ({ userId }) =
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows for group chart...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -146,8 +145,6 @@ const AttendedByGroupChart: React.FC<AttendedByGroupChartProps> = ({ userId }) =
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allAttendedShows.length} attended shows across ${page} pages for group chart`);
         setLoadingProgress(80);
         
         // Count shows by group

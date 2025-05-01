@@ -176,8 +176,6 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
   }, []);
 
   useEffect(() => {
-    console.log('FullSetlistDisplay show:', show);
-    console.log('FullSetlistDisplay show.show_id:', show?.show_id);
   }, [show]);
 
   // Update the dependency array to include show.show_tour

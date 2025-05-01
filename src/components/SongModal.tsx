@@ -129,10 +129,8 @@ const SongModal: React.FC<SongModalProps> = ({
           });
         
         if (error) throw error;
-        console.log('New song created successfully');
       } else {
         // Update existing song
-        console.log('Updating song with data:', songToSave);
         
         // Use the RPC function for updates
         const { error } = await supabase.rpc('update_song', {
@@ -145,7 +143,6 @@ const SongModal: React.FC<SongModalProps> = ({
         });
         
         if (error) throw error;
-        console.log('Song updated successfully');
       }
       
       onSave(); // Trigger refetch of songs

@@ -186,7 +186,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user attended shows...`);
           
           const { data, error } = await supabase
             .from('user_attended_shows')
@@ -209,8 +208,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
             hasMore = false;
           }
         }
-        
-        console.log(`Fetched a total of ${allAttendedShows.length} attended shows across ${page} pages`);
         
         if (allAttendedShows.length === 0) {
           // If user hasn't attended any shows, set empty results and stop loading
@@ -282,7 +279,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of top songs for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('setlist_entries')
@@ -381,7 +377,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of longest performances for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('setlist_entries')
@@ -477,7 +472,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of show openers for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('setlist_entries')
@@ -563,7 +557,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of set openers for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('setlist_entries')
@@ -649,7 +642,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of set closers for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('setlist_entries')
@@ -735,7 +727,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         const pageSize = 1000;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of encore songs for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('setlist_entries')
@@ -813,7 +804,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
   async function fetchNotSeenSongs(userShowIds: string[], startProgress: number, endProgress: number) {
     try {
       setLoadingProgress(startProgress);
-      console.log('Fetching most common not seen songs...');
       
       // First, get all songs the user has seen
       let userSeenSongs = new Set<string>();
@@ -835,7 +825,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         hasMore = true;
         
         while (hasMore) {
-          console.log(`Fetching page ${page} of user seen songs for chunk ${i+1}/${showIdChunks.length}...`);
           
           const { data, error } = await supabase
             .from('setlist_entries')
@@ -871,7 +860,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         }
       }
       
-      console.log(`User has seen ${userSeenSongs.size} unique songs`);
       setLoadingProgress(startProgress + 10);
       
       // Now get the most played songs overall (only from canonical shows)
@@ -880,7 +868,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
       hasMore = true;
       
       while (hasMore) {
-        console.log(`Fetching page ${page} of all songs from canonical shows...`);
         
         const { data, error } = await supabase
           .from('setlist_entries')
