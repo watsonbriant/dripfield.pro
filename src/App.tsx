@@ -28,6 +28,7 @@ import { Settings } from './components/Settings';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { UserMenu } from './components/UserMenu';
 import { Submit } from './components/Submit';
+import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -246,6 +247,7 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/setlistgame" element={<SetlistGame />} />
+              <Route path="/setlistgame/:showId" element={<SetlistGameShowPage />} />
             </Routes>
           </main>
         </div>
