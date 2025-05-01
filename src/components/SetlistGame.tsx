@@ -19,6 +19,7 @@ interface GameShow {
   timeRemaining?: string;
   isSelectionClosed?: boolean;
   submission_id?: string;
+  score?: number; // Add score field
 }
 
 interface UserPick {
@@ -133,23 +134,27 @@ export function SetlistGame() {
 
           const { data: submissionsData, error: submissionsError } = await supabase
             .from('setlist_game_submissions')
-            .select('show_id, submission_id')
+            .select('show_id, submission_id, score')
             .eq('user_id', user.id)
             .in('show_id', showIds);
 
           if (submissionsError) {
             console.error('Error fetching user submissions:', submissionsError);
           } else if (submissionsData) {
-            // Create a map of show_id to submission_id
+            // Create a map of show_id to submission data
             const submissionMap = submissionsData.reduce((acc, sub) => {
-              acc[sub.show_id] = sub.submission_id;
+              acc[sub.show_id] = {
+                submission_id: sub.submission_id,
+                score: sub.score
+              };
               return acc;
-            }, {} as Record<string, string>);
+            }, {} as Record<string, { submission_id: string; score: number | null }>);
 
-            // Add submission_id to each show if it exists
+            // Add submission_id and score to each show if it exists
             processedShows.forEach(show => {
               if (submissionMap[show.show_id]) {
-                show.submission_id = submissionMap[show.show_id];
+                show.submission_id = submissionMap[show.show_id].submission_id;
+                show.score = submissionMap[show.show_id].score;
               }
             });
           }
@@ -652,6 +657,8 @@ export function SetlistGame() {
                       <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Venue</th>
                       <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Location</th>
                       <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Status</th>
+                      {/* Add Score column */}
+                      <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Score</th>
                       <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Picks</th>
                     </tr>
                   </thead>
@@ -721,6 +728,16 @@ export function SetlistGame() {
                               <span className="px-2 py-1 bg-green-500/20 text-green-300 rounded-md text-xs">
                                 {show.timeRemaining} left
                               </span>
+                            )}
+                          </td>
+                          {/* Display user's score for this show */}
+                          <td className="px-4 py-1 text-center">
+                            {user && show.score !== undefined && show.show_scored ? (
+                              <span className="text-yellow-400 font-bold">
+                                {show.score}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500"></span>
                             )}
                           </td>
                           <td className="px-4 py-1 text-center">
