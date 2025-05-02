@@ -162,10 +162,37 @@ export function SetlistGameShowPage() {
     fetchShowDetails();
   }, [showId, user]);
 
-  // Fetch standings for this show
+  // Fetch player count whenever the page loads or showId changes (removed show_scored dependency)
+  useEffect(() => {
+    async function fetchPlayerCount() {
+      if (!showId) return;
+      
+      try {
+        // Get count of all submissions for this show
+        const { data, error, count } = await supabase
+          .from('setlist_game_submissions')
+          .select('*', { count: 'exact', head: true })
+          .eq('show_id', showId);
+
+        if (error) {
+          console.error('Error fetching player count:', error);
+          return;
+        }
+
+        // Update player count (using count if available, otherwise fallback to data length calculation)
+        setTotalPlayers(count !== null ? count : 0);
+      } catch (error) {
+        console.error('Error in player count fetch:', error);
+      }
+    }
+
+    fetchPlayerCount();
+  }, [showId]);
+
+  // Fetch standings for this show when it's scored
   useEffect(() => {
     async function fetchStandings() {
-      if (!showId) return;
+      if (!showId || !show?.show_scored) return;
 
       try {
         // Get all submissions for this show
@@ -181,12 +208,8 @@ export function SetlistGameShowPage() {
 
         if (!submissionsData || submissionsData.length === 0) {
           setStandings([]);
-          setTotalPlayers(0);
           return;
         }
-
-        // Set total players count
-        setTotalPlayers(submissionsData.length);
 
         // Get unique user IDs
         const userIds = [...new Set(submissionsData.map(sub => sub.user_id))];
@@ -278,9 +301,7 @@ export function SetlistGameShowPage() {
       }
     }
 
-    if (show?.show_scored) {
-      fetchStandings();
-    }
+    fetchStandings();
   }, [showId, show?.show_scored]);
 
   // Fetch top picked songs
@@ -569,7 +590,7 @@ export function SetlistGameShowPage() {
         <Link to="/setlistgame" className="hover:text-tertiary transition-colors">
           <div className="flex items-center">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Setlist Game
+            Echo of a Set
           </div>
         </Link>
         <ChevronRight className="w-4 h-4 mx-2" />

@@ -569,10 +569,13 @@ export function SetlistGame() {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="flex justify-between mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Setlist Game</h1>
-
-        <div className="flex gap-3">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+        <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
+          <h1 className="text-3xl font-bold text-white mb-1">Echo of a Set</h1>
+          <h2 className="text-sm font-semibold text-tertiary">A Setlist Game for Goose the Band</h2>
+        </div>
+        
+        <div className="flex gap-3 justify-center md:justify-start">
           {/* How to Play Button - visible to everyone */}
           <button
             onClick={() => setShowRulesModal(true)}
