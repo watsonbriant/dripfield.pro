@@ -19,6 +19,7 @@ export function Submit() {
     'Bandcamp/YouTube/Release Information',
     'Guest Information',
     'Song Correction',
+    'Setlist Game Issue/Bug',
     'Site Issue/Bug',
     'Other'
   ];

@@ -648,8 +648,10 @@ export function SetlistGame() {
                       <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Venue</th>
                       <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Location</th>
                       <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Status</th>
-                      {/* Add Score column */}
-                      <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Score</th>
+                      {/* Conditionally render Score column */}
+                      {user && (
+                        <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Score</th>
+                      )}
                       <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Picks</th>
                     </tr>
                   </thead>
@@ -687,17 +689,26 @@ export function SetlistGame() {
                         >
                           <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
                             <span className="font-semibold">
-                              {/* Change this button to a Link */}
-                              <Link
-                                to={`/setlistgame/${show.show_id}`}
-                                className="hover:text-white transition-colors table-link"
-                              >
-                                {show.show_date
-                                  .split('-')
-                                  .slice(1)
-                                  .concat(show.show_date.substring(2, 4))
-                                  .join('.')}
-                              </Link>
+                              {user ? (
+                                <Link
+                                  to={`/setlistgame/${show.show_id}`}
+                                  className="hover:text-white transition-colors table-link"
+                                >
+                                  {show.show_date
+                                    .split('-')
+                                    .slice(1)
+                                    .concat(show.show_date.substring(2, 4))
+                                    .join('.')}
+                                </Link>
+                              ) : (
+                                <span className="cursor-default">
+                                  {show.show_date
+                                    .split('-')
+                                    .slice(1)
+                                    .concat(show.show_date.substring(2, 4))
+                                    .join('.')}
+                                </span>
+                              )}
                             </span>
                           </td>
                           <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
@@ -721,16 +732,18 @@ export function SetlistGame() {
                               </span>
                             )}
                           </td>
-                          {/* Display user's score for this show */}
-                          <td className="px-4 py-1 text-center">
-                            {user && show.score !== undefined && show.show_scored ? (
-                              <span className="text-yellow-400 font-bold">
-                                {show.score}
-                              </span>
-                            ) : (
-                              <span className="text-gray-500"></span>
-                            )}
-                          </td>
+                          {/* Conditionally render Score cell */}
+                          {user && (
+                            <td className="px-4 py-1 text-center">
+                              {user && show.score !== undefined && show.show_scored ? (
+                                <span className="text-yellow-400 font-bold">
+                                  {show.score}
+                                </span>
+                              ) : (
+                                <span className="text-gray-500"></span>
+                              )}
+                            </td>
+                          )}
                           <td className="px-4 py-1 text-center">
                             {show.show_scored ? (
                               user && show.submission_id ? (
@@ -787,7 +800,7 @@ export function SetlistGame() {
               </div>
             )}
           </div>
-          <SetlistGameStandings activeLeague={activeLeague} user={user} />
+          {user && <SetlistGameStandings activeLeague={activeLeague} user={user} />}
         </div>
       )}
 

@@ -26,10 +26,12 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const fetchStandings = useCallback(async () => {
+    console.log('Starting fetchStandings for league:', activeLeague);
     try {
       setLoading(true);
       
       // Step 1: Get all scored submissions for the active league
+      console.log('Fetching scored shows for league:', activeLeague);
       const { data: showData, error: showError } = await supabase
         .from('shows')
         .select('show_id')
@@ -39,18 +41,25 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         
       if (showError) {
         console.error('Error fetching shows:', showError);
+        setStandings([]);
+        setLoading(false);
         return;
       }
       
+      console.log('Scored shows found:', showData?.length || 0, showData);
+      
       if (!showData || showData.length === 0) {
+        console.log('No scored shows found, exiting early');
         setStandings([]);
+        setLoading(false);
         return;
       }
       
       const showIds = showData.map(show => show.show_id);
+      console.log('Show IDs to check for submissions:', showIds);
       
       // Step 2: Get all submissions for these shows
-      // Modified to not join with profiles table directly
+      console.log('Fetching submissions for shows');
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('setlist_game_submissions')
         .select('submission_id, user_id, show_id, score, total_songs_picked, total_songs_played')
@@ -58,18 +67,26 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         
       if (submissionsError) {
         console.error('Error fetching submissions:', submissionsError);
+        setStandings([]);
+        setLoading(false);
         return;
       }
       
+      console.log('Submissions found:', submissionsData?.length || 0, submissionsData);
+      
       if (!submissionsData || submissionsData.length === 0) {
+        console.log('No submissions found, exiting early');
         setStandings([]);
+        setLoading(false);
         return;
       }
       
       // Get unique user IDs from submissions
       const userIds = [...new Set(submissionsData.map(sub => sub.user_id))];
+      console.log('Unique user IDs found:', userIds.length, userIds);
       
       // Fetch profiles separately
+      console.log('Fetching user profiles');
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, username')
@@ -77,7 +94,10 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         
       if (profilesError) {
         console.error('Error fetching profiles:', profilesError);
+        console.log('Continuing without profile data');
       }
+      
+      console.log('Profiles found:', profilesData?.length || 0, profilesData);
       
       // Create mapping of user_id to username
       const usernameMap = profilesData?.reduce((acc, profile) => {
@@ -87,6 +107,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
       
       // Step 3: Get detailed pick data
       const submissionIds = submissionsData.map(sub => sub.submission_id);
+      console.log('Fetching picks data for submissions:', submissionIds.length);
       
       const { data: picksData, error: picksError } = await supabase
         .from('setlist_game_picks')
@@ -96,10 +117,13 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         
       if (picksError) {
         console.error('Error fetching picks:', picksError);
-        return;
+        console.log('Will continue with limited data (no pick details)');
       }
       
+      console.log('Picks found:', picksData?.length || 0);
+      
       // Step 4: Group submissions by user and calculate stats
+      console.log('Calculating user stats');
       const userStats: Record<string, PlayerStats> = {};
       
       submissionsData.forEach(submission => {
@@ -125,50 +149,68 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         userStats[userId].showsPlayed += 1;
       });
       
+      console.log('User stats object before pick details:', userStats);
+      
       // Count detailed picks stats
-      picksData?.forEach(pick => {
-        const submission = submissionsData.find(s => s.submission_id === pick.submission_id);
-        if (!submission) return;
-        
-        const userId = submission.user_id;
-        
-        // Count songs picked (any correct song)
-        if (pick.result !== 'not_played') {
-          userStats[userId].songsPicked += 1;
-        }
-        
-        // Count sets picked correctly
-        if (pick.result === 'correct_song_set' || 
-            pick.result === 'correct_song_set_num' || 
-            pick.result === 'correct_song_set_openercloser') {
-          userStats[userId].setsPicked += 1;
-        }
-        
-        // Count show openers
-        if ((pick.result === 'correct_song_openercloser' || 
-             pick.result === 'correct_song_set_openercloser') && 
-            pick.placement?.includes('Set 1 Opener')) {
-          userStats[userId].showOpenersPicked += 1;
-        }
-        
-        // Count show closers
-        if (pick.result === 'correct_song_showcloser') {
-          userStats[userId].showClosersPicked += 1;
-        }
-      });
+      if (picksData) {
+        console.log('Processing pick details');
+        picksData.forEach(pick => {
+          const submission = submissionsData.find(s => s.submission_id === pick.submission_id);
+          if (!submission) {
+            console.log('Submission not found for pick:', pick);
+            return;
+          }
+          
+          const userId = submission.user_id;
+          
+          // Count songs picked (any correct song)
+          if (pick.result !== 'not_played') {
+            userStats[userId].songsPicked += 1;
+          }
+          
+          // Count sets picked correctly
+          if (pick.result === 'correct_song_set' || 
+              pick.result === 'correct_song_set_num' || 
+              pick.result === 'correct_song_set_openercloser') {
+            userStats[userId].setsPicked += 1;
+          }
+          
+          // Count show openers
+          if ((pick.result === 'correct_song_openercloser' || 
+               pick.result === 'correct_song_set_openercloser') && 
+              pick.placement?.includes('Set 1 Opener')) {
+            userStats[userId].showOpenersPicked += 1;
+          }
+          
+          // Count show closers
+          if (pick.result === 'correct_song_showcloser') {
+            userStats[userId].showClosersPicked += 1;
+          }
+        });
+      }
       
       // Calculate average points per show and convert to array
+      console.log('Finalizing standings array');
       const standingsArray = Object.values(userStats).map(user => ({
         ...user,
         avgPointsPerShow: Number((user.totalPoints / (user.showsPlayed || 1)).toFixed(2))
       }));
       
+      console.log('Final standings array:', standingsArray.length, standingsArray);
+      
       // Sort standings
-      setStandings(sortStandings(standingsArray, sortField, sortDirection));
+      const sortedStandings = sortStandings(standingsArray, sortField, sortDirection);
+      console.log('Sorted standings:', sortedStandings.length);
+      
+      // Set the state
+      setStandings(sortedStandings);
       
     } catch (error) {
       console.error('Error fetching standings:', error);
+      console.log('Setting empty standings due to error');
+      setStandings([]);
     } finally {
+      console.log('Finished fetchStandings function, setting loading to false');
       setLoading(false);
     }
   }, [activeLeague, sortField, sortDirection]);
@@ -229,7 +271,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         </div>
       ) : standings.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-[#fce7ca]/70">No standings available yet. Play some games to see your ranking!</p>
+          <p className="text-[#fce7ca]/70">No standings available yet for this league.</p>
         </div>
       ) : (
         <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">

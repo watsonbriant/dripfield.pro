@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { Link, useParams } from 'react-router-dom';
@@ -36,7 +36,7 @@ interface SongStat {
   song: string;
   count: number;
   percentage: number;
-  categoryId?: number; // Added to store the category_canonid
+  categoryId?: number;
 }
 
 interface UserPick {
@@ -58,6 +58,12 @@ interface SubmissionDetails {
     entry_setnum: number;
     entry_placement: string;
   }>;
+  username?: string; // Added username for viewing other users' submissions
+}
+
+interface SongCategory {
+  category: string;
+  category_canonid: number;
 }
 
 export function SetlistGameShowPage() {
@@ -79,6 +85,7 @@ export function SetlistGameShowPage() {
     songsPlayed: 0,
     setlist: []
   });
+  const [viewingUserId, setViewingUserId] = useState<string | null>(null);
 
   // Fetch show details
   useEffect(() => {
@@ -331,12 +338,11 @@ export function SetlistGameShowPage() {
           .select(`
             song, 
             song_category,
-            categories(
+            categories:song_category(
               category,
               category_canonid
             )
-          `)
-          .in('song', songNames);
+          `);
 
         if (songError) {
           console.error('Error fetching song categories:', songError);
@@ -346,11 +352,13 @@ export function SetlistGameShowPage() {
         // Create a map of song to category_canonid
         const songCategoryMap: Record<string, number> = {};
         songData?.forEach(song => {
-          songCategoryMap[song.song] = song.categories?.category_canonid || 0;
+          if (song.categories && typeof song.categories === 'object' && 'category_canonid' in song.categories) {
+            songCategoryMap[song.song] = (song.categories as SongCategory).category_canonid || 0;
+          }
         });
 
         // Convert to array with category information
-        const songStatsArray: (SongStat & { categoryId?: number })[] = Object.entries(songCounts).map(([song, count]) => ({
+        const songStatsArray: SongStat[] = Object.entries(songCounts).map(([song, count]) => ({
           song,
           count,
           percentage: Math.round((count / submissionsData.length) * 100),
@@ -368,8 +376,8 @@ export function SetlistGameShowPage() {
           }
           
           // Then by category_canonid (ascending)
-          if (a.categoryId !== b.categoryId) {
-            return a.categoryId - b.categoryId;
+          if ((a.categoryId || 0) !== (b.categoryId || 0)) {
+            return (a.categoryId || 0) - (b.categoryId || 0);
           }
           
           // Finally by song name (alphabetically)
@@ -387,9 +395,11 @@ export function SetlistGameShowPage() {
     fetchTopSongs();
   }, [showId]);
 
-  // Load user's picks for viewing
-  const fetchUserPicks = async () => {
-    if (!user || !userSubmission) return [];
+  // Load picks for viewing (either for the current user or another user)
+  const fetchUserPicks = async (submissionId?: string) => {
+    const targetSubmissionId = submissionId || userSubmission;
+    
+    if (!targetSubmissionId) return [];
 
     try {
       setLoadingPicks(true);
@@ -398,7 +408,7 @@ export function SetlistGameShowPage() {
       const { data: picksData, error: picksError } = await supabase
         .from('setlist_game_picks')
         .select('song, set, setnum, placement, score, result')
-        .eq('submission_id', userSubmission)
+        .eq('submission_id', targetSubmissionId)
         .order('setnum', { ascending: true });
 
       if (picksError) {
@@ -446,15 +456,19 @@ export function SetlistGameShowPage() {
     setActiveSongSelectionShow(null);
     setUserPicks([]);
     setViewMode(false); // Reset view mode when closing
+    setViewingUserId(null); // Reset viewing user ID
   };
 
-  // Handle viewing user's submission
+  // Handle viewing current user's submission
   const handleViewSubmission = async () => {
     if (!user || !userSubmission || !show) {
       return;
     }
 
     try {
+      // Reset viewing user ID
+      setViewingUserId(null);
+      
       await fetchUserPicks();
 
       // Fetch the submission record
@@ -484,6 +498,58 @@ export function SetlistGameShowPage() {
 
     } catch (error) {
       console.error('Error in view submission:', error);
+    }
+  };
+  
+  // Handle viewing another user's submission
+  const handleViewOtherUserSubmission = async (userId: string, username: string) => {
+    if (!showId || !show || !user) {
+      // Redirect to login if user is not logged in
+      return;
+    }
+
+    try {
+      // Set viewing user ID
+      setViewingUserId(userId);
+      
+      // Find the submission for this user and show
+      const { data: submissionData, error: submissionError } = await supabase
+        .from('setlist_game_submissions')
+        .select('submission_id, score, total_songs_picked, total_songs_played')
+        .eq('user_id', userId)
+        .eq('show_id', showId)
+        .single();
+
+      if (submissionError) {
+        console.error('Error fetching other user submission:', submissionError);
+        return;
+      }
+      
+      if (!submissionData) {
+        console.error('No submission found for this user');
+        return;
+      }
+
+      // Fetch the user's picks
+      await fetchUserPicks(submissionData.submission_id);
+
+      // Set submission details
+      setSubmissionDetails({
+        totalScore: submissionData.score || 0,
+        songsPicked: submissionData.total_songs_picked || 0,
+        songsPlayed: submissionData.total_songs_played || 0,
+        setlist: [],
+        username: username
+      });
+
+      // Set view mode
+      setViewMode(true);
+
+      // Open modal
+      setActiveSongSelectionShow(show);
+
+    } catch (error) {
+      console.error('Error in view other user submission:', error);
     }
   };
 
@@ -654,7 +720,12 @@ export function SetlistGameShowPage() {
                               </td>
                               <td className="px-3 py-1 whitespace-normal font-medium text-xs"
                                 style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
-                                {player.username}
+                                <button 
+                                  onClick={() => handleViewOtherUserSubmission(player.userId, player.username)}
+                                  className="hover:underline hover:text-tertiary transition-colors focus:outline-none"
+                                >
+                                  {player.username}
+                                </button>
                               </td>
                               <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
                                 style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
@@ -787,8 +858,8 @@ export function SetlistGameShowPage() {
           onClose={handleCloseModal}
           show={activeSongSelectionShow}
           existingPicks={userPicks}
-          isEditing={!!userSubmission && !viewMode}
-          viewMode={viewMode}
+          isEditing={!!userSubmission && !viewMode && !viewingUserId}
+          viewMode={viewMode || !!viewingUserId}
           submissionDetails={viewMode ? submissionDetails : undefined}
         />
       )}
