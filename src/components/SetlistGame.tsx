@@ -748,27 +748,27 @@ export function SetlistGame() {
                             {show.show_scored ? (
                               user && show.submission_id ? (
                                 <button
-                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors"
+                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors inline-block"
                                   onClick={() => handleViewSubmission(show)}
                                 >
                                   View Results
                                 </button>
                               ) : (
-                                <span className="px-3 py-1 bg-gray-500/50 text-white/50 text-xs font-medium rounded">
+                                <span className="px-3 py-1 bg-gray-500/50 text-white/50 text-xs font-medium rounded inline-block">
                                   Scored
                                 </span>
                               )
                             ) : show.isSelectionClosed ? (
                               user && show.submission_id ? (
                                 <button
-                                  className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-medium rounded transition-colors"
+                                  className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-medium rounded transition-colors inline-block"
                                   onClick={() => handleViewSubmission(show)}
                                 >
                                   View Picks
                                 </button>
                               ) : (
                                 <button
-                                  className="px-3 py-1 bg-gray-500/50 text-white/50 text-xs font-medium rounded cursor-not-allowed"
+                                  className="px-3 py-1 bg-gray-500/50 text-white/50 text-xs font-medium rounded cursor-not-allowed inline-block"
                                   disabled
                                 >
                                   Closed
@@ -777,7 +777,7 @@ export function SetlistGame() {
                             ) : (
                               user ? (
                                 <button
-                                  className="px-3 py-1 bg-tertiary hover:bg-tertiary/80 text-white text-xs font-medium rounded transition-colors"
+                                  className="px-3 py-1 bg-tertiary hover:bg-tertiary/80 text-white text-xs font-medium rounded transition-colors inline-block"
                                   onClick={() => handleSelectSongs(show)}
                                 >
                                   {show.submission_id ? 'Edit Picks' : 'Make Picks'}

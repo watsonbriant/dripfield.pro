@@ -113,8 +113,7 @@ export function Sidebar({
       name: 'Setlist Game', 
       icon: <ListMusic className="w-5 h-5" />, 
       path: '/setlistgame',
-      newBadge: true,
-      adminOnly: true
+      newBadge: true
     },
     { name: 'Submit', icon: <FileWarning className="w-5 h-5" />, path: '/submit' },
     // Admin-only items

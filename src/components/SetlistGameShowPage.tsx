@@ -714,7 +714,7 @@ export function SetlistGameShowPage() {
           hover:bg-white/10 transition-colors
         `}
                             >
-                              <td className="px-1 py-1 text-xs text-center"
+                              <td className="px-1 py-1 text-xs text-center font-semibold"
                                 style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
                                 {index + 1}
                               </td>
@@ -727,7 +727,7 @@ export function SetlistGameShowPage() {
                                   {player.username}
                                 </button>
                               </td>
-                              <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
+                              <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
                                 style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
                                 {player.totalPoints}
                               </td>

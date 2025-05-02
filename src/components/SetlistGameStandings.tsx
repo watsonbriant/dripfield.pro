@@ -26,12 +26,10 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const fetchStandings = useCallback(async () => {
-    console.log('Starting fetchStandings for league:', activeLeague);
     try {
       setLoading(true);
       
       // Step 1: Get all scored submissions for the active league
-      console.log('Fetching scored shows for league:', activeLeague);
       const { data: showData, error: showError } = await supabase
         .from('shows')
         .select('show_id')
@@ -46,20 +44,15 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         return;
       }
       
-      console.log('Scored shows found:', showData?.length || 0, showData);
-      
       if (!showData || showData.length === 0) {
-        console.log('No scored shows found, exiting early');
         setStandings([]);
         setLoading(false);
         return;
       }
       
       const showIds = showData.map(show => show.show_id);
-      console.log('Show IDs to check for submissions:', showIds);
       
       // Step 2: Get all submissions for these shows
-      console.log('Fetching submissions for shows');
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('setlist_game_submissions')
         .select('submission_id, user_id, show_id, score, total_songs_picked, total_songs_played')
@@ -72,10 +65,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         return;
       }
       
-      console.log('Submissions found:', submissionsData?.length || 0, submissionsData);
-      
       if (!submissionsData || submissionsData.length === 0) {
-        console.log('No submissions found, exiting early');
         setStandings([]);
         setLoading(false);
         return;
@@ -83,10 +73,8 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
       
       // Get unique user IDs from submissions
       const userIds = [...new Set(submissionsData.map(sub => sub.user_id))];
-      console.log('Unique user IDs found:', userIds.length, userIds);
       
       // Fetch profiles separately
-      console.log('Fetching user profiles');
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, username')
@@ -94,10 +82,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         
       if (profilesError) {
         console.error('Error fetching profiles:', profilesError);
-        console.log('Continuing without profile data');
       }
-      
-      console.log('Profiles found:', profilesData?.length || 0, profilesData);
       
       // Create mapping of user_id to username
       const usernameMap = profilesData?.reduce((acc, profile) => {
@@ -107,7 +92,6 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
       
       // Step 3: Get detailed pick data
       const submissionIds = submissionsData.map(sub => sub.submission_id);
-      console.log('Fetching picks data for submissions:', submissionIds.length);
       
       const { data: picksData, error: picksError } = await supabase
         .from('setlist_game_picks')
@@ -117,13 +101,9 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         
       if (picksError) {
         console.error('Error fetching picks:', picksError);
-        console.log('Will continue with limited data (no pick details)');
       }
       
-      console.log('Picks found:', picksData?.length || 0);
-      
       // Step 4: Group submissions by user and calculate stats
-      console.log('Calculating user stats');
       const userStats: Record<string, PlayerStats> = {};
       
       submissionsData.forEach(submission => {
@@ -149,15 +129,11 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         userStats[userId].showsPlayed += 1;
       });
       
-      console.log('User stats object before pick details:', userStats);
-      
       // Count detailed picks stats
       if (picksData) {
-        console.log('Processing pick details');
         picksData.forEach(pick => {
           const submission = submissionsData.find(s => s.submission_id === pick.submission_id);
           if (!submission) {
-            console.log('Submission not found for pick:', pick);
             return;
           }
           
@@ -190,27 +166,21 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
       }
       
       // Calculate average points per show and convert to array
-      console.log('Finalizing standings array');
       const standingsArray = Object.values(userStats).map(user => ({
         ...user,
         avgPointsPerShow: Number((user.totalPoints / (user.showsPlayed || 1)).toFixed(2))
       }));
       
-      console.log('Final standings array:', standingsArray.length, standingsArray);
-      
       // Sort standings
       const sortedStandings = sortStandings(standingsArray, sortField, sortDirection);
-      console.log('Sorted standings:', sortedStandings.length);
       
       // Set the state
       setStandings(sortedStandings);
       
     } catch (error) {
       console.error('Error fetching standings:', error);
-      console.log('Setting empty standings due to error');
       setStandings([]);
     } finally {
-      console.log('Finished fetchStandings function, setting loading to false');
       setLoading(false);
     }
   }, [activeLeague, sortField, sortDirection]);
@@ -373,7 +343,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
                     hover:bg-white/10 transition-colors
                   `}
                 >
-                  <td className="px-1 py-1 text-xs text-center"
+                  <td className="px-1 py-1 text-xs text-center font-semibold"
                     style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
                     {index + 1}
                   </td>
@@ -381,7 +351,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
                     style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
                     {player.username}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
+                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
                     style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
                     {player.totalPoints}
                   </td>
