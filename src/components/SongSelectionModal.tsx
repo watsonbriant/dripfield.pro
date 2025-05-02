@@ -2058,7 +2058,7 @@ export function SongSelectionModal({
                   Close
                 </button>
                 
-                {/* Download button */}
+                {/* Download/Share button */}
                 {viewMode && (
                   <button
                     onClick={handleDownloadImage}
@@ -2072,8 +2072,16 @@ export function SongSelectionModal({
                       </>
                     ) : (
                       <>
-                        <Share className="w-4 h-4" />
-                        <span>Share My Picks</span>
+                        {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                          ? <Share className="w-4 h-4" /> 
+                          : <Download className="w-4 h-4" />
+                        }
+                        <span>
+                          {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                            ? 'Share My Picks'
+                            : 'Share My Picks'
+                          }
+                        </span>
                       </>
                     )}
                   </button>
