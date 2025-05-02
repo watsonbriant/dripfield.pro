@@ -19,6 +19,7 @@ interface GameShow {
   timeRemaining?: string;
   isSelectionClosed?: boolean;
   submission_id?: string;
+  show_detail?: string | null;
 }
 
 interface PlayerStats {
@@ -97,7 +98,7 @@ export function SetlistGameShowPage() {
 
         const { data, error } = await supabase
           .from('shows')
-          .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored')
+          .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored, show_detail')
           .eq('show_id', showId)
           .single();
 
@@ -614,14 +615,17 @@ export function SetlistGameShowPage() {
           <div className="bg-[#172330] border border-white/10 rounded-lg p-6">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center">
               <div>
-                <h1 className="text-lg md:text-lg font-bold text-white">
+                <h1 className="text-lg md:text-lg font-bold text-white mb-1">
                   {formatDate(show.show_date)}
                 </h1>
-                <h2 className="text-sm text-[#fce7ca]/90 mb-1">
+                <h2 className="text-sm text-[#fce7ca]/90">
                   {show.show_subvenue}
                 </h2>
-                <p className="text-[#fce7ca]/70 text-xs">
-                  {show.show_venue_location}
+                <p className="text-[#fce7ca]/70 text-xs mb-1">
+                  {show.show_venue_location}<br />
+                </p>
+                <p className="text-tertiary text-xs font-semibold">
+                  {show.show_detail && show.show_detail}
                 </p>
               </div>
 

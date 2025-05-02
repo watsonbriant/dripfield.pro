@@ -15,6 +15,7 @@ interface GameShow {
   show_time: string;
   show_tour: string;
   show_subvenue_venue: string;
+  show_detail?: string | null; // Add detail field
   show_scored?: boolean; // Add this field
   timeRemaining?: string;
   isSelectionClosed?: boolean;
@@ -104,7 +105,7 @@ export function SetlistGame() {
 
       let query = supabase
         .from('shows')
-        .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored')
+        .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored, show_detail')
         .eq('show_tour', activeLeague)
         .eq('show_issetlistgame', true)
         .order('show_date', { ascending: true });
@@ -650,6 +651,7 @@ export function SetlistGame() {
                       <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Date</th>
                       <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Venue</th>
                       <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Location</th>
+                      <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Detail</th>
                       <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Status</th>
                       {/* Conditionally render Score column */}
                       {user && (
@@ -719,6 +721,9 @@ export function SetlistGame() {
                           </td>
                           <td className="px-4 py-1 text-[#fce7ca]/70 whitespace-nowrap">
                             {show.show_venue_location}
+                          </td>
+                          <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                            {show.show_detail || ''}
                           </td>
                           <td className="px-4 py-1 whitespace-nowrap text-center">
                             {show.show_scored ? (
