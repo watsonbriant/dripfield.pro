@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { X, Plus, Trash2, ChevronUp, ChevronDown, Share, Download, Eye } from 'lucide-react';
+import { X, Plus, Trash2, ChevronUp, ChevronDown, Share, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import domtoimage from 'dom-to-image';
@@ -108,6 +108,7 @@ export function SongSelectionModal({
   const [username, setUsername] = useState<string>('');
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [clipboardSuccess, setClipboardSuccess] = useState<boolean>(false);
 
   // Fetch username on component mount
   useEffect(() => {
@@ -1283,6 +1284,70 @@ export function SongSelectionModal({
     }
   };
 
+  const copyImageToClipboard = async () => {
+    try {
+      setIsGeneratingImage(true);
+      setShareError(null);
+      
+      // Generate image if it doesn't exist yet
+      let imageUrl = previewImageUrl;
+      if (!imageUrl) {
+        imageUrl = await generatePreviewImage();
+        if (!imageUrl) {
+          throw new Error('Failed to generate image');
+        }
+      }
+      
+      // Convert data URL to blob
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      
+      // Try to use the clipboard API to copy the image
+      try {
+        // Use the Clipboard API's write method for better image support
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            [blob.type]: blob
+          })
+        ]);
+        
+        // Show success message by changing button state
+        setClipboardSuccess(true);
+        setTimeout(() => setClipboardSuccess(false), 2000); // Revert after 2 seconds
+        
+      } catch (clipboardError) {
+        console.error('Clipboard API write failed:', clipboardError);
+        
+        // Fallback to legacy method for older browsers
+        try {
+          // For browsers that don't support ClipboardItem
+          await navigator.clipboard.writeText('Setlist picks image copied to clipboard');
+          
+          // Still show success message
+          setClipboardSuccess(true);
+          setTimeout(() => setClipboardSuccess(false), 2000);
+          
+          setShareError('Your browser doesn\'t fully support clipboard images, but the image has been copied as text.');
+        } catch (fallbackError) {
+          console.error('Fallback clipboard method failed:', fallbackError);
+          
+          // If all clipboard methods fail, fall back to download
+          const link = document.createElement('a');
+          link.download = `echo-of-a-set-${formatDate(show.show_date)}.png`;
+          link.href = imageUrl;
+          link.click();
+          
+          setShareError('Unable to copy to clipboard. Image has been downloaded instead.');
+        }
+      }
+    } catch (error) {
+      console.error('Error copying image to clipboard:', error);
+      setShareError('Failed to copy image. Please try again.');
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   // Toggle preview
   const handleTogglePreview = async () => {
     if (showPreview) {
@@ -2058,30 +2123,31 @@ export function SongSelectionModal({
                   Close
                 </button>
                 
-                {/* Download/Share button */}
+                {/* Share button - now uses clipboard */}
                 {viewMode && (
                   <button
-                    onClick={handleDownloadImage}
-                    disabled={isGeneratingImage}
-                    className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2"
+                    onClick={copyImageToClipboard}
+                    disabled={isGeneratingImage || clipboardSuccess}
+                    className={`px-4 py-2 font-medium rounded-md transition-colors flex items-center gap-2 ${
+                      clipboardSuccess 
+                        ? 'bg-green-600 hover:bg-green-700 text-white' 
+                        : 'bg-tertiary hover:bg-tertiary/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
+                    }`}
                   >
                     {isGeneratingImage ? (
                       <>
                         <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                         <span>Generating...</span>
                       </>
+                    ) : clipboardSuccess ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        <span>Copied to clipboard!</span>
+                      </>
                     ) : (
                       <>
-                        {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-                          ? <Share className="w-4 h-4" /> 
-                          : <Download className="w-4 h-4" />
-                        }
-                        <span>
-                          {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-                            ? 'Share My Picks'
-                            : 'Share My Picks'
-                          }
-                        </span>
+                        <Share className="w-4 h-4" />
+                        <span>Share My Picks</span>
                       </>
                     )}
                   </button>
