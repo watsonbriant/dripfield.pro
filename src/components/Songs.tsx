@@ -90,6 +90,7 @@ export function Songs() {
           categories!inner(category_type)
         `, { count: 'exact' })
         .eq('categories.category_type', categoryType)
+        .eq('song_placeholder', false) // Only show songs where song_placeholder is false
         .order(field, { ascending: direction === 'asc' })
         .range((page - 1) * songsPerPage, page * songsPerPage - 1);
 
