@@ -1536,7 +1536,7 @@ export function SongSelectionModal({
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="mt-3 ml-4">
-          <h1 className="text-xl font-bold text-white">Echo of a Set</h1>
+          <h1 className="text-xl font-bold text-white">Echo of a Show</h1>
           <h2 className="text-xs font-semibold text-tertiary">A Setlist Game for Goose the Band</h2>
         </div>
         {/* Logo */}

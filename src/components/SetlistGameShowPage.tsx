@@ -591,7 +591,7 @@ export function SetlistGameShowPage() {
         <Link to="/setlistgame" className="hover:text-tertiary transition-colors">
           <div className="flex items-center">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Echo of a Set
+            Echo of a Show
           </div>
         </Link>
         <ChevronRight className="w-4 h-4 mx-2" />

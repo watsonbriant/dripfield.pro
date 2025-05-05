@@ -110,7 +110,7 @@ export function Sidebar({
     { name: 'Venues', icon: <Building2 className="w-5 h-5" />, path: '/venues' },
     { name: 'Discography', icon: <Disc className="w-5 h-5" />, path: '/discography' },
     { 
-      name: 'Echo of a Set', 
+      name: 'Echo of a Show', 
       icon: <ListMusic className="w-5 h-5" />, 
       path: '/setlistgame',
       newBadge: true
