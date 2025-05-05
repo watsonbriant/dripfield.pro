@@ -33,7 +33,7 @@ interface SongBasic {
 
 export function Songs() {
   const navigate = useNavigate();
-  const songsPerPage = 50;
+  const songsPerPage = 30;
 
   const [gooseTable, setGooseTable] = React.useState<TableState>({
     songs: [],
