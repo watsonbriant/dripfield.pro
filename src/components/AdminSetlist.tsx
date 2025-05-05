@@ -24,6 +24,7 @@ interface SetlistEntryData {
   entry_placement: string | null;
   entry_coachnotes: string | null;
   entry_show: string;
+  entry_new: string | null;
 }
 
 export const AdminSetlist: React.FC = () => {
@@ -199,12 +200,13 @@ export const AdminSetlist: React.FC = () => {
           entry_length, 
           entry_placement, 
           entry_coachnotes,
+          entry_new,
           entry_show
         `)
         .eq('entry_show', showId)
         .order('entry_set', { ascending: true })
         .order('entry_setnum', { ascending: true });
-
+  
       if (error) throw error;
       setSetlistEntries(data || []);
     } catch (error) {
@@ -288,6 +290,7 @@ export const AdminSetlist: React.FC = () => {
       entry_length: null,
       entry_placement: null,
       entry_coachnotes: null,
+      entry_new: 'FALSE', // Add this line
       entry_show: selectedShow.show_id
     };
     
@@ -396,13 +399,13 @@ export const AdminSetlist: React.FC = () => {
                   <table className="w-full border-collapse min-w-max">
                     <thead>
                       <tr className="bg-[#0e151b] border-y border-white/10">
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">S</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">#</th>
+                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">S</th>
+                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">#</th>
                         <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Song</th>
                         <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Short</th>
                         <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">&gt;</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Placement</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Length</th>
+                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">Placement</th>
+                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">Length</th>
                         <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Notes</th>
                       </tr>
                     </thead>
@@ -415,8 +418,8 @@ export const AdminSetlist: React.FC = () => {
                           } hover:bg-white/10 transition-colors text-xs cursor-pointer`}
                           onClick={() => handleEntrySelect(entry)}
                         >
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">{entry.entry_set}</td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">{entry.entry_setnum}</td>
+                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap text-center">{entry.entry_set}</td>
+                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap text-center">{entry.entry_setnum}</td>
                           <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap font-semibold">{entry.entry_song}</td>
                           <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
                             {entry.entry_short || ""}
@@ -435,7 +438,7 @@ export const AdminSetlist: React.FC = () => {
                               {entry.entry_placement || ""}
                             </div>
                           </td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">{formatTimeDisplay(entry.entry_length)}</td>
+                          <td className="px-2 py-0.5 text-[#fce7ca]/90 text-center whitespace-nowrap">{formatTimeDisplay(entry.entry_length)}</td>
                           <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
                             {entry.entry_coachnotes || ""}
                           </td>

@@ -14,6 +14,7 @@ interface SetlistEntryData {
   entry_placement: string | null;
   entry_coachnotes: string | null;
   entry_show: string;
+  entry_new: string | null;
 }
 
 interface SetOptions {
@@ -85,6 +86,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   const [allGuests, setAllGuests] = useState<GuestCategory[]>([]);
   const [selectedGuestIds, setSelectedGuestIds] = useState<string[]>([]);
   const [isGuestSectionExpanded, setIsGuestSectionExpanded] = useState(false);
+
+
+  const [selectedNewSongOption, setSelectedNewSongOption] = useState<string>("N/A");
 
   // Load dropdown options on component mount
   useEffect(() => {
@@ -192,17 +196,30 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         // Create a copy of entry with default values for dropdowns
         const entryWithDefaults = {
           ...entry,
-          entry_set: entry.entry_set || "--",  // Changed from null to "--"
-          entry_setnum: entry.entry_setnum || "--",  // Changed from null to "--"
+          entry_set: entry.entry_set || "--",
+          entry_setnum: entry.entry_setnum || "--",
           entry_song: entry.entry_song || null,
           entry_short: entry.entry_short || null,
           entry_segue: entry.entry_segue || null,
-          entry_placement: entry.entry_placement || null
+          entry_placement: entry.entry_placement || null,
+          entry_new: entry.entry_new || "FALSE" // Add default for entry_new
         };
         
         setEditedEntry(entryWithDefaults);
+        // For new entries, default to N/A
+        setSelectedNewSongOption("N/A");
       } else {
         setEditedEntry(entry);
+        
+        // For existing entries, set the dropdown value based on the database value
+        if (entry.entry_new === "New Original Song") {
+          setSelectedNewSongOption("New Original Song");
+        } else if (entry.entry_new === "New Cover Song") {
+          setSelectedNewSongOption("New Cover Song");
+        } else {
+          // If it's FALSE or null or undefined, set to N/A
+          setSelectedNewSongOption("N/A");
+        }
       }
       
       setIsEditing(isNewEntry); // Auto-enable editing mode for new entries
@@ -370,7 +387,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           return;
         }
       }
-
+  
       // Create a copy of editedEntry with empty strings and "--" converted to null
       const entryToSave = {
         ...editedEntry,
@@ -381,7 +398,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         entry_segue: editedEntry.entry_segue === "" || editedEntry.entry_segue === "--" ? null : editedEntry.entry_segue,
         entry_length: editedEntry.entry_length === "" ? null : editedEntry.entry_length,
         entry_placement: editedEntry.entry_placement === "" || editedEntry.entry_placement === "--" ? null : editedEntry.entry_placement,
-        entry_coachnotes: editedEntry.entry_coachnotes === "" ? null : editedEntry.entry_coachnotes
+        entry_coachnotes: editedEntry.entry_coachnotes === "" ? null : editedEntry.entry_coachnotes,
+        entry_new: selectedNewSongOption === "N/A" ? "FALSE" : selectedNewSongOption // Add this line
       };
       
       let savedEntryId: string;
@@ -394,7 +412,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           entry_set: entryToSave.entry_set,
           entry_setnum: entryToSave.entry_setnum,
           entry_song: entryToSave.entry_song,
-          entry_show: entryToSave.entry_show
+          entry_show: entryToSave.entry_show,
+          entry_new: entryToSave.entry_new // Add this line
         };
         
         // Add optional fields only if they have values
@@ -437,7 +456,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             entry_segue: entryToSave.entry_segue,
             entry_length: entryToSave.entry_length,
             entry_placement: entryToSave.entry_placement,
-            entry_coachnotes: entryToSave.entry_coachnotes
+            entry_coachnotes: entryToSave.entry_coachnotes,
+            entry_new: entryToSave.entry_new // Add this line
           })
           .eq('entry_id', entryToSave.entry_id);
         
@@ -856,6 +876,23 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               rows={4}
               className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'} text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
             />
+          </div>
+
+          <div className="space-y-2 md:col-span-6">
+            <label className="block text-sm font-semibold text-white">New Song?</label>
+            <select
+              name="new_song_option"
+              value={selectedNewSongOption}
+              onChange={(e) => setSelectedNewSongOption(e.target.value)}
+              disabled={!isEditing && !isNewEntry}
+              className={`w-full px-2 py-2 rounded-md border ${
+                isEditing || isNewEntry ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'
+              } text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+            >
+              <option value="N/A">N/A</option>
+              <option value="New Original Song">New Original Song</option>
+              <option value="New Cover Song">New Cover Song</option>
+            </select>
           </div>
         </div>
       </div>
