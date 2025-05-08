@@ -152,7 +152,6 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
         // Initialize tour-related statistics
         let tourCountsMap = {};
         let standsAttended: StandsAttended = {};
-        let standCategoriesMap = {};
         let fiveInARowCompleted = false;
 
         if (userId) {
@@ -201,68 +200,63 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                 }
               });
 
-              // Get stands information
-              const { data: standsData, error: standsError } = await supabase
-                .from('stands')
-                .select(`
-                  stand,
-                  stand_category,
-                  stand_categories:stand_category (
-                    stand_category
-                  )
-                `);
+              // Create a set of attended show IDs for easier lookup
+              const attendedShowIds = new Set(
+                attendedShowsData
+                  .filter(item => item.shows)
+                  .map(item => item.shows.show_id)
+              );
 
-              if (standsError) {
-                console.error('Error fetching stands data:', standsError);
-              } else if (standsData && standsData.length > 0) {
-                // Create mapping of stands to categories
-                standsData.forEach(stand => {
-                  if (stand.stand && stand.stand_categories) {
-                    standCategoriesMap[stand.stand] = stand.stand_categories.stand_category;
-                  }
-                });
+              // First, get all the unique stands from the user's attended shows
+              const userStands = new Set(
+                attendedShowsData
+                  .filter(item => item.shows && item.shows.show_stand)
+                  .map(item => item.shows.show_stand)
+              );
 
-                // Get all shows with stand info
-                const { data: showsByStand, error: showsByStandError } = await supabase
+              // For each stand the user has attended at least one show of
+              for (const standName of userStands) {
+                // Get ALL shows in this stand (not just attended ones)
+                const { data: allStandShows, error: standShowsError } = await supabase
                   .from('shows')
-                  .select('show_id, show_stand')
-                  .not('show_stand', 'is', null);
-
-                if (showsByStandError) {
-                  console.error('Error fetching shows by stand:', showsByStandError);
-                } else if (showsByStand && showsByStand.length > 0) {
-                  // Group shows by stand
-                  const allShowsByStand = {};
-                  showsByStand.forEach(show => {
-                    if (show.show_stand) {
-                      if (!allShowsByStand[show.show_stand]) {
-                        allShowsByStand[show.show_stand] = [];
-                      }
-                      allShowsByStand[show.show_stand].push(show.show_id);
-                    }
-                  });
-
-                  // Create a set of attended show IDs for easier lookup
-                  const attendedShowIds = new Set(
-                    attendedShowsData
-                      .filter(item => item.shows)
-                      .map(item => item.shows.show_id)
-                  );
-
-                  // Check each stand to see if user attended all shows
-                  Object.entries(allShowsByStand).forEach(([standName, showIds]) => {
-                    // Check if user attended ALL shows in this stand
-                    const allAttended = (showIds as string[]).every(showId => 
-                      attendedShowIds.has(showId)
-                    );
+                  .select('show_id')
+                  .eq('show_stand', standName);
+                  
+                if (standShowsError) {
+                  console.error(`Error fetching shows for stand ${standName}:`, standShowsError);
+                  continue;
+                }
+                
+                if (!allStandShows || allStandShows.length === 0) continue;
+                
+                // Check if user has attended ALL shows in this stand
+                const allStandShowIds = allStandShows.map(show => show.show_id);
+                const allAttended = allStandShowIds.every(showId => attendedShowIds.has(showId));
+                
+                if (allAttended) {
+                  // Get the category for this stand
+                  const { data: standData, error: standError } = await supabase
+                    .from('stands')
+                    .select(`
+                      stand_category,
+                      stand_categories:stand_category (
+                        stand_category
+                      )
+                    `)
+                    .eq('stand', standName)
+                    .single();
                     
-                    if (allAttended && showIds.length > 0) {
-                      standsAttended[standName] = {
-                        completed: true,
-                        category: standCategoriesMap[standName] || 'Unknown'
-                      };
-                    }
-                  });
+                  if (standError) {
+                    console.error(`Error fetching stand info for ${standName}:`, standError);
+                    continue;
+                  }
+                  
+                  if (standData && standData.stand_categories) {
+                    standsAttended[standName] = {
+                      completed: true,
+                      category: standData.stand_categories.stand_category
+                    };
+                  }
                 }
               }
 
