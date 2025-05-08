@@ -153,6 +153,10 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
         let tourCountsMap = {};
         let standsAttended: StandsAttended = {};
         let fiveInARowCompleted = false;
+        
+        // Initialize show stats variables
+        let canonicalShowCount = 0;
+        let attendedGlobalShow = false;
 
         if (userId) {
           try {
@@ -168,7 +172,9 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                   show_year,
                   show_date,
                   show_tour,
-                  show_stand
+                  show_stand,
+                  show_subvenue,
+                  show_subvenue_venue
                 )
               `)
               .eq('user_id', userId);
@@ -182,6 +188,9 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                 
               const canonicalShowIds = canonicalShows
                 .map(show => show.shows.show_id);
+              
+              // Count canonical shows for Show Stats
+              canonicalShowCount = canonicalShows.length;
 
               // Process Goosemas shows
               canonicalShows.forEach(show => {
@@ -206,6 +215,32 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                   .filter(item => item.shows)
                   .map(item => item.shows.show_id)
               );
+
+              // Check for global venues attendance
+              if (canonicalShows.length > 0) {
+                // Get venues with global flag
+                const { data: globalVenues, error: venuesError } = await supabase
+                  .from('venues')
+                  .select('venue')
+                  .eq('venue_global', true);
+                
+                if (venuesError) {
+                  console.error('Error fetching global venues:', venuesError);
+                } else if (globalVenues && globalVenues.length > 0) {
+                  // Extract venue names
+                  const globalVenueNames = globalVenues.map(v => v.venue);
+                  
+                  // Check if user has attended any show at these venues
+                  for (const show of canonicalShows) {
+                    if (show.shows && show.shows.show_subvenue_venue) {
+                      if (globalVenueNames.includes(show.shows.show_subvenue_venue)) {
+                        attendedGlobalShow = true;
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
 
               // First, get all the unique stands from the user's attended shows
               const userStands = new Set(
@@ -549,6 +584,22 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
               isComplete = Object.values(standsAttended).some(
                 stand => stand.completed && stand.category === looseEnd.end
               );
+            }
+            
+            return { ...looseEnd, isCompleted: isComplete };
+          }
+          // For Show Stats category, handle attendance milestones and global venue
+          else if (looseEnd.end_category === 'Show Stats') {
+            let isComplete = false;
+            
+            // Check Goose xN milestones
+            if (looseEnd.end.startsWith('Goose x')) {
+              const requiredShows = parseInt(looseEnd.end.replace('Goose x', ''), 10);
+              isComplete = !isNaN(requiredShows) && canonicalShowCount >= requiredShows;
+            }
+            // Check Goin' Global achievement
+            else if (looseEnd.end === "Goin' Global") {
+              isComplete = attendedGlobalShow;
             }
             
             return { ...looseEnd, isCompleted: isComplete };
