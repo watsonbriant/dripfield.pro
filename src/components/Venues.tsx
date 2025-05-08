@@ -44,8 +44,8 @@ export function Venues() {
             )
           `)
           .order(sortField === 'subvenue' ? 'subvenue' : 
-                 sortField === 'subvenue_venue_location' ? 'subvenue_venue_location' : 
-                 'subvenue', 
+                sortField === 'subvenue_venue_location' ? 'subvenue_venue_location' : 
+                'subvenue', 
                 { ascending: sortDirection === 'asc' });
         
         if (subvenuesError) throw subvenuesError;
