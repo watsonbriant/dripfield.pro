@@ -17,6 +17,7 @@ interface GameShow {
   show_venue_location: string;
   show_time: string;
   show_tour: string;
+  show_canonid: string;
   show_subvenue_venue: string;
   show_detail?: string | null; // Add detail field
   show_scored?: boolean; // Add this field
@@ -922,7 +923,7 @@ export function SetlistGame() {
                     <option value="">Select a show...</option>
                     {gameShows.map((show) => (
                       <option key={show.show_id} value={show.show_id}>
-                        {show.show_date.split('-').slice(1).concat(show.show_date.substring(2, 4)).join('.')} - {show.show_subvenue}
+                        {show.show_date.split('-').slice(1).concat(show.show_date.substring(2, 4)).join('.')} - [{show.show_canonid}] - {show.show_subvenue}
                       </option>
                     ))}
                   </select>
