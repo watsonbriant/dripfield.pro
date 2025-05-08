@@ -74,14 +74,18 @@ export function SetlistGame() {
   const calculateTimeRemaining = useCallback((showTime: string): {
     timeRemaining: string;
     isSelectionClosed: boolean;
+    isLessThan24Hours: boolean;  // Add this new property
   } => {
     const now = new Date();
     const showDateTime = new Date(showTime);
     const oneHourBefore = new Date(showDateTime);
     oneHourBefore.setHours(oneHourBefore.getHours() - 1);
-
+  
     const isSelectionClosed = now >= oneHourBefore;
-
+    
+    // Calculate if less than 24 hours remaining
+    const isLessThan24Hours = oneHourBefore.getTime() - now.getTime() < 24 * 60 * 60 * 1000;
+  
     // Calculate time remaining
     let timeRemaining = '';
     if (!isSelectionClosed) {
@@ -89,7 +93,7 @@ export function SetlistGame() {
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-
+  
       if (days > 0) {
         timeRemaining = `${days}d ${hours}h`;
       } else if (hours > 0) {
@@ -98,8 +102,8 @@ export function SetlistGame() {
         timeRemaining = `${minutes}m`;
       }
     }
-
-    return { timeRemaining, isSelectionClosed };
+  
+    return { timeRemaining, isSelectionClosed, isLessThan24Hours };
   }, []);
 
   const fetchGameShows = useCallback(async () => {
@@ -123,12 +127,13 @@ export function SetlistGame() {
       if (data) {
         // Process data to add time remaining calculations
         const processedShows = data.map(show => {
-          const { timeRemaining, isSelectionClosed } = calculateTimeRemaining(show.show_time);
+          const { timeRemaining, isSelectionClosed, isLessThan24Hours } = calculateTimeRemaining(show.show_time);
 
           return {
             ...show,
             timeRemaining,
-            isSelectionClosed
+            isSelectionClosed,
+            isLessThan24Hours
           };
         });
 
@@ -761,6 +766,10 @@ export function SetlistGame() {
                             ) : show.isSelectionClosed ? (
                               <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded-md text-xs">
                                 Closed
+                              </span>
+                            ) : show.isLessThan24Hours ? (
+                              <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded-md text-xs">
+                                {show.timeRemaining} left
                               </span>
                             ) : (
                               <span className="px-2 py-1 bg-green-500/20 text-green-300 rounded-md text-xs">
