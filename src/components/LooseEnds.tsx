@@ -69,6 +69,15 @@ interface CategoryProgress {
   };
 }
 
+interface StandInfo {
+  completed: boolean;
+  category: string;
+}
+
+interface StandsAttended {
+  [standName: string]: StandInfo;
+}
+
 export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
   const [groupedLooseEnds, setGroupedLooseEnds] = useState<GroupedLooseEnds>({});
   const [categories, setCategories] = useState<string[]>([]);
@@ -135,15 +144,21 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
           }
         }
         
-        // After checking side projects, let's add debut tracking
+        // After checking side projects, process debuts, Goosemas, and tour stats
         setLoadingProgress(27);
         let debutCount = 0;
         let goosemasShowsAttended = new Set<string>();
         
+        // Initialize tour-related statistics
+        let tourCountsMap = {};
+        let standsAttended: StandsAttended = {};
+        let standCategoriesMap = {};
+        let fiveInARowCompleted = false;
+
         if (userId) {
           try {
-            // First get the user's attended shows that are canonical
-            const { data: canonicalAttendedShows, error: showsError } = await supabase
+            // First get the user's attended shows with all required data
+            const { data: attendedShowsData, error: showsError } = await supabase
               .from('user_attended_shows')
               .select(`
                 show_id,
@@ -151,32 +166,146 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                   show_id,
                   show_canonid,
                   show_detail,
-                  show_year
+                  show_year,
+                  show_date,
+                  show_tour,
+                  show_stand
                 )
               `)
               .eq('user_id', userId);
 
             if (showsError) {
-              console.error('Error fetching user attended canonical shows:', showsError);
-            } else if (canonicalAttendedShows && canonicalAttendedShows.length > 0) {
-              // Filter to only keep shows with a valid show_canonid
-              const canonicalShows = canonicalAttendedShows
+              console.error('Error fetching user attended shows with details:', showsError);
+            } else if (attendedShowsData && attendedShowsData.length > 0) {
+              // Get canonical shows for debut tracking
+              const canonicalShows = attendedShowsData
                 .filter(show => show.shows && show.shows.show_canonid !== null);
                 
               const canonicalShowIds = canonicalShows
                 .map(show => show.shows.show_id);
 
-              // Process Goosemas shows - check each canonical show
+              // Process Goosemas shows
               canonicalShows.forEach(show => {
                 if (show.shows && 
                     show.shows.show_detail && 
                     show.shows.show_detail.includes('Goosemas')) {
-                  // Add the show_detail to our set of Goosemas shows attended
-                  // This ensures each unique Goosemas show is counted separately
                   goosemasShowsAttended.add(show.shows.show_detail);
                 }
               });
 
+              // Process tour counts
+              attendedShowsData.forEach(item => {
+                if (item.shows && item.shows.show_tour) {
+                  const tourName = item.shows.show_tour;
+                  tourCountsMap[tourName] = (tourCountsMap[tourName] || 0) + 1;
+                }
+              });
+
+              // Get stands information
+              const { data: standsData, error: standsError } = await supabase
+                .from('stands')
+                .select(`
+                  stand,
+                  stand_category,
+                  stand_categories:stand_category (
+                    stand_category
+                  )
+                `);
+
+              if (standsError) {
+                console.error('Error fetching stands data:', standsError);
+              } else if (standsData && standsData.length > 0) {
+                // Create mapping of stands to categories
+                standsData.forEach(stand => {
+                  if (stand.stand && stand.stand_categories) {
+                    standCategoriesMap[stand.stand] = stand.stand_categories.stand_category;
+                  }
+                });
+
+                // Get all shows with stand info
+                const { data: showsByStand, error: showsByStandError } = await supabase
+                  .from('shows')
+                  .select('show_id, show_stand')
+                  .not('show_stand', 'is', null);
+
+                if (showsByStandError) {
+                  console.error('Error fetching shows by stand:', showsByStandError);
+                } else if (showsByStand && showsByStand.length > 0) {
+                  // Group shows by stand
+                  const allShowsByStand = {};
+                  showsByStand.forEach(show => {
+                    if (show.show_stand) {
+                      if (!allShowsByStand[show.show_stand]) {
+                        allShowsByStand[show.show_stand] = [];
+                      }
+                      allShowsByStand[show.show_stand].push(show.show_id);
+                    }
+                  });
+
+                  // Create a set of attended show IDs for easier lookup
+                  const attendedShowIds = new Set(
+                    attendedShowsData
+                      .filter(item => item.shows)
+                      .map(item => item.shows.show_id)
+                  );
+
+                  // Check each stand to see if user attended all shows
+                  Object.entries(allShowsByStand).forEach(([standName, showIds]) => {
+                    // Check if user attended ALL shows in this stand
+                    const allAttended = (showIds as string[]).every(showId => 
+                      attendedShowIds.has(showId)
+                    );
+                    
+                    if (allAttended && showIds.length > 0) {
+                      standsAttended[standName] = {
+                        completed: true,
+                        category: standCategoriesMap[standName] || 'Unknown'
+                      };
+                    }
+                  });
+                }
+              }
+
+              // Check for Five in a Row (consecutive shows by canonId in same tour)
+              // Group shows by tour
+              const showsByTour = {};
+              canonicalShows
+                .filter(item => item.shows && item.shows.show_tour && item.shows.show_canonid)
+                .forEach(item => {
+                  const tourName = item.shows.show_tour;
+                  if (!showsByTour[tourName]) {
+                    showsByTour[tourName] = [];
+                  }
+                  showsByTour[tourName].push({
+                    id: item.shows.show_id,
+                    canonId: item.shows.show_canonid
+                  });
+                });
+
+              // For each tour, check for 5 consecutive shows by canonId
+              Object.entries(showsByTour).forEach(([tourName, shows]) => {
+                // Sort shows by canonical ID
+                const sortedShows = [...shows].sort((a, b) => a.canonId - b.canonId);
+                
+                let maxConsecutive = 1;
+                let currentConsecutive = 1;
+                
+                for (let i = 1; i < sortedShows.length; i++) {
+                  // Check if this show's canonId is exactly one more than the previous
+                  if (sortedShows[i].canonId === sortedShows[i-1].canonId + 1) {
+                    currentConsecutive++;
+                    maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+                  } else {
+                    currentConsecutive = 1;
+                  }
+                }
+                
+                if (maxConsecutive >= 5) {
+                  fiveInARowCompleted = true;
+                }
+              });
+
+              // Check for debuts
               if (canonicalShowIds.length > 0) {
                 // Get setlist entries that are debuts for these shows
                 const { data: debutEntries, error: entriesError } = await supabase
@@ -404,6 +533,30 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
             
             const showsAttended = goosemasShowsAttended.size;
             const isComplete = !isNaN(requiredShows) && showsAttended >= requiredShows;
+            return { ...looseEnd, isCompleted: isComplete };
+          }
+          // For Tour Stats category, handle all the tour-related achievements
+          else if (looseEnd.end_category === 'Tour Stats') {
+            let isComplete = false;
+            
+            if (looseEnd.end === 'Tour x5') {
+              // Check if any tour has at least 5 shows attended
+              isComplete = Object.values(tourCountsMap).some(count => count >= 5);
+            }
+            else if (looseEnd.end === 'Tour x10') {
+              // Check if any tour has at least 10 shows attended
+              isComplete = Object.values(tourCountsMap).some(count => count >= 10);
+            }
+            else if (looseEnd.end === 'Five in a Row') {
+              isComplete = fiveInARowCompleted;
+            }
+            else if (looseEnd.end.includes('Night Stand')) {
+              // Check if any completed stand has a category matching this Loose End
+              isComplete = Object.values(standsAttended).some(
+                stand => stand.completed && stand.category === looseEnd.end
+              );
+            }
+            
             return { ...looseEnd, isCompleted: isComplete };
           }
           

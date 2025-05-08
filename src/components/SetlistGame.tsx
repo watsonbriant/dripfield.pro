@@ -108,10 +108,10 @@ export function SetlistGame() {
 
       let query = supabase
         .from('shows')
-        .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored, show_detail')
+        .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored, show_detail, show_canonid')
         .eq('show_tour', activeLeague)
         .eq('show_issetlistgame', true)
-        .order('show_date', { ascending: true });
+        .order('show_canonid', { ascending: true });
 
       const { data, error } = await query;
 
