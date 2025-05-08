@@ -946,7 +946,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
           // Then alphabetically
           return a.song.localeCompare(b.song);
         })
-        .slice(0, 10); // Get top 10
+        .slice(0, 8); // Get top 10
       
       setNotSeenSongs(notSeenSongs);
       setLoadingNotSeen(false);
@@ -1070,6 +1070,12 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         showLength: true
       },
       {
+        type: 'notSeenSongs',
+        title: 'Most Common Not Seen',
+        data: notSeenSongs,
+        loading: loadingNotSeen
+      },
+      {
         type: 'showOpeners',
         title: 'Most Seen Show Openers',
         data: showOpeners,
@@ -1100,12 +1106,6 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         loading: loadingEncores,
         countKey: 'times_played',
         songNameKey: 'song_name'
-      },
-      {
-        type: 'notSeenSongs',
-        title: 'Most Common Not Seen',
-        data: notSeenSongs,
-        loading: loadingNotSeen
       }
     ];
     

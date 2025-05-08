@@ -224,7 +224,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         <div className="flex items-center gap-4">
           <Trophy className="w-5 h-5 text-yellow-400" />
           <span>Standings</span>
-          <span className="px-2 py-0.5 text-sm font-medium rounded bg-tertiary text-white">
+          <span className="px-2 py-0.5 text-sm font-medium rounded bg-[#ffe6c7] text-[#0c1d27]">
             {activeLeague}
           </span>
         </div>

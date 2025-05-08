@@ -666,7 +666,7 @@ export function SetlistGameShowPage() {
               </div>
 
               {show.show_tour && (
-                <div className="px-3 py-1 bg-tertiary text-white font-semibold rounded-md text-sm">
+                <div className="px-3 py-1 bg-[#ffe6c7] text-[#0c1d27] font-semibold rounded-md text-sm">
                   {show.show_tour}
                 </div>
               )}

@@ -11,6 +11,7 @@ import UserSlots from './UserSlots';
 import UserGuests from './UserGuests';
 import OverviewChart from './OverviewChart';
 import UserStats from './UserStats';
+import LooseEnds from './LooseEnds';
 import { ChevronDown, Link2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { MatrixSortMode } from './UserSongMatrix'; // Import the type from UserSongMatrix
@@ -122,7 +123,7 @@ export const Profile: React.FC = () => {
     }
   };
 
-  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Guests'];
+  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Guests', 'Loose Ends'];
 
   // Handle click outside to close dropdown and check for screen size changes
   useEffect(() => {
@@ -228,6 +229,12 @@ export const Profile: React.FC = () => {
         return (
           <div>
             <UserGuests userId={user.id} />
+          </div>
+        );
+      case 'Loose Ends':
+        return (
+          <div>
+            <LooseEnds userId={user.id} />
           </div>
         );
       default:

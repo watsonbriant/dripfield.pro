@@ -6,6 +6,9 @@ import { SongSelectionModal } from './SongSelectionModal';
 import { SetlistGameRulesModal } from './SetlistGameRulesModal'; // Import the new component
 import { SetlistGameStandings } from './SetlistGameStandings';
 import { ChevronDown, X, HelpCircle, Trophy, ListMusic } from 'lucide-react'; // Add Trophy icon
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBluesky } from '@fortawesome/free-brands-svg-icons';
+import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
 
 interface GameShow {
   show_id: string;
@@ -577,6 +580,31 @@ export function SetlistGame() {
         </div>
         
         <div className="flex gap-3 justify-center md:justify-start">
+          <a 
+            href="https://bsky.app/profile/echoofashow.bsky.social" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <FontAwesomeIcon 
+              icon={faBluesky} 
+              size="2x" 
+              style={{ color: '#ffffff' }} 
+            />
+          </a>
+
+          <a 
+            href="https://x.com/echoofashow" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mr-4"
+          >
+            <FontAwesomeIcon 
+              icon={faXTwitter} 
+              size="2x" 
+              style={{ color: '#ffffff' }} 
+            />
+          </a>
+
           {/* How to Play Button - visible to everyone */}
           <button
             onClick={() => setShowRulesModal(true)}
@@ -633,7 +661,7 @@ export function SetlistGame() {
               <div className="flex items-center gap-4">
                 <ListMusic className="w-5 h-5 text-yellow-400" />
                 <span>Active League</span>
-                <span className="px-2 py-0.5 text-sm font-medium rounded bg-tertiary text-white">
+                <span className="px-2 py-0.5 text-sm font-medium rounded bg-[#ffe6c7] text-[#0c1d27]">
                   {activeLeague}
                 </span>
               </div>
