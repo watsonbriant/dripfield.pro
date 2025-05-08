@@ -13,6 +13,7 @@ import OverviewChart from './OverviewChart';
 import UserStats from './UserStats';
 import { ChevronDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import LooseEnds from './LooseEnds';
 
 export const PublicProfile: React.FC = () => {
   const { user } = useAuth();
@@ -134,7 +135,7 @@ export const PublicProfile: React.FC = () => {
     fetchMappings();
   }, []);
 
-  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Guests'];
+  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Guests', 'Loose Ends'];
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -225,6 +226,13 @@ export const PublicProfile: React.FC = () => {
         return (
           <div>
             <UserGuests userId={userId} />
+          </div>
+        );
+      case 'Loose Ends':
+        return (
+          <div>
+            <h3 className="text-xl text-white/90 font-semibold mb-4">{formatUsername(profileUsername)}'s Loose Ends</h3>
+            <LooseEnds userId={userId} />
           </div>
         );
       default:
