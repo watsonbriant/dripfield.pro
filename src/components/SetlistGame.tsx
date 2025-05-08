@@ -24,6 +24,7 @@ interface GameShow {
   isSelectionClosed?: boolean;
   submission_id?: string;
   score?: number; // Add score field
+  playerCount?: number;
 }
 
 interface UserPick {
@@ -109,44 +110,45 @@ export function SetlistGame() {
   const fetchGameShows = useCallback(async () => {
     try {
       setLoading(true);
-
+  
       let query = supabase
         .from('shows')
         .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored, show_detail, show_canonid')
         .eq('show_tour', activeLeague)
         .eq('show_issetlistgame', true)
         .order('show_canonid', { ascending: true });
-
+  
       const { data, error } = await query;
-
+  
       if (error) {
         console.error('Error fetching game shows:', error);
         return;
       }
-
+  
       if (data) {
         // Process data to add time remaining calculations
         const processedShows = data.map(show => {
           const { timeRemaining, isSelectionClosed, isLessThan24Hours } = calculateTimeRemaining(show.show_time);
-
+  
           return {
             ...show,
             timeRemaining,
             isSelectionClosed,
-            isLessThan24Hours
+            isLessThan24Hours,
+            playerCount: 0 // Initialize player count
           };
         });
-
+  
         // If user is logged in, check for existing submissions
         if (user) {
           const showIds = processedShows.map(show => show.show_id);
-
+  
           const { data: submissionsData, error: submissionsError } = await supabase
             .from('setlist_game_submissions')
             .select('show_id, submission_id, score')
             .eq('user_id', user.id)
             .in('show_id', showIds);
-
+  
           if (submissionsError) {
             console.error('Error fetching user submissions:', submissionsError);
           } else if (submissionsData) {
@@ -158,7 +160,7 @@ export function SetlistGame() {
               };
               return acc;
             }, {} as Record<string, { submission_id: string; score: number | null }>);
-
+  
             // Add submission_id and score to each show if it exists
             processedShows.forEach(show => {
               if (submissionMap[show.show_id]) {
@@ -168,7 +170,22 @@ export function SetlistGame() {
             });
           }
         }
-
+  
+        // Fetch player counts for each show
+        for (const show of processedShows) {
+          try {
+            const { count } = await supabase
+              .from('setlist_game_submissions')
+              .select('*', { count: 'exact', head: true })
+              .eq('show_id', show.show_id);
+            
+            show.playerCount = count || 0;
+          } catch (countError) {
+            console.error(`Error fetching player count for show ${show.show_id}:`, countError);
+            show.playerCount = 0;
+          }
+        }
+  
         setGameShows(processedShows);
       }
     } catch (error) {
@@ -679,20 +696,21 @@ export function SetlistGame() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse min-w-max">
-                  <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Date</th>
-                      <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Venue</th>
-                      <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Location</th>
-                      <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Detail</th>
-                      <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Status</th>
-                      {/* Conditionally render Score column */}
-                      {user && (
-                        <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Score</th>
-                      )}
-                      <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Picks</th>
-                    </tr>
-                  </thead>
+                <thead>
+                  <tr className="bg-[#0e151b] border-y border-white/10">
+                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Date</th>
+                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Venue</th>
+                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Location</th>
+                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Detail</th>
+                    <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Status</th>
+                    <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Players</th>
+                    {/* Conditionally render Score column */}
+                    {user && (
+                      <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Score</th>
+                    )}
+                    <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Picks</th>
+                  </tr>
+                </thead>
                   <tbody className="divide-y divide-white/5">
                     {gameShows.map((show) => {
                       // Sort shows to determine the next upcoming show
@@ -776,6 +794,11 @@ export function SetlistGame() {
                                 {show.timeRemaining} left
                               </span>
                             )}
+                          </td>
+                          <td className="px-4 py-1 text-center">
+                            <span className="text-[#fce7ca]/70 text-xs">
+                              {show.playerCount !== undefined ? show.playerCount : '-'}
+                            </span>
                           </td>
                           {/* Conditionally render Score cell */}
                           {user && (
