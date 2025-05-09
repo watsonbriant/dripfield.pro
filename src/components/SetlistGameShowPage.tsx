@@ -38,6 +38,7 @@ interface SongStat {
   count: number;
   percentage: number;
   categoryId?: number;
+  song_id?: string;
 }
 
 interface UserPick {
@@ -73,6 +74,8 @@ export function SetlistGameShowPage() {
   const [show, setShow] = useState<GameShow | null>(null);
   const [standings, setStandings] = useState<PlayerStats[]>([]);
   const [topSongs, setTopSongs] = useState<SongStat[]>([]);
+  const [topOpeners, setTopOpeners] = useState<SongStat[]>([]); // State for top openers
+  const [topClosers, setTopClosers] = useState<SongStat[]>([]); // State for top show closers
   const [totalPlayers, setTotalPlayers] = useState(0);
   const { user } = useAuth();
   const [userSubmission, setUserSubmission] = useState<string | null>(null);
@@ -87,6 +90,7 @@ export function SetlistGameShowPage() {
     setlist: []
   });
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
+  const [activePill, setActivePill] = useState<'songs' | 'openers' | 'closers'>('songs');
 
   // Fetch show details
   useEffect(() => {
@@ -359,6 +363,7 @@ export function SetlistGameShowPage() {
           .from('songs')
           .select(`
             song, 
+            song_id,
             song_category,
             categories:song_category(
               category,
@@ -373,10 +378,13 @@ export function SetlistGameShowPage() {
 
         // Create a map of song to category_canonid
         const songCategoryMap: Record<string, number> = {};
+        const songIdMap: Record<string, string> = {}; // Add this map
+
         songData?.forEach(song => {
           if (song.categories && typeof song.categories === 'object' && 'category_canonid' in song.categories) {
             songCategoryMap[song.song] = (song.categories as SongCategory).category_canonid || 0;
           }
+          songIdMap[song.song] = song.song_id; // Map song name to song_id
         });
 
         // Convert to array with category information
@@ -384,7 +392,8 @@ export function SetlistGameShowPage() {
           song,
           count,
           percentage: Math.round((count / submissionsData.length) * 100),
-          categoryId: songCategoryMap[song] || 0 // Default to 0 if category not found
+          categoryId: songCategoryMap[song] || 0,
+          song_id: songIdMap[song] // Include the song_id
         }));
 
         // Sort using multiple criteria:
@@ -407,7 +416,7 @@ export function SetlistGameShowPage() {
         });
 
         // Get top 10 songs
-        const top10Songs = sortedSongs.slice(0, 10);
+        const top10Songs = sortedSongs.slice(0, 8);
         setTopSongs(top10Songs);
       } catch (error) {
         console.error('Error fetching top songs:', error);
@@ -415,6 +424,233 @@ export function SetlistGameShowPage() {
     }
 
     fetchTopSongs();
+  }, [showId]);
+
+  // Fetch top Set 1 Openers
+  useEffect(() => {
+    async function fetchTopOpeners() {
+      if (!showId) return;
+
+      try {
+        // Get all submissions for this show
+        const { data: submissionsData, error: submissionsError } = await supabase
+          .from('setlist_game_submissions')
+          .select('submission_id')
+          .eq('show_id', showId);
+
+        if (submissionsError) {
+          console.error('Error fetching submissions:', submissionsError);
+          return;
+        }
+
+        if (!submissionsData || submissionsData.length === 0) {
+          setTopOpeners([]);
+          return;
+        }
+
+        // Get the submission IDs
+        const submissionIds = submissionsData.map(sub => sub.submission_id);
+
+        // Get all songs picked as Set 1 Opener for these submissions
+        const { data: picksData, error: picksError } = await supabase
+          .from('setlist_game_picks')
+          .select('song')
+          .in('submission_id', submissionIds)
+          .eq('placement', 'Set 1 Opener');
+
+        if (picksError) {
+          console.error('Error fetching opener picks:', picksError);
+          return;
+        }
+
+        // Count occurrences of each song
+        const songCounts: Record<string, number> = {};
+        picksData?.forEach(pick => {
+          if (!songCounts[pick.song]) {
+            songCounts[pick.song] = 0;
+          }
+          songCounts[pick.song]++;
+        });
+
+        // Get unique song names
+        const songNames = Object.keys(songCounts);
+
+        // Fetch song categories for all the picked songs
+        const { data: songData, error: songError } = await supabase
+        .from('songs')
+        .select(`
+          song, 
+          song_id,
+          song_category,
+          categories:song_category(
+            category,
+            category_canonid
+          )
+        `);
+
+        // Create a map of song to category_canonid and song_id
+        const songCategoryMap: Record<string, number> = {};
+        const songIdMap: Record<string, string> = {}; // Add this map
+
+        songData?.forEach(song => {
+        if (song.categories && typeof song.categories === 'object' && 'category_canonid' in song.categories) {
+          songCategoryMap[song.song] = (song.categories as SongCategory).category_canonid || 0;
+        }
+        songIdMap[song.song] = song.song_id; // Map song name to song_id
+        });
+
+        // Convert to array with category information
+        const songStatsArray: SongStat[] = Object.entries(songCounts).map(([song, count]) => ({
+        song,
+        count,
+        percentage: Math.round((count / submissionsData.length) * 100),
+        categoryId: songCategoryMap[song] || 0,
+        song_id: songIdMap[song] // Include the song_id
+        }));
+
+        // Sort using multiple criteria:
+        // 1. By count (descending)
+        // 2. By category_canonid (ascending)
+        // 3. Alphabetically by song name (ascending)
+        const sortedSongs = [...songStatsArray].sort((a, b) => {
+          // First sort by count (descending)
+          if (b.count !== a.count) {
+            return b.count - a.count;
+          }
+          
+          // Then by category_canonid (ascending)
+          if ((a.categoryId || 0) !== (b.categoryId || 0)) {
+            return (a.categoryId || 0) - (b.categoryId || 0);
+          }
+          
+          // Finally by song name (alphabetically)
+          return a.song.localeCompare(b.song);
+        });
+
+        // Get top 10 songs
+        const top10Openers = sortedSongs.slice(0, 8);
+        setTopOpeners(top10Openers);
+      } catch (error) {
+        console.error('Error fetching top openers:', error);
+      }
+    }
+
+    fetchTopOpeners();
+  }, [showId]);
+
+  // Fetch top Show Closers
+  useEffect(() => {
+    async function fetchTopClosers() {
+      if (!showId) return;
+
+      try {
+        // Get all submissions for this show
+        const { data: submissionsData, error: submissionsError } = await supabase
+          .from('setlist_game_submissions')
+          .select('submission_id')
+          .eq('show_id', showId);
+
+        if (submissionsError) {
+          console.error('Error fetching submissions:', submissionsError);
+          return;
+        }
+
+        if (!submissionsData || submissionsData.length === 0) {
+          setTopClosers([]);
+          return;
+        }
+
+        // Get the submission IDs
+        const submissionIds = submissionsData.map(sub => sub.submission_id);
+
+        // For each submission, find the last song picked
+        const closerSongs: Record<string, number> = {};
+        
+        for (const subId of submissionIds) {
+          // Find the last song picked for this submission
+          const { data: lastPickData, error: lastPickError } = await supabase
+            .from('setlist_game_picks')
+            .select('song')
+            .eq('submission_id', subId)
+            .order('set', { ascending: false })
+            .order('setnum', { ascending: false })
+            .limit(1);
+
+          if (lastPickError) {
+            console.error('Error fetching last pick:', lastPickError);
+            continue;
+          }
+
+          if (lastPickData && lastPickData.length > 0) {
+            const song = lastPickData[0].song;
+            if (!closerSongs[song]) {
+              closerSongs[song] = 0;
+            }
+            closerSongs[song]++;
+          }
+        }
+
+        // Fetch song categories for all the picked songs
+        const { data: songData, error: songError } = await supabase
+        .from('songs')
+        .select(`
+          song, 
+          song_id,
+          song_category,
+          categories:song_category(
+            category,
+            category_canonid
+          )
+        `);
+
+        // Create a map of song to category_canonid and song_id
+        const songCategoryMap: Record<string, number> = {};
+        const songIdMap: Record<string, string> = {}; // Add this map
+
+        songData?.forEach(song => {
+        if (song.categories && typeof song.categories === 'object' && 'category_canonid' in song.categories) {
+          songCategoryMap[song.song] = (song.categories as SongCategory).category_canonid || 0;
+        }
+        songIdMap[song.song] = song.song_id; // Map song name to song_id
+        });
+
+        // Convert to array with category information
+        const songStatsArray: SongStat[] = Object.entries(closerSongs).map(([song, count]) => ({
+        song,
+        count,
+        percentage: Math.round((count / submissionsData.length) * 100),
+        categoryId: songCategoryMap[song] || 0,
+        song_id: songIdMap[song] // Include the song_id
+        }));
+
+        // Sort using multiple criteria:
+        // 1. By count (descending)
+        // 2. By category_canonid (ascending)
+        // 3. Alphabetically by song name (ascending)
+        const sortedSongs = [...songStatsArray].sort((a, b) => {
+          // First sort by count (descending)
+          if (b.count !== a.count) {
+            return b.count - a.count;
+          }
+          
+          // Then by category_canonid (ascending)
+          if ((a.categoryId || 0) !== (b.categoryId || 0)) {
+            return (a.categoryId || 0) - (b.categoryId || 0);
+          }
+          
+          // Finally by song name (alphabetically)
+          return a.song.localeCompare(b.song);
+        });
+
+        // Get top 10 songs
+        const top10Closers = sortedSongs.slice(0, 8);
+        setTopClosers(top10Closers);
+      } catch (error) {
+        console.error('Error fetching top closers:', error);
+      }
+    }
+
+    fetchTopClosers();
   }, [showId]);
 
   // Load picks for viewing (either for the current user or another user)
@@ -673,200 +909,423 @@ export function SetlistGameShowPage() {
             </div>
           </div>
 
-          {/* Main Content - Different sections based on show status */}
-          {show.show_scored ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Standings - Takes 2 columns on large screens */}
-              <div className="lg:col-span-2">
-                <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-                  <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2">
-                    <Award className="w-5 h-5 text-yellow-400" />
-                    <span>Standings</span>
-                  </h2>
-
-                  {standings.length === 0 ? (
-                    <div className="text-center py-8">
-                      <p className="text-[#fce7ca]/70">No standings available yet.</p>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-                      <table className="w-full border-collapse min-w-max table-fixed">
-                        <colgroup>
-                          <col className="w-12" /> {/* Rank column - narrow */}
-                          <col className="w-44" /> {/* User column - flexible but with minimum width */}
-                          <col className="w-[65px] min-w-[65px]" /> {/* Total Points */}
-                          <col className="w-[65px] min-w-[65px]" /> {/* Songs Correctly Picked */}
-                          <col className="w-[65px] min-w-[65px]" /> {/* Sets Correctly Picked */}
-                          <col className="w-[65px] min-w-[65px]" /> {/* Show Opener */}
-                          <col className="w-[65px] min-w-[65px]" /> {/* Show Closer */}
-                        </colgroup>
-                        <thead>
-                          <tr className="bg-[#0e151b] border-y border-white/10">
-                            <th className="px-1 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap text-center">
-                              Rank
-                            </th>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap">
-                              User
-                            </th>
-                            <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                              Total Points
-                            </th>
-                            <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                              Songs Picked
-                            </th>
-                            <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                              Sets Picked
-                            </th>
-                            <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                              Show Opener
-                            </th>
-                            <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                              Show Closer
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                          {standings.map((player, index) => (
-                            <tr
-                              key={player.userId}
-                              className={`
-          ${player.userId === user?.id
-                                  ? 'bg-tertiary/80 text-white'
-                                  : index % 2 === 0
-                                    ? 'bg-primary/30'
-                                    : 'bg-[#0c151c]'
-                                } 
-          hover:bg-white/10 transition-colors
-        `}
-                            >
-                              <td className="px-1 py-1 text-xs text-center font-semibold"
-                                style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
-                                {index + 1}
-                              </td>
-                              <td className="px-3 py-1 whitespace-normal font-medium text-xs"
-                                style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
-                                <button 
-                                  onClick={() => handleViewOtherUserSubmission(player.userId, player.username)}
-                                  className="hover:underline hover:text-tertiary transition-colors focus:outline-none"
-                                >
-                                  {player.username}
-                                </button>
-                              </td>
-                              <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
-                                style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
-                                {player.totalPoints}
-                              </td>
-                              <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                                style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
-                                {player.songsPicked}
-                              </td>
-                              <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                                style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
-                                {player.setsPicked}
-                              </td>
-                              <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
-                                {player.showOpenerPicked ? (
-                                  <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
-                                ) : (
-                                  <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
-                                )}
-                              </td>
-                              <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
-                                {player.showCloserPicked ? (
-                                  <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
-                                ) : (
-                                  <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Top Picked Songs - Takes 1 column */}
-              <div className="lg:col-span-1">
-                <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-                  <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2">
-                    <MusicIcon className="w-5 h-5 text-tertiary" />
-                    <span>Top Picked Songs</span>
-                  </h2>
-
+          {/* Top Songs, Top Openers, and Top Closers - Pills for mobile, grid for larger screens */}
+          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+            {/* Top Picks heading - visible only on mobile */}
+            <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2 lg:hidden">
+              <MusicIcon className="w-5 h-5 text-[#fce7ca]/90" />
+              <span>Top Picks</span>
+            </h2>
+            
+            {/* Pill selector - visible on mobile, hidden on larger screens */}
+            <div className="flex space-x-2 mb-4 lg:hidden">
+              <button 
+                onClick={() => setActivePill('songs')} 
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  activePill === 'songs' 
+                    ? 'bg-tertiary text-white' 
+                    : 'bg-white/10 text-white/70 hover:bg-white/20'
+                }`}
+              >
+                Songs
+              </button>
+              <button 
+                onClick={() => setActivePill('openers')} 
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  activePill === 'openers' 
+                    ? 'bg-tertiary text-white' 
+                    : 'bg-white/10 text-white/70 hover:bg-white/20'
+                }`}
+              >
+                Openers
+              </button>
+              <button 
+                onClick={() => setActivePill('closers')} 
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  activePill === 'closers' 
+                    ? 'bg-tertiary text-white' 
+                    : 'bg-white/10 text-white/70 hover:bg-white/20'
+                }`}
+              >
+                Closers
+              </button>
+            </div>
+            
+            {/* Mobile view - show only the active pill content */}
+            <div className="lg:hidden">
+              {activePill === 'songs' && (
+                <div className="space-y-1">
                   {topSongs.length === 0 ? (
                     <div className="text-center py-8">
                       <p className="text-[#fce7ca]/70">No song data available yet.</p>
                     </div>
                   ) : (
-                    <div className="space-y-1">
-                      {topSongs.map((song, index) => (
-                        <div
-                          key={song.song}
-                          className="flex items-center justify-between px-2 py-2 rounded-md bg-[#0e151b] border border-white/5"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
-                              {index + 1}
-                            </span>
-                            <span className="text-[#fce7ca] font-semibold text-xs">
-                              {song.song}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="text-xs text-white/90 bg-[#172330] px-2 py-0.5 rounded font-semibold">
-                              {song.count}
-                            </span>
-                          </div>
+                    topSongs.map((song, index) => (
+                      <div
+                        key={song.song}
+                        className="flex items-center justify-between px-2 py-2 rounded-md bg-[#0e151b] border border-white/5"
+                      >
+                        <div className="flex items-center gap-3 flex-1">
+                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                            {index + 1}
+                          </span>
+                          <Link 
+                            to={`/song/${song.song_id}`} 
+                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                          >
+                            {song.song}
+                          </Link>
                         </div>
-                      ))}
-                    </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-[#172330] px-2 py-0.5 rounded font-semibold">
+                            {song.count}
+                          </span>
+                        </div>
+                      </div>
+                    ))
                   )}
                 </div>
+              )}
+              
+              {activePill === 'openers' && (
+                <div className="space-y-1">
+                  {topOpeners.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-[#fce7ca]/70">No opener data available yet.</p>
+                    </div>
+                  ) : (
+                    topOpeners.map((song, index) => (
+                      <div
+                        key={song.song}
+                        className="flex items-center justify-between px-2 py-2 rounded-md bg-[#0e151b] border border-white/5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                            {index + 1}
+                          </span>
+                          <Link 
+                            to={`/song/${song.song_id}`} 
+                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                          >
+                            {song.song}
+                          </Link>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-[#172330] px-2 py-0.5 rounded font-semibold">
+                            {song.count}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+              
+              {activePill === 'closers' && (
+                <div className="space-y-1">
+                  {topClosers.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-[#fce7ca]/70">No closer data available yet.</p>
+                    </div>
+                  ) : (
+                    topClosers.map((song, index) => (
+                      <div
+                        key={song.song}
+                        className="flex items-center justify-between px-2 py-2 rounded-md bg-[#0e151b] border border-white/5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                            {index + 1}
+                          </span>
+                          <Link 
+                            to={`/song/${song.song_id}`} 
+                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                          >
+                            {song.song}
+                          </Link>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-[#172330] px-2 py-0.5 rounded font-semibold">
+                            {song.count}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {/* Desktop view - show grid layout with all three sections */}
+            <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6">
+              {/* Top Songs Picked */}
+              <div className="bg-[#0e151b] border border-white/5 rounded-lg p-4">
+                <h3 className="text-base font-semibold text-white/90 mb-3 flex items-center gap-2">
+                  <MusicIcon className="w-4 h-4 text-[#fce7ca]/90" />
+                  <span>Top Songs Picked</span>
+                </h3>
+
+                {topSongs.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-[#fce7ca]/70 text-xs">No song data available yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {topSongs.map((song, index) => (
+                      <div
+                        key={song.song}
+                        className="flex items-center justify-between px-2 py-2 rounded-md bg-[#172330] border border-white/5"
+                      >
+                        <div className="flex items-center gap-3 flex-1">
+                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                            {index + 1}
+                          </span>
+                          <Link 
+                            to={`/song/${song.song_id}`} 
+                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                          >
+                            {song.song}
+                          </Link>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
+                            {song.count}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Top Show Openers Picked */}
+              <div className="bg-[#0e151b] border border-white/5 rounded-lg p-4">
+                <h3 className="text-base font-semibold text-white/90 mb-3 flex items-center gap-2">
+                  <MusicIcon className="w-4 h-4 text-[#019B7A]" />
+                  <span>Top Show Openers Picked</span>
+                </h3>
+
+                {topOpeners.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-[#fce7ca]/70 text-xs">No opener data available yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {topOpeners.map((song, index) => (
+                      <div
+                        key={song.song}
+                        className="flex items-center justify-between px-2 py-2 rounded-md bg-[#172330] border border-white/5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                            {index + 1}
+                          </span>
+                          <Link 
+                            to={`/song/${song.song_id}`} 
+                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                          >
+                            {song.song}
+                          </Link>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
+                            {song.count}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Top Show Closers Picked */}
+              <div className="bg-[#0e151b] border border-white/5 rounded-lg p-4">
+                <h3 className="text-base font-semibold text-white/90 mb-3 flex items-center gap-2">
+                  <MusicIcon className="w-4 h-4 text-[#E17401]" />
+                  <span>Top Show Closers Picked</span>
+                </h3>
+
+                {topClosers.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-[#fce7ca]/70 text-xs">No closer data available yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {topClosers.map((song, index) => (
+                      <div
+                        key={song.song}
+                        className="flex items-center justify-between px-2 py-2 rounded-md bg-[#172330] border border-white/5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                            {index + 1}
+                          </span>
+                          <Link 
+                            to={`/song/${song.song_id}`} 
+                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                          >
+                            {song.song}
+                          </Link>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/90 bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
+                            {song.count}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-6">
-              {/* Pre-game content: Show status and participation info */}
-              <div className="bg-[#172330] border border-white/10 rounded-lg p-6 text-center">
-                <div className="flex items-center justify-center mb-6">
-                  <List className="w-10 h-10 text-tertiary" />
+          </div>
+
+          {/* Main Content - Different sections based on show status */}
+          {show.show_scored ? (
+            <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+              <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-yellow-400" />
+                <span>Standings</span>
+              </h2>
+
+              {standings.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-[#fce7ca]/70">No standings available yet.</p>
                 </div>
-
-                {show.isSelectionClosed ? (
-                  <>
-                    <h2 className="text-xl font-semibold text-white/90 mb-2">
-                      Picks are closed for this show.
-                    </h2>
-                    <p className="text-[#fce7ca]/70 max-w-lg mx-auto">
-                      Check back later to see results after the setlist has been scored.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <h2 className="text-lg font-semibold text-white/90 mb-2">
-                      Show is open for picks.
-                    </h2>
-                    {user ? (
-                      <button
-                        onClick={handleMakePicks}
-                        className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors"
-                      >
-                        {userSubmission ? 'Edit Picks' : 'Make Picks'}
-                      </button>
-                    ) : (
-                      <Link
-                        to="/login"
-                        className="px-4 py-2 bg-tertiary/50 hover:bg-tertiary/60 text-white font-medium rounded-md transition-colors inline-block"
-                      >
-                        Login to Play
-                      </Link>
-                    )}
-                  </>
-                )}
-
+              ) : (
+                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                  <table className="w-full border-collapse min-w-max table-fixed">
+                    <colgroup>
+                      <col className="w-12" /> {/* Rank column - narrow */}
+                      <col className="w-44" /> {/* User column - flexible but with minimum width */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Total Points */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Songs Correctly Picked */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Sets Correctly Picked */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Show Opener */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Show Closer */}
+                    </colgroup>
+                    <thead>
+                      <tr className="bg-[#0e151b] border-y border-white/10">
+                        <th className="px-1 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap text-center">
+                          Rank
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap">
+                          User
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Total Points
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Songs Picked
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Sets Picked
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Show Opener
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Show Closer
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {standings.map((player, index) => (
+                        <tr
+                          key={player.userId}
+                          className={`
+      ${player.userId === user?.id
+                              ? 'bg-tertiary/80 text-white'
+                              : index % 2 === 0
+                                ? 'bg-primary/30'
+                                : 'bg-[#0c151c]'
+                            } 
+      hover:bg-white/10 transition-colors
+    `}
+                        >
+                          <td className="px-1 py-1 text-xs text-center font-semibold"
+                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            {index + 1}
+                          </td>
+                          <td className="px-3 py-1 whitespace-normal font-medium text-xs"
+                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            <button 
+                              onClick={() => handleViewOtherUserSubmission(player.userId, player.username)}
+                              className="hover:underline hover:text-tertiary transition-colors focus:outline-none"
+                            >
+                              {player.username}
+                            </button>
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
+                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            {player.totalPoints}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
+                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            {player.songsPicked}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
+                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            {player.setsPicked}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
+                            {player.showOpenerPicked ? (
+                              <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
+                            ) : (
+                              <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
+                            )}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
+                            {player.showCloserPicked ? (
+                              <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
+                            ) : (
+                              <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-[#172330] border border-white/10 rounded-lg p-6 text-center">
+              <div className="flex items-center justify-center mb-6">
+                <List className="w-10 h-10 text-tertiary" />
               </div>
+
+              {show.isSelectionClosed ? (
+                <>
+                  <h2 className="text-xl font-semibold text-white/90 mb-2">
+                    Picks are closed for this show.
+                  </h2>
+                  <p className="text-[#fce7ca]/70 max-w-lg mx-auto">
+                    Check back later to see results after the setlist has been scored.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-lg font-semibold text-white/90 mb-2">
+                    Show is open for picks.
+                  </h2>
+                  {user ? (
+                    <button
+                      onClick={handleMakePicks}
+                      className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors"
+                    >
+                      {userSubmission ? 'Edit Picks' : 'Make Picks'}
+                    </button>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="px-4 py-2 bg-tertiary/50 hover:bg-tertiary/60 text-white font-medium rounded-md transition-colors inline-block"
+                    >
+                      Login to Play
+                    </Link>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>

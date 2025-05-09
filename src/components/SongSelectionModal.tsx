@@ -2088,7 +2088,7 @@ export function SongSelectionModal({
         )}
         
         {/* Footer actions */}
-        <div className="p-4 border-t border-white/10 flex justify-between items-center">
+        <div className="p-4 border-t border-white/10">
           {viewMode ? (
             <div className="w-full flex flex-col items-center">
               {/* Show raw points and penalties for scored shows */}
@@ -2118,40 +2118,39 @@ export function SongSelectionModal({
                 {/* Close button */}
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 bg-[#0e151b] hover:bg-tertiary/20 text-white font-medium rounded-md transition-colors border border-white/10"
+                  className="px-4 py-2 bg-red-600 hover:bg-red-600/80 text-white flex items-center gap-2 font-medium rounded-md transition-colors border border-white/10"
                 >
-                  Close
+                  <X className="w-4 h-4" />
+                  <span>Close</span>
                 </button>
                 
                 {/* Share button - now uses clipboard */}
-                {viewMode && (
-                  <button
-                    onClick={copyImageToClipboard}
-                    disabled={isGeneratingImage || clipboardSuccess}
-                    className={`px-4 py-2 font-medium rounded-md transition-colors flex items-center gap-2 ${
-                      clipboardSuccess 
-                        ? 'bg-green-600 hover:bg-green-700 text-white' 
-                        : 'bg-tertiary hover:bg-tertiary/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
-                    }`}
-                  >
-                    {isGeneratingImage ? (
-                      <>
-                        <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                        <span>Generating...</span>
-                      </>
-                    ) : clipboardSuccess ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        <span>Copied to clipboard!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Share className="w-4 h-4" />
-                        <span>Share My Picks</span>
-                      </>
-                    )}
-                  </button>
-                )}
+                <button
+                  onClick={copyImageToClipboard}
+                  disabled={isGeneratingImage || clipboardSuccess || songPicks.length === 0}
+                  className={`px-4 py-2 font-medium rounded-md transition-colors flex items-center gap-2 ${
+                    clipboardSuccess 
+                      ? 'bg-green-600 hover:bg-green-700 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
+                  }`}
+                >
+                  {isGeneratingImage ? (
+                    <>
+                      <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                      <span>Generating...</span>
+                    </>
+                  ) : clipboardSuccess ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>Copied to clipboard!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share className="w-4 h-4" />
+                      <span>Share My Picks</span>
+                    </>
+                  )}
+                </button>
               </div>
               
               {/* Share error message */}
@@ -2163,49 +2162,160 @@ export function SongSelectionModal({
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-4">
-                <div className="text-[#fce7ca]/70 text-sm">
-                  {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
+              {/* Mobile view: stacked layout */}
+              <div className="block md:hidden w-full">
+                <div className="flex justify-center mb-3">
+                  <div className="text-[#fce7ca]/70 text-sm">
+                    {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
+                  </div>
                 </div>
-                {songPicks.length > 0 && (
+                <div className="flex justify-center items-center space-x-2">
+                  {songPicks.length > 0 && (
+                    <button
+                      onClick={() => {
+                        // Clear all selections immediately without confirmation
+                        setSongPicks([]);
+                        setCurrentSet('1');
+                        setNextSetNum(1);
+                        setError(null);
+                      }}
+                      className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors flex items-center gap-1"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Clear</span>
+                    </button>
+                  )}
+                  
+                  {/* Share button for edit mode */}
+                  {songPicks.length > 0 && (
+                    <button
+                      onClick={copyImageToClipboard}
+                      disabled={isGeneratingImage || clipboardSuccess}
+                      className={`px-3 py-2 font-medium rounded-md transition-colors flex items-center gap-1 ${
+                        clipboardSuccess 
+                          ? 'bg-green-600 hover:bg-green-700 text-white' 
+                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
+                      }`}
+                    >
+                      {isGeneratingImage ? (
+                        <>
+                          <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                          <span>...</span>
+                        </>
+                      ) : clipboardSuccess ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share className="w-4 h-4" />
+                          <span>Share</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                  
                   <button
-                    onClick={() => {
-                      // Clear all selections immediately without confirmation
-                      setSongPicks([]);
-                      setCurrentSet('1');
-                      setNextSetNum(1);
-                      setError(null);
-                    }}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors flex items-center gap-2"
+                    onClick={handleSubmit}
+                    disabled={songPicks.length === 0 || submitting || success}
+                    className="px-3 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-1"
                   >
-                    <Trash2 className="w-4 h-4" />
-                    <span className="md:inline hidden">Clear Selections</span>
-                    <span className="md:hidden inline">Clear</span>
+                    {submitting ? (
+                      <>
+                        <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                        <span>...</span>
+                      </>
+                    ) : success ? (
+                      <span>Done!</span>
+                    ) : (
+                      <>
+                        <span>{isEditing ? 'Update' : 'Submit'}</span>
+                      </>
+                    )}
                   </button>
-                )}
+                </div>
               </div>
-              <button
-                onClick={handleSubmit}
-                disabled={songPicks.length === 0 || submitting || success}
-                className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {submitting ? (
-                  <>
-                    <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                    <span className="md:inline hidden">Submitting...</span>
-                    <span className="md:hidden inline">...</span>
-                  </>
-                ) : success ? (
-                  <span>
-                    {window.innerWidth >= 768 ? 'Submitted!' : 'Done!'}
-                  </span>
-                ) : (
-                  <>
-                    <span className="md:inline hidden">{isEditing ? 'Update Picks' : 'Submit Picks'}</span>
-                    <span className="md:hidden inline">{isEditing ? 'Update' : 'Submit'}</span>
-                  </>
-                )}
-              </button>
+              
+              {/* Desktop view: remains the same */}
+              <div className="hidden md:flex md:justify-between md:items-center">
+                <div className="flex items-center gap-4">
+                  <div className="text-[#fce7ca]/70 text-sm">
+                    {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
+                  </div>
+                  {songPicks.length > 0 && (
+                    <button
+                      onClick={() => {
+                        // Clear all selections immediately without confirmation
+                        setSongPicks([]);
+                        setCurrentSet('1');
+                        setNextSetNum(1);
+                        setError(null);
+                      }}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Clear Selections</span>
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* Share button for edit mode */}
+                  {songPicks.length > 0 && (
+                    <button
+                      onClick={copyImageToClipboard}
+                      disabled={isGeneratingImage || clipboardSuccess}
+                      className={`px-3 py-2 font-medium rounded-md transition-colors flex items-center gap-1 ${
+                        clipboardSuccess 
+                          ? 'bg-green-600 hover:bg-green-700 text-white' 
+                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
+                      }`}
+                    >
+                      {isGeneratingImage ? (
+                        <>
+                          <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                          <span>Generating...</span>
+                        </>
+                      ) : clipboardSuccess ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share className="w-4 h-4" />
+                          <span>Share Picks</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <button
+                    onClick={handleSubmit}
+                    disabled={songPicks.length === 0 || submitting || success}
+                    className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {submitting ? (
+                      <>
+                        <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                        <span>Submitting...</span>
+                      </>
+                    ) : success ? (
+                      <span>Submitted!</span>
+                    ) : (
+                      <>
+                        <span>{isEditing ? 'Update Picks' : 'Submit Picks'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+              
+              {/* Share error message for edit mode */}
+              {shareError && (
+                <div className="mt-2 text-red-500 text-xs text-center">
+                  {shareError}
+                </div>
+              )}
             </>
           )}
         </div>
