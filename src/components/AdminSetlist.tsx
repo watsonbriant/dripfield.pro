@@ -10,6 +10,7 @@ interface ShowData {
   show_group: string;
   show_subvenue: string;
   show_venue_location: string;
+  show_canonid: number | null;
 }
 
 interface SetlistEntryData {
@@ -147,8 +148,9 @@ export const AdminSetlist: React.FC = () => {
         
         const { data, error } = await supabase
           .from('shows')
-          .select('show_id, show_date, show_group, show_subvenue, show_venue_location')
+          .select('show_id, show_date, show_group, show_subvenue, show_venue_location, show_canonid')
           .order('show_date', { ascending: false })
+          .order('show_canonid', { ascending: false, nullsLast: true })
           .range(page * pageSize, (page + 1) * pageSize - 1);
         
         if (error) throw error;
@@ -221,7 +223,8 @@ export const AdminSetlist: React.FC = () => {
   const filteredShows = React.useMemo(() => {
     return shows.filter(show => {
       const formattedDate = formatDate(show.show_date);
-      const displayText = `${formattedDate} [${show.show_group} — ${show.show_venue_location}]`;
+      const canonidText = show.show_canonid ? `[${show.show_canonid}]` : '';
+      const displayText = `${formattedDate} ${canonidText} [${show.show_group} — ${show.show_venue_location}]`;
       return displayText.toLowerCase().includes(searchTerm.toLowerCase());
     });
   }, [shows, searchTerm]);
@@ -350,7 +353,11 @@ export const AdminSetlist: React.FC = () => {
                         onClick={() => handleShowSelect(show)}
                         className="w-full text-left px-2 py-1 text-sm hover:bg-surface-secondary transition-colors"
                       >
-                        {formatDate(show.show_date)} [{show.show_group} — {show.show_venue_location}]
+                        <span className="font-semibold">
+                          {formatDate(show.show_date)}
+                        </span>
+                          {show.show_canonid ? ` [${show.show_canonid}]` : ''} 
+                          &nbsp;[{show.show_group} — {show.show_venue_location}]
                       </button>
                     ))}
                     {filteredShows.length === 0 && !loading && (
@@ -372,7 +379,8 @@ export const AdminSetlist: React.FC = () => {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h4 className="text-lg text-[#fce7ca]/90 font-medium">
-                {formatDate(selectedShow.show_date)} [{selectedShow.show_group}]
+                {formatDate(selectedShow.show_date)}
+                &nbsp;[{selectedShow.show_group}]
               </h4>
               <div className="text-sm text-white/70 mt-1">
                 {selectedShow.show_subvenue} — {selectedShow.show_venue_location}
