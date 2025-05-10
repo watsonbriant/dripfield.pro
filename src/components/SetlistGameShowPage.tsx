@@ -929,6 +929,155 @@ export function SetlistGameShowPage() {
             </div>
           </div>
 
+          {/* Main Content - Different sections based on show status */}
+          {show.show_scored ? (
+            <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+              <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-yellow-400" />
+                <span>Standings</span>
+              </h2>
+
+              {standings.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-[#fce7ca]/70">No standings available yet.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                  <table className="w-full border-collapse min-w-max table-fixed">
+                    <colgroup>
+                      <col className="w-12" /> {/* Rank column - narrow */}
+                      <col className="w-44" /> {/* User column - flexible but with minimum width */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Total Points */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Songs Correctly Picked */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Sets Correctly Picked */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Show Opener */}
+                      <col className="w-[65px] min-w-[65px]" /> {/* Show Closer */}
+                    </colgroup>
+                    <thead>
+                      <tr className="bg-[#0e151b] border-y border-white/10">
+                        <th className="px-1 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap text-center">
+                          Rank
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap">
+                          User
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Total Points
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Songs Picked
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Sets Picked
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Show Opener
+                        </th>
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                          Show Closer
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {standings.map((player, index) => (
+                        <tr
+                          key={player.userId}
+                          className={`
+                        ${user && player.userId === user.id
+                              ? 'bg-tertiary/80 text-white'
+                              : index % 2 === 0
+                                ? 'bg-primary/30'
+                                : 'bg-[#0c151c]'
+                            } 
+                        hover:bg-white/10 transition-colors
+                        `}
+                        >
+                          <td className="px-1 py-1 text-xs text-center font-semibold"
+                            style={{ color: 'white' }}>
+                            {index + 1}
+                          </td>
+                          <td className="px-3 py-1 whitespace-normal font-medium text-xs"
+                            style={{ color: 'white' }}>
+                            <button 
+                              onClick={() => handleViewOtherUserSubmission(player.userId, player.username)}
+                              className="hover:underline hover:text-tertiary transition-colors focus:outline-none"
+                            >
+                              {player.username}
+                            </button>
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
+                            style={{ color: 'white' }}>
+                            {player.totalPoints}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
+                            style={{ color: 'white' }}>
+                            {player.songsPicked}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
+                            style={{ color: 'white' }}>
+                            {player.setsPicked}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
+                            {player.showOpenerPicked ? (
+                              <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
+                            ) : (
+                              <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
+                            )}
+                          </td>
+                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
+                            {player.showCloserPicked ? (
+                              <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
+                            ) : (
+                              <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-[#172330] border border-white/10 rounded-lg p-6 text-center">
+              <div className="flex items-center justify-center mb-6">
+                <List className="w-10 h-10 text-tertiary" />
+              </div>
+
+              {show.isSelectionClosed ? (
+                <>
+                  <h2 className="text-xl font-semibold text-white/90 mb-2">
+                    Picks are closed for this show.
+                  </h2>
+                  <p className="text-[#fce7ca]/70 max-w-lg mx-auto">
+                    Check back later to see results after the setlist has been scored.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-lg font-semibold text-white/90 mb-2">
+                    Show is open for picks.
+                  </h2>
+                  {user ? (
+                    <button
+                      onClick={handleMakePicks}
+                      className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors"
+                    >
+                      {userSubmission ? 'Edit Picks' : 'Make Picks'}
+                    </button>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="px-4 py-2 bg-tertiary/50 hover:bg-tertiary/60 text-white font-medium rounded-md transition-colors inline-block"
+                    >
+                      Login to Play
+                    </Link>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           {/* Top Songs, Top Openers, and Top Closers - Pills for mobile, grid for larger screens */}
           <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
             {/* Top Picks heading - visible only on mobile */}
@@ -1199,155 +1348,6 @@ export function SetlistGameShowPage() {
               </div>
             </div>
           </div>
-
-          {/* Main Content - Different sections based on show status */}
-          {show.show_scored ? (
-            <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-yellow-400" />
-                <span>Standings</span>
-              </h2>
-
-              {standings.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-[#fce7ca]/70">No standings available yet.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-                  <table className="w-full border-collapse min-w-max table-fixed">
-                    <colgroup>
-                      <col className="w-12" /> {/* Rank column - narrow */}
-                      <col className="w-44" /> {/* User column - flexible but with minimum width */}
-                      <col className="w-[65px] min-w-[65px]" /> {/* Total Points */}
-                      <col className="w-[65px] min-w-[65px]" /> {/* Songs Correctly Picked */}
-                      <col className="w-[65px] min-w-[65px]" /> {/* Sets Correctly Picked */}
-                      <col className="w-[65px] min-w-[65px]" /> {/* Show Opener */}
-                      <col className="w-[65px] min-w-[65px]" /> {/* Show Closer */}
-                    </colgroup>
-                    <thead>
-                      <tr className="bg-[#0e151b] border-y border-white/10">
-                        <th className="px-1 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap text-center">
-                          Rank
-                        </th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap">
-                          User
-                        </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                          Total Points
-                        </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                          Songs Picked
-                        </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                          Sets Picked
-                        </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                          Show Opener
-                        </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
-                          Show Closer
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {standings.map((player, index) => (
-                        <tr
-                          key={player.userId}
-                          className={`
-                        ${user && player.userId === user.id
-                              ? 'bg-tertiary/80 text-white'
-                              : index % 2 === 0
-                                ? 'bg-primary/30'
-                                : 'bg-[#0c151c]'
-                            } 
-                        hover:bg-white/10 transition-colors
-                        `}
-                        >
-                          <td className="px-1 py-1 text-xs text-center font-semibold"
-                            style={{ color: 'white' }}>
-                            {index + 1}
-                          </td>
-                          <td className="px-3 py-1 whitespace-normal font-medium text-xs"
-                            style={{ color: 'white' }}>
-                            <button 
-                              onClick={() => handleViewOtherUserSubmission(player.userId, player.username)}
-                              className="hover:underline hover:text-tertiary transition-colors focus:outline-none"
-                            >
-                              {player.username}
-                            </button>
-                          </td>
-                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
-                            style={{ color: 'white' }}>
-                            {player.totalPoints}
-                          </td>
-                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                            style={{ color: 'white' }}>
-                            {player.songsPicked}
-                          </td>
-                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                            style={{ color: 'white' }}>
-                            {player.setsPicked}
-                          </td>
-                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
-                            {player.showOpenerPicked ? (
-                              <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
-                            ) : (
-                              <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
-                            )}
-                          </td>
-                          <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">
-                            {player.showCloserPicked ? (
-                              <div className="w-4 h-4 rounded-full bg-green-500 mx-auto" />
-                            ) : (
-                              <div className="w-4 h-4 rounded-full bg-gray-600/50 mx-auto" />
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-[#172330] border border-white/10 rounded-lg p-6 text-center">
-              <div className="flex items-center justify-center mb-6">
-                <List className="w-10 h-10 text-tertiary" />
-              </div>
-
-              {show.isSelectionClosed ? (
-                <>
-                  <h2 className="text-xl font-semibold text-white/90 mb-2">
-                    Picks are closed for this show.
-                  </h2>
-                  <p className="text-[#fce7ca]/70 max-w-lg mx-auto">
-                    Check back later to see results after the setlist has been scored.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h2 className="text-lg font-semibold text-white/90 mb-2">
-                    Show is open for picks.
-                  </h2>
-                  {user ? (
-                    <button
-                      onClick={handleMakePicks}
-                      className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors"
-                    >
-                      {userSubmission ? 'Edit Picks' : 'Make Picks'}
-                    </button>
-                  ) : (
-                    <Link
-                      to="/login"
-                      className="px-4 py-2 bg-tertiary/50 hover:bg-tertiary/60 text-white font-medium rounded-md transition-colors inline-block"
-                    >
-                      Login to Play
-                    </Link>
-                  )}
-                </>
-              )}
-            </div>
-          )}
         </div>
       ) : (
         <div className="bg-[#172330] border border-white/10 rounded-lg p-6 text-center">
