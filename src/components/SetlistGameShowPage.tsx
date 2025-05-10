@@ -292,8 +292,7 @@ export function SetlistGameShowPage() {
     
           // Check if show opener was picked
           const showOpenerPicked = userPicks.some(pick =>
-            (pick.result === 'correct_song_set_openercloser' ||
-              pick.result === 'correct_song_openercloser') &&
+            pick.result === 'correct_song_set_openercloser' &&
             pick.placement?.includes('Set 1 Opener')
           );
     

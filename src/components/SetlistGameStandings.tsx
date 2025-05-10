@@ -154,8 +154,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
           }
           
           // Count show openers
-          if ((pick.result === 'correct_song_openercloser' || 
-               pick.result === 'correct_song_set_openercloser') && 
+          if (pick.result === 'correct_song_set_openercloser' && 
               pick.placement?.includes('Set 1 Opener')) {
             userStats[userId].showOpenersPicked += 1;
           }

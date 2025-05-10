@@ -1713,18 +1713,20 @@ export function SongSelectionModal({
                   {/* Song selection */}
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <select
-                        value={selectedSong}
-                        onChange={(e) => setSelectedSong(e.target.value)}
-                        className="w-full px-2 py-2 bg-black/30 border border-white/10 rounded-md text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary"
-                      >
-                        <option value="">Select a song...</option>
-                        {songs.map((song) => (
+                    <select
+                      value={selectedSong}
+                      onChange={(e) => setSelectedSong(e.target.value)}
+                      className="w-full px-2 py-2 bg-black/30 border border-white/10 rounded-md text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary"
+                    >
+                      <option value="">Select a song...</option>
+                      {songs
+                        .filter(song => !song.song.includes("[New") && !song.song_placeholder)
+                        .map((song) => (
                           <option key={song.song_id} value={song.song}>
                             {song.song}
                           </option>
                         ))}
-                      </select>
+                    </select>
                     </div>
                     <button
                       onClick={handleAddSong}
