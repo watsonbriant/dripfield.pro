@@ -1141,18 +1141,18 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between px-2 py-2 rounded-md bg-[#0e151b] border border-white/5"
                       >
                         <div className="flex items-center gap-3 flex-1">
-                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs text-white bg-white/10 px-2 py-0.5 rounded font-semibold">
                             {index + 1}
                           </span>
                           <Link 
                             to={`/song/${song.song_id}`} 
-                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                            className="text-white font-semibold text-xs hover:text-tertiary transition-colors truncate"
                           >
                             {song.song}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-[#172330] px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs text-white bg-[#172330] px-2 py-0.5 rounded font-semibold">
                             {song.count}
                           </span>
                         </div>
@@ -1175,18 +1175,18 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between px-2 py-2 rounded-md bg-[#0e151b] border border-white/5"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs text-white bg-white/10 px-2 py-0.5 rounded font-semibold">
                             {index + 1}
                           </span>
                           <Link 
                             to={`/song/${song.song_id}`} 
-                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                            className="text-white font-semibold text-xs hover:text-tertiary transition-colors truncate"
                           >
                             {song.song}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-[#172330] px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs text-white bg-[#172330] px-2 py-0.5 rounded font-semibold">
                             {song.count}
                           </span>
                         </div>
@@ -1209,18 +1209,18 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between px-2 py-2 rounded-md bg-[#0e151b] border border-white/5"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs text-white bg-white/10 px-2 py-0.5 rounded font-semibold">
                             {index + 1}
                           </span>
                           <Link 
                             to={`/song/${song.song_id}`} 
-                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                            className="text-white font-semibold text-xs hover:text-tertiary transition-colors truncate"
                           >
                             {song.song}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-[#172330] px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs text-white bg-[#172330] px-2 py-0.5 rounded font-semibold">
                             {song.count}
                           </span>
                         </div>
@@ -1252,18 +1252,18 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between px-2 py-2 rounded-md bg-[#172330] border border-white/5"
                       >
                         <div className="flex items-center gap-3 flex-1">
-                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-sm text-white bg-white/10 px-2 py-0.5 rounded font-semibold">
                             {index + 1}
                           </span>
                           <Link 
                             to={`/song/${song.song_id}`} 
-                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                            className="text-white font-semibold text-sm hover:text-tertiary transition-colors truncate"
                           >
                             {song.song}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
+                          <span className="text-sm text-white bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
                             {song.count}
                           </span>
                         </div>
@@ -1292,18 +1292,18 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between px-2 py-2 rounded-md bg-[#172330] border border-white/5"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-sm text-white bg-white/10 px-2 py-0.5 rounded font-semibold">
                             {index + 1}
                           </span>
                           <Link 
                             to={`/song/${song.song_id}`} 
-                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                            className="text-white font-semibold text-sm hover:text-tertiary transition-colors truncate"
                           >
                             {song.song}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
+                          <span className="text-sm text-white bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
                             {song.count}
                           </span>
                         </div>
@@ -1332,18 +1332,18 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between px-2 py-2 rounded-md bg-[#172330] border border-white/5"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-sm text-white bg-white/10 px-2 py-0.5 rounded font-semibold">
                             {index + 1}
                           </span>
                           <Link 
                             to={`/song/${song.song_id}`} 
-                            className="text-[#fce7ca] font-semibold text-xs hover:text-tertiary transition-colors truncate"
+                            className="text-white font-semibold text-sm hover:text-tertiary transition-colors truncate"
                           >
                             {song.song}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/90 bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
+                          <span className="text-sm text-white bg-[#0e151b] px-2 py-0.5 rounded font-semibold">
                             {song.count}
                           </span>
                         </div>
