@@ -38,7 +38,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         .eq('show_issetlistgame', true);
         
       if (showError) {
-        console.error('Error fetching shows:', showError);
+        console.error('Error fetching shows for standings:', showError.message, showError.details);
         setStandings([]);
         setLoading(false);
         return;
@@ -52,14 +52,14 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
       
       const showIds = showData.map(show => show.show_id);
       
-      // Step 2: Get all submissions for these shows
+      // Step 2: Get all submissions for these shows (now visible to all users with our RLS policy)
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('setlist_game_submissions')
         .select('submission_id, user_id, show_id, score, total_songs_picked, total_songs_played')
         .in('show_id', showIds);
         
       if (submissionsError) {
-        console.error('Error fetching submissions:', submissionsError);
+        console.error('Error fetching submissions:', submissionsError.message, submissionsError.details);
         setStandings([]);
         setLoading(false);
         return;
@@ -74,14 +74,15 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
       // Get unique user IDs from submissions
       const userIds = [...new Set(submissionsData.map(sub => sub.user_id))];
       
-      // Fetch profiles separately
+      // Fetch profiles separately - also visible to all with RLS
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, username')
         .in('id', userIds);
         
       if (profilesError) {
-        console.error('Error fetching profiles:', profilesError);
+        console.error('Error fetching profiles:', profilesError.message, profilesError.details);
+        // Continue without usernames if profiles fetch fails - we'll use IDs as fallbacks
       }
       
       // Create mapping of user_id to username
@@ -90,7 +91,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         return acc;
       }, {} as Record<string, string>) || {};
       
-      // Step 3: Get detailed pick data
+      // Step 3: Get detailed pick data - now visible to all with our RLS policy
       const submissionIds = submissionsData.map(sub => sub.submission_id);
       
       const { data: picksData, error: picksError } = await supabase
@@ -100,7 +101,8 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         .neq('result', 'not_played');
         
       if (picksError) {
-        console.error('Error fetching picks:', picksError);
+        console.error('Error fetching picks:', picksError.message, picksError.details);
+        // Continue even if picks fetch fails - we'll have partial stats
       }
       
       // Step 4: Group submissions by user and calculate stats
@@ -129,7 +131,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         userStats[userId].showsPlayed += 1;
       });
       
-      // Count detailed picks stats
+      // Count detailed picks stats if we have picks data
       if (picksData) {
         picksData.forEach(pick => {
           const submission = submissionsData.find(s => s.submission_id === pick.submission_id);
@@ -334,7 +336,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
                 <tr 
                   key={player.userId} 
                   className={`
-                    ${player.userId === user?.id 
+                    ${user && player.userId === user.id 
                       ? 'bg-tertiary/80 text-white' 
                       : index % 2 === 0 
                         ? 'bg-primary/30' 
@@ -344,39 +346,39 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
                   `}
                 >
                   <td className="px-1 py-1 text-xs text-center font-semibold"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {index + 1}
                   </td>
                   <td className="px-3 py-1 whitespace-normal font-medium text-xs"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.username}
                   </td>
                   <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.totalPoints}
                   </td>
                   <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.showsPlayed}
                   </td>
                   <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.avgPointsPerShow.toFixed(2)}
                   </td>
                   <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.songsPicked}
                   </td>
                   <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.setsPicked}
                   </td>
                   <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.showOpenersPicked}
                   </td>
                   <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                    style={{ color: 'white' }}>
                     {player.showClosersPicked}
                   </td>
                 </tr>

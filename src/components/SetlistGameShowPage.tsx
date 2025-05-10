@@ -178,19 +178,33 @@ export function SetlistGameShowPage() {
           .from('setlist_game_submissions')
           .select('*', { count: 'exact', head: true })
           .eq('show_id', showId);
-
+  
         if (error) {
-          console.error('Error fetching player count:', error);
+          console.error('Error fetching player count:', error.message, error.details);
+          
+          // Try a fallback approach with simpler query
+          const { count: fallbackCount, error: fallbackError } = await supabase
+            .from('setlist_game_submissions')
+            .select('submission_id', { count: 'exact', head: true })
+            .eq('show_id', showId);
+            
+          if (fallbackError) {
+            console.error('Fallback player count query failed:', fallbackError);
+            setTotalPlayers(0);
+          } else {
+            setTotalPlayers(fallbackCount || 0);
+          }
           return;
         }
-
+  
         // Update player count (using count if available, otherwise fallback to data length calculation)
         setTotalPlayers(count !== null ? count : 0);
       } catch (error) {
         console.error('Error in player count fetch:', error);
+        setTotalPlayers(0);
       }
     }
-
+  
     fetchPlayerCount();
   }, [showId]);
 
@@ -198,56 +212,58 @@ export function SetlistGameShowPage() {
   useEffect(() => {
     async function fetchStandings() {
       if (!showId || !show?.show_scored) return;
-
+    
       try {
         // Get all submissions for this show
         const { data: submissionsData, error: submissionsError } = await supabase
           .from('setlist_game_submissions')
           .select('submission_id, user_id, score, total_songs_picked')
           .eq('show_id', showId);
-
+    
         if (submissionsError) {
-          console.error('Error fetching submissions:', submissionsError);
+          console.error('Error fetching submissions:', submissionsError.message, submissionsError.details);
           return;
         }
-
+    
         if (!submissionsData || submissionsData.length === 0) {
           setStandings([]);
           return;
         }
-
+    
         // Get unique user IDs
         const userIds = [...new Set(submissionsData.map(sub => sub.user_id))];
-
+    
         // Fetch profiles for username display
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
           .select('id, username')
           .in('id', userIds);
-
+    
         if (profilesError) {
-          console.error('Error fetching profiles:', profilesError);
+          console.error('Error fetching profiles:', profilesError.message, profilesError.details);
+          // Continue without usernames
         }
-
+    
         // Create mapping of user_id to username
         const usernameMap = profilesData?.reduce((acc, profile) => {
           acc[profile.id] = profile.username;
           return acc;
         }, {} as Record<string, string>) || {};
-
+    
         // Get the submission IDs
         const submissionIds = submissionsData.map(sub => sub.submission_id);
-
+    
         // Fetch all picks data to determine opener/closer and set picks
         const { data: picksData, error: picksError } = await supabase
           .from('setlist_game_picks')
           .select('submission_id, result, set, placement')
           .in('submission_id', submissionIds);
-
+    
         if (picksError) {
-          console.error('Error fetching picks:', picksError);
+          console.error('Error fetching picks:', picksError.message, picksError.details);
+          // Continue with partial data
         }
-
+    
         // Group picks by submission
         const picksBySubmission = picksData?.reduce((acc, pick) => {
           if (!acc[pick.submission_id]) {
@@ -256,36 +272,36 @@ export function SetlistGameShowPage() {
           acc[pick.submission_id].push(pick);
           return acc;
         }, {} as Record<string, any[]>) || {};
-
+    
         // Calculate standings
         const playerStatsArray: PlayerStats[] = submissionsData.map(submission => {
           const username = usernameMap[submission.user_id] || submission.user_id.substring(0, 8);
           const userPicks = picksBySubmission[submission.submission_id] || [];
-
+    
           // Count correctly picked songs
           const songsPicked = userPicks.filter(pick =>
             pick.result && pick.result !== 'not_played'
           ).length;
-
+    
           // Count correctly picked sets
           const setsPicked = userPicks.filter(pick =>
             pick.result === 'correct_song_set' ||
             pick.result === 'correct_song_set_num' ||
             pick.result === 'correct_song_set_openercloser'
           ).length;
-
+    
           // Check if show opener was picked
           const showOpenerPicked = userPicks.some(pick =>
             (pick.result === 'correct_song_set_openercloser' ||
               pick.result === 'correct_song_openercloser') &&
             pick.placement?.includes('Set 1 Opener')
           );
-
+    
           // Check if show closer was picked
           const showCloserPicked = userPicks.some(pick =>
             pick.result === 'correct_song_showcloser'
           );
-
+    
           return {
             username: username.split('@')[0], // Only use characters before @ symbol
             userId: submission.user_id,
@@ -297,7 +313,7 @@ export function SetlistGameShowPage() {
             showCloserPicked
           };
         });
-
+    
         // Sort by total points descending
         const sortedStandings = [...playerStatsArray].sort((a, b) => b.totalPoints - a.totalPoints);
         setStandings(sortedStandings);
@@ -761,11 +777,16 @@ export function SetlistGameShowPage() {
   
   // Handle viewing another user's submission
   const handleViewOtherUserSubmission = async (userId: string, username: string) => {
-    if (!showId || !show || !user) {
-      // Redirect to login if user is not logged in
+    if (!showId || !show) {
       return;
     }
-
+    
+    // If user is not logged in, prompt them to log in
+    if (!user) {
+      alert("Please log in to view user submissions");
+      return;
+    }
+  
     try {
       // Set viewing user ID
       setViewingUserId(userId);
@@ -777,9 +798,9 @@ export function SetlistGameShowPage() {
         .eq('user_id', userId)
         .eq('show_id', showId)
         .single();
-
+  
       if (submissionError) {
-        console.error('Error fetching other user submission:', submissionError);
+        console.error('Error fetching other user submission:', submissionError.message, submissionError.details);
         return;
       }
       
@@ -787,10 +808,10 @@ export function SetlistGameShowPage() {
         console.error('No submission found for this user');
         return;
       }
-
+  
       // Fetch the user's picks
       await fetchUserPicks(submissionData.submission_id);
-
+  
       // Set submission details
       setSubmissionDetails({
         totalScore: submissionData.score || 0,
@@ -799,13 +820,13 @@ export function SetlistGameShowPage() {
         setlist: [],
         username: username
       });
-
+  
       // Set view mode
       setViewMode(true);
-
+  
       // Open modal
       setActiveSongSelectionShow(show);
-
+  
     } catch (error) {
       console.error('Error in view other user submission:', error);
     }
@@ -1234,21 +1255,21 @@ export function SetlistGameShowPage() {
                         <tr
                           key={player.userId}
                           className={`
-      ${player.userId === user?.id
+                        ${user && player.userId === user.id
                               ? 'bg-tertiary/80 text-white'
                               : index % 2 === 0
                                 ? 'bg-primary/30'
                                 : 'bg-[#0c151c]'
                             } 
-      hover:bg-white/10 transition-colors
-    `}
+                        hover:bg-white/10 transition-colors
+                        `}
                         >
                           <td className="px-1 py-1 text-xs text-center font-semibold"
-                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            style={{ color: 'white' }}>
                             {index + 1}
                           </td>
                           <td className="px-3 py-1 whitespace-normal font-medium text-xs"
-                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            style={{ color: 'white' }}>
                             <button 
                               onClick={() => handleViewOtherUserSubmission(player.userId, player.username)}
                               className="hover:underline hover:text-tertiary transition-colors focus:outline-none"
@@ -1257,15 +1278,15 @@ export function SetlistGameShowPage() {
                             </button>
                           </td>
                           <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
-                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            style={{ color: 'white' }}>
                             {player.totalPoints}
                           </td>
                           <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            style={{ color: 'white' }}>
                             {player.songsPicked}
                           </td>
                           <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                            style={{ color: player.userId === user?.id ? 'white' : 'white' }}>
+                            style={{ color: 'white' }}>
                             {player.setsPicked}
                           </td>
                           <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center">

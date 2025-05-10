@@ -112,6 +112,7 @@ export function SetlistGame() {
     try {
       setLoading(true);
   
+      // Query to get shows data remains the same
       let query = supabase
         .from('shows')
         .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored, show_detail, show_canonid')
@@ -122,7 +123,7 @@ export function SetlistGame() {
       const { data, error } = await query;
   
       if (error) {
-        console.error('Error fetching game shows:', error);
+        console.error('Error fetching game shows:', error.message, error.details);
         return;
       }
   
@@ -151,7 +152,7 @@ export function SetlistGame() {
             .in('show_id', showIds);
   
           if (submissionsError) {
-            console.error('Error fetching user submissions:', submissionsError);
+            console.error('Error fetching user submissions:', submissionsError.message, submissionsError.details);
           } else if (submissionsData) {
             // Create a map of show_id to submission data
             const submissionMap = submissionsData.reduce((acc, sub) => {
@@ -172,18 +173,36 @@ export function SetlistGame() {
           }
         }
   
-        // Fetch player counts for each show
+        // Improved player count fetching with better error handling
         for (const show of processedShows) {
           try {
-            const { count } = await supabase
+            // More robust query with explicit error handling
+            const { count, error } = await supabase
               .from('setlist_game_submissions')
               .select('*', { count: 'exact', head: true })
               .eq('show_id', show.show_id);
             
-            show.playerCount = count || 0;
+            if (error) {
+              console.error(`Error fetching player count for show ${show.show_id}:`, error.message, error.details);
+              
+              // Fallback to a simpler query if the first one fails
+              const { count: fallbackCount, error: fallbackError } = await supabase
+                .from('setlist_game_submissions')
+                .select('submission_id', { count: 'exact', head: true })
+                .eq('show_id', show.show_id);
+                
+              if (fallbackError) {
+                console.error(`Fallback player count query failed for show ${show.show_id}:`, fallbackError);
+                // Keep default 0 if both queries fail
+              } else {
+                show.playerCount = fallbackCount || 0;
+              }
+            } else {
+              show.playerCount = count || 0;
+            }
           } catch (countError) {
-            console.error(`Error fetching player count for show ${show.show_id}:`, countError);
-            show.playerCount = 0;
+            console.error(`Exception fetching player count for show ${show.show_id}:`, countError);
+            // Keep default player count of 0 if query fails
           }
         }
   
@@ -869,7 +888,7 @@ export function SetlistGame() {
               </div>
             )}
           </div>
-          {user && <SetlistGameStandings activeLeague={activeLeague} user={user} />}
+          <SetlistGameStandings activeLeague={activeLeague} user={user} />
         </div>
       )}
 
