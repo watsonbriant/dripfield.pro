@@ -1139,55 +1139,94 @@ export function SongSelectionModal({
       
       let submissionId;
       
+      // Check if this user already has a submission for this show
+      if (!isEditing) {
+        // Check if this user already has a submission for this show
+        const { data: existingSubmission, error: existingError } = await supabase
+          .from('setlist_game_submissions')
+          .select('submission_id')
+          .eq('user_id', user.id)
+          .eq('show_id', show.show_id)
+          .single();
+
+        if (!existingError && existingSubmission) {
+          // If there's already a submission, switch to editing mode
+          isEditing = true;
+          show.submission_id = existingSubmission.submission_id;
+          
+          console.log('Found existing submission, switching to edit mode:', existingSubmission.submission_id);
+        }
+      }
+      
       // If editing, update the existing submission and delete only the picks
       if (isEditing && show.submission_id) {
         submissionId = show.submission_id;
         
-        // Delete existing picks but KEEP the submission
-        const { error: picksDeleteError } = await supabase
-          .from('setlist_game_picks')
-          .delete()
-          .eq('submission_id', submissionId);
-          
-        if (picksDeleteError) {
-          console.error('Error deleting existing picks:', picksDeleteError);
-          throw picksDeleteError;
+        try {
+          // Delete existing picks but KEEP the submission
+          const { error: picksDeleteError } = await supabase
+            .from('setlist_game_picks')
+            .delete()
+            .eq('submission_id', submissionId);
+            
+          if (picksDeleteError) {
+            throw picksDeleteError;
+          }
+        } catch (deleteError) {
+          setError(`Error deleting existing picks: ${deleteError.message || 'Unknown error'}`);
+          return;
         }
         
-        // Update the existing submission record
-        const { error: updateError } = await supabase
-          .from('setlist_game_submissions')
-          .update({
-            total_songs_picked: songPicks.filter(pick => !pick.isBreak).length
-            // No updated_at field in the schema
-          })
-          .eq('submission_id', submissionId);
-        
-        if (updateError) {
-          console.error('Error updating submission:', updateError);
-          throw updateError;
+        try {
+          // Update the existing submission record
+          const { error: updateError } = await supabase
+            .from('setlist_game_submissions')
+            .update({
+              total_songs_picked: songPicks.filter(pick => !pick.isBreak).length
+            })
+            .eq('submission_id', submissionId);
+          
+          if (updateError) {
+            throw updateError;
+          }
+        } catch (updateError) {
+          setError(`Error updating submission: ${updateError.message || 'Unknown error'}`);
+          return;
         }
 
       } else {
-        // Create a new submission record
-        const { data: submissionData, error: submissionError } = await supabase
-          .from('setlist_game_submissions')
-          .insert([{
-            user_id: user.id,
-            show_id: show.show_id,
-            tour_id: show.show_tour,
-            submission_status: 'open',
-            total_songs_picked: songPicks.filter(pick => !pick.isBreak).length
-          }])
-          .select()
-          .single();
-        
-        if (submissionError) {
-          console.error('Error creating submission:', submissionError);
-          throw submissionError;
+        try {
+          // Create a new submission record
+          const { data: submissionData, error: submissionError } = await supabase
+            .from('setlist_game_submissions')
+            .insert([{
+              user_id: user.id,
+              show_id: show.show_id,
+              tour_id: show.show_tour,
+              submission_status: 'open',
+              total_songs_picked: songPicks.filter(pick => !pick.isBreak).length
+            }])
+            .select()
+            .single();
+          
+          if (submissionError) {
+            if (submissionError.code === '23505') { // PostgreSQL unique constraint violation
+              setError(`You already have picks submitted for this show. Try refreshing the page.`);
+            } else {
+              setError(`Error creating submission: ${submissionError.message || 'Unknown error'}`);
+            }
+            return;
+          }
+          
+          submissionId = submissionData.submission_id;
+        } catch (insertError) {
+          if (insertError.code === '23505') { // PostgreSQL unique constraint violation
+            setError(`Duplicate entry: You already have picks for this show. Please refresh the page.`);
+          } else {
+            setError(`Error creating submission: ${insertError.message || 'Unknown error'}`);
+          }
+          return;
         }
-        
-        submissionId = submissionData.submission_id;
       }
       
       // Group songs by set for proper numbering
@@ -1219,18 +1258,22 @@ export function SongSelectionModal({
             song: pick.song,
             set: pick.set,
             setnum: index + 1, // 1-based indexing for each set
-            placement: pick.placement
+            placement: pick.placement || getPlacement(setId, sortedSetSongs, pick) // Ensure placement is defined
           });
         });
       });
       
-      const { error: picksError } = await supabase
-        .from('setlist_game_picks')
-        .insert(picksToInsert);
-      
-      if (picksError) {
-        console.error('Error inserting picks:', picksError);
-        throw picksError;
+      try {
+        const { error: picksError } = await supabase
+          .from('setlist_game_picks')
+          .insert(picksToInsert);
+        
+        if (picksError) {
+          throw picksError;
+        }
+      } catch (picksInsertError) {
+        setError(`Error inserting picks: ${picksInsertError.message || 'Unknown error'}`);
+        return;
       }
       
       setSuccess(true);
@@ -1242,8 +1285,16 @@ export function SongSelectionModal({
         window.location.reload();
       }, 2000);
     } catch (error) {
-      console.error('Error submitting picks:', error);
-      setError('Failed to submit picks. Please try again.');
+      // For any other errors that weren't caught by specific handlers
+      let errorMessage = 'Failed to submit picks. Please try again.';
+      
+      if (error.code === '23505') {
+        errorMessage = 'Error: You already have picks for this show. Please refresh the page.';
+      } else if (error.message) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }

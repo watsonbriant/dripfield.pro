@@ -712,16 +712,22 @@ export function SetlistGameShowPage() {
     // Reset view mode first - important to do this before loading picks
     setViewMode(false);
 
-    // If user has already submitted, load their picks
+    // If user has already submitted, load their picks and prepare for editing
     if (userSubmission) {
       await fetchUserPicks();
+
+      // Set the active show for the modal - IMPORTANT: Include submission_id!
+      setActiveSongSelectionShow({
+        ...show,
+        submission_id: userSubmission  // This is the key fix - passing the submission_id
+      });
     } else {
       // Reset picks if this is a new submission
       setUserPicks([]);
+      
+      // Set the active show for the modal without submission_id
+      setActiveSongSelectionShow(show);
     }
-
-    // Set the active show for the modal
-    setActiveSongSelectionShow(show);
   };
 
   // Handle closing the modal
