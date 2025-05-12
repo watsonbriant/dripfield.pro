@@ -81,7 +81,7 @@ export function Tours() {
   const { tour } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [currentTour, setCurrentTour] = React.useState<string>('2025 Winter');
+  const [currentTour, setCurrentTour] = React.useState<string>('2025 Summer');
   const [currentTourId, setCurrentTourId] = React.useState<string>('');
   const [shows, setShows] = React.useState<Show[]>([]);
   const [tours, setTours] = React.useState<Tour[]>([]);
@@ -289,7 +289,7 @@ export function Tours() {
 
   React.useEffect(() => {
     if (!tour) {
-      navigate('/tours/2025 Winter', { replace: true });
+      navigate('/tours/2025 Summer', { replace: true });
     }
   }, [tour, navigate]);
 
@@ -336,12 +336,12 @@ export function Tours() {
           throw error;
         }
 
-        // Find the 2025 Winter tour_id for initial navigation
-        const winter2025 = data?.find(t => t.tour === '2025 Winter');
+        // Find the tour_id for initial navigation
+        const winter2025 = data?.find(t => t.tour === '2025 Summer');
         if (winter2025 && !tour) {
           navigate(`/tours/${winter2025.tour_id}`, { replace: true });
           setCurrentTourId(winter2025.tour_id);
-          setCurrentTour('2025 Winter');
+          setCurrentTour('2025 Summer');
         }
 
         setTours(data || []);
