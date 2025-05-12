@@ -50,6 +50,7 @@ interface LooseEnd {
   end_category: string;
   end_image_collected: string;
   isCompleted?: boolean;
+  end_visible: boolean;
   progress?: {
     seen: number;
     total: number;
@@ -95,9 +96,10 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
         // Fetch all loose ends
         setLoadingProgress(10);
         const { data: looseEndsData, error: looseEndsError } = await supabase
-          .from('looseends')
-          .select('end, end_description, end_id, end_image, end_order, end_category, end_image_collected')
-          .order('end_order', { ascending: true });
+            .from('looseends')
+            .select('end, end_description, end_id, end_image, end_order, end_category, end_image_collected, end_visible')
+            .eq('end_visible', true)
+            .order('end_order', { ascending: true });
 
         if (looseEndsError) {
           console.error('Error fetching loose ends:', looseEndsError);
