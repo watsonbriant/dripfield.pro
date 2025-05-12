@@ -174,6 +174,9 @@ export function SongSelectionModal({
   useEffect(() => {
     if (viewMode && existingPicks && existingPicks.length > 0) {
       
+      // Check if any picks have showcloser_correct flag
+      const hasShowCloser = existingPicks.some(pick => pick.showcloser_correct);
+      
       // Get unique sets from existing picks, sorted in correct order
       const uniqueSets = [...new Set(existingPicks.map(pick => pick.set))].sort((a, b) => {
         // Sort by set number, handling E prefixes for encores
@@ -208,7 +211,9 @@ export function SongSelectionModal({
         setnum: pick.setnum,
         placement: pick.placement,
         score: pick.score,
-        result: pick.result
+        result: pick.result,
+        showcloser_correct: pick.showcloser_correct,  // Ensure this property is copied over
+        showopener_correct: pick.showopener_correct
       }));
       
       // Combine breaks and picks
@@ -1153,8 +1158,6 @@ export function SongSelectionModal({
           // If there's already a submission, switch to editing mode
           isEditing = true;
           show.submission_id = existingSubmission.submission_id;
-          
-          console.log('Found existing submission, switching to edit mode:', existingSubmission.submission_id);
         }
       }
       
@@ -1446,7 +1449,6 @@ export function SongSelectionModal({
           });
           return;
         } catch (shareError) {
-          console.log('Share cancelled or failed', shareError);
           // Fall back to download if sharing fails
         }
       }
@@ -1475,70 +1477,90 @@ export function SongSelectionModal({
   // Total number of songs selected (excluding breaks)
   const totalSongsSelected = songPicks.filter(pick => !pick.isBreak).length;
 
-  // Get result color based on result type
-  const getResultColor = (result: string | undefined): string => {
-    if (!result) return 'transparent';
-    
-    switch (result) {
-      case 'not_played':
-        return '#5c5c5c'; // Gray for not played
-      
-      case 'correct_song_set_num':
-      case 'correct_song_set_openercloser':
-        return '#006400'; // Dark green for perfect match
-      
-      case 'correct_song_showcloser':
-        return '#9C27B0'; // Purple for show closer match
-      
-      case 'correct_song_openercloser':
-        return '#228B22'; // Forest green for opener/closer match
-      
-      case 'correct_song_set':
-        return '#4CAF50'; // Medium green for song+set match
-      
-      case 'correct_song':
-        return '#8FBC8F'; // Light green for song match only
-      
-      default:
-        return 'transparent';
-    }
-  };
-
   // Helper function to get a human-readable description of the result
-  const getResultDescription = (result: string | undefined): string => {
+  const getResultDescription = (result: string | undefined, showcloser_correct?: boolean, showopener_correct?: boolean): string => {
+    
     if (!result) return '';
     
+    let description = '';
+    
     switch (result) {
       case 'not_played':
-        return 'Not played';
+        return '❌&nbsp;&nbsp;Song Not Played';
       
       case 'correct_song':
-        return 'Correct song';
+        description = '✅&nbsp;&nbsp;Song';
+        break;
       
       case 'correct_song_set':
-        return 'Correct song and set';
+        description = '✅&nbsp;&nbsp;Song<br>✅&nbsp;&nbsp;Set';
+        break;
       
-      case 'correct_song_set_num':
-        return 'Correct song, set, and position';
+      case 'correct_song_set_setnum':
+        description = '✅&nbsp;&nbsp;Song<br>✅&nbsp;&nbsp;Set<br>✅&nbsp;&nbsp;Set Position';
+        break;
       
-      case 'correct_song_openercloser':
-        return 'Correct opener/closer, wrong set';
+      case 'correct_song_openercloserencore':
+        description = '✅&nbsp;&nbsp;Song<br>✅&nbsp;&nbsp;Opener/Closer/Encore<br>❌&nbsp;&nbsp;Set';
+        break;
       
-      case 'correct_song_set_openercloser':
-        return 'Correct opener/closer and set';
+      case 'correct_song_set_openercloserencore':
+        description = '✅&nbsp;&nbsp;Song<br>✅&nbsp;&nbsp;Opener/Closer/Encore<br>✅&nbsp;&nbsp;Set';
+        break;
       
-      case 'correct_song_showcloser':
-        return 'Correct show closer';
+      case 'correct_song_set_setnum_openercloserencore':
+        description = '✅&nbsp;&nbsp;Song<br>✅&nbsp;&nbsp;Opener/Closer/Encore<br>✅&nbsp;&nbsp;Set<br>✅&nbsp;&nbsp;Set Position';
+        break;
       
       default:
         return result;
     }
+    
+    // Add Show Opener info if the showopener_correct flag is true
+    if (showopener_correct === true) {
+      description += '<br>✅&nbsp;&nbsp;Show Opener';
+    }
+    
+    // Add Show Closer info if the showcloser_correct flag is true
+    if (showcloser_correct === true) {
+      description += '<br>✅&nbsp;&nbsp;Show Closer';
+    }
+    
+    return description;
   };
 
   // TooltipContainer for score display with hover behavior
-  const TooltipContainer = React.memo(({ result, score }: { result: string | undefined, score: number | undefined }) => {
+  const TooltipContainer = React.memo(({ result, score, pick }: { 
+    result: string | undefined, 
+    score: number | undefined,
+    pick?: SongPick // Need to pass the pick to check showcloser_correct and showopener_correct
+  }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const tooltipRef = useRef<HTMLDivElement>(null);
+    
+    // Calculate tooltip position when it becomes visible
+    useEffect(() => {
+      if (showTooltip && containerRef.current && tooltipRef.current) {
+        // Get the position and dimensions of the tooltip container
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const tooltipHeight = tooltipRef.current.offsetHeight;
+        
+        // Check if the tooltip would extend below the visible area
+        const viewportHeight = window.innerHeight;
+        const tooltipBottom = containerRect.top + tooltipHeight;
+        const isOverflowing = tooltipBottom > viewportHeight - 20; // 20px buffer
+        
+        // Adjust top position if needed to prevent overflow
+        if (isOverflowing) {
+          tooltipRef.current.style.top = 'auto';
+          tooltipRef.current.style.bottom = '0';
+        } else {
+          tooltipRef.current.style.top = '-2px';
+          tooltipRef.current.style.bottom = 'auto';
+        }
+      }
+    }, [showTooltip]);
     
     return (
       <div 
@@ -1557,17 +1579,19 @@ export function SongSelectionModal({
           </span>
         )}
         
-        {/* Static tooltip that appears on hover */}
+        {/* Tooltip that appears on hover - now uses absolute positioning */}
         {showTooltip && (
           <div 
-            className="absolute bg-[#594e5f] text-[#fce7ca] px-3 py-1.5 rounded shadow-lg z-[9999] text-xs whitespace-nowrap"
+            ref={tooltipRef}
+            className="absolute right-full mr-2 bg-[#594e5f] text-[#fce7ca] px-3 py-1.5 rounded shadow-lg z-[99999] text-xs whitespace-nowrap"
             style={{
-              right: '30px', // Positioned to the left of the score
-              top: '0', // Aligned with the score vertically
+              pointerEvents: 'none', // Ensure tooltip doesn't interfere with mouse events
+              top: '-5px', // Default position, may be overridden by useEffect
             }}
-          >
-            {getResultDescription(result)}
-          </div>
+            dangerouslySetInnerHTML={{ 
+              __html: getResultDescription(result, pick?.showcloser_correct ?? false, pick?.showopener_correct ?? false)
+            }}
+          />
         )}
       </div>
     );
@@ -1877,7 +1901,7 @@ export function SongSelectionModal({
                                           {/* Score display in the middle */}
                                           <div className="flex items-center shrink-0">
                                             {pick.score !== undefined && (
-                                              <TooltipContainer result={pick.result} score={pick.score} />
+                                              <TooltipContainer result={pick.result} score={pick.score} pick={pick} />
                                             )}
                                           </div>
                                         </div>
@@ -1963,7 +1987,7 @@ export function SongSelectionModal({
                                           {/* Score display */}
                                           <div className="flex items-center shrink-0">
                                             {pick.score !== undefined && (
-                                              <TooltipContainer result={pick.result} score={pick.score} />
+                                              <TooltipContainer result={pick.result} score={pick.score} pick={pick} />
                                             )}
                                           </div>
                                         </div>
@@ -2100,7 +2124,7 @@ export function SongSelectionModal({
                                 <div className="flex items-center shrink-0 ml-2">
                                   {/* Only show + indicators for scored shows */}
                                   {show.show_scored && pick.score !== undefined && (
-                                    <TooltipContainer result={pick.result} score={pick.score} />
+                                    <TooltipContainer result={pick.result} score={pick.score} pick={pick} />
                                   )}
                                 </div>
                               )}

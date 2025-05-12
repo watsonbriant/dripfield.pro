@@ -93,10 +93,10 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
       
       // Step 3: Get detailed pick data - now visible to all with our RLS policy
       const submissionIds = submissionsData.map(sub => sub.submission_id);
-      
+
       const { data: picksData, error: picksError } = await supabase
         .from('setlist_game_picks')
-        .select('submission_id, result, set, placement')
+        .select('submission_id, result, set, placement, showopener_correct, showcloser_correct')
         .in('submission_id', submissionIds)
         .neq('result', 'not_played');
         
@@ -153,14 +153,13 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
             userStats[userId].setsPicked += 1;
           }
           
-          // Count show openers
-          if (pick.result === 'correct_song_set_openercloser' && 
-              pick.placement?.includes('Set 1 Opener')) {
+          // Count show openers - use showopener_correct flag instead of placement check
+          if (pick.showopener_correct === true) {
             userStats[userId].showOpenersPicked += 1;
           }
           
-          // Count show closers
-          if (pick.result === 'correct_song_showcloser') {
+          // Count show closers - use showcloser_correct flag
+          if (pick.showcloser_correct === true) {
             userStats[userId].showClosersPicked += 1;
           }
         });
@@ -207,6 +206,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
     direction: 'asc' | 'desc'
   ): PlayerStats[] => {
     return [...data].sort((a, b) => {
+      // Primary sort by the selected field and direction
       let comparison = 0;
       
       if (a[field] < b[field]) {
@@ -215,7 +215,34 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
         comparison = 1;
       }
       
-      return direction === 'asc' ? comparison : -comparison;
+      // Apply the selected sort direction
+      comparison = direction === 'asc' ? comparison : -comparison;
+      
+      // If items are equal on the primary sort field, apply the tiebreaker rules
+      if (comparison === 0) {
+        // If we're not already sorting by totalPoints, use it as first tiebreaker (descending)
+        if (field !== 'totalPoints') {
+          if (a.totalPoints > b.totalPoints) return -1;
+          if (a.totalPoints < b.totalPoints) return 1;
+        }
+        
+        // If we're not already sorting by avgPointsPerShow, use it as second tiebreaker (descending)
+        if (field !== 'avgPointsPerShow') {
+          if (a.avgPointsPerShow > b.avgPointsPerShow) return -1;
+          if (a.avgPointsPerShow < b.avgPointsPerShow) return 1;
+        }
+        
+        // If we're not already sorting by songsPicked, use it as third tiebreaker (descending)
+        if (field !== 'songsPicked') {
+          if (a.songsPicked > b.songsPicked) return -1;
+          if (a.songsPicked < b.songsPicked) return 1;
+        }
+        
+        // Finally, sort alphabetically by username as the last tiebreaker
+        return a.username.localeCompare(b.username);
+      }
+      
+      return comparison;
     });
   };
   

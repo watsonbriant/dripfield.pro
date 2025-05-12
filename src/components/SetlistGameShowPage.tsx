@@ -48,6 +48,8 @@ interface UserPick {
   placement?: string;
   score?: number;
   result?: string;
+  showcloser_correct?: boolean;
+  showopener_correct?: boolean;
 }
 
 interface SubmissionDetails {
@@ -210,60 +212,62 @@ export function SetlistGameShowPage() {
 
   // Fetch standings for this show when it's scored
   useEffect(() => {
+    // Modify the fetchStandings function to check for showcloser_correct
     async function fetchStandings() {
       if (!showId || !show?.show_scored) return;
-    
+
       try {
         // Get all submissions for this show
         const { data: submissionsData, error: submissionsError } = await supabase
           .from('setlist_game_submissions')
           .select('submission_id, user_id, score, total_songs_picked')
           .eq('show_id', showId);
-    
+
         if (submissionsError) {
           console.error('Error fetching submissions:', submissionsError.message, submissionsError.details);
           return;
         }
-    
+
         if (!submissionsData || submissionsData.length === 0) {
           setStandings([]);
           return;
         }
-    
+
         // Get unique user IDs
         const userIds = [...new Set(submissionsData.map(sub => sub.user_id))];
-    
+
         // Fetch profiles for username display
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
           .select('id, username')
           .in('id', userIds);
-    
+
         if (profilesError) {
           console.error('Error fetching profiles:', profilesError.message, profilesError.details);
           // Continue without usernames
         }
-    
+
         // Create mapping of user_id to username
         const usernameMap = profilesData?.reduce((acc, profile) => {
           acc[profile.id] = profile.username;
           return acc;
         }, {} as Record<string, string>) || {};
-    
+
         // Get the submission IDs
         const submissionIds = submissionsData.map(sub => sub.submission_id);
-    
+
         // Fetch all picks data to determine opener/closer and set picks
+        // Update this query to include showcloser_correct field
         const { data: picksData, error: picksError } = await supabase
           .from('setlist_game_picks')
-          .select('submission_id, result, set, placement')
+          .select('submission_id, result, set, placement, showcloser_correct, showopener_correct')
           .in('submission_id', submissionIds);
-    
+
         if (picksError) {
           console.error('Error fetching picks:', picksError.message, picksError.details);
           // Continue with partial data
         }
-    
+
         // Group picks by submission
         const picksBySubmission = picksData?.reduce((acc, pick) => {
           if (!acc[pick.submission_id]) {
@@ -272,35 +276,34 @@ export function SetlistGameShowPage() {
           acc[pick.submission_id].push(pick);
           return acc;
         }, {} as Record<string, any[]>) || {};
-    
+
         // Calculate standings
         const playerStatsArray: PlayerStats[] = submissionsData.map(submission => {
           const username = usernameMap[submission.user_id] || submission.user_id.substring(0, 8);
           const userPicks = picksBySubmission[submission.submission_id] || [];
-    
+
           // Count correctly picked songs
           const songsPicked = userPicks.filter(pick =>
             pick.result && pick.result !== 'not_played'
           ).length;
-    
+
           // Count correctly picked sets
           const setsPicked = userPicks.filter(pick =>
             pick.result === 'correct_song_set' ||
             pick.result === 'correct_song_set_num' ||
             pick.result === 'correct_song_set_openercloser'
           ).length;
-    
-          // Check if show opener was picked
-          const showOpenerPicked = userPicks.some(pick =>
-            pick.result === 'correct_song_set_openercloser' &&
-            pick.placement?.includes('Set 1 Opener')
-          );
-    
-          // Check if show closer was picked
+
+          // Check if show closer was picked - UPDATED to use showcloser_correct field
           const showCloserPicked = userPicks.some(pick =>
-            pick.result === 'correct_song_showcloser'
+            pick.showcloser_correct === true
           );
-    
+
+          // Check if show opener was picked - UPDATED to use showopener_correct field
+          const showOpenerPicked = userPicks.some(pick =>
+            pick.showopener_correct === true
+          );
+
           return {
             username: username.split('@')[0], // Only use characters before @ symbol
             userId: submission.user_id,
@@ -312,7 +315,7 @@ export function SetlistGameShowPage() {
             showCloserPicked
           };
         });
-    
+
         // Sort by total points descending
         const sortedStandings = [...playerStatsArray].sort((a, b) => b.totalPoints - a.totalPoints);
         setStandings(sortedStandings);
@@ -680,7 +683,7 @@ export function SetlistGameShowPage() {
       // Get the picks for this submission
       const { data: picksData, error: picksError } = await supabase
         .from('setlist_game_picks')
-        .select('song, set, setnum, placement, score, result')
+        .select('song, set, setnum, placement, score, result, showcloser_correct, showopener_correct')
         .eq('submission_id', targetSubmissionId)
         .order('setnum', { ascending: true });
 

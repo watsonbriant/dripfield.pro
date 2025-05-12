@@ -63,6 +63,7 @@ export function SetlistGame() {
   const [isAdminUser, setIsAdminUser] = useState(false);
 
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const [scoringError, setScoringError] = useState<string | null>(null);
 
   const [viewMode, setViewMode] = useState(false);
   const [submissionDetails, setSubmissionDetails] = useState<SubmissionDetails>({
@@ -359,188 +360,238 @@ export function SetlistGame() {
   };
 
   // Updated scoring function with fixes for multi-instance songs and show closer
-  const handleScoreSubmissions = async () => {
-    if (!selectedShowToScore) {
-      return;
+const handleScoreSubmissions = async () => {
+  if (!selectedShowToScore) {
+    return;
+  }
+
+  try {
+    setIsScoring(true);
+    setScoringError(null); // Reset any previous errors
+    console.log("Beginning scoring process for show ID:", selectedShowToScore);
+
+    // Step 1: Count total songs played at this show
+    const { data: setlistData, error: setlistError } = await supabase
+      .from('setlist_entries')
+      .select('entry_id')
+      .eq('entry_show', selectedShowToScore);
+
+    if (setlistError) {
+      console.error('Error fetching setlist:', setlistError);
+      throw new Error(`Failed to fetch setlist: ${setlistError.message}`);
     }
-  
-    try {
-      setIsScoring(true);
-      console.log("Beginning scoring process for show ID:", selectedShowToScore);
-  
-      // Step 1: Count total songs played at this show
-      const { data: setlistData, error: setlistError } = await supabase
-        .from('setlist_entries')
-        .select('entry_id')
-        .eq('entry_show', selectedShowToScore);
-  
-      if (setlistError) {
-        console.error('Error fetching setlist:', setlistError);
-        throw setlistError;
-      }
-  
-      const totalSongsPlayed = setlistData.length;
-      console.log(`Total songs played at this show: ${totalSongsPlayed}`);
-  
-      // Step 2: Get actual setlist data (for more detailed processing)
-      const { data: actualSetlistData, error: actualSetlistError } = await supabase
-        .from('setlist_entries')
-        .select('entry_id, entry_song, entry_set, entry_setnum, entry_placement')
-        .eq('entry_show', selectedShowToScore)
-        .order('entry_set', { ascending: true })
-        .order('entry_setnum', { ascending: true });
-  
-      if (actualSetlistError) {
-        console.error('Error fetching actual setlist data:', actualSetlistError);
-        throw actualSetlistError;
-      }
-  
-      console.log("Fetched actual setlist data:", actualSetlistData);
-  
-      // Step 3: Find the last song of the show
-      const actualLastSong = actualSetlistData && actualSetlistData.length > 0 
-        ? actualSetlistData[actualSetlistData.length - 1] 
-        : null;
-  
-      if (actualLastSong) {
-        console.log(`Actual last song: ${actualLastSong.entry_song}, Set ${actualLastSong.entry_set}, Position ${actualLastSong.entry_setnum}`);
-      } else {
-        console.log("No last song found");
-      }
-  
-      // Step 4: Get all submissions for this show
-      const { data: submissionsData, error: submissionsError } = await supabase
+
+    const totalSongsPlayed = setlistData.length;
+    console.log(`Total songs played at this show: ${totalSongsPlayed}`);
+
+    // Step 2: Get actual setlist data (for more detailed processing)
+    const { data: actualSetlistData, error: actualSetlistError } = await supabase
+      .from('setlist_entries')
+      .select('entry_id, entry_song, entry_set, entry_setnum, entry_placement')
+      .eq('entry_show', selectedShowToScore)
+      .order('entry_set', { ascending: true })
+      .order('entry_setnum', { ascending: true });
+
+    if (actualSetlistError) {
+      console.error('Error fetching actual setlist data:', actualSetlistError);
+      throw actualSetlistError;
+    }
+
+    console.log("Fetched actual setlist data:", actualSetlistData);
+
+    // Step 3: Find the last song of the show
+    const actualLastSong = actualSetlistData && actualSetlistData.length > 0 
+      ? actualSetlistData[actualSetlistData.length - 1] 
+      : null;
+
+    if (actualLastSong) {
+      console.log(`Actual last song: ${actualLastSong.entry_song}, Set ${actualLastSong.entry_set}, Position ${actualLastSong.entry_setnum}`);
+    } else {
+      console.log("No last song found");
+    }
+
+    // Step 4: Get all submissions for this show
+    const { data: submissionsData, error: submissionsError } = await supabase
+      .from('setlist_game_submissions')
+      .select('submission_id, user_id, total_songs_picked')
+      .eq('show_id', selectedShowToScore);
+
+    if (submissionsError) {
+      console.error('Error fetching submissions:', submissionsError);
+      throw submissionsError;
+    }
+
+    console.log(`Found ${submissionsData.length} submissions to score`);
+
+    // Step 5: For each submission, update total_songs_played and score picks
+    for (const submission of submissionsData) {
+      console.log(`\nScoring submission ${submission.submission_id} for user ${submission.user_id}`);
+      let totalScore = 0;
+
+      // Update total_songs_played
+      await supabase
         .from('setlist_game_submissions')
-        .select('submission_id, user_id, total_songs_picked')
-        .eq('show_id', selectedShowToScore);
-  
-      if (submissionsError) {
-        console.error('Error fetching submissions:', submissionsError);
-        throw submissionsError;
+        .update({ total_songs_played: totalSongsPlayed })
+        .eq('submission_id', submission.submission_id);
+
+      // Get all picks for this submission
+      const { data: picksData, error: picksError } = await supabase
+        .from('setlist_game_picks')
+        .select('pick_id, song, set, setnum, placement')
+        .eq('submission_id', submission.submission_id);
+
+      if (picksError) {
+        console.error('Error fetching picks:', picksError);
+        continue; // Skip to next submission if there's an error
       }
-  
-      console.log(`Found ${submissionsData.length} submissions to score`);
-  
-      // Step 5: For each submission, update total_songs_played and score picks
-      for (const submission of submissionsData) {
-        console.log(`\nScoring submission ${submission.submission_id} for user ${submission.user_id}`);
-        let totalScore = 0;
-  
-        // Update total_songs_played
-        await supabase
-          .from('setlist_game_submissions')
-          .update({ total_songs_played: totalSongsPlayed })
-          .eq('submission_id', submission.submission_id);
-  
-        // Get all picks for this submission
-        const { data: picksData, error: picksError } = await supabase
-          .from('setlist_game_picks')
-          .select('pick_id, song, set, setnum, placement')
-          .eq('submission_id', submission.submission_id);
-  
-        if (picksError) {
-          console.error('Error fetching picks:', picksError);
-          continue; // Skip to next submission if there's an error
+
+      console.log(`Found ${picksData.length} picks to score`);
+
+      // Create a dictionary of songs in setlist for quick lookup
+      const setlistSongs = {};
+      actualSetlistData.forEach(entry => {
+        if (!setlistSongs[entry.entry_song]) {
+          setlistSongs[entry.entry_song] = [];
         }
-  
-        console.log(`Found ${picksData.length} picks to score`);
-  
-        // Create a dictionary of songs in setlist for quick lookup
-        const setlistSongs = {};
-        actualSetlistData.forEach(entry => {
-          if (!setlistSongs[entry.entry_song]) {
-            setlistSongs[entry.entry_song] = [];
-          }
-          setlistSongs[entry.entry_song].push({
-            set: entry.entry_set,
-            setnum: entry.entry_setnum,
-            placement: entry.entry_placement
-          });
+        setlistSongs[entry.entry_song].push({
+          set: entry.entry_set,
+          setnum: entry.entry_setnum,
+          placement: entry.entry_placement
         });
+      });
+      
+      // Score each pick
+      for (const pick of picksData) {
+        let pickScore = 0;
+        let resultString = 'not_played';
+        console.log(`\nScoring pick: ${pick.song} in Set ${pick.set}, Position ${pick.setnum}, Placement ${pick.placement || 'None'}`);
+      
+        // Check if song was played (using our dictionary for faster lookup)
+        const songInstances = setlistSongs[pick.song] || [];
         
-        // Score each pick
-        for (const pick of picksData) {
-          let pickScore = 0;
-          let resultString = 'not_played';
-          console.log(`\nScoring pick: ${pick.song} in Set ${pick.set}, Position ${pick.setnum}, Placement ${pick.placement || 'None'}`);
-  
-          // Check if song was played (using our dictionary for faster lookup)
-          const songInstances = setlistSongs[pick.song] || [];
+        if (songInstances.length > 0) {
+          console.log(`Song was played ${songInstances.length} times in the setlist`);
           
-          if (songInstances.length > 0) {
-            console.log(`Song was played ${songInstances.length} times in the setlist`);
+          // Start with basic song match (2 points)
+          pickScore = 2;
+          resultString = 'correct_song';
+          
+          // Check for correct set match
+          const correctSetMatch = songInstances.some(instance => pick.set === instance.set);
+          
+          // Define setAndPositionMatch outside the if block so it's available in all scopes
+          let setAndPositionMatch = false;
+          
+          if (correctSetMatch) {
+            console.log(`User picked correct set: ${pick.set}`);
+            pickScore = 4;
+            resultString = 'correct_song_set';
             
-            // Start with basic song match (2 points)
-            pickScore = 2;
-            resultString = 'correct_song';
+            // Check for correct setnum within that set
+            setAndPositionMatch = songInstances.some(instance => 
+              pick.set === instance.set && pick.setnum === instance.setnum
+            );
             
-            // Check for correct set match
-            const correctSetMatch = songInstances.some(instance => pick.set === instance.set);
-            
-            if (correctSetMatch) {
-              console.log(`User picked correct set: ${pick.set}`);
-              pickScore += 2;
-              resultString = 'correct_song_set';
-              
-              // Check for correct setnum within that set
-              const correctSetAndPosition = songInstances.some(instance => 
-                pick.set === instance.set && pick.setnum === instance.setnum
-              );
-              
-              if (correctSetAndPosition) {
-                console.log(`User picked correct setnum within set: ${pick.setnum}`);
-                pickScore += 3;
-                resultString = 'correct_song_set_num';
-              }
+            if (setAndPositionMatch) {
+              console.log(`User picked correct setnum within set: ${pick.setnum}`);
+              pickScore = 7;
+              resultString = 'correct_song_set_setnum';
             }
-            
-            // Check for opener/closer matches
-            const userPickedOpener = pick.placement?.includes('Opener');
-            const userPickedCloser = pick.placement?.includes('Closer');
-            
-            console.log(`User picked opener: ${userPickedOpener}, User picked closer: ${userPickedCloser}`);
-            
-            // Check if song was an opener/closer in any instance
-            const wasAnyOpener = songInstances.some(instance => instance.placement?.includes('Opener'));
-            const wasAnyCloser = songInstances.some(instance => instance.placement?.includes('Closer'));
-            
-            console.log(`Song was any opener: ${wasAnyOpener}, Song was any closer: ${wasAnyCloser}`);
-            
-            // Check for specific placement match
-            const wasSpecificPlacement = songInstances.some(instance => instance.placement === pick.placement);
-            
-            console.log(`Song had specific placement match: ${wasSpecificPlacement}`);
-            
-            // Handle opener/closer scoring
-            if ((userPickedOpener && wasAnyOpener) || (userPickedCloser && wasAnyCloser)) {
-              if (wasSpecificPlacement) {
-                console.log(`User picked the exact placement: ${pick.placement}`);
-                pickScore += 5; // 5 points for specific set opener/closer
-                resultString = 'correct_song_set_openercloser';
-              } else if (resultString === 'correct_song') {
-                // Only apply general opener/closer bonus if they didn't already get set points
-                console.log(`User picked general opener/closer`);
-                pickScore += 2;
-                resultString = 'correct_song_openercloser';
-              }
-            }
-          } else {
-            console.log(`Song was not played in the setlist`);
           }
           
-          // Add to total score
-          totalScore += pickScore;
-          console.log(`Score for this pick: ${pickScore}, result: ${resultString}`);
+          // Check for special placements (Opener, Closer, Encore)
+          const userPlacement = pick.placement || '';
+          const hasOpener = userPlacement.includes('Opener');
+          const hasCloser = userPlacement.includes('Closer');
+          const hasEncore = userPlacement.includes('Encore');
           
-          // Update the pick's score and result
-          await supabase
-            .from('setlist_game_picks')
-            .update({ score: pickScore, result: resultString })
-            .eq('pick_id', pick.pick_id);
+          // Check if the song had the same placement in any instance
+          const matchingPlacementInstance = songInstances.find(instance => {
+            const actualPlacement = instance.placement || '';
+            return (hasOpener && actualPlacement.includes('Opener')) ||
+                  (hasCloser && actualPlacement.includes('Closer')) ||
+                  (hasEncore && actualPlacement.includes('Encore'));
+          });
+          
+          if (matchingPlacementInstance) {
+            console.log(`User picked correct placement: ${userPlacement}`);
+            
+            // Check which special case applies based on the points awarded
+            if (correctSetMatch && matchingPlacementInstance.set === pick.set) {
+              if (setAndPositionMatch && matchingPlacementInstance.setnum === pick.setnum) {
+                // Correct song, set, setnum, and placement
+                pickScore = 10;
+                resultString = 'correct_song_set_setnum_openercloserencore';
+              } else {
+                // Correct song, set, and placement
+                pickScore = 7;
+                resultString = 'correct_song_set_openercloserencore';
+              }
+            } else if (pickScore <= 2) {
+              // Only the song and placement are correct (no set match)
+              pickScore = 5;
+              resultString = 'correct_song_openercloserencore';
+            }
+          }
+        } else {
+          console.log(`Song was not played in the setlist`);
         }
-  
-        // Step 6: Handle show closer bonus
-        // Get the user's last pick
+        
+        // Add to total score
+        totalScore += pickScore;
+        console.log(`Score for this pick: ${pickScore}, result: ${resultString}`);
+        
+        // Update the pick's score and result
+        await supabase
+          .from('setlist_game_picks')
+          .update({ score: pickScore, result: resultString })
+          .eq('pick_id', pick.pick_id);
+      }
+
+        // Step 6a: Handle show opener bonus - NEW CODE
+        const { data: firstPickData, error: firstPickError } = await supabase
+          .from('setlist_game_picks')
+          .select('pick_id, song, set, setnum, placement, score, result')
+          .eq('submission_id', submission.submission_id)
+          .order('set', { ascending: true })
+          .order('setnum', { ascending: true })
+          .limit(1);
+
+        if (firstPickError) {
+          console.error('Error getting first pick:', firstPickError);
+        } else if (firstPickData && firstPickData.length > 0 && actualSetlistData && actualSetlistData.length > 0) {
+          // Get the first song of the actual setlist
+          const actualFirstSong = actualSetlistData[0];
+          
+          console.log(`User's first pick: ${firstPickData[0].song}, first song of show: ${actualFirstSong.entry_song}`);
+
+          // Check if first pick matches actual first song
+          const isShowOpenerCorrect = firstPickData[0].song === actualFirstSong.entry_song;
+
+          if (isShowOpenerCorrect) {
+            console.log(`User correctly picked the show opener`);
+            
+            // Add show opener bonus to both pick and total score
+            const currentPickScore = firstPickData[0].score || 0;
+            const showopenerBonus = 3;
+            const newPickScore = currentPickScore + showopenerBonus;
+            
+            console.log(`Adding +${showopenerBonus} points to ${firstPickData[0].song} (from ${currentPickScore} to ${newPickScore})`);
+            
+            totalScore += showopenerBonus;
+            
+            // Update the pick with new score and set showopener_correct to TRUE
+            await supabase
+              .from('setlist_game_picks')
+              .update({ 
+                score: newPickScore,
+                showopener_correct: true
+              })
+              .eq('pick_id', firstPickData[0].pick_id);
+          }
+        }
+
+        // Step 6b: Handle show closer bonus - EXISTING CODE
         const { data: lastPickData, error: lastPickError } = await supabase
           .from('setlist_game_picks')
           .select('pick_id, song, set, setnum, placement, score, result')
@@ -548,14 +599,16 @@ export function SetlistGame() {
           .order('set', { ascending: false })
           .order('setnum', { ascending: false })
           .limit(1);
-  
+
         if (lastPickError) {
           console.error('Error getting last pick:', lastPickError);
         } else if (lastPickData && lastPickData.length > 0 && actualLastSong) {
           console.log(`User's last pick: ${lastPickData[0].song}, last song of show: ${actualLastSong.entry_song}`);
-          
+
           // Check if last pick matches actual last song
-          if (lastPickData[0].song === actualLastSong.entry_song) {
+          const isShowCloserCorrect = lastPickData[0].song === actualLastSong.entry_song;
+
+          if (isShowCloserCorrect) {
             console.log(`User correctly picked the show closer`);
             
             // Add show closer bonus to both pick and total score
@@ -567,17 +620,17 @@ export function SetlistGame() {
             
             totalScore += showcloserBonus;
             
-            // Update the pick with new result and score
+            // Update the pick with new score and set showcloser_correct to TRUE
             await supabase
               .from('setlist_game_picks')
               .update({ 
                 score: newPickScore,
-                result: 'correct_song_showcloser'
+                showcloser_correct: true
               })
               .eq('pick_id', lastPickData[0].pick_id);
           }
         }
-  
+
         // Step 7: Apply penalty for excess picks
         if (submission.total_songs_picked > totalSongsPlayed) {
           const excessSongs = submission.total_songs_picked - totalSongsPlayed;
@@ -587,10 +640,10 @@ export function SetlistGame() {
           
           totalScore -= penalty;
         }
-  
+
         // Step 8: Update submission's total score
         console.log(`Final score for submission: ${totalScore} points`);
-        
+
         await supabase
           .from('setlist_game_submissions')
           .update({ score: totalScore })
@@ -621,7 +674,7 @@ export function SetlistGame() {
   
     } catch (error) {
       console.error('Error scoring submissions:', error);
-      alert('Failed to score submissions. Please try again.');
+      setScoringError(error?.message || 'Failed to score submissions. Please try again.');
     } finally {
       setIsScoring(false);
     }
@@ -994,6 +1047,11 @@ export function SetlistGame() {
             {scoringComplete ? (
               <div className="bg-green-500/20 text-green-300 px-4 py-3 rounded-lg mb-4">
                 Scoring completed successfully!
+              </div>
+            ) : scoringError ? (
+              <div className="bg-red-500/20 text-red-300 px-4 py-3 rounded-lg mb-4">
+                <p className="font-semibold">Error occurred:</p>
+                <p>{scoringError}</p>
               </div>
             ) : (
               <>
