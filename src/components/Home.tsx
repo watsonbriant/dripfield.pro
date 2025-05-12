@@ -7,6 +7,7 @@ import coverImage from '../img/Cover.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBluesky } from '@fortawesome/free-brands-svg-icons';
 import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
+import gooseGif from '../img/Goose.gif';
 
 interface Show {
   show_date: string;
@@ -818,12 +819,17 @@ export function Home() {
                           }}
                           onMouseLeave={() => setHoveredLocation(null)}
                         >
-                          <button
-                            onClick={() => navigateToVenue(show)}
-                            className="hover:text-white hover:underline transition-colors"
-                          >
-                            {show.venue_location}
-                          </button>
+                          <div className="flex items-center justify-between">
+                            <button
+                              onClick={() => navigateToVenue(show)}
+                              className="hover:text-white hover:underline transition-colors"
+                            >
+                              {show.venue_location}
+                            </button>
+                            {show.show_group === 'Goose' && (
+                              <img src={gooseGif} alt="Goose" className="h-4 w-4 ml-2" />
+                            )}
+                          </div>
                           {hoveredLocation === show.show_id && (
                             <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg whitespace-nowrap z-[9999]"
                               style={{
@@ -954,12 +960,17 @@ export function Home() {
                           }}
                           onMouseLeave={() => setHoveredLocation(null)}
                         >
-                          <button
-                            onClick={() => navigateToVenue(show)}
-                            className="hover:text-white hover:underline transition-colors"
-                          >
-                            {show.venue_location}
-                          </button>
+                          <div className="flex items-center justify-between">
+                            <button
+                              onClick={() => navigateToVenue(show)}
+                              className="hover:text-white hover:underline transition-colors"
+                            >
+                              {show.venue_location}
+                            </button>
+                            {show.show_group === 'Goose' && (
+                              <img src={gooseGif} alt="Goose" className="h-4 w-4 ml-2" />
+                            )}
+                          </div>
                           {hoveredLocation === show.show_id && (
                             <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg whitespace-nowrap z-[9999]"
                               style={{
@@ -1046,12 +1057,17 @@ export function Home() {
                           }}
                           onMouseLeave={() => setHoveredLocation(null)}
                         >
-                          <button
-                            onClick={() => navigateToVenue(show)}
-                            className="hover:text-white hover:underline transition-colors"
-                          >
-                            {show.venue_location}
-                          </button>
+                          <div className="flex items-center justify-between">
+                            <button
+                              onClick={() => navigateToVenue(show)}
+                              className="hover:text-white hover:underline transition-colors"
+                            >
+                              {show.venue_location}
+                            </button>
+                            {show.show_group === 'Goose' && (
+                              <img src={gooseGif} alt="Goose" className="h-4 w-4 ml-2" />
+                            )}
+                          </div>
                           {hoveredLocation === show.show_id && (
                             <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg whitespace-nowrap z-[9999]"
                               style={{
