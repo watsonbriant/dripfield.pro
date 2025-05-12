@@ -290,8 +290,9 @@ export function SetlistGameShowPage() {
           // Count correctly picked sets
           const setsPicked = userPicks.filter(pick =>
             pick.result === 'correct_song_set' ||
-            pick.result === 'correct_song_set_num' ||
-            pick.result === 'correct_song_set_openercloser'
+            pick.result === 'correct_song_set_setnum' ||
+            pick.result === 'correct_song_set_openercloserencore' ||
+            pick.result === 'correct_song_set_setnum_openercloserencore'
           ).length;
 
           // Check if show closer was picked - UPDATED to use showcloser_correct field

@@ -148,8 +148,9 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
           
           // Count sets picked correctly
           if (pick.result === 'correct_song_set' || 
-              pick.result === 'correct_song_set_num' || 
-              pick.result === 'correct_song_set_openercloser') {
+              pick.result === 'correct_song_set_setnum' || 
+              pick.result === 'correct_song_set_openercloserencore' || 
+              pick.result === 'correct_song_set_setnum_openercloserencore') {
             userStats[userId].setsPicked += 1;
           }
           
