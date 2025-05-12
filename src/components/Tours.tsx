@@ -457,6 +457,8 @@ export function Tours() {
           .select(`
             show_id,
             show_date,
+            show_canonid,
+            show_group,
             setlist_entries (
               entry_placement,
               entry_song,
@@ -464,7 +466,9 @@ export function Tours() {
             )
           `)
           .eq('show_tour', currentTour)
-          .order('show_date');
+          .order('show_date', { ascending: true })
+          .order('show_canonid', { ascending: true, nullsFirst: true })
+          .order('show_group', { ascending: true });
           
         // Wait for all data to be fetched
         const [showsResult, placementsResult, slotsResult] = await Promise.all([
