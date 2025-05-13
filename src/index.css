@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Hero';
+  src: url('./src/fonts/Hero.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mohr';
+  src: url('./src/fonts/Mohr.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Base link styles */
 a:not(.no-underline):hover,
 .table-link:hover {
@@ -26,4 +42,33 @@ html {
   html {
     font-size: 15px;
   }
+}
+
+/* Sparkle animation */
+@keyframes sparkle {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  20% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.sparkle {
+  position: absolute;
+  pointer-events: none;
+  width: 20px;
+  height: 20px;
+  animation: sparkle 0.5s forwards;
+  z-index: 10;
 }

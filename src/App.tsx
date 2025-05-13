@@ -30,6 +30,8 @@ import { UserMenu } from './components/UserMenu';
 import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 
+import logo from './img/Logo_Text.png';
+
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
@@ -132,24 +134,37 @@ function App() {
 
   return (
     <div className="flex flex-col md:h-screen bg-canvas">
-      {/* Header - Only shown on desktop */}
-      <header className="z-20 bg-primary border-b border-white/10 p-4 md:sticky md:top-0 hidden md:block">
-        <div className="relative flex items-center justify-center">
-          <button
-            onClick={handleLogoClick}
-            className="focus:outline-none"
-          >
-            <img 
-              src="../src/img/MoonCabin_Logo.jpg" 
-              alt="MoonCabin Logo" 
-              className="h-10 w-auto"
-            />
-          </button>
-          <div className="absolute right-0 flex items-center">
-            <UserMenu />
+      {/* Header with integrated navigation - Only shown on desktop */}
+      <div className="hidden lg:block">
+        <header className="z-20 bg-primary border-b border-white/10 p-4 md:sticky md:top-0">
+          <div className="flex items-center">
+            <button
+              onClick={handleLogoClick}
+              className="focus:outline-none mr-4"
+            >
+              <img 
+                src={logo} 
+                alt="Dripfield.pro Logo" 
+                className="h-12 w-auto"
+              />
+            </button>
+            <div className="flex-1 flex justify-center">
+              <Sidebar 
+                onNavigate={() => setIsSidebarOpen(false)}
+                openShowModal={openShowModal}
+                isAdmin={isAdmin}
+                isOpen={true}
+                onClose={() => {}}
+                isMobile={false}
+                showAllOnSameLine={true} // New prop to control layout
+              />
+            </div>
+            <div className="ml-4">
+              <UserMenu />
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
 
       {/* Content container */}
       <div className="flex-1 flex md:overflow-hidden">
@@ -161,10 +176,10 @@ function App() {
           />
         )}
 
-        {/* Sidebar - ensure it's above the overlay */}
+        {/* Mobile Sidebar - ensure it's above the overlay */}
         <div className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 fixed md:static w-64 h-[calc(100%)] top-[50px] md:top-0 z-30 transition-transform duration-300 ease-in-out`}>
+        } lg:hidden fixed w-64 h-[calc(100%)] top-[50px] z-30 transition-transform duration-300 ease-in-out`}>
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)} 
             openShowModal={openShowModal}
@@ -178,7 +193,7 @@ function App() {
         {/* Main content wrapper */}
         <div className="flex-1 flex flex-col min-h-screen md:min-h-0 overflow-auto">
           {/* Mobile-only header */}
-          <header className="z-20 bg-primary border-b border-white/10 p-4 md:hidden">
+          <header className="z-20 bg-primary border-b border-white/10 p-4 lg:hidden">
             <div className="relative flex items-center justify-center">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -191,8 +206,8 @@ function App() {
                 className="focus:outline-none"
               >
                 <img 
-                  src="../src/img/MoonCabin_Logo.jpg" 
-                  alt="MoonCabin Logo" 
+                  src={logo} 
+                  alt="Dripfield.pro Logo" 
                   className="h-8 w-auto"
                 />
               </button>

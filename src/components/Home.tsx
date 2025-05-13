@@ -727,7 +727,7 @@ export function Home() {
           </h1>
           
           <h4 className="text-sm font-semibold text-[#ffffff] mt-1">
-            testingA Setlist Archive for Goose the Band
+            A Setlist Archive for Goose the Band
           </h4>
         </div>
         
