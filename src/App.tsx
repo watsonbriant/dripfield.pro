@@ -1,6 +1,6 @@
 import { useAuth } from './context/AuthContext';
 import { supabase } from './lib/supabase';
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { Home } from './components/Home';
@@ -40,6 +40,41 @@ function App() {
   const { user } = useAuth();
   const [username, setUsername] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  
+  // Add sparkle state
+  const [logoSparkle, setLogoSparkle] = useState({ show: false, x: 0, y: 0 });
+  const sparkleTimeoutRef = useRef<number | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // Add this useEffect to detect mobile screens
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (sparkleTimeoutRef.current) {
+        window.clearTimeout(sparkleTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (sparkleTimeoutRef.current) {
+        window.clearTimeout(sparkleTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Check if user is admin
   useEffect(() => {
@@ -114,7 +149,27 @@ function App() {
     };
   }, [isSidebarOpen]);
 
-  const handleLogoClick = () => {
+  const handleLogoClick = (e: React.MouseEvent) => {
+    // Only show sparkle on non-mobile
+    if (!isMobile) {
+      // Get click position relative to the button
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Show sparkle
+      setLogoSparkle({ show: true, x, y });
+      
+      // Hide sparkle after animation completes
+      if (sparkleTimeoutRef.current) {
+        window.clearTimeout(sparkleTimeoutRef.current);
+      }
+      
+      sparkleTimeoutRef.current = window.setTimeout(() => {
+        setLogoSparkle({ show: false, x: 0, y: 0 });
+      }, 500); // Animation duration
+    }
+  
     navigate('/');
   };
 
@@ -136,18 +191,30 @@ function App() {
     <div className="flex flex-col md:h-screen bg-canvas">
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
-        <header className="z-20 bg-primary border-b border-white/10 p-4 md:sticky md:top-0">
+        <header className="z-20 bg-primary border-b border-black/15 px-6 py-1 md:sticky md:top-0">
           <div className="flex items-center">
-            <button
-              onClick={handleLogoClick}
-              className="focus:outline-none mr-4"
-            >
+          <button
+            onClick={handleLogoClick}
+            className="focus:outline-none mr-4 relative"
+          >
+            <img 
+              src={logo} 
+              alt="Dripfield.pro Logo" 
+              className="h-12 w-auto"
+            />
+            {/* Sparkle effect for logo - only on desktop */}
+            {logoSparkle.show && !isMobile && (
               <img 
-                src={logo} 
-                alt="Dripfield.pro Logo" 
-                className="h-12 w-auto"
+                src="/src/img/sparkle.png"
+                alt=""
+                className="sparkle absolute pointer-events-none"
+                style={{
+                  left: `${logoSparkle.x - 10}px`,
+                  top: `${logoSparkle.y - 10}px`,
+                }}
               />
-            </button>
+            )}
+          </button>
             <div className="flex-1 flex justify-center">
               <Sidebar 
                 onNavigate={() => setIsSidebarOpen(false)}
@@ -197,19 +264,20 @@ function App() {
             <div className="relative flex items-center justify-center">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute left-0 p-2 rounded-lg text-white/90 hover:bg-white/10 transition-colors"
+                className="absolute left-0 p-2 rounded-md bg-[#f9ae37] hover:bg-tertiary text-black transition-colors border border-black"
               >
                 <Menu className="w-6 h-6" />
               </button>
               <button
                 onClick={handleLogoClick}
-                className="focus:outline-none"
+                className="focus:outline-none relative"
               >
                 <img 
                   src={logo} 
                   alt="Dripfield.pro Logo" 
                   className="h-8 w-auto"
                 />
+                {/* No sparkle effect on mobile */}
               </button>
               <div className="absolute right-0">
                 <UserMenu />

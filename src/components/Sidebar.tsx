@@ -15,6 +15,7 @@ import navSubmit from '../img/Nav_Submit.png';
 import navAdmin from '../img/Nav_Admin.png';
 import navBug from '../img/Nav_Bug.png';
 import navFindShow from '../img/Nav_FindShow.png';
+import navHome from '../img/Nav_Home.png';
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -157,7 +158,13 @@ export function Sidebar({
 
   // Navigation items including admin-only options
   const navigation: NavItem[] = [
-    { name: 'Home', icon: <Home className="w-5 h-5" />, path: '/', mobileOnly: true },
+    { 
+      name: 'Home', 
+      icon: <Home className="w-5 h-5" />, 
+      desktopIcon: <img src={navHome} alt="Years" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      path: '/',
+      mobileOnly: true 
+    },
     { 
       name: 'Years', 
       icon: <Calendar className="w-5 h-5" />, 
@@ -240,8 +247,8 @@ export function Sidebar({
   // For mobile: vertical sidebar
   if (isMobile) {
     return (
-      <div className="flex flex-col h-full bg-primary border-r border-white/10 w-full">
-        <nav className="flex-1 px-2 overflow-y-auto bg-[#172330]">
+      <div className="flex flex-col h-full bg-primary border-r border-tertiary/10 w-full">
+        <nav className="flex-1 px-2 py-2 overflow-y-auto">
           {filteredNavigation.map((item) => (
             <div
               key={item.name}
@@ -255,22 +262,29 @@ export function Sidebar({
                     handleNavigation(item.path);
                   }
                 }}
-                className={`flex items-center px-3 py-2 text-sm font-medium text-[#ffffff]/90 rounded-md hover:bg-white/10 transition-colors ${
+                className={`flex items-center px-3 rounded-md hover:bg-white/10 transition-colors ${
                   (item.path === '/' ? location.pathname === '/' : location.pathname.startsWith(item.path)) ? 'bg-white/10' : ''
-                } my-1 w-full text-left`}
+                } my-1 w-full relative`}
+                aria-label={item.name}
               >
-                <div className="text-[#b27139]">{item.icon}</div>
-                <span className="ml-3 flex-1">{item.name}</span>
-                {item.badge !== undefined && item.badge !== null && item.badge > 0 && (
-                  <span className="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white min-w-[20px] text-center">
-                    {item.badge > 99 ? '99+' : item.badge}
-                  </span>
-                )}
-                {item.newBadge && (
-                  <span className="ml-2 px-2 py-0.5 text-xs font-semibold rounded-md bg-tertiary text-white">
-                    New
-                  </span>
-                )}
+                <div className="relative">
+                  {/* Use desktop icon (image) if available, fallback to icon */}
+                  {item.desktopIcon || (
+                    <div className="text-[#b27139]">{item.icon}</div>
+                  )}
+                  
+                  {/* Badges positioned relative to the icon */}
+                  {item.badge !== undefined && item.badge !== null && item.badge > 0 && (
+                    <span className="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white min-w-[20px] text-center">
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </span>
+                  )}
+                  {item.newBadge && (
+                    <span className="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs font-semibold rounded-md bg-tertiary text-white">
+                      New
+                    </span>
+                  )}
+                </div>
               </button>
             </div>
           ))}

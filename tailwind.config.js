@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter var', 'system-ui', 'sans-serif'],
-        hero: ['Hero', 'Inter var', 'system-ui', 'sans-serif'],
-        mohr: ['Mohr', 'Inter var', 'system-ui', 'sans-serif'],
+        sans: ['SF Pro', 'Inter', 'system-ui', 'sans-serif'],
+        hero: ['Hero', 'SF Pro', 'Inter', 'system-ui', 'sans-serif'],
+        mohr: ['Mohr', 'SF Pro', 'Inter', 'system-ui', 'sans-serif'],
       },
       fontFeatureSettings: {
         numeric: '"tnum" 1',
@@ -15,11 +15,11 @@ export default {
         primary: '#fae2c6',
         secondary: '#7fc3b6',
         tertiary: '#8e6c7a',
-        canvas: '#101c26',
+        canvas: '#f7d8b4',
         'surface-primary': '#FFFFFF',
         'surface-secondary': '#FFFFFF',
-        'border-primary': '#E5E7EB',
-        'border-secondary': '#fce7ca',
+        'border-primary': '#000000',
+        'border-secondary': '#4e4e4e',
       },
     },
   },

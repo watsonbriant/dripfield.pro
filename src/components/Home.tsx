@@ -4,10 +4,9 @@ import { formatInTimeZone } from 'date-fns-tz';
 import SetlistDisplay from './SetlistDisplay';
 import { useNavigate } from 'react-router-dom';
 import coverImage from '../img/Cover.jpg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBluesky } from '@fortawesome/free-brands-svg-icons';
-import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
 import gooseGif from '../img/Goose.gif';
+import fullLogo from '../img/Logo_Full_Transparent.png';
+import textLogo from '../img/Logo_Text.png'
 
 interface Show {
   show_date: string;
@@ -66,6 +65,12 @@ interface Encore {
   times_played: number;
 }
 
+interface NotPlayedSong {
+  song: string;
+  song_id: string;
+  play_count: number;
+}
+
 export function Home() {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -91,6 +96,8 @@ export function Home() {
   const [loadingSetClosers, setLoadingSetClosers] = useState(true);
   const [encores, setEncores] = useState<Encore[]>([]);
   const [loadingEncores, setLoadingEncores] = useState(true);
+  const [notPlayedSongs, setNotPlayedSongs] = useState<NotPlayedSong[]>([]);
+  const [loadingNotPlayed, setLoadingNotPlayed] = useState(true);
 
   useEffect(() => {
     const testConnection = async () => {
@@ -105,6 +112,7 @@ export function Home() {
   }, []);
 
   useEffect(() => {
+    // For the fetchRecentShows function
     async function fetchRecentShows() {
       try {
         const now = new Date();
@@ -128,10 +136,9 @@ export function Home() {
             )
           `)
           .lte('show_date', alaskaDate)
-          .order('show_date', { ascending: false })
+          .order('show_date', { ascending: false })  // Keep this initial sorting for database query
           .order('show_canonid', { ascending: false, nullsFirst: false })
           .order('show_group', { ascending: true })
-          .order('show_id', { ascending: true })
           .limit(6);
 
         if (error) throw error;
@@ -153,11 +160,33 @@ export function Home() {
             show_tour: show.show_tour || '',
             show_detail: show.show_detail,
             subvenue_venue: show.show_subvenue_venue || '',
-            venue_id: show.subvenues?.venues?.venue_id
-          }))
-          .sort((a, b) => new Date(a.show_date).getTime() - new Date(b.show_date).getTime());
+            venue_id: show.subvenues?.venues?.venue_id,
+            show_canonid: show.show_canonid
+          }));
 
-        setRecentShows(processedShows || []);
+        // Sort using the same logic as in Years component, but chronological (oldest to newest)
+        const sortedShows = [...processedShows].sort((a, b) => {
+          // Primary sort by show_date - chronological (oldest to newest)
+          const dateA = new Date(a.show_date).getTime();
+          const dateB = new Date(b.show_date).getTime();
+          if (dateA !== dateB) {
+            return dateA - dateB; // Ascending order for dates (oldest first)
+          }
+          
+          // Secondary sort by show_canonid (handle nulls appropriately)
+          const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
+          const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
+          if (canonIdA !== canonIdB) {
+            return canonIdA - canonIdB; // Ascending for canon IDs
+          }
+          
+          // Tertiary sort by show_group
+          const groupA = a.show_group || '';
+          const groupB = b.show_group || '';
+          return groupA.localeCompare(groupB);
+        });
+
+        setRecentShows(sortedShows || []);
       } catch (error) {
         // Error silently handled
       } finally {
@@ -165,6 +194,7 @@ export function Home() {
       }
     }
 
+    // For the fetchUpcomingShows function
     async function fetchUpcomingShows() {
       try {
         const now = new Date();
@@ -189,6 +219,8 @@ export function Home() {
           `)
           .gt('show_date', alaskaDate)
           .order('show_date', { ascending: true })
+          .order('show_canonid', { ascending: true, nullsFirst: true })
+          .order('show_group', { ascending: true })
           .limit(5);
 
         if (error) throw error;
@@ -207,10 +239,33 @@ export function Home() {
           show_tour: show.show_tour || '',
           show_detail: show.show_detail,
           subvenue_venue: show.show_subvenue_venue || '',
-          venue_id: show.subvenues?.venues?.venue_id
+          venue_id: show.subvenues?.venues?.venue_id,
+          show_canonid: show.show_canonid
         }));
 
-        setUpcomingShows(processedShows || []);
+        // Sort using the same logic as in Years component
+        const sortedShows = [...processedShows].sort((a, b) => {
+          // Primary sort by show_date
+          const dateA = new Date(a.show_date).getTime();
+          const dateB = new Date(b.show_date).getTime();
+          if (dateA !== dateB) {
+            return dateA - dateB; // Ascending for upcoming shows
+          }
+          
+          // Secondary sort by show_canonid (handle nulls appropriately)
+          const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
+          const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
+          if (canonIdA !== canonIdB) {
+            return canonIdA - canonIdB; // Ascending for upcoming shows
+          }
+          
+          // Tertiary sort by show_group
+          const groupA = a.show_group || '';
+          const groupB = b.show_group || '';
+          return groupA.localeCompare(groupB);
+        });
+
+        setUpcomingShows(sortedShows || []);
       } catch (error) {
         console.error('Error fetching upcoming shows:', error);
       } finally {
@@ -218,6 +273,7 @@ export function Home() {
       }
     }
 
+    // For the fetchMostRecentShow function
     async function fetchMostRecentShow() {
       try {
         const now = new Date();
@@ -242,10 +298,9 @@ export function Home() {
             )
           `)
           .lte('show_date', alaskaDate)
-          .order('show_date', { ascending: false })
-          .order('show_canonid', { ascending: false, nullsFirst: false })
-          .order('show_group', { ascending: true })
-          .order('show_id', { ascending: true })
+          .order('show_date', { ascending: false })  // Most recent date first
+          .order('show_canonid', { ascending: false, nullsFirst: false })  // Highest canon ID first
+          .order('show_group', { ascending: true })  // Group alphabetically
           .limit(1)
           .single();
 
@@ -267,14 +322,49 @@ export function Home() {
             show_detail: data.show_detail,
             show_iscanon: data.show_iscanon,
             subvenue_venue: data.show_subvenue_venue,
-            venue_id: data.subvenues?.venues?.venue_id
+            venue_id: data.subvenues?.venues?.venue_id,
+            show_canonid: data.show_canonid
           });
+          
+          // Now fetch the setlist for this most recent show
           fetchSetlist(data.show_id);
         }
       } catch (error) {
         console.error('Error fetching most recent show:', error);
       } finally {
         setLoadingMostRecent(false);
+      }
+    }
+
+    // For the fetchSetlist function
+    async function fetchSetlist(showId: string) {
+      try {
+        const { data, error } = await supabase
+          .from('setlist_entries')
+          .select(`
+            entry_song,
+            entry_short,
+            entry_segue,
+            entry_placement,
+            entry_setorder,
+            entry_set,
+            entry_setnum,
+            songs!inner(song_id)
+          `)
+          .eq('entry_show', showId)
+          .order('entry_set', { ascending: true })
+          .order('entry_setnum', { ascending: true })
+          .order('entry_setorder', { ascending: true });
+
+        if (error) throw error;
+
+        // Since setlists should always be in chronological order (as the show progressed),
+        // we'll keep this ascending sorting which is already correct
+        setSetlist(data || []);
+      } catch (error) {
+        console.error('Error fetching setlist:', error);
+      } finally {
+        setLoadingSetlist(false);
       }
     }
 
@@ -307,18 +397,20 @@ export function Home() {
       }
     }
 
+    // For the fetchHistoricalShows function too
     async function fetchHistoricalShows() {
       try {
         const now = new Date();
         const month = formatInTimeZone(now, 'America/Anchorage', 'MM');
         const day = formatInTimeZone(now, 'America/Anchorage', 'dd');
         const todayMMDD = `${month}-${day}`;
-    
+
         const { data, error } = await supabase
           .from('shows')
           .select(`
             show_date,
             show_id,
+            show_canonid,
             show_venue_location,
             show_subvenue,
             show_group,
@@ -332,10 +424,12 @@ export function Home() {
             )
           `)
           .eq('show_day', todayMMDD)
-          .order('show_date', { ascending: true });
-    
+          .order('show_date', { ascending: true })
+          .order('show_canonid', { ascending: true, nullsFirst: true })
+          .order('show_group', { ascending: true });
+
         if (error) throw error;
-    
+
         const processedShows = data?.map(show => ({
           show_id: show.show_id,
           show_date: show.show_date,
@@ -350,10 +444,33 @@ export function Home() {
           show_tour: show.show_tour || '',
           show_detail: show.show_detail,
           subvenue_venue: show.show_subvenue_venue || '',
-          venue_id: show.subvenues?.venues?.venue_id
+          venue_id: show.subvenues?.venues?.venue_id,
+          show_canonid: show.show_canonid
         }));
-    
-        setHistoricalShows(processedShows || []);
+
+        // Sort using the same logic as in Years component
+        const sortedShows = [...processedShows].sort((a, b) => {
+          // Primary sort by show_date
+          const dateA = new Date(a.show_date).getTime();
+          const dateB = new Date(b.show_date).getTime();
+          if (dateA !== dateB) {
+            return dateA - dateB; // Ascending for historical shows
+          }
+          
+          // Secondary sort by show_canonid (handle nulls appropriately)
+          const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
+          const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
+          if (canonIdA !== canonIdB) {
+            return canonIdA - canonIdB; // Ascending for historical shows
+          }
+          
+          // Tertiary sort by show_group
+          const groupA = a.show_group || '';
+          const groupB = b.show_group || '';
+          return groupA.localeCompare(groupB);
+        });
+
+        setHistoricalShows(sortedShows || []);
       } catch (error) {
         console.error('Error fetching historical shows:', error);
       } finally {
@@ -675,6 +792,108 @@ export function Home() {
       }
     }
 
+    // Add this new fetch function after the other fetch functions
+    async function fetchNotPlayedSongs() {
+      try {
+        const currentYear = new Date().getFullYear();
+        
+        // First, get all songs played in 2025
+        const { data: playedIn2025Data, error: playedError } = await supabase
+          .from('setlist_entries')
+          .select(`
+            songs!inner(song_id),
+            shows!inner(
+              show_date,
+              show_group,
+              show_canonid
+            )
+          `)
+          .gte('shows.show_date', `${currentYear}-01-01`)
+          .lte('shows.show_date', `${currentYear}-12-31`)
+          .eq('shows.show_group', 'Goose')
+          .not('shows.show_canonid', 'is', null);
+
+        if (playedError) throw playedError;
+
+        // Create a Set of song IDs played in 2025
+        const songsPlayedIn2025 = new Set(
+          playedIn2025Data.map((entry: any) => entry.songs.song_id)
+        );
+
+        // Now get all songs from canonical Goose shows all-time
+        const { data: allTimeData, error: allTimeError } = await supabase
+          .from('setlist_entries')
+          .select(`
+            entry_song,
+            songs!inner(
+              song_id,
+              song_category,
+              categories!inner(
+                category_canonid
+              )
+            ),
+            entry_show,
+            shows!inner(
+              show_date,
+              show_group,
+              show_canonid
+            )
+          `)
+          .eq('shows.show_group', 'Goose')
+          .not('shows.show_canonid', 'is', null);
+
+        if (allTimeError) throw allTimeError;
+
+        // Count overall song frequency by unique shows
+        const songShowCounts = allTimeData.reduce((acc: { [key: string]: any }, entry: any) => {
+          const songId = entry.songs.song_id;
+          const showId = entry.entry_show;
+          const uniqueKey = `${songId}-${showId}`;
+
+          if (!acc[songId]) {
+            acc[songId] = {
+              song: entry.entry_song,
+              song_id: songId,
+              shows: new Set([showId]),
+              category_canonid: entry.songs.categories.category_canonid
+            };
+          } else {
+            acc[songId].shows.add(showId);
+          }
+          return acc;
+        }, {});
+
+        // Filter to only songs NOT played in 2025
+        const notPlayedSongs = Object.values(songShowCounts)
+          .filter((item: any) => !songsPlayedIn2025.has(item.song_id))
+          .map((item: any) => ({
+            song: item.song,
+            song_id: item.song_id,
+            play_count: item.shows.size,
+            category_canonid: item.category_canonid
+          }))
+          .sort((a: any, b: any) => {
+            // Sort by play count (descending)
+            if (b.play_count !== a.play_count) {
+              return b.play_count - a.play_count;
+            }
+            // Then by category (ascending)
+            if (a.category_canonid !== b.category_canonid) {
+              return a.category_canonid - b.category_canonid;
+            }
+            // Then alphabetically
+            return a.song.localeCompare(b.song);
+          })
+          .slice(0, 8); // Get top 8
+
+        setNotPlayedSongs(notPlayedSongs);
+      } catch (error) {
+        console.error('Error fetching not played songs:', error);
+      } finally {
+        setLoadingNotPlayed(false);
+      }
+    }
+
     fetchMostRecentShow();
     fetchRecentShows();
     fetchUpcomingShows();
@@ -684,6 +903,7 @@ export function Home() {
     fetchSetOpeners();
     fetchSetClosers();
     fetchEncores();
+    fetchNotPlayedSongs();
   }, []);
 
   // Helper function to navigate to venue page
@@ -697,67 +917,35 @@ export function Home() {
   };
 
   return (
-    <div className="max-w-[800px] mx-auto">
+    <div className="max-w-[1200px] mx-auto">
       {!isSupabaseConfigured() && (
         <div className="bg-primary border border-white/10 rounded-lg p-4 mb-6">
-          <p className="text-[#fce7ca]/90">
+          <p className="text-black">
             Please connect to Supabase using the button in the top right to view setlist data.
           </p>
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-6">
-        <a 
-          href="https://bsky.app/profile/dripfieldpro.bsky.social" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="ml-2"
-        >
-          <FontAwesomeIcon 
-            icon={faBluesky} 
-            size="2x" 
-            style={{ color: '#ffffff' }} 
-          />
-        </a>
-        
-        <div className="text-center flex-grow">
-          <h1 className="text-3xl font-bold text-[#ffffff]">
-            <span className="hidden md:inline">Welcome to </span>
-            Dripfield.pro<span className="hidden md:inline">!</span>
-          </h1>
+      <div className="flex flex-col lg:flex-row">
+        {/* Left Column - adjust width based on image aspect ratio */}
+        <div className="w-full lg:w-[43%] space-y-6 mr-6">
+          {/* Logo container with natural height on mobile, fixed on desktop */}
+          <div className="h-auto md:h-[320px] overflow-hidden rounded-lg flex items-center justify-center">
+            <img 
+              src={fullLogo} 
+              alt="Dripfield.pro logo" 
+              className="hidden md:block h-full w-auto object-contain"
+            />
+            <img 
+              src={textLogo} 
+              alt="Dripfield.pro logo" 
+              className="block md:hidden h-auto w-auto"
+            />
+          </div>
           
-          <h4 className="text-sm font-semibold text-[#ffffff] mt-1">
-            A Setlist Archive for Goose the Band
-          </h4>
-        </div>
-        
-        <a 
-          href="https://x.com/dripfieldpro" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="mr-2"
-        >
-          <FontAwesomeIcon 
-            icon={faXTwitter} 
-            size="2x" 
-            style={{ color: '#ffffff' }} 
-          />
-        </a>
-      </div>
-
-      <div className="mb-6">
-        <img 
-          src={coverImage} 
-          alt="Dripfield.pro banner" 
-          className="w-full max-w-4xl rounded-lg shadow-lg" 
-        />
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="w-full lg:w-1/2">
           {/* Last 5 Shows Table */}
-          <div className="mb-6 flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-3">
-            <h2 className="text-xl font-semibold text-white/90 mb-2">Last 5 Shows</h2>
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Last 5 Shows</h2>
             {loading ? (
               <div className="text-center py-12">
                 <p className="text-[#fce7ca]/70">Loading shows...</p>
@@ -766,9 +954,9 @@ export function Home() {
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Date</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Location</th>
+                    <tr className="bg-canvas border-y border-white/10">
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
@@ -776,11 +964,11 @@ export function Home() {
                       <tr
                         key={show.show_id}
                         className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
+                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                        } hover:bg-black/10 transition-colors text-xs`}
                       >
                         <td 
-                          className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap cursor-pointer relative"
+                          className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -792,12 +980,12 @@ export function Home() {
                         >
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-white transition-colors table-link"
+                            className="hover:text-[#a9682e] transition-colors table-link"
                           >
                             <span className="font-semibold">{show.formatted_show_date}</span>
                           </button>
                           {hoveredDate === show.show_id && (
-                            <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -809,7 +997,7 @@ export function Home() {
                           )}
                         </td>
                         <td 
-                          className="px-4 py-0.5 text-[#fce7ca]/90 relative cursor-pointer"
+                          className="px-4 py-0.5 text-black relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -822,16 +1010,25 @@ export function Home() {
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => navigateToVenue(show)}
-                              className="hover:text-white hover:underline transition-colors"
+                              className="hover:text-[#a9682e] hover:underline transition-colors"
                             >
                               {show.venue_location}
                             </button>
                             {show.show_group === 'Goose' && (
-                              <img src={gooseGif} alt="Goose" className="h-4 w-4 ml-2" />
+                              <div className="flex-shrink-0 ml-2">
+                                <img 
+                                  src={gooseGif} 
+                                  alt="Goose" 
+                                  className="h-4 w-4 filter drop-shadow-lg" 
+                                  style={{ 
+                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
+                                  }} 
+                                />
+                              </div>
                             )}
                           </div>
                           {hoveredLocation === show.show_id && (
-                            <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg whitespace-nowrap z-[9999]"
+                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -849,26 +1046,40 @@ export function Home() {
           </div>
           
           {/* Most Recent Show Section */}
-          <div className="mb-6 flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-3">
-            <h2 className="text-xl font-semibold text-white/90 mb-2">Most Recent Show</h2>
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Most Recent Show</h2>
+              {mostRecentShow && mostRecentShow.show_group === 'Goose' && (
+                <div className="flex-shrink-0">
+                  <img 
+                    src={gooseGif} 
+                    alt="Goose" 
+                    className="h-6 w-6 filter drop-shadow-lg" 
+                    style={{ 
+                      filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
+                    }} 
+                  />
+                </div>
+              )}
+            </div>
             {loadingMostRecent ? (
               <div className="text-center py-12">
                 <p className="text-[#fce7ca]/70">Loading show...</p>
               </div>
             ) : mostRecentShow ? (
               <div>
-                <div className="mb-2 text-lg text-[#fce7ca]">
+                <div className="mb-2 text-lg text-black">
                   <div className="text-base">
                     <button
                       onClick={() => navigate(`/setlist/${mostRecentShow.show_id}`)}
-                      className="hover:text-white hover:underline transition-colors"
+                      className="hover:text-[#a9682e] transition-colors table-link"
                     >
                       <strong>{mostRecentShow.formatted_show_date}</strong>
                     </button>
                     {" — "}
                     <button
                       onClick={() => navigateToVenue(mostRecentShow)}
-                      className="hover:text-white hover:underline transition-colors"
+                      className="hover:text-[#a9682e] transition-colors table-link"
                     >
                       <strong>{mostRecentShow.venue_location}</strong>
                     </button>
@@ -897,8 +1108,8 @@ export function Home() {
           </div>
           
           {/* Next 5 Shows Table */}
-          <div className="mb-6 flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-3">
-            <h2 className="text-xl font-semibold text-white/90 mb-2">Next 5 Shows</h2>
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Next 5 Shows</h2>
             {loadingUpcoming ? (
               <div className="text-center py-12">
                 <p className="text-[#fce7ca]/70">Loading shows...</p>
@@ -907,21 +1118,21 @@ export function Home() {
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Date</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Location</th>
-                    </tr>
+                  <tr className="bg-canvas border-y border-white/10">
+                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
+                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
+                  </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {upcomingShows.map((show, index) => (
                       <tr
                         key={show.show_id}
                         className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
+                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                        } hover:bg-black/10 transition-colors text-xs`}
                       >
                         <td 
-                          className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap cursor-pointer relative"
+                          className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -933,12 +1144,12 @@ export function Home() {
                         >
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-white transition-colors table-link"
+                            className="hover:text-[#a9682e] transition-colors table-link"
                           >
                             <span className="font-semibold">{show.formatted_show_date}</span>
                           </button>
                           {hoveredDate === show.show_id && (
-                            <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -950,7 +1161,7 @@ export function Home() {
                           )}
                         </td>
                         <td 
-                          className="px-4 py-0.5 text-[#fce7ca]/90 relative cursor-pointer"
+                          className="px-4 py-0.5 text-black relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -963,16 +1174,25 @@ export function Home() {
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => navigateToVenue(show)}
-                              className="hover:text-white hover:underline transition-colors"
+                              className="hover:text-[#a9682e] transition-colors table-link"
                             >
                               {show.venue_location}
                             </button>
                             {show.show_group === 'Goose' && (
-                              <img src={gooseGif} alt="Goose" className="h-4 w-4 ml-2" />
+                              <div className="flex-shrink-0 ml-2">
+                                <img 
+                                  src={gooseGif} 
+                                  alt="Goose" 
+                                  className="h-4 w-4 filter drop-shadow-lg" 
+                                  style={{ 
+                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
+                                  }} 
+                                />
+                              </div>
                             )}
                           </div>
                           {hoveredLocation === show.show_id && (
-                            <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg whitespace-nowrap z-[9999]"
+                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -990,8 +1210,8 @@ export function Home() {
           </div>
           
           {/* This Day in Goose History Table */}
-          <div className="flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-3">
-            <h2 className="text-xl font-semibold text-white/90 mb-2">This Day in Goose History</h2>
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">This Day in Goose History</h2>
             {loadingHistorical ? (
               <div className="text-center py-2 text-xs">
                 <p className="text-[#fce7ca]/70">Loading shows...</p>
@@ -1004,21 +1224,21 @@ export function Home() {
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Date</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Location</th>
-                    </tr>
+                  <tr className="bg-canvas border-y border-white/10">
+                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
+                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
+                  </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {historicalShows.map((show, index) => (
                       <tr
                         key={show.show_id}
                         className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
+                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                        } hover:bg-black/10 transition-colors text-xs`}
                       >
                         <td 
-                          className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap cursor-pointer relative"
+                          className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1030,12 +1250,12 @@ export function Home() {
                         >
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-white transition-colors table-link"
+                            className="hover:text-[#a9682e] transition-colors table-link"
                           >
                             <span className="font-semibold">{show.formatted_show_date}</span>
                           </button>
                           {hoveredDate === show.show_id && (
-                            <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -1047,7 +1267,7 @@ export function Home() {
                           )}
                         </td>
                         <td 
-                          className="px-4 py-0.5 text-[#fce7ca]/90 relative cursor-pointer"
+                          className="px-4 py-0.5 text-black relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1060,16 +1280,25 @@ export function Home() {
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => navigateToVenue(show)}
-                              className="hover:text-white hover:underline transition-colors"
+                              className="hover:text-[#a9682e] transition-colors table-link"
                             >
                               {show.venue_location}
                             </button>
                             {show.show_group === 'Goose' && (
-                              <img src={gooseGif} alt="Goose" className="h-4 w-4 ml-2" />
+                              <div className="flex-shrink-0 ml-2">
+                                <img 
+                                  src={gooseGif} 
+                                  alt="Goose" 
+                                  className="h-4 w-4 filter drop-shadow-lg" 
+                                  style={{ 
+                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
+                                  }} 
+                                />
+                              </div>
                             )}
                           </div>
                           {hoveredLocation === show.show_id && (
-                            <div className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1 rounded shadow-lg whitespace-nowrap z-[9999]"
+                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -1085,212 +1314,550 @@ export function Home() {
               </div>
             )}
           </div>
+        </div>
+        
+        {/* Right Column - adjust width based on image aspect ratio */}
+        <div className="w-full lg:w-[57%] space-y-6">
+          {/* Cover Image with fixed height - hidden on mobile */}
+          <div className="hidden md:block h-[320px] overflow-hidden rounded-lg">
+            <img 
+              src={coverImage} 
+              alt="Dripfield.pro banner" 
+              className="w-full h-full object-cover shadow-lg" 
+            />
           </div>
           
-          <div className="flex-1">
           {/* 2025 Stats Section */}
-          <div className="mb-6 flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-3">
-            <h2 className="text-xl font-semibold text-white/90 mb-2">2025 Stats</h2>
-            
-            <h3 className="text-lg font-semibold text-white/90 mb-3">Top Songs</h3>
-            {loadingTopSongs ? (
-              <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading stats...</p>
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">2025 Stats</h2>
+
+            {/* Desktop view - 2 columns, hidden on mobile */}
+            <div className="hidden md:grid md:grid-cols-2 gap-4">
+              {/* Left column for desktop */}
+              <div>
+                {/* Top Songs */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
+                  {loadingTopSongs ? (
+                    <div className="text-center py-6">
+                      <p className="text-[#fce7ca]/70">Loading stats...</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto relative">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-canvas border-y border-white/10">
+                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {topSongs.map((song, index) => (
+                            <tr
+                              key={song.song_id}
+                              className={`${
+                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
+                            >
+                              <td className="px-4 py-0.5 text-black">
+                                <button
+                                  onClick={() => navigate(`/song/${song.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {song.song}
+                                </button>
+                              </td>
+                              <td className="px-4 py-0.5 text-center text-black">
+                                {song.play_count}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Top Show Openers */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                  {loadingShowOpeners ? (
+                    <div className="text-center py-6">
+                      <p className="text-[#fce7ca]/70">Loading stats...</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto relative">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-canvas border-y border-white/10">
+                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {showOpeners.map((opener, index) => (
+                            <tr
+                              key={opener.song_id}
+                              className={`${
+                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
+                            >
+                              <td className="px-4 py-0.5 text-black">
+                                <button
+                                  onClick={() => navigate(`/song/${opener.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {opener.song_name}
+                                </button>
+                              </td>
+                              <td className="px-4 py-0.5 text-center text-black">
+                                {opener.times_played}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Top Set Closers */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                  {loadingSetClosers ? (
+                    <div className="text-center py-6">
+                      <p className="text-[#fce7ca]/70">Loading stats...</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto relative">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-canvas border-y border-white/10">
+                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {setClosers.map((closer, index) => (
+                            <tr
+                              key={closer.song_id}
+                              className={`${
+                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
+                            >
+                              <td className="px-4 py-0.5 text-black">
+                                <button
+                                  onClick={() => navigate(`/song/${closer.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {closer.song_name}
+                                </button>
+                              </td>
+                              <td className="px-4 py-0.5 text-center text-black">
+                                {closer.times_played}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               </div>
-            ) : (
-              <div className="overflow-x-auto relative">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Song</th>
-                      <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-white/90">Count</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {topSongs.map((song, index) => (
-                      <tr
-                        key={song.song_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
-                      >
-                        <td className="px-4 py-0.5 text-[#fce7ca]/90">
-                          <button
-                            onClick={() => navigate(`/song/${song.song_id}`)}
-                            className="font-semibold hover:underline cursor-pointer"
+              
+              {/* Right column for desktop */}
+              <div>
+                {/* Most Common Not Played */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                  {loadingNotPlayed ? (
+                    <div className="text-center py-6">
+                      <p className="text-[#fce7ca]/70">Loading stats...</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto relative">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-canvas border-y border-white/10">
+                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {notPlayedSongs.map((song, index) => (
+                            <tr
+                              key={song.song_id}
+                              className={`${
+                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
+                            >
+                              <td className="px-4 py-0.5 text-black">
+                                <button
+                                  onClick={() => navigate(`/song/${song.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {song.song}
+                                </button>
+                              </td>
+                              <td className="px-4 py-0.5 text-center text-black">
+                                {song.play_count}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Top Set Openers */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                  {loadingSetOpeners ? (
+                    <div className="text-center py-6">
+                      <p className="text-[#fce7ca]/70">Loading stats...</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto relative">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-canvas border-y border-white/10">
+                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {setOpeners.map((opener, index) => (
+                            <tr
+                              key={opener.song_id}
+                              className={`${
+                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
+                            >
+                              <td className="px-4 py-0.5 text-black">
+                                <button
+                                  onClick={() => navigate(`/song/${opener.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {opener.song_name}
+                                </button>
+                              </td>
+                              <td className="px-4 py-0.5 text-center text-black">
+                                {opener.times_played}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Top Encores */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                  {loadingEncores ? (
+                    <div className="text-center py-6">
+                      <p className="text-[#fce7ca]/70">Loading stats...</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto relative">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-canvas border-y border-white/10">
+                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {encores.map((encore, index) => (
+                            <tr
+                              key={encore.song_id}
+                              className={`${
+                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
+                            >
+                              <td className="px-4 py-0.5 text-black">
+                                <button
+                                  onClick={() => navigate(`/song/${encore.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {encore.song_name}
+                                </button>
+                              </td>
+                              <td className="px-4 py-0.5 text-center text-black">
+                                {encore.times_played}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile view - single column in custom order, hidden on desktop */}
+            <div className="md:hidden space-y-6">
+              {/* 1. Top Songs */}
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-3">Top Songs</h3>
+                {loadingTopSongs ? (
+                  <div className="text-center py-6">
+                    <p className="text-[#fce7ca]/70">Loading stats...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto relative">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-canvas border-y border-white/10">
+                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {topSongs.map((song, index) => (
+                          <tr
+                            key={song.song_id}
+                            className={`${
+                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                            } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            {song.song}
-                          </button>
-                        </td>
-                        <td className="px-4 py-0.5 text-center text-[#fce7ca]/90">
-                          {song.play_count}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            <td className="px-4 py-0.5 text-black">
+                              <button
+                                onClick={() => navigate(`/song/${song.song_id}`)}
+                                className="font-semibold hover:underline cursor-pointer text-left"
+                              >
+                                {song.song}
+                              </button>
+                            </td>
+                            <td className="px-4 py-0.5 text-center text-black">
+                              {song.play_count}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-            )}
-          
-            <h3 className="text-lg font-semibold text-white/90 mb-3 mt-6">Top Show Openers</h3>
-            {loadingShowOpeners ? (
-              <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading stats...</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto relative">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Song</th>
-                      <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-white/90">Count</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {showOpeners.map((opener, index) => (
-                      <tr
-                        key={opener.song_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
-                      >
-                        <td className="px-4 py-0.5 text-[#fce7ca]/90">
-                          <button
-                            onClick={() => navigate(`/song/${opener.song_id}`)}
-                            className="font-semibold hover:underline cursor-pointer"
+              
+              {/* 2. Most Common Not Played */}
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-3">Most Common Not Played</h3>
+                {loadingNotPlayed ? (
+                  <div className="text-center py-6">
+                    <p className="text-[#fce7ca]/70">Loading stats...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto relative">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-canvas border-y border-white/10">
+                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {notPlayedSongs.map((song, index) => (
+                          <tr
+                            key={song.song_id}
+                            className={`${
+                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                            } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            {opener.song_name}
-                          </button>
-                        </td>
-                        <td className="px-4 py-0.5 text-center text-[#fce7ca]/90">
-                          {opener.times_played}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            <td className="px-4 py-0.5 text-black">
+                              <button
+                                onClick={() => navigate(`/song/${song.song_id}`)}
+                                className="font-semibold hover:underline cursor-pointer text-left"
+                              >
+                                {song.song}
+                              </button>
+                            </td>
+                            <td className="px-4 py-0.5 text-center text-black">
+                              {song.play_count}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-            )}
-          
-            <h3 className="text-lg font-semibold text-white/90 mb-3 mt-6">Top Set Openers</h3>
-            {loadingSetOpeners ? (
-              <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading stats...</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto relative">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Song</th>
-                      <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-white/90">Count</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {setOpeners.map((opener, index) => (
-                      <tr
-                        key={opener.song_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
-                      >
-                        <td className="px-4 py-0.5 text-[#fce7ca]/90">
-                          <button
-                            onClick={() => navigate(`/song/${opener.song_id}`)}
-                            className="font-semibold hover:underline cursor-pointer"
+              
+              {/* 3. Top Show Openers */}
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-3">Top Show Openers</h3>
+                {loadingShowOpeners ? (
+                  <div className="text-center py-6">
+                    <p className="text-[#fce7ca]/70">Loading stats...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto relative">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-canvas border-y border-white/10">
+                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {showOpeners.map((opener, index) => (
+                          <tr
+                            key={opener.song_id}
+                            className={`${
+                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                            } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            {opener.song_name}
-                          </button>
-                        </td>
-                        <td className="px-4 py-0.5 text-center text-[#fce7ca]/90">
-                          {opener.times_played}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            <td className="px-4 py-0.5 text-black">
+                              <button
+                                onClick={() => navigate(`/song/${opener.song_id}`)}
+                                className="font-semibold hover:underline cursor-pointer text-left"
+                              >
+                                {opener.song_name}
+                              </button>
+                            </td>
+                            <td className="px-4 py-0.5 text-center text-black">
+                              {opener.times_played}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-            )}
-          
-            <h3 className="text-lg font-semibold text-white/90 mb-3 mt-6">Top Set Closers</h3>
-            {loadingSetClosers ? (
-              <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading stats...</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto relative">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Song</th>
-                      <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-white/90">Count</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {setClosers.map((closer, index) => (
-                      <tr
-                        key={closer.song_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
-                      >
-                        <td className="px-4 py-0.5 text-[#fce7ca]/90">
-                          <button
-                            onClick={() => navigate(`/song/${closer.song_id}`)}
-                            className="font-semibold hover:underline cursor-pointer"
+              
+              {/* 4. Top Set Openers */}
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-3">Top Set Openers</h3>
+                {loadingSetOpeners ? (
+                  <div className="text-center py-6">
+                    <p className="text-[#fce7ca]/70">Loading stats...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto relative">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-canvas border-y border-white/10">
+                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {setOpeners.map((opener, index) => (
+                          <tr
+                            key={opener.song_id}
+                            className={`${
+                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                            } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            {closer.song_name}
-                          </button>
-                        </td>
-                        <td className="px-4 py-0.5 text-center text-[#fce7ca]/90">
-                          {closer.times_played}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            <td className="px-4 py-0.5 text-black">
+                              <button
+                                onClick={() => navigate(`/song/${opener.song_id}`)}
+                                className="font-semibold hover:underline cursor-pointer text-left"
+                              >
+                                {opener.song_name}
+                              </button>
+                            </td>
+                            <td className="px-4 py-0.5 text-center text-black">
+                              {opener.times_played}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-            )}
-          
-            <h3 className="text-lg font-semibold text-white/90 mb-3 mt-6">Top Encores</h3>
-            {loadingEncores ? (
-              <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading stats...</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto relative">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-white/90">Song</th>
-                      <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-white/90">Count</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {encores.map((encore, index) => (
-                      <tr
-                        key={encore.song_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
-                      >
-                        <td className="px-4 py-0.5 text-[#fce7ca]/90">
-                          <button
-                            onClick={() => navigate(`/song/${encore.song_id}`)}
-                            className="font-semibold hover:underline cursor-pointer"
+              
+              {/* 5. Top Set Closers */}
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-3">Top Set Closers</h3>
+                {loadingSetClosers ? (
+                  <div className="text-center py-6">
+                    <p className="text-[#fce7ca]/70">Loading stats...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto relative">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-canvas border-y border-white/10">
+                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {setClosers.map((closer, index) => (
+                          <tr
+                            key={closer.song_id}
+                            className={`${
+                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                            } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            {encore.song_name}
-                          </button>
-                        </td>
-                        <td className="px-4 py-0.5 text-center text-[#fce7ca]/90">
-                          {encore.times_played}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            <td className="px-4 py-0.5 text-black">
+                              <button
+                                onClick={() => navigate(`/song/${closer.song_id}`)}
+                                className="font-semibold hover:underline cursor-pointer text-left"
+                              >
+                                {closer.song_name}
+                              </button>
+                            </td>
+                            <td className="px-4 py-0.5 text-center text-black">
+                              {closer.times_played}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-            )}
+              
+              {/* 6. Top Encores */}
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-3">Top Encores</h3>
+                {loadingEncores ? (
+                  <div className="text-center py-6">
+                    <p className="text-[#fce7ca]/70">Loading stats...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto relative">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-canvas border-y border-white/10">
+                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
+                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {encores.map((encore, index) => (
+                          <tr
+                            key={encore.song_id}
+                            className={`${
+                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                            } hover:bg-black/10 transition-colors text-xs`}
+                          >
+                            <td className="px-4 py-0.5 text-black">
+                              <button
+                                onClick={() => navigate(`/song/${encore.song_id}`)}
+                                className="font-semibold hover:underline cursor-pointer text-left"
+                              >
+                                {encore.song_name}
+                              </button>
+                            </td>
+                            <td className="px-4 py-0.5 text-center text-black">
+                              {encore.times_played}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
