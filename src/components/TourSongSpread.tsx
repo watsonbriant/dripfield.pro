@@ -7,6 +7,7 @@ interface SetlistEntry {
     song_originalartist: string | null;
     categories: {
       category_canonid: number;
+      category_artwork: string | null;
     };
   };
 }
@@ -76,22 +77,36 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
     );
   });
 
-  // Create a map of categories to their canonids
-  const categoryCanonIds = shows.reduce((acc, show) => {
+  // Create a map of categories to their metadata (canonid and artwork)
+  const categoryMeta = shows.reduce((acc, show) => {
     show.setlist_entries?.forEach(entry => {
-      if (entry.songs.song_category && entry.songs.categories.category_canonid) {
-        acc[entry.songs.song_category] = entry.songs.categories.category_canonid;
+      if (entry.songs.song_category) {
+        // Log to check the structure of the entry
+        // console.log('Entry categories:', entry.songs.categories);
+        
+        // Check if the current entry has artwork and the accumulator doesn't
+        const currentArtwork = entry.songs.categories?.category_artwork;
+        const hasExistingArtwork = acc[entry.songs.song_category]?.artwork;
+        
+        // Only update if we don't have artwork yet or we find a non-null artwork
+        if (!acc[entry.songs.song_category] || (currentArtwork && !hasExistingArtwork)) {
+          acc[entry.songs.song_category] = {
+            canonid: entry.songs.categories?.category_canonid || 0,
+            artwork: currentArtwork || null
+          };
+        }
       }
     });
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<string, { canonid: number, artwork: string | null }>);
 
   // Convert to array and sort by count (descending) then by canonid (ascending)
   const sortedCategories = Object.entries(categoryData.counts)
     .map(([category, count]) => ({
       category,
       count,
-      canonid: categoryCanonIds[category] || 0,
+      canonid: categoryMeta[category]?.canonid || 0,
+      artwork: categoryMeta[category]?.artwork,
       songs: categoryData.songs[category]
     }))
     .sort((a, b) => {
@@ -109,7 +124,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
         Song Spread
       </h2>
       <div className="space-y-1.5">
-        {sortedCategories.map(({ category, count, songs }) => (
+        {sortedCategories.map(({ category, count, songs, artwork }) => (
           <div key={category}>
             <div 
               className="text-black text-sm font-semibold cursor-pointer"
@@ -136,12 +151,23 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               onMouseLeave={() => setHoveredCategory(null)}
             >
               <div 
-                className="h-full bg-[#f9ae37] rounded border border-black relative"
+                className="h-full bg-[#f9ae37] rounded border border-black relative flex items-center"
                 style={{ 
                   width: `${(count / maxCount) * 100}%`,
-                  minWidth: '25px'
+                  minWidth: '42px'
                 }}
               >
+                {artwork && (
+                  <img 
+                    src={artwork} 
+                    alt=""
+                    onError={(e) => {
+                      console.error(`Failed to load image for ${category}:`, artwork);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                    className="h-4 w-4 ml-0.5 object-cover rounded-sm"
+                  />
+                )}
                 <div className="absolute right-0 top-0 h-full flex items-center pr-2">
                   <span className="text-black text-sm font-semibold">{count}</span>
                 </div>

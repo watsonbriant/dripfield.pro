@@ -434,7 +434,8 @@ export function Tours() {
                 song_category,
                 song_originalartist,
                 categories (
-                  category_canonid
+                  category_canonid,
+                  category_artwork
                 )
               )
             )
