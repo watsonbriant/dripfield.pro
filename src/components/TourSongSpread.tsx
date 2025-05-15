@@ -104,13 +104,15 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
   const maxCount = Math.max(...Object.values(categoryData.counts));
 
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-      <h2 className="text-xl font-semibold text-white/90 mb-4">Song Spread</h2>
+    <div className="bg-primary border border-black rounded-lg p-3">
+      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+        Song Spread
+      </h2>
       <div className="space-y-1.5">
         {sortedCategories.map(({ category, count, songs }) => (
           <div key={category}>
             <div 
-              className="text-[#ffffff]/90 text-sm font-semibold cursor-pointer"
+              className="text-black text-sm font-semibold cursor-pointer"
               onMouseEnter={(e) => {
                 setHoveredCategory(category);
                 setMousePosition({ x: e.clientX, y: e.clientY });
@@ -134,20 +136,20 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               onMouseLeave={() => setHoveredCategory(null)}
             >
               <div 
-                className="h-full bg-[#594e5f] rounded relative"
+                className="h-full bg-[#f9ae37] rounded border border-black relative"
                 style={{ 
                   width: `${(count / maxCount) * 100}%`,
-                  minWidth: '22px'
+                  minWidth: '25px'
                 }}
               >
                 <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                  <span className="text-[#fce7ca] text-sm font-semibold">{count}</span>
+                  <span className="text-black text-sm font-semibold">{count}</span>
                 </div>
               </div>
             </div>
             {hoveredCategory === category && (
               <div 
-                className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1.5 rounded shadow-lg min-w-max z-[9999] text-xs"
+                className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999] text-xs"
                 style={{
                   left: `${mousePosition.x + 10}px`,
                   top: `${mousePosition.y - 10}px`

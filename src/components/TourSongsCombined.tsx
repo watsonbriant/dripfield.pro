@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import TourSongStats from './TourSongStats';
 import TourSongMatrix from './TourSongMatrix';
-import { Modal } from './Modal';
 import { CompactModal } from './CompactModal';
 import { ArrowDownUp } from 'lucide-react';
 
@@ -40,9 +39,9 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-white/90">
+    <div className="bg-primary border border-black rounded-lg p-3">
+      <div className="flex justify-between items-center mb-3">
+      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
           {uniqueSongCount} Songs Played
         </h2>
         
@@ -52,15 +51,15 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
           {viewMode === 'matrix' && (
             <>
               {/* Desktop version - hidden on mobile */}
-              <div className="hidden md:flex items-center bg-[#0e151b] rounded-md border border-white/10 py-1 px-2">
-                <span className="text-[#fce7ca]/90 text-xs mr-2 font-semibold">Sort:</span>
+              <div className="hidden md:flex items-center bg-canvas rounded-md border border-black py-1 px-2">
+                <span className="text-black text-xs mr-2 font-bold">Sort:</span>
                 <div className="flex gap-1">
                   <button 
                     onClick={() => setMatrixSortMode('alphabetical')}
                     className={`px-2 py-0.5 text-xs rounded ${
                       matrixSortMode === 'alphabetical' 
-                        ? 'bg-[#ec742e] text-white' 
-                        : 'text-[#fce7ca]/90 hover:bg-white/10'
+                        ? 'bg-[#f9ae37] text-black' 
+                        : 'text-black hover:bg-black/10'
                     }`}
                   >
                     A-Z
@@ -69,8 +68,8 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
                     onClick={() => setMatrixSortMode('chronological')}
                     className={`px-2 py-0.5 text-xs rounded ${
                       matrixSortMode === 'chronological' 
-                        ? 'bg-[#ec742e] text-white' 
-                        : 'text-[#fce7ca]/90 hover:bg-white/10'
+                        ? 'bg-[#f9ae37] text-black' 
+                        : 'text-black hover:bg-black/10'
                     }`}
                   >
                     Tour Order
@@ -79,8 +78,8 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
                     onClick={() => setMatrixSortMode('playcount')}
                     className={`px-2 py-0.5 text-xs rounded ${
                       matrixSortMode === 'playcount' 
-                        ? 'bg-[#ec742e] text-white' 
-                        : 'text-[#fce7ca]/90 hover:bg-white/10'
+                        ? 'bg-[#f9ae37] text-black' 
+                        : 'text-black hover:bg-black/10'
                     }`}
                   >
                     Most Played
@@ -91,7 +90,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               {/* Mobile version - only visible on mobile */}
               <button 
                 onClick={() => setIsSortModalOpen(true)}
-                className="md:hidden flex items-center justify-center bg-[#fce7ca] rounded-md border border-white/10 p-1.5"
+                className="md:hidden flex items-center justify-center bg-[#f9ae37] rounded-md border border-black p-1.5"
                 aria-label="Sort options"
               >
                 <ArrowDownUp className="w-4 h-4 text-black" />
@@ -111,7 +110,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               strokeWidth="2" 
               strokeLinecap="round" 
               strokeLinejoin="round" 
-              className={`lucide lucide-list ${viewMode === 'list' ? 'text-white' : 'text-[#fce7ca]'}`}
+              className={`lucide lucide-list ${viewMode === 'list' ? 'text-black' : 'text-[#756d61]'}`}
             >
               <line x1="8" y1="6" x2="21" y2="6" />
               <line x1="8" y1="12" x2="21" y2="12" />
@@ -125,10 +124,10 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               role="switch"
               aria-checked={viewMode === 'matrix'}
               onClick={() => setViewMode(viewMode === 'list' ? 'matrix' : 'list')}
-              className="relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ec742e]/50 bg-[#fce7ca]"
+              className="relative inline-flex h-6 w-12 items-center rounded-full border border-black transition-colors bg-[#f9ae37]"
             >
               <span
-                className={`absolute h-4 w-4 rounded-full bg-[#172330] transition-transform duration-200 ${
+                className={`absolute h-4 w-4 rounded-full bg-black transition-transform duration-200 ${
                   viewMode === 'matrix' ? 'left-7' : 'left-1'
                 }`}
               />
@@ -144,7 +143,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               strokeWidth="2" 
               strokeLinecap="round" 
               strokeLinejoin="round" 
-              className={`lucide lucide-grid ${viewMode === 'matrix' ? 'text-white' : 'text-[#fce7ca]'}`}
+              className={`lucide lucide-grid ${viewMode === 'matrix' ? 'text-black' : 'text-[#756d61]'}`}
             >
               <rect width="18" height="18" x="3" y="3" rx="2" />
               <path d="M3 9h18" />
@@ -187,8 +186,8 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
             }}
             className={`w-full px-4 py-2 text-left rounded ${
               matrixSortMode === 'alphabetical' 
-                ? 'bg-[#ec742e] text-white' 
-                : 'text-[#fce7ca]/90 hover:bg-white/5'
+                ? 'bg-[#f9ae37] text-black font-mohr' 
+                : 'text-black hover:bg-black/10 font-mohr'
             }`}
           >
             A-Z
@@ -200,8 +199,8 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
             }}
             className={`w-full px-4 py-2 text-left rounded ${
               matrixSortMode === 'chronological' 
-                ? 'bg-[#ec742e] text-white' 
-                : 'text-[#fce7ca]/90 hover:bg-white/5'
+                ? 'bg-[#f9ae37] text-black font-mohr' 
+                : 'text-black hover:bg-black/10 font-mohr'
             }`}
           >
             Tour Order
@@ -213,8 +212,8 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
             }}
             className={`w-full px-4 py-2 text-left rounded ${
               matrixSortMode === 'playcount' 
-                ? 'bg-[#ec742e] text-white' 
-                : 'text-[#fce7ca]/90 hover:bg-white/5'
+                ? 'bg-[#f9ae37] text-black font-mohr' 
+                : 'text-black hover:bg-black/10 font-mohr'
             }`}
           >
             Most Played

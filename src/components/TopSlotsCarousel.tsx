@@ -37,6 +37,25 @@ const TopSlotsCarousel = ({
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   
+  // Define a function to get different background colors based on slot type or index
+  const getHeaderBgColor = (title: string, index: number) => {
+    // Color palette for different slot types
+    const colorMap: Record<string, string> = {
+      'Show Openers': '#006400',
+      'Set Openers': '#019B7A',  
+      'Set Closers': '#E17401', 
+      'Encores': '#7C2128',    
+      // Fallback colors based on index if title doesn't match
+      '0': '#006400',
+      '1': '#019B7A',
+      '2': '#E17401',
+      '3': '#7C2128'    
+    };
+    
+    // Return the color based on title, or fallback to index-based color
+    return colorMap[title] || colorMap[index.toString()] || '#f9ae37'; // Default amber
+  };
+  
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -68,38 +87,46 @@ const TopSlotsCarousel = ({
   const currentTitle = currentSlide.title;
 
   // Function to render a single slot table
-  const renderSlotTable = (slot: SlotData) => {
+  const renderSlotTable = (slot: SlotData, index: number) => {
     // If no data, don't render the table
     if (slot.data.length === 0) {
       return null;
     }
     
+    // Get the background color for this header
+    const headerBgColor = getHeaderBgColor(slot.title, index);
+    
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4 h-full">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">{`Top ${slot.title}`}</h2>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 
+          className="text-lg font-mohr text-white inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4"
+          style={{ backgroundColor: headerBgColor }}
+        >
+          {`Top ${slot.title}`}
+        </h2>
         <div className="overflow-y-auto max-h-64">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">{slot.headerLeft || 'Song'}</th>
-                <th className="px-4 py-1 text-right text-s font-semibold text-white/90 whitespace-nowrap">{slot.headerRight || 'Count'}</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">{slot.headerLeft || 'Song'}</th>
+                <th className="px-4 py-1 text-right text-s font-semibold text-black whitespace-nowrap">{slot.headerRight || 'Count'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {slot.data.map((item, itemIndex) => (
                 <tr
                   key={itemIndex}
-                  className={`${itemIndex % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'} hover:bg-white/10 transition-colors text-xs`}
+                  className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
                 >
                   <td className="px-4 py-0.5 font-semibold">
                     <span 
-                      className="text-[#fce7ca]/90 cursor-pointer hover:text-white hover:underline"
+                      className="text-black cursor-pointer hover:text-[#a9682e] hover:underline"
                       onClick={() => handleSongClick(item.left)}
                     >
                       {item.left}
                     </span>
                   </td>
-                  <td className="px-4 py-0.5 text-right text-[#fce7ca]/90 font-semibold">
+                  <td className="px-4 py-0.5 text-right text-black font-semibold">
                     {typeof item.right === 'number' ? `${item.right}` : item.right}
                   </td>
                 </tr>
@@ -115,23 +142,26 @@ const TopSlotsCarousel = ({
     <>
       {/* Mobile view - shown when isMobile is true or screen is smaller than md */}
       <div className={`${!isMobile ? "md:hidden" : ""}`}>
-        <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+        <div className="bg-primary border border-black rounded-lg p-3">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-white/90">Top Slots</h2>
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+              Top Slots
+            </h2>
             
             {/* Dropdown selector for mobile */}
             {slotsWithData.length > 1 && (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap"
+                  className="flex items-center gap-2 text-white px-4 pt-2 pb-1.5 rounded-lg border border-black hover:opacity-90 transition-colors text-base font-mohr"
+                  style={{ backgroundColor: getHeaderBgColor(currentTitle, safeCurrentIndex) }}
                 >
                   {currentTitle}
                   <ChevronDown className="w-4 h-4" />
                 </button>
                 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 py-1 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 overflow-y-auto w-48">
+                  <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-48">
                     {slotsWithData.map((slot, index) => (
                       <button
                         key={index}
@@ -139,8 +169,8 @@ const TopSlotsCarousel = ({
                           setCurrentSlideIndex(index);
                           setIsDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-1 text-sm hover:bg-surface-secondary transition-colors ${
-                          index === safeCurrentIndex ? 'bg-surface-secondary' : ''
+                        className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
+                          index === safeCurrentIndex ? 'bg-[#f9ae37]' : ''
                         }`}
                       >
                         {slot.title}
@@ -156,26 +186,26 @@ const TopSlotsCarousel = ({
           <div className="overflow-y-auto max-h-72">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-[#0e151b] border-y border-white/10">
-                  <th className="px-4 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">{currentSlide.headerLeft || 'Song'}</th>
-                  <th className="px-4 py-1 text-right text-s font-semibold text-white/90 whitespace-nowrap">{currentSlide.headerRight || 'Count'}</th>
+                <tr className="bg-canvas border-y border-white/10">
+                  <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">{currentSlide.headerLeft || 'Song'}</th>
+                  <th className="px-4 py-1 text-right text-s font-semibold text-black whitespace-nowrap">{currentSlide.headerRight || 'Count'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {currentSlide.data.map((item, itemIndex) => (
                   <tr
                     key={itemIndex}
-                    className={`${itemIndex % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'} hover:bg-white/10 transition-colors text-xs`}
+                    className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
                   >
                     <td className="px-4 py-0.5 font-semibold">
                       <span 
-                        className="text-[#fce7ca]/90 cursor-pointer hover:text-white hover:underline"
+                        className="text-black cursor-pointer hover:text-[#a9682e] hover:underline"
                         onClick={() => handleSongClick(item.left)}
                       >
                         {item.left}
                       </span>
                     </td>
-                    <td className="px-4 py-0.5 text-right text-[#fce7ca]/90 font-semibold">
+                    <td className="px-4 py-0.5 text-right text-black font-semibold">
                       {typeof item.right === 'number' ? `${item.right}` : item.right}
                     </td>
                   </tr>
@@ -190,7 +220,7 @@ const TopSlotsCarousel = ({
       <div className={`${!isMobile ? "hidden md:grid" : "hidden"} md:grid-cols-2 gap-4`}>
         {slotsWithData.map((slot, index) => (
           <div key={index}>
-            {renderSlotTable(slot)}
+            {renderSlotTable(slot, index)}
           </div>
         ))}
       </div>

@@ -111,26 +111,26 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
   };
 
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-      <h2 className="text-xl font-semibold text-white/90 mb-4">
+    <div className="bg-primary border border-black rounded-lg p-3">
+      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
         Longest Songs
       </h2>
       {loading ? (
         <div className="text-center py-4">
-          <p className="text-[#fce7ca]/70">Loading...</p>
+          <p className="text-black/70">Loading...</p>
         </div>
       ) : longestSongs.length === 0 ? (
         <div className="text-center py-2">
-          <p className="text-[#fce7ca]/70 text-xs">Song times for this tour are unknown.</p>
+          <p className="text-black/70 text-xs">Song times for this tour are unknown.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-y-auto max-h-64">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Song</th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Length</th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Date</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Song</th>
+                <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Length</th>
+                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -138,30 +138,30 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
                 <tr
                   key={`${song.entry_song}-${index}`}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                  } hover:bg-white/10 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                  } hover:bg-black/10 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
-                    <button
+                  <td className="px-4 py-0.5 font-semibold">
+                    <span
+                      className="text-black cursor-pointer hover:text-[#a9682e] hover:underline"
                       onClick={() => handleSongClick(song.song_id || '')}
-                      className="font-semibold hover:text-white transition-colors table-link text-left"
                     >
                       {song.entry_song}
-                    </button>
+                    </span>
                   </td>
-                  <td className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-black text-center font-semibold">
                     {formatTime(song.entry_length)}
                   </td>
-                  <td className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-black">
                     {song.show_date && (
                       <>
-                        <button
+                        <span
                           onClick={() => handleShowClick(song.show_id || '')}
-                          className="font-semibold hover:text-white transition-colors table-link"
+                          className="font-semibold cursor-pointer hover:text-[#a9682e] hover:underline"
                         >
                           {formatDate(song.show_date)}
-                        </button>
-                        {song.venue_location && <span>&nbsp;&nbsp;[{song.venue_location}]</span>}
+                        </span>
+                        {song.venue_location && <span className="text-black/70">&nbsp;[{song.venue_location}]</span>}
                       </>
                     )}
                   </td>

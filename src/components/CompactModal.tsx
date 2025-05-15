@@ -19,15 +19,15 @@ export function CompactModal({ isOpen, onClose, title, children }: CompactModalP
       />
       <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[320px] z-50 bg-primary rounded-lg border border-white/10 shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-3 border-b border-white/10">
-          <h2 className="text-lg font-semibold text-white/90">{title}</h2>
+          <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
           >
-            <X className="w-5 h-5 text-white/70" />
+            <X className="w-5 h-5 text-black" />
           </button>
         </div>
-        <div className="overflow-y-auto py-1">
+        <div className="flex-1 overflow-y-auto p-4">
           {children}
         </div>
       </div>

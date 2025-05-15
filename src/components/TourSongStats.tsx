@@ -38,7 +38,7 @@ const TourSongStats: React.FC<Props> = ({
   onSongCountChange, 
   uniqueSongCount, 
   hideTitle = false,
-  className = "" // Add this
+  className = ""
 }) => {
   const navigate = useNavigate();
   const [sortColumn, setSortColumn] = React.useState<'song' | 'count' | 'category' | null>(null);
@@ -147,8 +147,8 @@ const TourSongStats: React.FC<Props> = ({
       return null;
     }
     return sortDirection === 'asc' ? 
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-white/90" /> : 
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-white/90" />;
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" /> : 
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
   };
 
   const handleRowClick = (song_id: string) => {
@@ -156,18 +156,18 @@ const TourSongStats: React.FC<Props> = ({
   };
 
   return (
-    <div className={`${!hideTitle ? "bg-[#172330] border border-white/10 rounded-lg p-4" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-black rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
-        <h2 className="text-xl font-semibold text-white/90 mb-4">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
           {uniqueSongCount} Songs Played
         </h2>
       )}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse min-w-max">
           <thead>
-            <tr className="bg-[#0e151b] border-y border-white/10">
+            <tr className="bg-canvas border-y border-white/10">
               <th 
-                className="px-4 py-1 text-center text-s font-semibold text-white/90 cursor-pointer hover:bg-white/5 whitespace-nowrap"
+                className="px-4 py-1 text-center text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('count')}
               >
                 <div className="text-center gap-1">
@@ -176,7 +176,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-left text-s font-semibold text-white/90 cursor-pointer hover:bg-white/5 whitespace-nowrap"
+                className="px-4 py-1 text-left text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('song')}
               >
                 <div className="flex items-center gap-1">
@@ -185,7 +185,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-left text-s font-semibold text-white/90 cursor-pointer hover:bg-white/5 whitespace-nowrap"
+                className="px-4 py-1 text-left text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('category')}
               >
                 <div className="flex items-center gap-1">
@@ -200,20 +200,20 @@ const TourSongStats: React.FC<Props> = ({
               <tr
                 key={stat.song}
                 className={`${
-                  index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                } hover:bg-white/10 transition-colors text-xs`}
+                  index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                } hover:bg-black/10 transition-colors text-xs`}
               >
-                <td className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap text-center">{stat.count}</td>
+                <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">{stat.count}</td>
                 <td 
-                  className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap cursor-pointer"
+                  className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer"
                   onClick={() => handleRowClick(stat.song_id)}
                 >
-                  <span className="font-semibold hover:text-white transition-colors table-link">
+                  <span className="font-semibold hover:text-[#a9682e] transition-colors table-link">
                     {stat.song}
                   </span>
                 </td>
                 <td 
-                  className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap"
+                  className="px-4 py-0.5 text-black whitespace-nowrap"
                 >
                   {stat.category}
                 </td>

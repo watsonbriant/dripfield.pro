@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUpDown, ArrowUp, ArrowDown, Check, MoveRight } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight } from 'lucide-react';
 import { Modal } from './Modal';
-import { formatInTimeZone } from 'date-fns-tz';
 import { useAuth } from '../context/AuthContext';
 import TourSongSpread from './TourSongSpread';
-import TourSongStats from './TourSongStats';
 import TopSlotsCarousel from './TopSlotsCarousel';
 import LongestSongs from './LongestSongs';
-import TourSongMatrix from './TourSongMatrix';
 import TourSongsCombined from './TourSongsCombined';
 
 interface Show {
@@ -104,12 +101,12 @@ export function Tours() {
   const getRarityColor = (percentage: string | null): string => {
     // If percentage is null or not a valid percentage string, return transparent
     if (!percentage || percentage === '-') return 'transparent';
-    
+
     // Convert percentage string to number
     const numericPercentage = parseFloat(percentage.replace('%', ''));
-    
+
     if (isNaN(numericPercentage)) return 'transparent';
-    
+
     // Define our 4 color stops with breakpoints at 0, 15, 50, 100
     const colorStops = [
       { percent: 0, color: { r: 156, g: 12, b: 12 } },     // #9C0C0C (Even Darker Red)
@@ -118,11 +115,11 @@ export function Tours() {
       { percent: 50, color: { r: 46, g: 125, b: 50 } },    // #2E7D32 (Darker Green)
       { percent: 100, color: { r: 13, g: 71, b: 161 } }    // #0D47A1 (Darker Blue)
     ];
-    
+
     // Find the color stops to interpolate between
     let lowerStop = colorStops[0];
     let upperStop = colorStops[colorStops.length - 1];
-    
+
     for (let i = 0; i < colorStops.length - 1; i++) {
       if (numericPercentage >= colorStops[i].percent && numericPercentage <= colorStops[i + 1].percent) {
         lowerStop = colorStops[i];
@@ -130,19 +127,19 @@ export function Tours() {
         break;
       }
     }
-    
+
     // Calculate interpolation factor
     const range = upperStop.percent - lowerStop.percent;
     const factor = range !== 0 ? (numericPercentage - lowerStop.percent) / range : 0;
-    
+
     // Interpolate RGB values
     const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
     const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
     const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
-    
+
     return `rgb(${r}, ${g}, ${b})`;
   };
-  
+
   // Window width state for responsive behavior
   const [windowWidth, setWindowWidth] = React.useState(
     typeof window !== 'undefined' ? window.innerWidth : 0
@@ -157,17 +154,17 @@ export function Tours() {
 
     // Add event listener
     window.addEventListener('resize', handleResize);
-    
+
     // Initial call to set the width
     handleResize();
-    
+
     // Clean up
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
   // Unified loading state
   const [isLoading, setIsLoading] = React.useState(true);
-  
+
   // Track loading states of individual data components
   const [toursLoaded, setToursLoaded] = React.useState(false);
   const [showsLoaded, setShowsLoaded] = React.useState(false);
@@ -187,16 +184,16 @@ export function Tours() {
           .from('user_attended_shows')
           .select('show_id')
           .eq('user_id', user.id);
-          
+
         if (error) throw error;
-        
+
         setAttendedShowIds(data.map(item => item.show_id));
       } catch (error) {
         console.error('Error fetching attended shows:', error);
         setAttendedShowIds([]);
       }
     };
-    
+
     fetchAttendedShows();
   }, [user]);
 
@@ -242,16 +239,16 @@ export function Tours() {
     if (sortColumn !== column) {
       return null;
     }
-    return sortDirection === 'asc' ? 
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-white/90" /> : 
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-white/90" />;
+    return sortDirection === 'asc' ?
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" /> :
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
   };
 
   const sortData = (data: Show[]) => {
     return [...data].sort((a, b) => {
       let aValue: any = a[sortColumn as keyof Show];
       let bValue: any = b[sortColumn as keyof Show];
-      
+
       // Handle special cases for length and rarity which are percentages/time
       if (sortColumn === 'show_rarity') {
         aValue = aValue ? parseFloat(aValue.replace('%', '')) : -1;
@@ -308,7 +305,7 @@ export function Tours() {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     // Scroll to the current tour when dropdown opens
     if (isDropdownOpen && dropdownListRef.current) {
       // Find the button for the current tour
@@ -320,7 +317,7 @@ export function Tours() {
         }
       }
     }
-    
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen, currentTour]);
 
@@ -362,14 +359,14 @@ export function Tours() {
         const { data, error } = await supabase
           .from('songs')
           .select('song, song_id');
-        
+
         if (error) throw error;
-        
+
         const songMap: { [songName: string]: string } = {};
         data?.forEach(songData => {
           songMap[songData.song] = songData.song_id;
         });
-        
+
         setSongIdMap(songMap);
         setSongIdsLoaded(true);
       } catch (error) {
@@ -377,7 +374,7 @@ export function Tours() {
         setSongIdsLoaded(true); // Still mark as loaded to show error state
       }
     };
-    
+
     fetchSongIds();
   }, []);
 
@@ -387,7 +384,7 @@ export function Tours() {
       setIsLoading(true);
       setPreviousTourId(tour || null);
     }
-    
+
     if (tour && tours.length > 0) {
       const tourData = tours.find(t => t.tour_id === tour);
       if (tourData) {
@@ -404,7 +401,7 @@ export function Tours() {
       setShowsLoaded(false);
       setSlotsLoaded(false);
     }
-    
+
     // We'll use Promise.all to load everything in parallel
     async function fetchAllData() {
       try {
@@ -446,12 +443,12 @@ export function Tours() {
           .order('show_date', { ascending: true })
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true });
-    
+
         const placementsPromise = supabase
           .from('placements')
           .select('placements, placement_order')
           .order('placement_order');
-          
+
         const slotsPromise = supabase
           .from('shows')
           .select(`
@@ -469,25 +466,25 @@ export function Tours() {
           .order('show_date', { ascending: true })
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true });
-          
+
         // Wait for all data to be fetched
         const [showsResult, placementsResult, slotsResult] = await Promise.all([
           showsPromise,
           placementsPromise,
           slotsPromise
         ]);
-        
+
         // Check for errors in any of the requests
         if (showsResult.error) throw showsResult.error;
         if (placementsResult.error) throw placementsResult.error;
         if (slotsResult.error) throw slotsResult.error;
-        
+
         // Process shows data
         const processedShows = showsResult.data?.map(show => {
           // Calculate show length
           let totalSeconds = 0;
           const hasLength = show.setlist_entries?.some(entry => entry.entry_length !== null);
-          
+
           if (hasLength) {
             show.setlist_entries?.forEach(entry => {
               if (entry.entry_length) {
@@ -502,7 +499,7 @@ export function Tours() {
               }
             });
           }
-    
+
           // Format length string
           let show_length = null;
           if (totalSeconds > 0) {
@@ -511,12 +508,12 @@ export function Tours() {
             const seconds = totalSeconds % 60;
             show_length = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
           }
-    
+
           // Calculate show rarity
           let show_rarity = null;
           if (show.show_canonid && show.setlist_entries?.length) {
             const uniqueSongs = new Map();
-            
+
             show.setlist_entries.forEach(entry => {
               if (!uniqueSongs.has(entry.entry_song)) {
                 uniqueSongs.set(entry.entry_song, {
@@ -525,19 +522,19 @@ export function Tours() {
                 });
               }
             });
-    
-            const totalPlays = Array.from(uniqueSongs.values()).reduce((sum, entry) => 
+
+            const totalPlays = Array.from(uniqueSongs.values()).reduce((sum, entry) =>
               sum + (entry.times_played_num ? parseInt(entry.times_played_num, 10) : 0), 0);
-            
-            const totalShows = Array.from(uniqueSongs.values()).reduce((sum, entry) => 
+
+            const totalShows = Array.from(uniqueSongs.values()).reduce((sum, entry) =>
               sum + (entry.shows_since_debut_num ? parseInt(entry.shows_since_debut_num, 10) : 0), 0);
-            
+
             if (totalShows > 0) {
               const percentage = (totalPlays * 100.0) / totalShows;
               show_rarity = `${percentage.toFixed(2)}%`;
             }
           }
-    
+
           return {
             ...show,
             show_length,
@@ -546,23 +543,23 @@ export function Tours() {
             attended: attendedShowIds.includes(show.show_id)
           };
         });
-        
+
         // Process slots data
         const transformedData = slotsResult.data?.map(show => {
           const slots: any = {
             show_id: show.show_id,
             Show_Date: show.show_date
           };
-  
+
           // Group entries by placement
           const placementEntries: { [key: string]: Array<SongEntryWithId> } = {};
-          
+
           show.setlist_entries?.forEach(entry => {
             // Skip main set entries
             if (entry.entry_placement.startsWith('Main Set')) {
               return;
             }
-            
+
             const key = entry.entry_placement.replace(/\s+/g, '_');
             if (!placementEntries[key]) {
               placementEntries[key] = [];
@@ -579,10 +576,10 @@ export function Tours() {
             entries.sort((a, b) => a.setnum - b.setnum);
             slots[key] = entries;
           });
-  
+
           return slots;
         });
-  
+
         // Find active columns and order them according to placement_order
         const columnsWithData = new Set<string>();
         transformedData?.forEach(show => {
@@ -592,23 +589,23 @@ export function Tours() {
             }
           });
         });
-  
+
         // Order the columns based on placement_order
         const orderedColumns = placementsResult.data
           ?.filter(p => Array.from(columnsWithData).includes(p.placements.replace(/\s+/g, '_')))
           .map(p => p.placements.replace(/\s+/g, '_'));
-  
-        const hasEntries = (transformedData || []).some(show => 
-          Object.keys(show).some(key => 
-            key !== 'show_id' && 
-            key !== 'Show_Date' && 
+
+        const hasEntries = (transformedData || []).some(show =>
+          Object.keys(show).some(key =>
+            key !== 'show_id' &&
+            key !== 'Show_Date' &&
             show[key] !== null
           )
         );
-        
+
         // Update all state at once after processing
         // Check if any show has setlist entries
-        const hasAnySetlistEntries = processedShows?.some(show => 
+        const hasAnySetlistEntries = processedShows?.some(show =>
           show.setlist_entries && show.setlist_entries.length > 0
         );
         setHasTourSetlistEntries(hasAnySetlistEntries || false);
@@ -616,7 +613,7 @@ export function Tours() {
         setHasSlotEntries(hasEntries);
         setSlots(transformedData || []);
         setActiveColumns(orderedColumns || []);
-        
+
         // Mark data as loaded
         setShowsLoaded(true);
         setSlotsLoaded(true);
@@ -637,13 +634,13 @@ export function Tours() {
   React.useEffect(() => {
     async function fetchPlacementData() {
       if (!currentTour || showsLoaded === false) return;
-      
+
       try {
         // Get all show IDs for this tour
         const showIds = shows.map(show => show.show_id);
-        
+
         if (showIds.length === 0) return;
-        
+
         // First fetch all setlist entries with their placements
         const { data: entriesData, error: entriesError } = await supabase
           .from('setlist_entries')
@@ -654,12 +651,12 @@ export function Tours() {
             entry_show
           `)
           .in('entry_show', showIds);
-        
+
         if (entriesError) throw entriesError;
-        
+
         // Then fetch song category information for all unique songs
         const uniqueSongs = [...new Set(entriesData?.map(entry => entry.entry_song) || [])];
-        
+
         const { data: songsData, error: songsError } = await supabase
           .from('songs')
           .select(`
@@ -670,15 +667,15 @@ export function Tours() {
             )
           `)
           .in('song', uniqueSongs);
-        
+
         if (songsError) throw songsError;
-        
+
         // Create a map of songs to their category IDs
         const songCategoryMap: Record<string, number> = {};
         songsData?.forEach(song => {
           songCategoryMap[song.song] = song.categories?.category_canonid || 999;
         });
-        
+
         // Process the entries data with the category information
         const processedTopSlots = processTourDataWithCategories(entriesData || [], songCategoryMap);
         setTopSlots(processedTopSlots);
@@ -686,7 +683,7 @@ export function Tours() {
         console.error('Error fetching placement data:', error);
       }
     }
-    
+
     // Function to process tour data with category information
     const processTourDataWithCategories = (
       entries: Array<{ entry_placement: string; entry_song: string; entry_show?: string }>,
@@ -697,55 +694,55 @@ export function Tours() {
       const setOpeners: Record<string, number> = {};
       const setClosers: Record<string, number> = {};
       const encores: Record<string, number> = {};
-    
+
       // Track unique combinations of show+placement+song
       const uniqueCombinations = new Set<string>();
-      
+
       entries.forEach(entry => {
         const placement = entry.entry_placement || '';
         const show = entry.entry_show || '';
         const song = entry.entry_song;
-        
+
         // Create a unique key for this show+placement+song combination
         const uniqueKey = `${show}|${placement}|${song}`;
-        
+
         // Only process if we haven't seen this combination before
         if (!uniqueCombinations.has(uniqueKey)) {
           uniqueCombinations.add(uniqueKey);
-          
+
           // Show openers (Set 1 Opener)
           if (placement === "Set 1 Opener") {
             showOpeners[song] = (showOpeners[song] || 0) + 1;
           }
-          
+
           // Set Openers (contains "Opener")
           if (placement.includes("Opener")) {
             setOpeners[song] = (setOpeners[song] || 0) + 1;
           }
-          
+
           // Set Closers (contains "Closer")
           if (placement.includes("Closer")) {
             setClosers[song] = (setClosers[song] || 0) + 1;
           }
-          
+
           // Encores (contains "Encore")
           if (placement.includes("Encore")) {
             encores[song] = (encores[song] || 0) + 1;
           }
         }
       });
-    
+
       // Check if all categories are empty
       const hasShowOpeners = Object.keys(showOpeners).length > 0;
       const hasSetOpeners = Object.keys(setOpeners).length > 0;
       const hasSetClosers = Object.keys(setClosers).length > 0;
       const hasEncores = Object.keys(encores).length > 0;
-    
+
       // If all categories are empty, return an empty array
       if (!hasShowOpeners && !hasSetOpeners && !hasSetClosers && !hasEncores) {
         return [];
       }
-    
+
       // Format data for top slots
       const formatSlotData = (data: Record<string, number>, title: string): SlotData => {
         const sortedData = Object.entries(data)
@@ -759,18 +756,18 @@ export function Tours() {
             if (a.count !== b.count) {
               return b.count - a.count;
             }
-            
+
             // Then by category_canonid (ascending)
             if (a.categoryCanonId !== b.categoryCanonId) {
               return a.categoryCanonId - b.categoryCanonId;
             }
-            
+
             // Finally alphabetically by song name
             return a.song.localeCompare(b.song);
           })
-          .slice(0, 8) // Get top 5
+          .slice(0, 8) // Get top 8
           .map(({ song, count }) => ({ left: song, right: count }));
-        
+
         // If no data, return empty data instead of placeholder
         if (sortedData.length === 0) {
           return {
@@ -780,7 +777,7 @@ export function Tours() {
             data: []
           };
         }
-        
+
         return {
           title,
           headerLeft: 'Song',
@@ -788,37 +785,37 @@ export function Tours() {
           data: sortedData
         };
       };
-    
+
       // Create slot data for carousel, only include non-empty categories
       const result = [];
-      
+
       if (hasShowOpeners) {
         result.push(formatSlotData(showOpeners, 'Show Openers'));
       }
-      
+
       if (hasSetOpeners) {
         result.push(formatSlotData(setOpeners, 'Set Openers'));
       }
-      
+
       if (hasSetClosers) {
         result.push(formatSlotData(setClosers, 'Set Closers'));
       }
-      
+
       if (hasEncores) {
         result.push(formatSlotData(encores, 'Encores'));
       }
-    
+
       return result;
     };
-    
+
     fetchPlacementData();
   }, [currentTour, shows, showsLoaded]);
 
   const renderSongList = (songs: SongEntryWithId[] | null) => {
     if (!songs || songs.length === 0) return null;
-    
+
     return (
-      <div 
+      <div
         className="w-full text-left"
         style={{
           wordWrap: 'break-word',
@@ -831,16 +828,16 @@ export function Tours() {
         {songs.map((song, index) => (
           <React.Fragment key={`${song.song}-${index}`}>
             {index > 0 && (
-              <MoveRight className="text-red-400 inline w-[1rem] h-[1rem] mx-1" />
+              <MoveRight className="text-red-500 inline w-[1rem] h-[1rem] mx-1" />
             )}
-            <a 
+            <a
               onClick={() => {
                 const songId = songIdMap[song.song];
                 if (songId) {
                   navigate(`/song/${songId}`);
                 }
               }}
-              className="font-semibold hover:text-white transition-colors text-[#fce7ca]/90 table-link cursor-pointer inline"
+              className="font-semibold hover:text-[#a9682e] transition-colors text-black table-link cursor-pointer inline"
             >
               {song.song}
             </a>
@@ -855,11 +852,11 @@ export function Tours() {
     return (
       <div className="max-w-[1280px] mx-auto">
         <div className="flex justify-between mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Tours</h1>
+          <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Tours</h1>
           <div className="relative" ref={dropdownRef}>
             <div className="hidden md:block">
               <button
-                className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-border-primary transition-colors text-sm whitespace-nowrap font-semibold"
+                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black transition-colors text-base font-mohr"
               >
                 {currentTour}
                 <ChevronDown className="w-4 h-4" />
@@ -867,13 +864,13 @@ export function Tours() {
             </div>
           </div>
         </div>
-        <div className="text-center py-12">
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-[#fce7ca]/70 mt-4">Loading tour data...</p>
+          <p className="text-black mt-4">Loading tour data...</p>
         </div>
       </div>
     );
@@ -883,8 +880,21 @@ export function Tours() {
   if (tours.length === 0) {
     return (
       <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">No tours found</p>
+        <div className="flex justify-between mb-6">
+          <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Tours</h1>
+          <div className="relative" ref={dropdownRef}>
+            <div className="hidden md:block">
+              <button
+                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black transition-colors text-base font-mohr"
+              >
+                Select Tour
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+          <p className="text-black">No tours found</p>
         </div>
       </div>
     );
@@ -894,12 +904,12 @@ export function Tours() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Tours</h1>
+        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Tours</h1>
         <div className="relative" ref={dropdownRef}>
           <div className="md:hidden">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-lg bg-[#fce7ca] text-primary hover:bg-[#fce7ca]/90 transition-colors"
+              className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#fce7ca]/90 transition-colors border border-black"
             >
               <Search className="w-6 h-6" />
             </button>
@@ -909,7 +919,7 @@ export function Tours() {
               title="Select Tour"
             >
               <div className="space-y-0">
-                <div className="divide-y divide-white/10">
+                <div className="divide-y divide-black/10">
                   {tours.map((tour) => (
                     <button
                       key={tour.tour}
@@ -919,9 +929,9 @@ export function Tours() {
                         navigate(`/tours/${tour.tour_id}`);
                         setIsModalOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-sm rounded-lg hover:bg-white/10 transition-colors font-semibold"
+                      className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
                     >
-                      <span className="text-[#fce7ca]">{tour.tour}</span>
+                      <span className="text-black">{tour.tour}</span>
                     </button>
                   ))}
                 </div>
@@ -931,18 +941,17 @@ export function Tours() {
           <div className="hidden md:block">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap font-semibold"
+              className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
             >
               {currentTour}
               <ChevronDown className="w-4 h-4" />
             </button>
           </div>
           {isDropdownOpen && (
-            <div 
+            <div
               ref={dropdownListRef}
-              className={`absolute right-0 mt-2 py-1 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 overflow-y-auto ${
-                window.innerWidth < 768 ? 'fixed inset-x-4 top-[72px]' : 'w-64 max-h-96'
-              }`}
+              className={`absolute py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-64 max-h-96'
+                }`}
             >
               {tours.map((tour) => (
                 <button
@@ -953,9 +962,8 @@ export function Tours() {
                     navigate(`/tours/${tour.tour_id}`);
                     setIsDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm hover:bg-surface-secondary transition-colors ${
-                    currentTour === tour.tour ? 'bg-surface-secondary' : ''
-                  }`}
+                  className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${currentTour === tour.tour ? 'bg-[#f9ae37]' : ''
+                    }`}
                 >
                   {tour.tour}
                 </button>
@@ -964,26 +972,28 @@ export function Tours() {
           )}
         </div>
       </div>
-  
+
       {shows.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">No shows found for {currentTour}</p>
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+          <p className="text-black">No shows found for {currentTour}</p>
         </div>
       ) : (
         <div className="mt-6">
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-            <h2 className="text-xl font-semibold text-white/90 mb-4 flex justify-between">
-              <span>{currentTour}</span>
-              <span>{shows.length} {shows.length === 1 ? 'Show' : 'Shows'}</span>
-            </h2>
-            
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+                {currentTour}
+              </h2>
+              <span className="text-black font-semibold text-lg">{shows.length} {shows.length === 1 ? 'Show' : 'Shows'}</span>
+            </div>
+
             <div className="overflow-x-auto">
               <table className="w-full border-collapse min-w-max">
                 <thead>
-                  <tr className="bg-[#0e151b] border-y border-white/10">
+                  <tr className="bg-canvas border-y border-white/10">
                     {[
                       { key: 'show_date', label: 'Date' },
-                      ...(user ? [{ key: 'attended', label: <Check size={16} className="text-white" strokeWidth={4} /> }] : []),
+                      ...(user ? [{ key: 'attended', label: <Check size={16} className="text-black" strokeWidth={4} /> }] : []),
                       { key: 'show_group', label: 'Group' },
                       { key: 'show_length', label: 'Length' },
                       { key: 'show_rarity', label: 'Rarity' },
@@ -994,7 +1004,9 @@ export function Tours() {
                       <th
                         key={key}
                         onClick={() => key !== 'attended' ? handleSort(key) : null}
-                        className={`px-4 py-2 ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'text-center' : 'text-left'} text-s font-semibold text-white/90 whitespace-nowrap ${key !== 'attended' ? 'cursor-pointer hover:bg-white/5' : 'w-8 px-1 py-2 text-center'}`}
+                        className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'text-center' : 'text-left'} 
+                          text-s font-semibold text-black whitespace-nowrap 
+                          ${key !== 'attended' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
                       >
                         <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'justify-center' : ''} gap-1`}>
                           {label}
@@ -1008,15 +1020,14 @@ export function Tours() {
                   {sortData(shows).map((show, index) => (
                     <tr
                       key={show.show_id}
-                      className={`${
-                        index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                      } hover:bg-white/10 transition-colors text-xs`}
+                      className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                        } hover:bg-black/10 transition-colors text-xs`}
                     >
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                      <td className="px-4 py-0.5 text-black text-center whitespace-nowrap">
                         <span className="font-semibold">
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-white transition-colors table-link"
+                            className="hover:text-[#a9682e] transition-colors table-link"
                           >
                             {show.show_date
                               .split('-')
@@ -1030,51 +1041,46 @@ export function Tours() {
                         <td className="w-8 text-center">
                           {show.attended && (
                             <div className="flex justify-center items-center h-full">
-                              <div className="rounded-full p-1 bg-green-600">
-                                <Check size={12} className="text-white" strokeWidth={4} />
+                              <div className="rounded-full p-0.5 bg-green-600">
+                                <Check size={12} className="text-white" strokeWidth={3} />
                               </div>
                             </div>
                           )}
                         </td>
                       )}
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">{show.show_group}</td>
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap text-center">
+                      <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_group}</td>
+                      <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">
                         {show.show_length || ''}
                       </td>
                       <td className="px-4 py-0 whitespace-nowrap text-center">
                         {show.show_rarity ? (
-                          <span 
+                          <span
                             className="text-white font-medium px-2 py-0.5 rounded-md inline-block"
-                            style={{ 
-                              backgroundColor: getRarityColor(show.show_rarity) 
+                            style={{
+                              backgroundColor: getRarityColor(show.show_rarity)
                             }}
                           >
                             {show.show_rarity}
                           </span>
                         ) : (
-                          <span className="text-[#fce7ca]/90"></span>
+                          <span className="text-black"></span>
                         )}
                       </td>
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
                         <button
                           onClick={() => navigateToVenue(show)}
-                          className="hover:text-white hover:underline transition-colors"
+                          className="hover:text-[#a9682e] hover:underline transition-colors"
                         >
                           {show.show_subvenue}
                         </button>
                       </td>
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
-                        <button
-                          onClick={() => navigateToVenue(show)}
-                          className="hover:text-white hover:underline transition-colors"
-                        >
-                          {show.show_venue_location}
-                        </button>
+                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                        {show.show_venue_location}
                       </td>
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
                         {show.show_detail && show.show_detail}
                         {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
-                        {show.show_alert && <span className="text-tertiary"><strong>[{show.show_alert}]</strong></span>}
+                        {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
                       </td>
                     </tr>
                   ))}
@@ -1084,38 +1090,36 @@ export function Tours() {
           </div>
         </div>
       )}
-  
+
       {shows.length > 0 && hasSlotEntries && (
         <div className="mt-6">
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-            <h2 className="text-xl font-semibold text-white/90 mb-4">
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
               Slots
             </h2>
-            
+
             <div className="overflow-x-auto">
               <table className="w-full border-collapse min-w-max">
                 <thead>
-                  <tr className="bg-[#0e151b] border-y border-white/10">
-                    <th 
-                      className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-white/90">
+                  <tr className="bg-canvas border-y border-white/10">
+                    <th
+                      className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-black">
                       Date
                     </th>
                     {activeColumns.map(column => (
-                      <th 
-                        key={column} 
+                      <th
+                        key={column}
                         className="px-4 py-1 text-left text-s font-semibold text-white/90"
-                        style={{ 
+                        style={{
                           width: '190px',
                           minWidth: '190px',
-                          backgroundColor: getColumnBackgroundColor(column),
-                          borderTop: '1px solid #2b333b',
-                          borderBottom: '1px solid #2b333b'
+                          backgroundColor: getColumnBackgroundColor(column)
                         }}
                       >
-                        {column.split('_').map(word => 
+                        {column.split('_').map(word =>
                           word === 'Op' ? 'Opener' :
-                          word === 'Cl' ? 'Closer' :
-                          word
+                            word === 'Cl' ? 'Closer' :
+                              word
                         ).join(' ')}
                       </th>
                     ))}
@@ -1125,15 +1129,14 @@ export function Tours() {
                   {slots.map((slot, index) => (
                     <tr
                       key={`slot-${slot.show_id}`}
-                      className={`${
-                        index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                      } hover:bg-white/10 transition-colors text-xs`}
+                      className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                        } hover:bg-black/10 transition-colors text-xs`}
                     >
-                      <td className="w-[85px] min-w-[85px] px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                      <td className="w-[85px] min-w-[85px] px-4 py-1 text-black whitespace-nowrap">
                         <span className="font-semibold">
                           <button
                             onClick={() => navigate(`/setlist/${slot.show_id}`)}
-                            className="hover:text-white transition-colors table-link"
+                            className="hover:text-[#a9682e] transition-colors table-link"
                           >
                             {slot.Show_Date
                               .split('-')
@@ -1144,15 +1147,13 @@ export function Tours() {
                         </span>
                       </td>
                       {activeColumns.map(column => (
-                        <td 
-                          key={`${slot.show_id}-${column}`} 
-                          className="px-4 py-1 text-[#fce7ca]/90 text-left align-middle"
-                          style={{ 
+                        <td
+                          key={`${slot.show_id}-${column}`}
+                          className="px-4 py-1 text-left align-middle"
+                          style={{
                             width: '190px',
                             minWidth: '190px',
                             maxWidth: '190px',
-                            borderTop: '1px solid #1f2830',
-                            borderBottom: index === slots.length - 1 ? 'none' : '1px solid #1f2830',
                             wordWrap: 'break-word',
                             overflowWrap: 'break-word',
                             textAlign: 'left'
@@ -1169,43 +1170,39 @@ export function Tours() {
           </div>
         </div>
       )}
-  
+
       {shows.length > 0 && hasTourSetlistEntries && (
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Song Spread - full width on mobile, left column on desktop */}
           <div>
             <TourSongSpread shows={shows} />
           </div>
-          
+
           {/* Right column on desktop contains TopSlotsCarousel and LongestSongs */}
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-6">
             {/* TopSlotsCarousel */}
             {topSlots.length > 0 && (
-              <div>
-                <TopSlotsCarousel 
-                  slots={topSlots} 
-                  isMobile={windowWidth < 1280}
-                  songIdMap={songIdMap}
-                  onSongClick={(songId) => navigate(`/song/${songId}`)}
-                />
-              </div>
-            )}
-            
-            {/* LongestSongs - with appropriate margin for both mobile and desktop */}
-            <div className="mt-6">
-              <LongestSongs 
-                showIds={shows.map(show => show.show_id)} 
+              <TopSlotsCarousel
+                slots={topSlots}
+                isMobile={windowWidth < 1280}
                 songIdMap={songIdMap}
+                onSongClick={(songId) => navigate(`/song/${songId}`)}
               />
-            </div>
+            )}
+
+            {/* LongestSongs */}
+            <LongestSongs
+              showIds={shows.map(show => show.show_id)}
+              songIdMap={songIdMap}
+            />
           </div>
         </div>
       )}
-      
+
       {shows.length > 0 && hasTourSetlistEntries && (
         <div className="mt-6">
-          <TourSongsCombined 
-            shows={shows} 
+          <TourSongsCombined
+            shows={shows}
             songIdMap={songIdMap}
             onSongCountChange={setUniqueSongCount}
             uniqueSongCount={uniqueSongCount}

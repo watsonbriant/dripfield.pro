@@ -1217,8 +1217,8 @@ export function Home() {
                 <p className="text-[#fce7ca]/70">Loading shows...</p>
               </div>
             ) : historicalShows.length === 0 ? (
-              <div className="text-center py-2 text-xs">
-                <p className="text-[#fce7ca]/70">No shows occurred on this date in Goose history.</p>
+              <div className="text-center py-2 text-sm">
+                <p className="text-black font-semibold">No shows occurred on this date in Goose history.</p>
               </div>
             ) : (
               <div className="overflow-x-auto relative">
