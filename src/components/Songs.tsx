@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { Modal } from './Modal';
 import { SongSearch } from './SongSearch';
 
 interface Song {
@@ -222,48 +221,53 @@ export function Songs() {
     };
 
     return (
-      <div className="flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
           {getTableTitle(type)}
         </h2>
         {state.loading ? (
           <div className="text-center py-12">
-            <p className="text-[#fce7ca]/70">Loading songs...</p>
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+              <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+              <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+            </div>
+            <p className="text-black mt-4">Loading songs...</p>
           </div>
         ) : state.songs.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-[#fce7ca]/70">No songs found</p>
+            <p className="text-black">No songs found</p>
           </div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse min-w-max">
                 <thead>
-                  <tr className="bg-[#0e151b] border-y border-white/10">
-                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">
+                  <tr className="bg-canvas border-y border-white/10">
+                    <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
                       <button 
                         onClick={() => handleSort(type, 'song')}
-                        className="flex items-center gap-1 hover:text-[#fce7ca] group"
+                        className="flex items-center gap-1 hover:text-[#a9682e] group"
                       >
                         Song
                         {renderSortIcon(state, 'song')}
                       </button>
                     </th>
                     {(type === 'goose' || type === 'adjacent') && (
-                      <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
                         <button 
                           onClick={() => handleSort(type, 'song_category')}
-                          className="flex items-center gap-1 hover:text-[#fce7ca] group"
+                          className="flex items-center gap-1 hover:text-[#a9682e] group"
                         >
                           Category
                           {renderSortIcon(state, 'song_category')}
                         </button>
                       </th>
                     )}
-                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">
+                    <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
                       <button 
                         onClick={() => handleSort(type, 'song_originalartist')}
-                        className="flex items-center gap-1 hover:text-[#fce7ca] group"
+                        className="flex items-center gap-1 hover:text-[#a9682e] group"
                       >
                         Original Artist
                         {renderSortIcon(state, 'song_originalartist')}
@@ -276,21 +280,21 @@ export function Songs() {
                     <tr
                       key={song.song_id}
                       className={`${
-                        index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                      } hover:bg-white/10 transition-colors text-xs`}
+                        index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                      } hover:bg-black/10 transition-colors text-xs`}
                     >
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
                         <span 
-                          className="font-semibold hover:underline cursor-pointer"
+                          className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
                           onClick={() => navigate(`/song/${song.song_id}`)}
                         >
                           {song.song}
                         </span>
                       </td>
                       {(type === 'goose' || type === 'adjacent') && (
-                        <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">{song.song_category}</td>
+                        <td className="px-4 py-0.5 text-black whitespace-nowrap">{song.song_category}</td>
                       )}
-                      <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">{song.song_originalartist}</td>
+                      <td className="px-4 py-0.5 text-black whitespace-nowrap">{song.song_originalartist}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -298,7 +302,7 @@ export function Songs() {
             </div>
 
             <div className="mt-4 flex items-center justify-between px-4">
-              <div className="text-sm text-[#fce7ca]/70">
+              <div className="text-sm text-black">
                 Showing {(state.currentPage - 1) * songsPerPage + 1}-{Math.min(state.currentPage * songsPerPage, state.totalCount)} of {state.totalCount}
               </div>
               <div className="flex items-center gap-2">
@@ -307,13 +311,13 @@ export function Songs() {
                   disabled={state.currentPage === 1}
                   className={`p-1 rounded-md transition-colors ${
                     state.currentPage === 1
-                      ? 'text-[#fce7ca]/30 cursor-not-allowed'
-                      : 'text-[#fce7ca]/70 hover:text-[#fce7ca] hover:bg-white/10'
+                      ? 'text-black/30 cursor-not-allowed'
+                      : 'text-black hover:text-[#a9682e] hover:bg-black/10'
                   }`}
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="text-sm text-[#fce7ca]/90">
+                <span className="text-sm text-black">
                   Page {state.currentPage} of {totalPages}
                 </span>
                 <button
@@ -321,8 +325,8 @@ export function Songs() {
                   disabled={state.currentPage === totalPages}
                   className={`p-1 rounded-md transition-colors ${
                     state.currentPage === totalPages
-                      ? 'text-[#fce7ca]/30 cursor-not-allowed'
-                      : 'text-[#fce7ca]/70 hover:text-[#fce7ca] hover:bg-white/10'
+                      ? 'text-black/30 cursor-not-allowed'
+                      : 'text-black hover:text-[#a9682e] hover:bg-black/10'
                   }`}
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -338,7 +342,7 @@ export function Songs() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-bold text-white">Songs</h1>
+        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Songs</h1>
         <SongSearch />
       </div>
       <div className="flex flex-col gap-8 w-full">
