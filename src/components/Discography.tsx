@@ -122,12 +122,12 @@ export function Discography() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Discography</h1>
+        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Discography</h1>
         <div className="relative" ref={dropdownRef}>
           <div className="md:hidden">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-lg bg-[#fce7ca] text-primary hover:bg-[#fce7ca]/90 transition-colors"
+              className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#f9ae37]/90 transition-colors border border-black"
             >
               <Search className="w-6 h-6" />
             </button>
@@ -137,14 +137,14 @@ export function Discography() {
               title="Select Album"
             >
               <div className="space-y-0">
-                <div className="divide-y divide-white/10">
+                <div className="divide-y divide-black/10">
                   {albums.map((album) => (
                     <button
                       key={album.category}
                       onClick={() => scrollToAlbum(album.category)}
-                      className="w-full text-left px-4 py-2 text-sm rounded-lg hover:bg-white/10 transition-colors font-semibold"
+                      className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
                     >
-                      <span className="text-[#fce7ca]">{album.category}</span>
+                      <span className="text-black">{album.category}</span>
                     </button>
                   ))}
                 </div>
@@ -154,19 +154,19 @@ export function Discography() {
           <div className="hidden md:block">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-2 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap"
+              className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
             >
               Select Release
               <ChevronDown className="w-4 h-4" />
             </button>
           </div>
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 py-2 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
+            <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto right-0 w-64 max-h-96">
               {albums.map((album) => (
                 <button
                   key={album.category}
                   onClick={() => scrollToAlbum(album.category)}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary transition-colors"
+                  className="w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors"
                 >
                   {album.category}
                 </button>
@@ -177,12 +177,17 @@ export function Discography() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Loading albums...</p>
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading albums...</p>
         </div>
       ) : albums.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">No albums found</p>
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+          <p className="text-black">No albums found</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -190,7 +195,7 @@ export function Discography() {
             <div
               key={album.title}
               ref={el => albumRefs.current[album.category] = el}
-              className="bg-[#172330] border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-colors"
+              className="bg-primary border border-black rounded-lg overflow-hidden hover:border-black/70 transition-colors"
             >
               <div className="aspect-square">
                 <img
@@ -200,23 +205,23 @@ export function Discography() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-white mb-1">{album.title}</h3>
-                <p className="text-[#fce7ca]/70 text-sm mb-4">{album.artist}</p>
+                <h3 className="text-lg font-semibold text-black">{album.title}</h3>
+                <p className="text-black/70 text-sm mb-2">{album.artist}</p>
 
                 {album.tracks.length > 0 && (
                   <>
-                    <ol className="list-none space-y-1">
+                    <ol className="list-none">
                       {album.tracks.map((track) => (
                         <li
                           key={`${album.title}-${track.name}-${track.id}`}
-                          className="text-sm text-[#fce7ca]/90 relative pl-8 flex"
+                          className="text-sm text-black relative pl-8 flex"
                         >
-                          <span className="absolute left-0 top-0 text-[#fce7ca]/70 w-5 text-right">
+                          <span className="absolute left-0 top-0 text-black/70 w-5 text-right">
                             {Number(track.song_categoryorder)}. {/* Display song_categoryorder */}
                           </span>
                           <button
                             onClick={() => navigate(`/song/${track.id}`)}
-                            className="font-bold hover:text-white hover:underline transition-colors text-left"
+                            className="font-bold hover:underline hover:text-[#a9682e] transition-colors text-left"
                           >
                             {track.name}
                           </button>
