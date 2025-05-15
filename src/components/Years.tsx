@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter } from 'lucide-react';
 import { Modal } from './Modal';
-import { formatInTimeZone } from 'date-fns-tz';
 import { useAuth } from '../context/AuthContext';
 
 interface Year {
@@ -109,8 +108,8 @@ export function Years() {
       return null;
     }
     return sortDirection === 'asc' ? 
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-white/90" /> : 
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-white/90" />;
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" /> : 
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
   };
 
   const sortData = (data: Show[]) => {
@@ -411,7 +410,7 @@ export function Years() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-bold text-white">Years</h1>
+        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1 pb-0.5 rounded-full border border-black">Years</h1>
         <div className="relative" ref={dropdownRef}>
           <div className="md:hidden">
             <button
@@ -448,7 +447,7 @@ export function Years() {
           <div className="hidden md:block">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm font-semibold"
+              className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-black hover:bg-surface-secondary transition-colors text-sm font-semibold"
             >
               {currentYear}
               <ChevronDown className="w-4 h-4" />
@@ -457,7 +456,7 @@ export function Years() {
           {isDropdownOpen && (
           <div 
             ref={dropdownListRef}
-            className={`absolute py-1 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 overflow-y-auto ${
+            className={`absolute py-1 bg-[#fce7ca] border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
               window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-24 max-h-96'
             }`}
           >
@@ -485,22 +484,22 @@ export function Years() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-4 mb-8">
         <div className="col-span-1 overflow-x-auto">
           {loading ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
                 <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
                 <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
               </div>
-              <p className="text-[#fce7ca]/70 mt-4">Loading shows...</p>
+              <p className="text-black mt-4">Loading shows...</p>
             </div>
           ) : filteredShows.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-[#fce7ca]/70">
+            <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+              <p className="text-black">
                 {shows.length === 0 
                   ? `No shows found for ${currentYear}` 
                   : `No shows match the selected filters. ${" "}
                     <button 
-                      className="text-[#fce7ca] underline hover:text-white"
+                      className="text-[#a9682e] underline hover:text-[#7b4e23]"
                       onClick={clearGroupFilters}
                     >
                       Clear filters
@@ -509,9 +508,9 @@ export function Years() {
               </p>
             </div>
           ) : (
-            <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-white/90">
+            <div className="bg-primary border border-black rounded-lg p-3">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
                   {currentYear} Shows
                 </h2>
                 {selectedGroups.length > 0 && (
@@ -526,10 +525,10 @@ export function Years() {
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse min-w-max">
                   <thead>
-                    <tr className="bg-[#0e151b] border-y border-white/10">
-                      <th className="w-1 px-0 py-2"></th>
+                    <tr className="bg-canvas border-y border-white/10">
+                      <th className="w-1 px-0 py-1"></th>
                       <th 
-                        className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap cursor-pointer hover:bg-white/5"
+                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_date')}
                       >
                         <div className="flex items-center gap-1">
@@ -538,12 +537,12 @@ export function Years() {
                         </div>
                       </th>
                       {user && (
-                        <th className="w-8 px-1 py-2 text-center text-s font-semibold text-white/90">
-                          <Check size={16} className="text-white" strokeWidth={4} />
+                        <th className="w-8 px-1 py-1 text-center text-s font-semibold text-black">
+                          <Check size={16} className="text-black" strokeWidth={4} />
                         </th>
                       )}
                       <th 
-                        className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap cursor-pointer hover:bg-white/5"
+                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_group')}
                       >
                         <div className="flex items-center gap-1">
@@ -552,7 +551,7 @@ export function Years() {
                         </div>
                       </th>
                       <th 
-                        className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap cursor-pointer hover:bg-white/5"
+                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_subvenue')}
                       >
                         <div className="flex items-center gap-1">
@@ -561,7 +560,7 @@ export function Years() {
                         </div>
                       </th>
                       <th 
-                        className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap cursor-pointer hover:bg-white/5"
+                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_venue_location')}
                       >
                         <div className="flex items-center gap-1">
@@ -570,7 +569,7 @@ export function Years() {
                         </div>
                       </th>
                       <th 
-                        className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap cursor-pointer hover:bg-white/5"
+                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_detail')}
                       >
                         <div className="flex items-center gap-1">
@@ -585,8 +584,8 @@ export function Years() {
                       <tr
                         key={show.show_id}
                         className={`${
-                          index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                        } hover:bg-white/10 transition-colors text-xs`}
+                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                        } hover:bg-black/10 transition-colors text-xs`}
                       >
                         <td 
                           style={{ 
@@ -605,7 +604,7 @@ export function Years() {
                         >
                           {hoveredTour === show.show_tour && (
                             <div 
-                              className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1.5 rounded shadow-lg min-w-max z-[9999] text-xs"
+                              className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -615,11 +614,11 @@ export function Years() {
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                        <td className="px-4 py-0.5 text-black whitespace-nowrap">
                           <span className="font-semibold">
                             <button
                               onClick={() => navigate(`/setlist/${show.show_id}`)}
-                              className="hover:text-white transition-colors table-link"
+                              className="hover:text-[#a9682e] transition-colors table-link"
                             >
                               {show.show_date
                                 .split('-')
@@ -640,20 +639,20 @@ export function Years() {
                             )}
                           </td>
                         )}
-                        <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">{show.show_group}</td>
-                        <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                        <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_group}</td>
+                        <td className="px-4 py-0.5 text-black whitespace-nowrap">
                           <button
                             onClick={() => navigateToVenue(show)}
-                            className="hover:text-white hover:underline transition-colors"
+                            className="hover:text-[#a9682e] hover:underline transition-colors"
                           >
                             {show.show_subvenue}
                           </button>
                         </td>
-                        <td className="px-4 py-1 text-[#fce7ca]/70 whitespace-nowrap">{show.show_venue_location}</td>
-                        <td className="px-4 py-1 text-[#fce7ca]/70 whitespace-nowrap">
+                        <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_venue_location}</td>
+                        <td className="px-4 py-0.5 text-black whitespace-nowrap">
                           {show.show_detail && show.show_detail}
                           {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
-                          {show.show_alert && <span className="text-tertiary"><strong>[{show.show_alert}]</strong></span>}
+                          {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
                         </td>
                       </tr>
                     ))}
@@ -666,8 +665,8 @@ export function Years() {
         
         <div className="col-span-1 lg:order-last">
           {/* Tours Container */}
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4 w-full mb-4">
-            <h2 className="text-xl font-semibold text-white/90 mb-4">
+          <div className="bg-primary border border-black rounded-lg p-3 w-full mb-4">
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">
               {currentYear} Tours
             </h2>
             <div className="space-y-1.5">
@@ -680,18 +679,18 @@ export function Years() {
                   </div>
                 </div>
               ) : tours.length === 0 ? (
-                <p className="text-[#fce7ca]/70 text-xs text-center py-2">No tours found</p>
+                <p className="text-black text-xs text-center py-2">No tours found</p>
               ) : (
                 tours.map((tour) => (
-                  <div key={tour.tour_count} className="text-[#fce7ca]/90 text-xs flex items-center gap-2">
+                  <div key={tour.tour_count} className="text-black text-xs flex items-center gap-2">
                     <div 
-                      className="w-5 h-5 rounded flex-shrink-0"
+                      className="w-5 h-5 rounded flex-shrink-0 border border-black"
                       style={{ backgroundColor: tour.color }}
                     />
                     <div>
                       <button 
                         onClick={() => navigate(`/tours/${tour.tour_id}`)}
-                        className="hover:text-white transition-colors font-semibold"
+                        className="hover:text-[#a9682e] transition-colors font-semibold"
                       >
                         {tour.tour_count.split(' (')[0]}
                       </button>
@@ -704,9 +703,9 @@ export function Years() {
           </div>
           
           {/* Group Filter Container */}
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4 w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-white/90">
+          <div className="bg-primary border border-black rounded-lg p-3 w-full">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
                 Filter by Group
               </h2>
               {selectedGroups.length > 0 && (
@@ -729,7 +728,7 @@ export function Years() {
                   </div>
                 </div>
               ) : groups.length === 0 ? (
-                <p className="text-[#fce7ca]/70 text-xs text-center py-2">No groups found</p>
+                <p className="text-black text-xs text-center py-2">No groups found</p>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {groups.map((groupData) => (
@@ -738,8 +737,8 @@ export function Years() {
                       onClick={() => toggleGroupSelection(groupData.group)}
                       className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
                         selectedGroups.includes(groupData.group)
-                          ? 'bg-[#fce7ca] text-primary'
-                          : 'bg-[#0e151b] text-[#fce7ca]/90 hover:bg-[#0e151b]/80 hover:text-white'
+                          ? 'bg-[#f9ae37] text-black border border-black'
+                          : 'bg-canvas text-black hover:text-[#a9682e] border border-black'
                       }`}
                     >
                       {groupData.group} ({groupData.count})

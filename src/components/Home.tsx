@@ -917,7 +917,7 @@ export function Home() {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-[1280px] mx-auto">
       {!isSupabaseConfigured() && (
         <div className="bg-primary border border-white/10 rounded-lg p-4 mb-6">
           <p className="text-black">
@@ -930,7 +930,7 @@ export function Home() {
         {/* Left Column - adjust width based on image aspect ratio */}
         <div className="w-full lg:w-[43%] space-y-6 mr-6">
           {/* Logo container with natural height on mobile, fixed on desktop */}
-          <div className="h-auto md:h-[320px] overflow-hidden rounded-lg flex items-center justify-center">
+          <div className="h-auto md:h-[342px] overflow-hidden rounded-lg flex items-center justify-center">
             <img 
               src={fullLogo} 
               alt="Dripfield.pro logo" 
@@ -1319,7 +1319,7 @@ export function Home() {
         {/* Right Column - adjust width based on image aspect ratio */}
         <div className="w-full lg:w-[57%] space-y-6">
           {/* Cover Image with fixed height - hidden on mobile */}
-          <div className="hidden md:block h-[320px] overflow-hidden rounded-lg">
+          <div className="hidden md:block h-[342px] overflow-hidden rounded-lg">
             <img 
               src={coverImage} 
               alt="Dripfield.pro banner" 
@@ -1602,7 +1602,7 @@ export function Home() {
             <div className="md:hidden space-y-6">
               {/* 1. Top Songs */}
               <div>
-                <h3 className="text-lg font-semibold text-black mb-3">Top Songs</h3>
+                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                 {loadingTopSongs ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1645,7 +1645,7 @@ export function Home() {
               
               {/* 2. Most Common Not Played */}
               <div>
-                <h3 className="text-lg font-semibold text-black mb-3">Most Common Not Played</h3>
+                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                 {loadingNotPlayed ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1688,7 +1688,7 @@ export function Home() {
               
               {/* 3. Top Show Openers */}
               <div>
-                <h3 className="text-lg font-semibold text-black mb-3">Top Show Openers</h3>
+                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                 {loadingShowOpeners ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1731,7 +1731,7 @@ export function Home() {
               
               {/* 4. Top Set Openers */}
               <div>
-                <h3 className="text-lg font-semibold text-black mb-3">Top Set Openers</h3>
+                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                 {loadingSetOpeners ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1774,7 +1774,7 @@ export function Home() {
               
               {/* 5. Top Set Closers */}
               <div>
-                <h3 className="text-lg font-semibold text-black mb-3">Top Set Closers</h3>
+                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                 {loadingSetClosers ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1817,7 +1817,7 @@ export function Home() {
               
               {/* 6. Top Encores */}
               <div>
-                <h3 className="text-lg font-semibold text-black mb-3">Top Encores</h3>
+                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                 {loadingEncores ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
