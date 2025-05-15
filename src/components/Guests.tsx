@@ -200,36 +200,41 @@ export function Guests() {
     if (currentMembersTable.loading) {
       return (
         <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Loading members...</p>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading members...</p>
         </div>
       );
     }
 
     return (
-      <div className="flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
           Current Goose Members
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Member</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Instruments</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Member</th>
+                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Instruments</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {currentMembersTable.members.map((member, index) => (
-                <tr key={member.guest} className={`${index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'} hover:bg-white/10 transition-colors text-xs`}>
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                <tr key={member.guest} className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}>
+                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:underline cursor-pointer"
+                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${member.guest_id}`)}
                     >
                       {member.guest}
                     </span>
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">{member.guest_instrument}</td>
+                  <td className="px-4 py-0.5 text-black whitespace-nowrap">{member.guest_instrument}</td>
                 </tr>
               ))}
             </tbody>
@@ -243,22 +248,27 @@ export function Guests() {
     if (formerMembersTable.loading) {
       return (
         <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Loading members...</p>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading members...</p>
         </div>
       );
     }
   
     return (
-      <div className="flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
           Former Goose Members
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Member</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Instruments</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-4 py-1 text-left text-s font-semibold text-black">Member</th>
+                <th className="px-4 py-1 text-left text-s font-semibold text-black">Instruments</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -266,18 +276,18 @@ export function Guests() {
                 <tr
                   key={member.guest}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                  } hover:bg-white/10 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                  } hover:bg-black/10 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:underline cursor-pointer"
+                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${member.guest_id}`)}
                     >
                       {member.guest}
                     </span>
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90">
+                  <td className="px-4 py-0.5 text-black">
                     {member.guest_instrument}
                   </td>
                 </tr>
@@ -295,22 +305,27 @@ export function Guests() {
     if (guestTable.loading) {
       return (
         <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Loading guests...</p>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading guests...</p>
         </div>
       );
     }
   
     return (
-      <div className="flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
           Guests
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Guest</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Instruments</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-4 py-1 text-left text-s font-semibold text-black">Guest</th>
+                <th className="px-4 py-1 text-left text-s font-semibold text-black">Instruments</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -318,18 +333,18 @@ export function Guests() {
                 <tr
                   key={guest.guest}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                  } hover:bg-white/10 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                  } hover:bg-black/10 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:underline cursor-pointer"
+                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${guest.guest_id}`)}
                     >
                       {guest.guest}
                     </span>
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90">
+                  <td className="px-4 py-0.5 text-black">
                     {guest.guest_instrument}
                   </td>
                 </tr>
@@ -339,7 +354,7 @@ export function Guests() {
         </div>
   
         <div className="mt-4 flex items-center justify-between px-4">
-          <div className="text-sm text-[#fce7ca]/70">
+          <div className="text-sm text-black">
             Showing {(guestTable.currentPage - 1) * guestsPerPage + 1}-{Math.min(guestTable.currentPage * guestsPerPage, guestTable.totalCount)} of {guestTable.totalCount}
           </div>
           <div className="flex items-center gap-2">
@@ -348,13 +363,13 @@ export function Guests() {
               disabled={guestTable.currentPage === 1}
               className={`p-1 rounded-md transition-colors ${
                 guestTable.currentPage === 1
-                  ? 'text-[#fce7ca]/30 cursor-not-allowed'
-                  : 'text-[#fce7ca]/70 hover:text-[#fce7ca] hover:bg-white/10'
+                  ? 'text-black/30 cursor-not-allowed'
+                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
               }`}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-sm text-[#fce7ca]/90">
+            <span className="text-sm text-black">
               Page {guestTable.currentPage} of {totalPages}
             </span>
             <button
@@ -362,8 +377,8 @@ export function Guests() {
               disabled={guestTable.currentPage === totalPages}
               className={`p-1 rounded-md transition-colors ${
                 guestTable.currentPage === totalPages
-                  ? 'text-[#fce7ca]/30 cursor-not-allowed'
-                  : 'text-[#fce7ca]/70 hover:text-[#fce7ca] hover:bg-white/10'
+                  ? 'text-black/30 cursor-not-allowed'
+                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
               }`}
             >
               <ChevronRight className="w-5 h-5" />
@@ -380,21 +395,26 @@ export function Guests() {
     if (groupTable.loading) {
       return (
         <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Loading groups...</p>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading groups...</p>
         </div>
       );
     }
   
     return (
-      <div className="flex-1 min-w-0 bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
           Groups
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Group</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-4 py-1 text-left text-s font-semibold text-black">Group</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -402,12 +422,12 @@ export function Guests() {
                 <tr
                   key={group.guest}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                  } hover:bg-white/10 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                  } hover:bg-black/10 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:underline cursor-pointer"
+                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${group.guest_id}`)}
                     >
                       {group.guest}
@@ -420,7 +440,7 @@ export function Guests() {
         </div>
   
         <div className="mt-4 flex items-center justify-between px-4">
-          <div className="text-sm text-[#fce7ca]/70">
+          <div className="text-sm text-black">
             Showing {(groupTable.currentPage - 1) * guestsPerPage + 1}-{Math.min(groupTable.currentPage * guestsPerPage, groupTable.totalCount)} of {groupTable.totalCount}
           </div>
           <div className="flex items-center gap-2">
@@ -429,13 +449,13 @@ export function Guests() {
               disabled={groupTable.currentPage === 1}
               className={`p-1 rounded-md transition-colors ${
                 groupTable.currentPage === 1
-                  ? 'text-[#fce7ca]/30 cursor-not-allowed'
-                  : 'text-[#fce7ca]/70 hover:text-[#fce7ca] hover:bg-white/10'
+                  ? 'text-black/30 cursor-not-allowed'
+                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
               }`}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-sm text-[#fce7ca]/90">
+            <span className="text-sm text-black">
               Page {groupTable.currentPage} of {totalPages}
             </span>
             <button
@@ -443,8 +463,8 @@ export function Guests() {
               disabled={groupTable.currentPage === totalPages}
               className={`p-1 rounded-md transition-colors ${
                 groupTable.currentPage === totalPages
-                  ? 'text-[#fce7ca]/30 cursor-not-allowed'
-                  : 'text-[#fce7ca]/70 hover:text-[#fce7ca] hover:bg-white/10'
+                  ? 'text-black/30 cursor-not-allowed'
+                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
               }`}
             >
               <ChevronRight className="w-5 h-5" />
@@ -458,7 +478,7 @@ export function Guests() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6 items-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Guests</h1>
+        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Guests</h1>
         <GuestSearch />
       </div>
 
