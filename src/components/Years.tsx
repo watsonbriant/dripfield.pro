@@ -410,12 +410,12 @@ export function Years() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1 pb-0.5 rounded-full border border-black">Years</h1>
+        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Years</h1>
         <div className="relative" ref={dropdownRef}>
           <div className="md:hidden">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-lg bg-[#fce7ca] text-primary hover:bg-[#fce7ca]/90 transition-colors"
+              className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#fce7ca]/90 transition-colors border border-black"
             >
               <Search className="w-6 h-6" />
             </button>
@@ -425,7 +425,7 @@ export function Years() {
               title="Select Year"
             >
               <div className="space-y-0">
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-2">
                   {years.map((year) => (
                     <button
                       key={year.year}
@@ -435,9 +435,9 @@ export function Years() {
                         navigate(`/years/${year.year_id}`);
                         setIsModalOpen(false);
                       }}
-                      className="w-full text-center px-4 py-3 text-sm rounded-lg hover:bg-white/10 transition-colors font-semibold border border-white/10"
+                      className="w-full text-center px-3 pt-2 pb-1 text-lg rounded-full hover:bg-tertiary bg-[#f9ae37] transition-colors font-mohr border border-black"
                     >
-                      <span className="text-[#fce7ca]">{year.year}</span>
+                      <span className="text-black">{year.year}</span>
                     </button>
                   ))}
                 </div>
@@ -447,7 +447,7 @@ export function Years() {
           <div className="hidden md:block">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-black hover:bg-surface-secondary transition-colors text-sm font-semibold"
+              className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
             >
               {currentYear}
               <ChevronDown className="w-4 h-4" />
@@ -456,7 +456,7 @@ export function Years() {
           {isDropdownOpen && (
           <div 
             ref={dropdownListRef}
-            className={`absolute py-1 bg-[#fce7ca] border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
+            className={`absolute py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
               window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-24 max-h-96'
             }`}
           >
@@ -469,8 +469,8 @@ export function Years() {
                     navigate(`/years/${year.year_id}`);
                     setIsDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm hover:bg-surface-secondary transition-colors ${
-                    currentYear === year.year ? 'bg-surface-secondary' : ''
+                  className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
+                    currentYear === year.year ? 'bg-[#f9ae37]' : ''
                   }`}
                 >
                   {year.year}
@@ -510,13 +510,13 @@ export function Years() {
           ) : (
             <div className="bg-primary border border-black rounded-lg p-3">
               <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
+                <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
                   {currentYear} Shows
                 </h2>
                 {selectedGroups.length > 0 && (
                   <button
                     onClick={clearGroupFilters}
-                    className="flex items-center gap-2 bg-[#fce7ca] text-primary px-2 py-1 rounded-lg border border-border-primary hover:bg-[#fce7ca]/90 transition-colors text-xs font-semibold"
+                    className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-black hover:bg-red-600 transition-colors text-xs font-semibold"
                   >
                     Clear Filters
                   </button>
@@ -604,7 +604,7 @@ export function Years() {
                         >
                           {hoveredTour === show.show_tour && (
                             <div 
-                              className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                              className="fixed bg-secondary text-black px-3 py-1 rounded border border-black min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -632,8 +632,8 @@ export function Years() {
                           <td className="w-8 text-center">
                             {show.attended && (
                               <div className="flex justify-center items-center h-full">
-                                <div className="rounded-full p-1 bg-green-600">
-                                  <Check size={12} className="text-white" strokeWidth={4} />
+                                <div className="rounded-full p-0.5 bg-green-600">
+                                  <Check size={12} className="text-white" strokeWidth={3} />
                                 </div>
                               </div>
                             )}
@@ -666,7 +666,7 @@ export function Years() {
         <div className="col-span-1 lg:order-last">
           {/* Tours Container */}
           <div className="bg-primary border border-black rounded-lg p-3 w-full mb-4">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-2">
               {currentYear} Tours
             </h2>
             <div className="space-y-1.5">
@@ -705,13 +705,13 @@ export function Years() {
           {/* Group Filter Container */}
           <div className="bg-primary border border-black rounded-lg p-3 w-full">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
                 Filter by Group
               </h2>
               {selectedGroups.length > 0 && (
                 <button
                   onClick={clearGroupFilters}
-                  className="flex items-center gap-2 bg-[#fce7ca] text-primary px-2 py-1 rounded-lg border border-border-primary hover:bg-[#fce7ca]/90 transition-colors text-xs font-semibold"
+                  className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-black hover:bg-red-600 transition-colors text-xs font-semibold"
                 >
                   <span>Clear</span>
                   <Filter className="w-3 h-3" />
