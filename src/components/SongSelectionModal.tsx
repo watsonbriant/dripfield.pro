@@ -723,7 +723,7 @@ export function SongSelectionModal({
     
     // Check if the song is already selected in ANY set (not just current set)
     if (songPicks.some(pick => pick.song === selectedSong && !pick.isBreak)) {
-      setError('This song is already selected for this show');
+      setError('This song is already selected for this show.');
       return;
     }
     
@@ -1762,7 +1762,7 @@ export function SongSelectionModal({
         </div>
         
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-4">
+        <div className="flex-1 overflow-y-auto p-4">
           {loading ? (
             <div className="text-center py-8">
               <div className="flex items-center justify-center space-x-2">
@@ -1774,7 +1774,7 @@ export function SongSelectionModal({
             </div>
           ) : success ? (
             <div className="text-center py-8">
-              <div className="bg-green-500/20 text-green-300 px-4 py-3 rounded-lg">
+              <div className="bg-green-500/20 text-black px-4 py-3 rounded-lg">
                 Your song selections have been {isEditing ? 'updated' : 'submitted'} successfully!
               </div>
             </div>
@@ -1789,7 +1789,7 @@ export function SongSelectionModal({
                     <select
                       value={selectedSong}
                       onChange={(e) => setSelectedSong(e.target.value)}
-                      className="w-full px-2 py-2 bg-white border border-black rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#f9ae37] appearance-none"
+                      className="w-full px-2 py-2 bg-white border border-black rounded-md text-black font-semibold focus:outline-none focus:ring-2 focus:ring-[#f9ae37] appearance-none"
                     >
                       <option value="">Select a song...</option>
                       {songs
@@ -1804,7 +1804,7 @@ export function SongSelectionModal({
                     <button
                       onClick={handleAddSong}
                       disabled={!selectedSong}
-                      className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors disabled:bg-[#f9ae37]/50 disabled:cursor-not-allowed flex items-center gap-2 border border-black"
+                      className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-semibold rounded-md transition-colors disabled:bg-[#f9ae37]/50 disabled:cursor-not-allowed flex items-center gap-2 border border-black"
                     >
                       <Plus className="w-4 h-4" />
                       <span className="md:inline hidden">Add Song</span>
@@ -1817,7 +1817,7 @@ export function SongSelectionModal({
                     <button
                       onClick={handleAddSetBreak}
                       disabled={!canAddSetBreak()}
-                      className="px-4 py-2 bg-canvas hover:bg-[#f9ae37]/20 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
+                      className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
                     >
                       Add Set Break
                     </button>
@@ -1825,7 +1825,7 @@ export function SongSelectionModal({
                     <button
                       onClick={handleAddEncoreBreak}
                       disabled={!canAddEncoreBreak()}
-                      className="px-4 py-2 bg-canvas hover:bg-[#f9ae37]/20 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
+                      className="px-4 py-2 bg-red-400 hover:bg-red-400/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
                     >
                       Add Encore Break
                     </button>
@@ -1879,7 +1879,7 @@ export function SongSelectionModal({
                                       getSongsForSet(setId).map((pick, index) => (
                                         <div 
                                           key={pick.id} 
-                                          className="flex justify-between items-center rounded-md px-3 text-black hover:bg-black/5 transition-colors">
+                                          className="flex justify-between items-center rounded-md px-3 text-black hover:bg-black/10 transition-colors">
                                           <div className="flex items-center gap-3">
                                             <span 
                                               className="text-white text-center rounded text-sm font-semibold w-8 h-6 flex items-center justify-center"
@@ -2035,8 +2035,8 @@ export function SongSelectionModal({
                       // Regular view for non-scored or edit mode
                       getUniqueSets().map(setId => (
                         <div key={setId} className="border border-black rounded-lg overflow-hidden">
-                          <div className="flex justify-between items-center px-3 py-2 bg-canvas">
-                            <h4 className="text-base font-medium text-[#fce7ca]">
+                          <div className="flex justify-between items-center px-3 py-2 bg-black">
+                            <h4 className="text-base font-medium text-white">
                               {getSetDisplayName(setId)}
                             </h4>
                             {!viewMode && (
@@ -2045,7 +2045,7 @@ export function SongSelectionModal({
                                   e.stopPropagation();
                                   handleRemoveSet(setId);
                                 }}
-                                className="text-white hover:text-white hover:bg-red-500/20 p-1.5 rounded-md"
+                                className="bg-red-600 text-white hover:bg-red-600/80 p-1.5 rounded-md"
                                 title="Remove this set"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -2089,7 +2089,7 @@ export function SongSelectionModal({
                                       e.stopPropagation(); // Prevent event bubbling
                                       moveSongUp(pick.id);
                                     }}
-                                    className="text-black hover:text-black hover:bg-[#f9ae37]/20 p-1 rounded border border-black"
+                                    className="text-black bg-[#f9ae37] hover:bg-[#f9ae37]/50 p-1 mr-0.5 rounded border border-black"
                                     title="Move up"
                                   >
                                     <ChevronUp className="w-4 h-4" />
@@ -2099,7 +2099,7 @@ export function SongSelectionModal({
                                       e.stopPropagation(); // Prevent event bubbling
                                       moveSongDown(pick.id);
                                     }}
-                                    className="text-black hover:text-black hover:bg-[#f9ae37]/20 p-1 rounded border border-black"
+                                    className="text-black bg-[#f9ae37] hover:bg-[#f9ae37]/50 p-1 mr-0.5 rounded border border-black"
                                     title="Move down"
                                   >
                                     <ChevronDown className="w-4 h-4" />
@@ -2112,7 +2112,7 @@ export function SongSelectionModal({
                                         handleRemoveSong(index);
                                       }
                                     }}
-                                    className="text-white hover:text-white hover:bg-red-500/20 p-1 rounded"
+                                    className="text-white bg-red-600 hover:bg-red-600/50 p-1 mr-0.5 rounded border border-black"
                                     title="Remove song"
                                   >
                                     <X className="w-4 h-4" />
@@ -2240,7 +2240,7 @@ export function SongSelectionModal({
               {/* Mobile view: stacked layout */}
               <div className="block md:hidden w-full">
                 <div className="flex justify-center mb-3">
-                  <div className="text-[#fce7ca]/70 text-sm">
+                  <div className="text-black font-semibold text-sm">
                     {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
                   </div>
                 </div>
@@ -2254,7 +2254,7 @@ export function SongSelectionModal({
                         setNextSetNum(1);
                         setError(null);
                       }}
-                      className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors flex items-center gap-1"
+                      className="px-3 py-2 bg-red-600 border border-black hover:bg-red-700 text-white font-medium rounded-md transition-colors flex items-center gap-1"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span>Clear</span>
@@ -2266,10 +2266,10 @@ export function SongSelectionModal({
                     <button
                       onClick={copyImageToClipboard}
                       disabled={isGeneratingImage || clipboardSuccess}
-                      className={`px-3 py-2 font-medium rounded-md transition-colors flex items-center gap-1 ${
+                      className={`px-3 py-2 font-medium rounded-md transition-colors border border-black flex items-center gap-1 ${
                         clipboardSuccess 
                           ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
+                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-black/50 disabled:cursor-not-allowed'
                       }`}
                     >
                       {isGeneratingImage ? (
@@ -2294,7 +2294,7 @@ export function SongSelectionModal({
                   <button
                     onClick={handleSubmit}
                     disabled={songPicks.length === 0 || submitting || success}
-                    className="px-3 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="px-3 py-2 bg-green-600 border border-black hover:bg-green-600/80 text-white font-medium rounded-md transition-colors disabled:bg-black/50 disabled:cursor-not-allowed flex items-center gap-1"
                   >
                     {submitting ? (
                       <>
@@ -2315,7 +2315,7 @@ export function SongSelectionModal({
               {/* Desktop view: remains the same */}
               <div className="hidden md:flex md:justify-between md:items-center">
                 <div className="flex items-center gap-4">
-                  <div className="text-[#fce7ca]/70 text-sm">
+                  <div className="text-black font-semibold text-sm">
                     {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
                   </div>
                   {songPicks.length > 0 && (
@@ -2327,7 +2327,7 @@ export function SongSelectionModal({
                         setNextSetNum(1);
                         setError(null);
                       }}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors flex items-center gap-2"
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white border border-black font-medium rounded-md transition-colors flex items-center gap-2"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span>Clear Selections</span>
@@ -2340,10 +2340,10 @@ export function SongSelectionModal({
                     <button
                       onClick={copyImageToClipboard}
                       disabled={isGeneratingImage || clipboardSuccess}
-                      className={`px-3 py-2 font-medium rounded-md transition-colors flex items-center gap-1 ${
+                      className={`px-3 py-2 font-medium rounded-md border border-black transition-colors flex items-center gap-1 ${
                         clipboardSuccess 
                           ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
+                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-black/50 disabled:cursor-not-allowed'
                       }`}
                     >
                       {isGeneratingImage ? (
@@ -2367,7 +2367,7 @@ export function SongSelectionModal({
                   <button
                     onClick={handleSubmit}
                     disabled={songPicks.length === 0 || submitting || success}
-                    className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-2 bg-green-600 hover:bg-green-600/80 border border-black text-white font-medium rounded-md transition-colors disabled:bg-green-600/50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {submitting ? (
                       <>

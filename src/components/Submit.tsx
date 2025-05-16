@@ -107,19 +107,19 @@ export function Submit() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-6 mb-6">
-        <h1 className="text-2xl font-bold text-white mb-4">Submit Information</h1>
-        <p className="text-[#fce7ca]/90 mb-6">
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Submit Information</h2>
+        <p className="text-black mb-4">
           Use this form to submit corrections, new information, or report issues with the site.
         </p>
 
         {submitSuccess ? (
-          <div className="bg-green-900/50 border border-green-500/50 text-green-100 p-4 rounded-md mb-6">
+          <div className="bg-green-600/20 border border-green-500/50 text-green-800 p-4 rounded-md mb-6">
             <p className="font-medium">Thank you for your submission!</p>
             <p className="text-sm mt-1">We have received your information and will review it soon.</p>
             <button
               onClick={() => setSubmitSuccess(false)}
-              className="mt-3 px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors"
+              className="mt-3 px-4 py-2 bg-[#f9ae37] hover:bg-[#e29d26] text-black font-medium rounded-md transition-colors border border-black"
             >
               Submit Another
             </button>
@@ -127,14 +127,14 @@ export function Submit() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {submitError && (
-              <div className="bg-red-900/50 border border-red-500/50 text-red-100 p-4 rounded-md">
+              <div className="bg-red-600/20 border border-red-500/50 text-red-800 p-4 rounded-md">
                 <p>{submitError}</p>
               </div>
             )}
 
             <div>
-              <label htmlFor="submissionType" className="block text-sm font-semibold text-[#fce7ca]/80 mb-1">
-                Submission Type <span className="text-red-500">*</span>
+              <label htmlFor="submissionType" className="block text-sm font-semibold text-black mb-1">
+                Submission Type <span className="text-red-600">*</span>
               </label>
               <select
                 id="submissionType"
@@ -142,7 +142,7 @@ export function Submit() {
                 value={formData.submissionType}
                 onChange={handleChange}
                 required
-                className="w-full px-2 py-2 bg-black/30 border border-white/10 rounded-md text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 bg-canvas border border-black rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               >
                 <option value="">&mdash;</option>
                 {submissionTypes.map((type) => (
@@ -154,8 +154,8 @@ export function Submit() {
             </div>
 
             <div>
-              <label htmlFor="contactEmail" className="block text-sm font-semibold text-[#fce7ca]/80 mb-1">
-                Contact Email <span className="text-red-500">*</span>
+              <label htmlFor="contactEmail" className="block text-sm font-semibold text-black mb-1">
+                Contact Email <span className="text-red-600">*</span>
               </label>
               <input
                 type="email"
@@ -164,14 +164,14 @@ export function Submit() {
                 value={formData.contactEmail}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 bg-black/30 border border-white/10 rounded-md text-[#fce7ca] placeholder-[#fce7ca]/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 placeholder="ted@dripfield.pro"
               />
             </div>
 
             <div>
-              <label htmlFor="details" className="block text-sm font-semibold text-[#fce7ca]/80 mb-1">
-                Details <span className="text-red-500">*</span>
+              <label htmlFor="details" className="block text-sm font-semibold text-black mb-1">
+                Details <span className="text-red-600">*</span>
               </label>
               <textarea
                 id="details"
@@ -180,14 +180,14 @@ export function Submit() {
                 onChange={handleChange}
                 required
                 rows={6}
-                className="w-full px-3 py-2 bg-black/30 border border-white/10 rounded-md text-[#fce7ca] placeholder-[#fce7ca]/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 placeholder="Please provide as much detail as possible about your submission..."
               />
             </div>
 
             <div>
-              <label htmlFor="confirmationCode" className="block text-sm font-semibold text-[#fce7ca]/80 mb-1">
-                Confirmation Code <span className="text-red-500">*</span>
+              <label htmlFor="confirmationCode" className="block text-sm font-semibold text-black mb-1">
+                Confirmation Code <span className="text-red-600">*</span>
               </label>
               <div className="flex items-center">
                 <input
@@ -197,10 +197,10 @@ export function Submit() {
                   value={formData.confirmationCode}
                   onChange={handleChange}
                   required
-                  className={`px-3 py-2 bg-black/30 border ${confirmationError ? 'border-red-500' : 'border-white/10'} rounded-md text-[#fce7ca] placeholder-[#fce7ca]/50 focus:outline-none focus:ring-2 focus:ring-tertiary w-24 text-sm`}
+                  className={`px-3 py-2 bg-canvas border ${confirmationError ? 'border-red-600' : 'border-black'} rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] w-24 text-sm`}
                   placeholder="&mdash;"
                 />
-                <span className={`ml-3 text-sm ${confirmationError ? 'text-red-400' : 'text-[#fce7ca]/70'}`}>
+                <span className={`ml-3 text-sm ${confirmationError ? 'text-red-600' : 'text-black/70'}`}>
                   {confirmationError ? 'Incorrect code. Please enter 726.' : 'Type the number 726 here.'}
                 </span>
               </div>
@@ -210,7 +210,7 @@ export function Submit() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                className="w-full px-4 py-2 bg-[#f9ae37] hover:bg-[#e29d26] text-black font-medium rounded-md transition-colors disabled:opacity-50 disabled:pointer-events-none border border-black"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
