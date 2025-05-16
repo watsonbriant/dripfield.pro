@@ -485,9 +485,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-primary border border-black rounded-lg p-4 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl text-white font-semibold">
+          <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
             {isNewEntry ? 'Add Setlist Entry' : 'Edit Setlist Entry'}
           </h3>
           <div className="flex gap-2">
@@ -496,7 +496,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 <button
                   onClick={toggleEdit}
                   disabled={isSubmitting}
-                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-tertiary text-white hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
                 >
                   {isEditing ? (
                     <>
@@ -548,11 +548,11 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                       }
                     }}
                     disabled={isSubmitting}
-                    className={`flex items-center justify-center w-10 h-10 rounded-md ${
+                    className={`flex items-center justify-center w-10 h-10 rounded-md border ${
                       isDeleteConfirming 
-                        ? 'bg-green-600 hover:bg-green-700' 
-                        : 'bg-red-600 hover:bg-red-700'
-                    } text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                        ? 'bg-green-500 hover:bg-green-600 border-green-700' 
+                        : 'bg-red-500 hover:bg-red-600 border-red-700'
+                    } text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                     title={isDeleteConfirming ? "Confirm Delete" : "Delete"}
                   >
                     {isDeleteConfirming ? (
@@ -568,7 +568,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               <button
                 onClick={handleSaveChanges}
                 disabled={isSubmitting || !editedEntry?.entry_set || !editedEntry?.entry_song}
-                className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-white hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
               >
                 <Save className="w-5 h-5" />
                 {isSubmitting && <span className="ml-1">...</span>}
@@ -576,9 +576,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-white/10 hover:bg-white/20 transition-colors"
+              className="flex items-center justify-center w-10 h-10 rounded-md bg-canvas hover:bg-black/10 transition-colors border border-black"
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="w-5 h-5 text-black" />
             </button>
           </div>
         </div>
@@ -586,13 +586,13 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           {/* Set */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-white">Set</label>
+            <label className="block text-sm font-semibold text-black">Set</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_set"
                 value={editedEntry?.entry_set === null ? "--" : editedEntry?.entry_set || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 required
               >
                 <option value="--">--</option>
@@ -607,20 +607,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_set || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               />
             )}
           </div>
           
           {/* Set Number */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-white">Set Number</label>
+            <label className="block text-sm font-semibold text-black">Set Number</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_setnum"
                 value={editedEntry?.entry_setnum === null ? "--" : editedEntry?.entry_setnum?.toString() || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 required
               >
                 <option value="--">--</option>
@@ -635,20 +635,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_setnum || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               />
             )}
           </div>
 
           {/* Placement */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-white">Placement</label>
+            <label className="block text-sm font-semibold text-black">Placement</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_placement"
                 value={editedEntry?.entry_placement === null ? "--" : editedEntry?.entry_placement || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               >
                 <option value="--">--</option>
                 {placements.map((placement) => (
@@ -662,20 +662,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_placement || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               />
             )}
           </div>
           
           {/* Song */}
           <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-semibold text-white">Song</label>
+            <label className="block text-sm font-semibold text-black">Song</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_song"
                 value={editedEntry?.entry_song === null ? "--" : editedEntry?.entry_song || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 required
               >
                 <option value="--">--</option>
@@ -690,20 +690,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_song || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               />
             )}
           </div>
           
           {/* Short */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-white">Short</label>
+            <label className="block text-sm font-semibold text-black">Short</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_short"
                 value={editedEntry?.entry_short === null ? "--" : editedEntry?.entry_short || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               >
                 <option value="--">--</option>
                 {shorts.map((short) => (
@@ -717,20 +717,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_short || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               />
             )}
           </div>
           
           {/* Segue */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-white">Segue</label>
+            <label className="block text-sm font-semibold text-black">Segue</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_segue"
                 value={editedEntry?.entry_segue === null ? "--" : editedEntry?.entry_segue || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               >
                 <option value="--">--</option>
                 {segues.map((segue) => (
@@ -744,14 +744,14 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_segue || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               />
             )}
           </div>
           
           {/* Length */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-white">Length (hh:mm:ss)</label>
+            <label className="block text-sm font-semibold text-black">Length (hh:mm:ss)</label>
             <input
               type="text"
               name="entry_length"
@@ -759,7 +759,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               onChange={handleInputChange}
               readOnly={!isEditing && !isNewEntry}
               placeholder="00:00:00"
-              className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'} text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+              className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
             />
           </div>
           
@@ -768,19 +768,19 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             <div className="flex flex-col space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <label className="block text-sm font-semibold text-white">Guests</label>
+                  <label className="block text-sm font-semibold text-black">Guests</label>
                   {/* Move button next to the heading, only show when editing or new entry */}
                   {(isEditing || isNewEntry) && (
                     <button
                       onClick={handleSelectAllGooseMembers}
-                      className="px-2 py-1 rounded-md bg-tertiary text-white hover:bg-tertiary/90 transition-colors text-xs font-semibold"
+                      className="px-2 py-1 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-xs font-semibold border border-black"
                     >
                       Select All Goose Members
                     </button>
                   )}
                 </div>
                 <button 
-                  className="text-gray-300 hover:text-white cursor-pointer"
+                  className="text-black hover:text-[#a9682e] cursor-pointer"
                   onClick={() => setIsGuestSectionExpanded(!isGuestSectionExpanded)}
                 >
                   {isGuestSectionExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
@@ -800,12 +800,12 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                     return (
                       <div 
                         key={guestId} 
-                        className="bg-tertiary text-white text-xs px-2 py-1 rounded-full flex items-center"
+                        className="bg-[#f9ae37] text-black text-xs px-2 py-1 rounded-full flex items-center border border-black"
                       >
                         <span>{guestInfo.guest_displayname || guestInfo.guest}</span>
                         {(isEditing || isNewEntry) && (
                           <button 
-                            className="ml-1 text-white/70 hover:text-white"
+                            className="ml-1 text-black/70 hover:text-black"
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent opening/closing the section
                               handleGuestSelection(guestId);
@@ -822,12 +822,12 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             </div>
             
             {isGuestSectionExpanded && (
-              <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-tertiary bg-white/5' : 'border-white/10 bg-white/5'}`}>
+              <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'}`}>
                 {allGuests.length > 0 ? (
                   <div className="max-h-60 overflow-y-auto">
                     {allGuests.map(category => (
                       <div key={category.category} className="mb-4">
-                        <h4 className="text-sm font-medium text-white mb-2">{category.category}</h4>
+                        <h4 className="text-sm font-medium text-black mb-2">{category.category}</h4>
                         <div className="space-y-2">
                           {category.guests.map(guest => (
                             <div key={guest.guest_id} className="flex items-center">
@@ -837,11 +837,11 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                                 checked={selectedGuestIds.includes(guest.guest_id)}
                                 onChange={() => handleGuestSelection(guest.guest_id)}
                                 disabled={!isEditing && !isNewEntry}
-                                className="mr-2 h-4 w-4 rounded border-white/30 bg-white/5 checked:bg-tertiary focus:ring-tertiary disabled:opacity-50"
+                                className="mr-2 h-4 w-4 rounded border-black/30 bg-white checked:bg-[#f9ae37] focus:ring-[#a9682e] disabled:opacity-50"
                               />
                               <label 
                                 htmlFor={`guest-${guest.guest_id}`} 
-                                className="text-[#fce7ca] text-sm cursor-pointer"
+                                className="text-black text-sm cursor-pointer"
                               >
                                 {guest.guest_displayname || guest.guest}
                                 {guest.guest_instrument && ` (${guest.guest_instrument})`}
@@ -853,12 +853,12 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-sm">No guests available</p>
+                  <p className="text-black/60 text-sm">No guests available</p>
                 )}
                 
                 {selectedGuestIds.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-white/10">
-                    <p className="text-sm text-white">Selected guests: {selectedGuestIds.length}</p>
+                  <div className="mt-3 pt-3 border-t border-black/10">
+                    <p className="text-sm text-black">Selected guests: {selectedGuestIds.length}</p>
                   </div>
                 )}
               </div>
@@ -867,27 +867,27 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           
           {/* Coach's Notes */}
           <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-semibold text-white">Coach's Notes</label>
+            <label className="block text-sm font-semibold text-black">Coach's Notes</label>
             <textarea
               name="entry_coachnotes"
               value={editedEntry?.entry_coachnotes || ''}
               onChange={handleInputChange}
               readOnly={!isEditing && !isNewEntry}
               rows={4}
-              className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'} text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+              className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
             />
           </div>
 
           <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-semibold text-white">New Song?</label>
+            <label className="block text-sm font-semibold text-black">New Song?</label>
             <select
               name="new_song_option"
               value={selectedNewSongOption}
               onChange={(e) => setSelectedNewSongOption(e.target.value)}
               disabled={!isEditing && !isNewEntry}
               className={`w-full px-2 py-2 rounded-md border ${
-                isEditing || isNewEntry ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'
-              } text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+                isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'
+              } text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
             >
               <option value="N/A">N/A</option>
               <option value="New Original Song">New Original Song</option>

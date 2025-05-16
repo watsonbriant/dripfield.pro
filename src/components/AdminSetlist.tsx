@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Search, Plus } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { formatInTimeZone } from 'date-fns-tz';
 import SetlistEntryModal from './SetlistEntryModal';
 
 interface ShowData {
@@ -314,19 +313,19 @@ export const AdminSetlist: React.FC = () => {
     <div>
       {/* Header with right-aligned dropdown */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl text-white/90 font-semibold">Setlist Management</h3>
+        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Setlist Management</h3>
         
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap font-semibold"
+            className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
           >
             Select Show
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 py-1 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
+            <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
               <div className="p-2">
                 <div className="relative">
                   <input
@@ -334,16 +333,16 @@ export const AdminSetlist: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search shows..."
-                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-border-primary bg-white/90 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
                   />
-                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
                 </div>
               </div>
-              <div className="max-h-64 overflow-y-auto divide-y divide-border-primary/20">
+              <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
                 {loading && loadingProgress < 100 ? (
                   <div className="flex flex-col justify-center items-center p-4 h-16">
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary"></div>
-                    <p className="text-xs text-primary/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
+                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
+                    <p className="text-xs text-black/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
                   </div>
                 ) : (
                   <>
@@ -351,7 +350,7 @@ export const AdminSetlist: React.FC = () => {
                       <button
                         key={show.show_id}
                         onClick={() => handleShowSelect(show)}
-                        className="w-full text-left px-2 py-1 text-sm hover:bg-surface-secondary transition-colors"
+                        className="w-full text-left px-2 py-1 text-sm text-black hover:bg-canvas transition-colors"
                       >
                         <span className="font-semibold">
                           {formatDate(show.show_date)}
@@ -361,7 +360,7 @@ export const AdminSetlist: React.FC = () => {
                       </button>
                     ))}
                     {filteredShows.length === 0 && !loading && (
-                      <div className="px-2 py-1 text-sm text-gray-500 italic">
+                      <div className="px-2 py-1 text-sm text-black/60 italic">
                         No shows found
                       </div>
                     )}
@@ -378,11 +377,11 @@ export const AdminSetlist: React.FC = () => {
         <div>
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h4 className="text-lg text-[#fce7ca]/90 font-medium">
+              <h4 className="text-lg text-black font-semibold">
                 {formatDate(selectedShow.show_date)}
                 &nbsp;[{selectedShow.show_group}]
               </h4>
-              <div className="text-sm text-white/70 mt-1">
+              <div className="text-sm text-black/70 mt-1">
                 {selectedShow.show_subvenue} — {selectedShow.show_venue_location}
               </div>
             </div>
@@ -390,7 +389,7 @@ export const AdminSetlist: React.FC = () => {
             {/* Add New Entry Button - similar to the Add New Song button in AdminSong */}
             <button
               onClick={handleCreateNewEntry}
-              className="flex items-center gap-2 bg-tertiary text-white px-1.5 py-1.5 rounded-lg hover:bg-tertiary/90 transition-colors text-sm whitespace-nowrap font-semibold"
+              className="flex items-center gap-2 bg-[#f9ae37] text-black px-1.5 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -398,7 +397,7 @@ export const AdminSetlist: React.FC = () => {
           
           {loading ? (
             <div className="flex justify-center items-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-tertiary"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#f9ae37]"></div>
             </div>
           ) : (
             <>
@@ -406,48 +405,48 @@ export const AdminSetlist: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse min-w-max">
                     <thead>
-                      <tr className="bg-[#0e151b] border-y border-white/10">
-                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">S</th>
-                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">#</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Song</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Short</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">&gt;</th>
-                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">Placement</th>
-                        <th className="px-2 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap">Length</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap">Notes</th>
+                      <tr className="bg-canvas border-y border-black/10">
+                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">S</th>
+                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">#</th>
+                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Song</th>
+                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Short</th>
+                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">&gt;</th>
+                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Placement</th>
+                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Length</th>
+                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Notes</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-black/5">
                       {setlistEntries.map((entry, index) => (
                         <tr 
                           key={entry.entry_id} 
                           className={`${
-                            index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                          } hover:bg-white/10 transition-colors text-xs cursor-pointer`}
+                            index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                          } hover:bg-black/10 transition-colors text-xs cursor-pointer`}
                           onClick={() => handleEntrySelect(entry)}
                         >
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap text-center">{entry.entry_set}</td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap text-center">{entry.entry_setnum}</td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap font-semibold">{entry.entry_song}</td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
+                          <td className="px-2 py-0.5 text-black whitespace-nowrap text-center">{entry.entry_set}</td>
+                          <td className="px-2 py-0.5 text-black whitespace-nowrap text-center">{entry.entry_setnum}</td>
+                          <td className="px-2 py-0.5 text-black whitespace-nowrap font-semibold">{entry.entry_song}</td>
+                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
                             {entry.entry_short || ""}
                           </td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
+                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
                             {entry.entry_segue || ""}
                           </td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
+                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
                             <div 
                               className="px-2 py-0.5 rounded-md text-center font-semibold"
                               style={{ 
                                 backgroundColor: getPlacementColor(entry.entry_placement),
-                                color: getPlacementColor(entry.entry_placement) !== 'transparent' ? 'white' : '#fce7ca90'
+                                color: getPlacementColor(entry.entry_placement) !== 'transparent' ? 'white' : 'black'
                               }}
                             >
                               {entry.entry_placement || ""}
                             </div>
                           </td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 text-center whitespace-nowrap">{formatTimeDisplay(entry.entry_length)}</td>
-                          <td className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
+                          <td className="px-2 py-0.5 text-black text-center whitespace-nowrap">{formatTimeDisplay(entry.entry_length)}</td>
+                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
                             {entry.entry_coachnotes || ""}
                           </td>
                         </tr>
@@ -456,8 +455,8 @@ export const AdminSetlist: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <div className="border border-white/10 rounded-lg p-6 text-center">
-                  <p className="text-white/70">No setlist entries found for this show.</p>
+                <div className="border border-black rounded-lg p-6 text-center">
+                  <p className="text-black/70">No setlist entries found for this show.</p>
                 </div>
               )}
             </>
@@ -467,16 +466,16 @@ export const AdminSetlist: React.FC = () => {
 
       {/* Show message when no show is selected */}
       {!selectedShow && !loading && (
-        <div className="border border-white/10 rounded-lg p-6 text-center">
-          <p className="text-white/70">Select a show to view its setlist.</p>
+        <div className="border border-black rounded-lg p-6 text-center">
+          <p className="text-black/70">Select a show to view its setlist.</p>
         </div>
       )}
 
       {/* Show loading indicator for initial data fetch */}
       {loading && loadingProgress < 100 && !selectedShow && (
         <div className="flex flex-col justify-center items-center h-56">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-tertiary"></div>
-          <p className="text-[#fce7ca]/70 mt-4">Loading shows ({Math.round(loadingProgress)}%)</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#f9ae37]"></div>
+          <p className="text-black/70 mt-4">Loading shows ({Math.round(loadingProgress)}%)</p>
         </div>
       )}
 

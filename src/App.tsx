@@ -340,17 +340,17 @@ function App() {
       {isShowModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsShowModalOpen(false)}></div>
-          <div className="relative bg-[#172330] border border-white/10 rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="relative bg-primary border border-black rounded-lg p-4 w-full max-w-md mx-4">
             <button
               onClick={() => setIsShowModalOpen(false)}
-              className="absolute top-4 right-4 rounded-md text-[#fce7ca] hover:text-white focus:outline-none"
+              className="absolute top-4 right-4 rounded-md text-black hover:text-[#a9682e] focus:outline-none"
             >
               <X className="w-6 h-6" />
             </button>
-            <h2 className="text-xl font-medium text-white mb-4">Find a Show</h2>
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Find a Show</h2>
             <form onSubmit={handleShowSearch} className="space-y-4">
               <div>
-                <label htmlFor="showId" className="block text-sm font-medium text-[#fce7ca]/80 mb-1">
+                <label htmlFor="showId" className="block text-sm font-semibold text-black mb-1">
                   Enter Show ID
                 </label>
                 <input
@@ -358,14 +358,14 @@ function App() {
                   id="showId"
                   value={showId}
                   onChange={(e) => setShowId(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/30 border border-white/10 rounded-md text-[#fce7ca] placeholder-[#fce7ca]/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
-                  placeholder="Enter show ID"
+                  className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e]"
+                  placeholder="Enter Show ID"
                   autoFocus
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors"
+                className="w-full px-4 py-2 bg-[#f9ae37] hover:bg-[#e29d26] text-black font-medium rounded-md transition-colors border border-black"
               >
                 Go
               </button>

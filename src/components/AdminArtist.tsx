@@ -121,19 +121,19 @@ export const AdminArtist: React.FC = () => {
     <div>
       {/* Header with right-aligned dropdown */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl text-white/90 font-semibold">Artist Management</h3>
+        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Artist Management</h3>
         
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap font-semibold"
+            className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
           >
             Current Artists
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 py-1 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
+            <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
               <div className="p-2">
                 <div className="relative">
                   <input
@@ -141,12 +141,12 @@ export const AdminArtist: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search artists..."
-                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-border-primary bg-white/90 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
                   />
-                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
                 </div>
               </div>
-              <div className="max-h-64 overflow-y-auto divide-y divide-border-primary/20">
+              <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
                 {filteredArtists.map((artist) => (
                   <button
                     key={artist.artist_id}
@@ -156,13 +156,13 @@ export const AdminArtist: React.FC = () => {
                       setSearchTerm('');
                       // No action when selecting an artist as per requirements
                     }}
-                    className="w-full text-left px-4 py-1 text-sm hover:bg-surface-secondary transition-colors"
+                    className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
                   >
                     {artist.artist}
                   </button>
                 ))}
                 {filteredArtists.length === 0 && (
-                  <div className="px-4 py-2 text-sm text-gray-500 italic">
+                  <div className="px-4 py-2 text-sm text-black/60 italic">
                     No artists found
                   </div>
                 )}
@@ -179,17 +179,17 @@ export const AdminArtist: React.FC = () => {
           value={newArtistName}
           onChange={(e) => setNewArtistName(e.target.value)}
           placeholder="Enter artist name"
-          className="flex-grow px-3 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] placeholder-[#fce7ca]/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+          className="flex-grow px-3 py-2 rounded-md border border-black bg-canvas text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
         />
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || buttonState === 'success' || buttonState === 'error'}
-          className={`px-4 py-2 font-semibold rounded-md transition-colors text-sm flex items-center justify-center text-white min-w-[80px] ${
+          className={`px-4 py-2 font-semibold rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border ${
             buttonState === 'success' 
-              ? 'bg-green-600 text-white' 
+              ? 'bg-green-500 text-black border-green-700' 
               : buttonState === 'error'
-              ? 'bg-red-600 text-white'
-              : 'bg-tertiary text-primary hover:bg-tertiary/90'
+              ? 'bg-red-500 text-black border-red-700'
+              : 'bg-[#f9ae37] text-black border-black hover:bg-[#e29d26]'
           } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isSubmitting ? 'Adding...' : 

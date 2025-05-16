@@ -154,25 +154,25 @@ export function Admin() {
     switch (activeTab) {
       case 'Setlist':
         return (
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+          <div className="bg-primary border border-black rounded-lg p-3">
             <AdminSetlist />
           </div>
         );
       case 'Artist':
         return (
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+          <div className="bg-primary border border-black rounded-lg p-3">
             <AdminArtist />
           </div>
         );
       case 'Song':
         return (
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+          <div className="bg-primary border border-black rounded-lg p-3">
             <AdminSong />
           </div>
         );
       case 'Guest':
         return (
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+          <div className="bg-primary border border-black rounded-lg p-3">
             <AdminGuest />
           </div>
         );
@@ -184,16 +184,16 @@ export function Admin() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="mt-2 flex justify-between items-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Panel</h1>
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Admin Panel</h2>
         <button
           onClick={handleUpdateStatistics}
           disabled={isUpdating || updateStatus.type === 'success'}
-          className={`px-3 py-1 rounded text-sm text-white font-medium transition-colors
+          className={`px-3 py-1 rounded-md text-sm font-medium transition-colors border border-black
             ${isUpdating
-              ? 'bg-tertiary/50 cursor-not-allowed'
+              ? 'bg-black/50 text-white cursor-not-allowed'
               : updateStatus.type === 'success'
-              ? 'bg-green-500'
-              : 'bg-tertiary hover:bg-tertiary/80'}`}
+              ? 'bg-blue-500 text-white'
+              : 'bg-green-600 text-white hover:bg-green-600/50'}`}
           title="Update all setlist entries statistics"
         >
           {isUpdating
@@ -205,29 +205,29 @@ export function Admin() {
       </div>
       
       {updateStatus.type === 'error' && (
-        <div className="mt-2 text-sm text-red-400">
+        <div className="mt-2 text-sm text-red-600 bg-red-100 px-3 py-1 rounded-md border border-red-300">
           Error: {updateStatus.message}
         </div>
       )}
       
-      <div className="my-4 border-b border-white/10"></div>
+      <div className="my-4 border-b border-black/20"></div>
       
       {/* Tab Navigation */}
       <div className="mt-4 flex flex-row justify-between items-center">
-        <h2 className="text-xl font-semibold text-white/90">Manage Data</h2>
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Manage Data</h2>
         
         {/* Mobile Dropdown */}
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-tertiary text-white font-semibold"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f9ae37] text-black border border-black font-semibold"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-4 py-1 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -235,8 +235,8 @@ export function Admin() {
                     handleTabChange(tab);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm hover:bg-surface-secondary transition-colors ${
-                    activeTab === tab ? 'bg-surface-secondary' : ''
+                  className={`w-full text-left px-4 py-1 text-sm hover:bg-canvas transition-colors ${
+                    activeTab === tab ? 'bg-canvas font-semibold' : 'text-black'
                   }`}
                 >
                   {tab}
@@ -248,7 +248,7 @@ export function Admin() {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-[#172330] px-1 py-1 rounded-full border border-white/10">
+          <div className="bg-primary px-1 py-1 rounded-full border border-black">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
@@ -257,8 +257,8 @@ export function Admin() {
                   onClick={() => handleTabChange(tab)}
                   className={`py-1 px-3 font-semibold relative z-10 text-sm transition-colors duration-200 ${
                     activeTab === tab
-                      ? 'text-white'
-                      : 'text-white/60 hover:text-white/90'
+                      ? 'text-black'
+                      : 'text-black/60 hover:text-black/90'
                   }`}
                 >
                   {tab}
@@ -268,7 +268,7 @@ export function Admin() {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-tertiary rounded-full top-0 transition-all duration-300 ease-in-out"
+                className="absolute h-7 bg-[#f9ae37] rounded-full top-0 transition-all duration-300 ease-in-out"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>

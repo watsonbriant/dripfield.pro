@@ -162,13 +162,13 @@ export const AdminGuest: React.FC = () => {
     <div>
       {/* Header with buttons and dropdown */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl text-white/90 font-semibold">Guest Management</h3>
+        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Guest Management</h3>
         
         <div className="flex items-center gap-2">
           {/* Add New Guest button */}
           <button
             onClick={handleOpenNewGuestModal}
-            className="flex items-center gap-2 bg-tertiary text-white px-1.5 py-1.5 rounded-lg hover:bg-tertiary/90 transition-colors text-sm whitespace-nowrap font-semibold"
+            className="flex items-center gap-2 bg-[#f9ae37] text-black px-1.5 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
           >
             <Plus className="w-5 h-5" />
           </button>
@@ -177,14 +177,14 @@ export const AdminGuest: React.FC = () => {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-1.5 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap font-semibold"
+              className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
             >
               Guest
               <ChevronDown className="w-4 h-4" />
             </button>
             
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 py-1 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
+              <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
                 <div className="p-2">
                   <div className="relative">
                     <input
@@ -192,23 +192,23 @@ export const AdminGuest: React.FC = () => {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Search guests..."
-                      className="w-full px-3 py-1.5 pr-8 rounded-md border border-border-primary bg-white/90 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
                     />
-                    <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
                   </div>
                 </div>
-                <div className="max-h-64 overflow-y-auto divide-y divide-border-primary/20">
+                <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
                   {filteredGuests.map((guest) => (
                     <button
                       key={guest.guest_id}
                       onClick={() => handleGuestSelect(guest)}
-                      className="w-full text-left px-4 py-1 text-sm hover:bg-surface-secondary transition-colors"
+                      className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
                     >
                       {guest.guest}
                     </button>
                   ))}
                   {filteredGuests.length === 0 && (
-                    <div className="px-4 py-2 text-sm text-gray-500 italic">
+                    <div className="px-4 py-2 text-sm text-black/60 italic">
                       No guests found
                     </div>
                   )}
@@ -223,11 +223,11 @@ export const AdminGuest: React.FC = () => {
       {selectedGuest && (
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h4 className="text-lg text-white font-medium">{selectedGuest.guest}</h4>
+            <h4 className="text-lg text-black font-semibold">{selectedGuest.guest}</h4>
             <button
               onClick={toggleEdit}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-tertiary text-white hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
             >
               {isEditing ? (
                 <>
@@ -245,49 +245,49 @@ export const AdminGuest: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-white">Guest Name</label>
+              <label className="block text-sm font-semibold text-black">Guest Name</label>
               <input
                 type="text"
                 name="guest"
                 value={editedGuest?.guest || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'} text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
               />
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-white">Display Name</label>
+              <label className="block text-sm font-semibold text-black">Display Name</label>
               <input
                 type="text"
                 name="guest_displayname"
                 value={editedGuest?.guest_displayname || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'} text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
               />
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-white">Instrument</label>
+              <label className="block text-sm font-semibold text-black">Instrument</label>
               <input
                 type="text"
                 name="guest_instrument"
                 value={editedGuest?.guest_instrument || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-tertiary bg-white/10' : 'border-white/10 bg-white/5'} text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
               />
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-white">Category</label>
+              <label className="block text-sm font-semibold text-black">Category</label>
               {isEditing ? (
                 <select
                   name="guest_category"
                   value={editedGuest?.guest_category || ''}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                  className="w-full px-3 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 >
                   <option value="">-- Select Category --</option>
                   {guestCategories.map((category) => (
@@ -301,20 +301,20 @@ export const AdminGuest: React.FC = () => {
                   type="text"
                   value={editedGuest?.guest_category || ''}
                   readOnly
-                  className="w-full px-3 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                  className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 />
               )}
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-white">Canon ID</label>
+              <label className="block text-sm font-semibold text-black">Canon ID</label>
               <input
                 type="text"
                 value={editedGuest?.guest_canonid || ''}
                 readOnly
-                className="w-full px-3 py-2 rounded-md border border-white/10 bg-white/5 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
               />
-              <p className="text-xs text-white/60 italic">Auto-generated value</p>
+              <p className="text-xs text-black/60 italic">Auto-generated value</p>
             </div>
           </div>
         </div>
