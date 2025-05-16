@@ -1365,7 +1365,7 @@ category_artwork
               <div>
                 {/* Top Songs */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                   {loadingTopSongs ? (
                     <div className="text-center py-6">
                       <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1373,12 +1373,6 @@ category_artwork
                   ) : (
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-canvas border-y border-white/10">
-                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                          </tr>
-                        </thead>
                         <tbody className="divide-y divide-white/5">
                           {topSongs.map((song, index) => (
                             <tr
@@ -1407,7 +1401,7 @@ category_artwork
                                   )}
                                 </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                                 {song.play_count}
                               </td>
                             </tr>
@@ -1420,7 +1414,7 @@ category_artwork
 
                 {/* Top Show Openers */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                   {loadingShowOpeners ? (
                     <div className="text-center py-6">
                       <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1428,12 +1422,6 @@ category_artwork
                   ) : (
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-canvas border-y border-white/10">
-                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                          </tr>
-                        </thead>
                         <tbody className="divide-y divide-white/5">
                           {showOpeners.map((opener, index) => (
                             <tr
@@ -1462,7 +1450,7 @@ category_artwork
                                   )}
                                 </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                                 {opener.times_played}
                               </td>
                             </tr>
@@ -1475,7 +1463,7 @@ category_artwork
 
                 {/* Top Set Closers */}
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                   {loadingSetClosers ? (
                     <div className="text-center py-6">
                       <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1483,12 +1471,6 @@ category_artwork
                   ) : (
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-canvas border-y border-white/10">
-                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                          </tr>
-                        </thead>
                         <tbody className="divide-y divide-white/5">
                           {setClosers.map((closer, index) => (
                             <tr
@@ -1517,7 +1499,7 @@ category_artwork
                                   )}
                                 </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                                 {closer.times_played}
                               </td>
                             </tr>
@@ -1533,7 +1515,7 @@ category_artwork
               <div>
                 {/* Most Common Not Played */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                   {loadingNotPlayed ? (
                     <div className="text-center py-6">
                       <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1541,12 +1523,6 @@ category_artwork
                   ) : (
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-canvas border-y border-white/10">
-                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                          </tr>
-                        </thead>
                         <tbody className="divide-y divide-white/5">
                           {notPlayedSongs.map((song, index) => (
                             <tr
@@ -1575,7 +1551,7 @@ category_artwork
                                   )}
                                 </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                                 {song.play_count}
                               </td>
                             </tr>
@@ -1588,7 +1564,7 @@ category_artwork
 
                 {/* Top Set Openers */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                   {loadingSetOpeners ? (
                     <div className="text-center py-6">
                       <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1596,12 +1572,6 @@ category_artwork
                   ) : (
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-canvas border-y border-white/10">
-                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                          </tr>
-                        </thead>
                         <tbody className="divide-y divide-white/5">
                           {setOpeners.map((opener, index) => (
                             <tr
@@ -1630,7 +1600,7 @@ category_artwork
                                   )}
                                 </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                                 {opener.times_played}
                               </td>
                             </tr>
@@ -1643,7 +1613,7 @@ category_artwork
 
                 {/* Top Encores */}
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                   {loadingEncores ? (
                     <div className="text-center py-6">
                       <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1651,12 +1621,6 @@ category_artwork
                   ) : (
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-canvas border-y border-white/10">
-                            <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                          </tr>
-                        </thead>
                         <tbody className="divide-y divide-white/5">
                           {encores.map((encore, index) => (
                             <tr
@@ -1685,7 +1649,7 @@ category_artwork
                                   )}
                                 </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                                 {encore.times_played}
                               </td>
                             </tr>
@@ -1702,7 +1666,7 @@ category_artwork
             <div className="md:hidden space-y-6">
               {/* 1. Top Songs */}
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                 {loadingTopSongs ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1710,12 +1674,6 @@ category_artwork
                 ) : (
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-canvas border-y border-white/10">
-                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                        </tr>
-                      </thead>
                       <tbody className="divide-y divide-white/5">
                         {topSongs.map((song, index) => (
                           <tr
@@ -1744,7 +1702,7 @@ category_artwork
                                 )}
                               </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                               {song.play_count}
                             </td>
                           </tr>
@@ -1757,7 +1715,7 @@ category_artwork
 
               {/* 2. Most Common Not Played */}
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                 {loadingNotPlayed ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1765,12 +1723,6 @@ category_artwork
                 ) : (
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-canvas border-y border-white/10">
-                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                        </tr>
-                      </thead>
                       <tbody className="divide-y divide-white/5">
                         {notPlayedSongs.map((song, index) => (
                           <tr
@@ -1799,7 +1751,7 @@ category_artwork
                                 )}
                               </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                               {song.play_count}
                             </td>
                           </tr>
@@ -1812,7 +1764,7 @@ category_artwork
 
               {/* 3. Top Show Openers */}
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                 {loadingShowOpeners ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1820,12 +1772,6 @@ category_artwork
                 ) : (
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-canvas border-y border-white/10">
-                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                        </tr>
-                      </thead>
                       <tbody className="divide-y divide-white/5">
                         {showOpeners.map((opener, index) => (
                           <tr
@@ -1854,7 +1800,7 @@ category_artwork
                                 )}
                               </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                               {opener.times_played}
                             </td>
                           </tr>
@@ -1867,7 +1813,7 @@ category_artwork
 
               {/* 4. Top Set Openers */}
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                 {loadingSetOpeners ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1875,12 +1821,6 @@ category_artwork
                 ) : (
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-canvas border-y border-white/10">
-                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                        </tr>
-                      </thead>
                       <tbody className="divide-y divide-white/5">
                         {setOpeners.map((opener, index) => (
                           <tr
@@ -1909,7 +1849,7 @@ category_artwork
                                 )}
                               </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                               {opener.times_played}
                             </td>
                           </tr>
@@ -1922,7 +1862,7 @@ category_artwork
 
               {/* 5. Top Set Closers */}
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                 {loadingSetClosers ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1930,12 +1870,6 @@ category_artwork
                 ) : (
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-canvas border-y border-white/10">
-                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                        </tr>
-                      </thead>
                       <tbody className="divide-y divide-white/5">
                         {setClosers.map((closer, index) => (
                           <tr
@@ -1964,7 +1898,7 @@ category_artwork
                                 )}
                               </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                               {closer.times_played}
                             </td>
                           </tr>
@@ -1977,7 +1911,7 @@ category_artwork
 
               {/* 6. Top Encores */}
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                 {loadingEncores ? (
                   <div className="text-center py-6">
                     <p className="text-[#fce7ca]/70">Loading stats...</p>
@@ -1985,12 +1919,6 @@ category_artwork
                 ) : (
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-canvas border-y border-white/10">
-                          <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
-                        </tr>
-                      </thead>
                       <tbody className="divide-y divide-white/5">
                         {encores.map((encore, index) => (
                           <tr
@@ -2019,7 +1947,7 @@ category_artwork
                                 )}
                               </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                               {encore.times_played}
                             </td>
                           </tr>
