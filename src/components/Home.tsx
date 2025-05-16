@@ -39,36 +39,48 @@ interface TopSong {
   song: string;
   song_id: string;
   play_count: number;
+  category_canonid: number;
+  category_artwork?: string;
 }
 
 interface ShowOpener {
   song_name: string;
   song_id: string;
   times_played: number;
+  category_canonid: number;
+  category_artwork?: string;
 }
 
 interface SetOpener {
   song_name: string;
   song_id: string;
   times_played: number;
+  category_canonid: number;
+  category_artwork?: string;
 }
 
 interface SetCloser {
   song_name: string;
   song_id: string;
   times_played: number;
+  category_canonid: number;
+  category_artwork?: string;
 }
 
 interface Encore {
   song_name: string;
   song_id: string;
   times_played: number;
+  category_canonid: number;
+  category_artwork?: string;
 }
 
 interface NotPlayedSong {
   song: string;
   song_id: string;
   play_count: number;
+  category_canonid: number;
+  category_artwork?: string;
 }
 
 export function Home() {
@@ -107,7 +119,7 @@ export function Home() {
         // Error silently handled
       }
     };
-    
+
     testConnection();
   }, []);
 
@@ -172,14 +184,14 @@ export function Home() {
           if (dateA !== dateB) {
             return dateA - dateB; // Ascending order for dates (oldest first)
           }
-          
+
           // Secondary sort by show_canonid (handle nulls appropriately)
           const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
           const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
           if (canonIdA !== canonIdB) {
             return canonIdA - canonIdB; // Ascending for canon IDs
           }
-          
+
           // Tertiary sort by show_group
           const groupA = a.show_group || '';
           const groupB = b.show_group || '';
@@ -251,14 +263,14 @@ export function Home() {
           if (dateA !== dateB) {
             return dateA - dateB; // Ascending for upcoming shows
           }
-          
+
           // Secondary sort by show_canonid (handle nulls appropriately)
           const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
           const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
           if (canonIdA !== canonIdB) {
             return canonIdA - canonIdB; // Ascending for upcoming shows
           }
-          
+
           // Tertiary sort by show_group
           const groupA = a.show_group || '';
           const groupB = b.show_group || '';
@@ -325,7 +337,7 @@ export function Home() {
             venue_id: data.subvenues?.venues?.venue_id,
             show_canonid: data.show_canonid
           });
-          
+
           // Now fetch the setlist for this most recent show
           fetchSetlist(data.show_id);
         }
@@ -456,14 +468,14 @@ export function Home() {
           if (dateA !== dateB) {
             return dateA - dateB; // Ascending for historical shows
           }
-          
+
           // Secondary sort by show_canonid (handle nulls appropriately)
           const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
           const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
           if (canonIdA !== canonIdB) {
             return canonIdA - canonIdB; // Ascending for historical shows
           }
-          
+
           // Tertiary sort by show_group
           const groupA = a.show_group || '';
           const groupB = b.show_group || '';
@@ -489,7 +501,8 @@ export function Home() {
               song_id,
               song_category,
               categories!inner(
-                category_canonid
+                category_canonid,
+                category_artwork
               )
             ),
             entry_show,
@@ -499,35 +512,38 @@ export function Home() {
             )
           `)
           .eq('shows.show_group', 'Goose')
+          .not('shows.show_canonid', 'is', null)
           .gte('shows.show_date', `${currentYear}-01-01`)
           .lte('shows.show_date', `${currentYear}-12-31`);
-    
+
         if (error) throw error;
-    
+
         const songShowCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
           const songId = entry.songs.song_id;
           const showId = entry.entry_show;
           const uniqueKey = `${songId}-${showId}`;
-    
+
           if (!acc[songId]) {
             acc[songId] = {
               song: entry.entry_song,
               song_id: songId,
               shows: new Set([showId]),
-              category_canonid: entry.songs.categories.category_canonid
+              category_canonid: entry.songs.categories.category_canonid,
+              category_artwork: entry.songs.categories.category_artwork
             };
           } else {
             acc[songId].shows.add(showId);
           }
           return acc;
         }, {});
-    
+
         const processedSongs = Object.values(songShowCounts)
           .map((item: any) => ({
             song: item.song,
             song_id: item.song_id,
             play_count: item.shows.size,
-            category_canonid: item.category_canonid
+            category_canonid: item.category_canonid,
+            category_artwork: item.category_artwork
           }))
           .sort((a: any, b: any) => {
             if (b.play_count !== a.play_count) {
@@ -539,7 +555,7 @@ export function Home() {
             return a.song.localeCompare(b.song);
           })
           .slice(0, 8);
-    
+
         setTopSongs(processedSongs);
       } catch (error) {
         console.error('Error fetching top songs:', error);
@@ -559,7 +575,8 @@ export function Home() {
               song_id,
               song_category,
               categories!inner(
-                category_canonid
+                category_canonid,
+category_artwork
               )
             ),
             shows!inner(
@@ -568,12 +585,13 @@ export function Home() {
             )
           `)
           .eq('shows.show_group', 'Goose')
+          .not('shows.show_canonid', 'is', null)
           .eq('entry_placement', 'Set 1 Opener')
           .gte('shows.show_date', `${currentYear}-01-01`)
           .lte('shows.show_date', `${currentYear}-12-31`);
-    
+
         if (error) throw error;
-    
+
         const openerCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
@@ -581,14 +599,15 @@ export function Home() {
               song_name: songName,
               song_id: entry.songs.song_id,
               times_played: 1,
-              category_canonid: entry.songs.categories.category_canonid
+              category_canonid: entry.songs.categories.category_canonid,
+              category_artwork: entry.songs.categories.category_artwork
             };
           } else {
             acc[songName].times_played++;
           }
           return acc;
         }, {});
-    
+
         const processedOpeners = Object.values(openerCounts)
           .sort((a: any, b: any) => {
             if (b.times_played !== a.times_played) {
@@ -600,7 +619,7 @@ export function Home() {
             return a.song_name.localeCompare(b.song_name);
           })
           .slice(0, 8);
-    
+
         setShowOpeners(processedOpeners);
       } catch (error) {
         console.error('Error fetching show openers:', error);
@@ -620,7 +639,8 @@ export function Home() {
               song_id,
               song_category,
               categories!inner(
-                category_canonid
+                category_canonid,
+category_artwork
               )
             ),
             shows!inner(
@@ -629,12 +649,13 @@ export function Home() {
             )
           `)
           .eq('shows.show_group', 'Goose')
+          .not('shows.show_canonid', 'is', null)
           .in('entry_placement', ['Set 1 Opener', 'Set 2 Opener', 'Set 3 Opener', 'Set 4 Opener', 'Set 5 Opener'])
           .gte('shows.show_date', `${currentYear}-01-01`)
           .lte('shows.show_date', `${currentYear}-12-31`);
-    
+
         if (error) throw error;
-    
+
         const openerCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
@@ -642,14 +663,15 @@ export function Home() {
               song_name: songName,
               song_id: entry.songs.song_id,
               times_played: 1,
-              category_canonid: entry.songs.categories.category_canonid
+              category_canonid: entry.songs.categories.category_canonid,
+              category_artwork: entry.songs.categories.category_artwork
             };
           } else {
             acc[songName].times_played++;
           }
           return acc;
         }, {});
-    
+
         const processedOpeners = Object.values(openerCounts)
           .sort((a: any, b: any) => {
             if (b.times_played !== a.times_played) {
@@ -661,7 +683,7 @@ export function Home() {
             return a.song_name.localeCompare(b.song_name);
           })
           .slice(0, 8);
-    
+
         setSetOpeners(processedOpeners);
       } catch (error) {
         console.error('Error fetching set openers:', error);
@@ -681,7 +703,8 @@ export function Home() {
               song_id,
               song_category,
               categories!inner(
-                category_canonid
+                category_canonid,
+category_artwork
               )
             ),
             shows!inner(
@@ -690,12 +713,13 @@ export function Home() {
             )
           `)
           .eq('shows.show_group', 'Goose')
+          .not('shows.show_canonid', 'is', null)
           .in('entry_placement', ['Set 1 Closer', 'Set 2 Closer', 'Set 3 Closer', 'Set 4 Closer', 'Set 5 Closer'])
           .gte('shows.show_date', `${currentYear}-01-01`)
           .lte('shows.show_date', `${currentYear}-12-31`);
-    
+
         if (error) throw error;
-    
+
         const closerCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
@@ -703,14 +727,15 @@ export function Home() {
               song_name: songName,
               song_id: entry.songs.song_id,
               times_played: 1,
-              category_canonid: entry.songs.categories.category_canonid
+              category_canonid: entry.songs.categories.category_canonid,
+              category_artwork: entry.songs.categories.category_artwork
             };
           } else {
             acc[songName].times_played++;
           }
           return acc;
         }, {});
-    
+
         const processedClosers = Object.values(closerCounts)
           .sort((a: any, b: any) => {
             if (b.times_played !== a.times_played) {
@@ -722,7 +747,7 @@ export function Home() {
             return a.song_name.localeCompare(b.song_name);
           })
           .slice(0, 8);
-    
+
         setSetClosers(processedClosers);
       } catch (error) {
         console.error('Error fetching set closers:', error);
@@ -742,7 +767,8 @@ export function Home() {
               song_id,
               song_category,
               categories!inner(
-                category_canonid
+                category_canonid,
+category_artwork
               )
             ),
             shows!inner(
@@ -751,12 +777,13 @@ export function Home() {
             )
           `)
           .eq('shows.show_group', 'Goose')
+          .not('shows.show_canonid', 'is', null)
           .in('entry_placement', ['Encore 1', 'Encore 2', 'Encore 3'])
           .gte('shows.show_date', `${currentYear}-01-01`)
           .lte('shows.show_date', `${currentYear}-12-31`);
-    
+
         if (error) throw error;
-    
+
         const encoreCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
@@ -764,14 +791,15 @@ export function Home() {
               song_name: songName,
               song_id: entry.songs.song_id,
               times_played: 1,
-              category_canonid: entry.songs.categories.category_canonid
+              category_canonid: entry.songs.categories.category_canonid,
+              category_artwork: entry.songs.categories.category_artwork
             };
           } else {
             acc[songName].times_played++;
           }
           return acc;
         }, {});
-    
+
         const processedEncores = Object.values(encoreCounts)
           .sort((a: any, b: any) => {
             if (b.times_played !== a.times_played) {
@@ -783,7 +811,7 @@ export function Home() {
             return a.song_name.localeCompare(b.song_name);
           })
           .slice(0, 8);
-    
+
         setEncores(processedEncores);
       } catch (error) {
         console.error('Error fetching encores:', error);
@@ -796,7 +824,7 @@ export function Home() {
     async function fetchNotPlayedSongs() {
       try {
         const currentYear = new Date().getFullYear();
-        
+
         // First, get all songs played in 2025
         const { data: playedIn2025Data, error: playedError } = await supabase
           .from('setlist_entries')
@@ -829,7 +857,8 @@ export function Home() {
               song_id,
               song_category,
               categories!inner(
-                category_canonid
+                category_canonid,
+category_artwork
               )
             ),
             entry_show,
@@ -855,7 +884,8 @@ export function Home() {
               song: entry.entry_song,
               song_id: songId,
               shows: new Set([showId]),
-              category_canonid: entry.songs.categories.category_canonid
+              category_canonid: entry.songs.categories.category_canonid,
+              category_artwork: entry.songs.categories.category_artwork
             };
           } else {
             acc[songId].shows.add(showId);
@@ -870,7 +900,8 @@ export function Home() {
             song: item.song,
             song_id: item.song_id,
             play_count: item.shows.size,
-            category_canonid: item.category_canonid
+            category_canonid: item.category_canonid,
+            category_artwork: item.category_artwork
           }))
           .sort((a: any, b: any) => {
             // Sort by play count (descending)
@@ -931,18 +962,18 @@ export function Home() {
         <div className="w-full lg:w-[43%] space-y-6 mr-6">
           {/* Logo container with natural height on mobile, fixed on desktop */}
           <div className="h-auto md:h-[342px] overflow-hidden rounded-lg flex items-center justify-center">
-            <img 
-              src={fullLogo} 
-              alt="Dripfield.pro logo" 
+            <img
+              src={fullLogo}
+              alt="Dripfield.pro logo"
               className="hidden md:block h-full w-auto object-contain"
             />
-            <img 
-              src={textLogo} 
-              alt="Dripfield.pro logo" 
+            <img
+              src={textLogo}
+              alt="Dripfield.pro logo"
               className="block md:hidden h-auto w-auto"
             />
           </div>
-          
+
           {/* Last 5 Shows Table */}
           <div className="bg-primary border border-black rounded-lg p-3">
             <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Last 5 Shows</h2>
@@ -963,11 +994,10 @@ export function Home() {
                     {recentShows.map((show, index) => (
                       <tr
                         key={show.show_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                        } hover:bg-black/10 transition-colors text-xs`}
+                        className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                          } hover:bg-black/10 transition-colors text-xs`}
                       >
-                        <td 
+                        <td
                           className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
@@ -996,7 +1026,7 @@ export function Home() {
                             </div>
                           )}
                         </td>
-                        <td 
+                        <td
                           className="px-4 py-0.5 text-black relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
@@ -1016,13 +1046,13 @@ export function Home() {
                             </button>
                             {show.show_group === 'Goose' && (
                               <div className="flex-shrink-0 ml-2">
-                                <img 
-                                  src={gooseGif} 
-                                  alt="Goose" 
-                                  className="h-4 w-4 filter drop-shadow-lg" 
-                                  style={{ 
-                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
-                                  }} 
+                                <img
+                                  src={gooseGif}
+                                  alt="Goose"
+                                  className="h-4 w-4 filter drop-shadow-lg"
+                                  style={{
+                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))'
+                                  }}
                                 />
                               </div>
                             )}
@@ -1044,20 +1074,20 @@ export function Home() {
               </div>
             )}
           </div>
-          
+
           {/* Most Recent Show Section */}
           <div className="bg-primary border border-black rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Most Recent Show</h2>
               {mostRecentShow && mostRecentShow.show_group === 'Goose' && (
                 <div className="flex-shrink-0">
-                  <img 
-                    src={gooseGif} 
-                    alt="Goose" 
-                    className="h-6 w-6 filter drop-shadow-lg" 
-                    style={{ 
-                      filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
-                    }} 
+                  <img
+                    src={gooseGif}
+                    alt="Goose"
+                    className="h-6 w-6 filter drop-shadow-lg"
+                    style={{
+                      filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))'
+                    }}
                   />
                 </div>
               )}
@@ -1087,7 +1117,7 @@ export function Home() {
                     <strong>{mostRecentShow.show_group}</strong>
                   </div>
                 </div>
-                
+
                 {loadingSetlist ? (
                   <div className="text-center py-4">
                     <p className="text-[#fce7ca]/70">Loading setlist...</p>
@@ -1106,7 +1136,7 @@ export function Home() {
               </div>
             )}
           </div>
-          
+
           {/* Next 5 Shows Table */}
           <div className="bg-primary border border-black rounded-lg p-3">
             <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Next 5 Shows</h2>
@@ -1118,20 +1148,19 @@ export function Home() {
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
                   <thead>
-                  <tr className="bg-canvas border-y border-white/10">
-                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
-                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
-                  </tr>
+                    <tr className="bg-canvas border-y border-white/10">
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
+                    </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {upcomingShows.map((show, index) => (
                       <tr
                         key={show.show_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                        } hover:bg-black/10 transition-colors text-xs`}
+                        className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                          } hover:bg-black/10 transition-colors text-xs`}
                       >
-                        <td 
+                        <td
                           className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
@@ -1160,7 +1189,7 @@ export function Home() {
                             </div>
                           )}
                         </td>
-                        <td 
+                        <td
                           className="px-4 py-0.5 text-black relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
@@ -1180,13 +1209,13 @@ export function Home() {
                             </button>
                             {show.show_group === 'Goose' && (
                               <div className="flex-shrink-0 ml-2">
-                                <img 
-                                  src={gooseGif} 
-                                  alt="Goose" 
-                                  className="h-4 w-4 filter drop-shadow-lg" 
-                                  style={{ 
-                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
-                                  }} 
+                                <img
+                                  src={gooseGif}
+                                  alt="Goose"
+                                  className="h-4 w-4 filter drop-shadow-lg"
+                                  style={{
+                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))'
+                                  }}
                                 />
                               </div>
                             )}
@@ -1208,7 +1237,7 @@ export function Home() {
               </div>
             )}
           </div>
-          
+
           {/* This Day in Goose History Table */}
           <div className="bg-primary border border-black rounded-lg p-3">
             <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">This Day in Goose History</h2>
@@ -1224,20 +1253,19 @@ export function Home() {
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
                   <thead>
-                  <tr className="bg-canvas border-y border-white/10">
-                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
-                    <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
-                  </tr>
+                    <tr className="bg-canvas border-y border-white/10">
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
+                    </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {historicalShows.map((show, index) => (
                       <tr
                         key={show.show_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                        } hover:bg-black/10 transition-colors text-xs`}
+                        className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                          } hover:bg-black/10 transition-colors text-xs`}
                       >
-                        <td 
+                        <td
                           className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
@@ -1266,7 +1294,7 @@ export function Home() {
                             </div>
                           )}
                         </td>
-                        <td 
+                        <td
                           className="px-4 py-0.5 text-black relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
@@ -1286,13 +1314,13 @@ export function Home() {
                             </button>
                             {show.show_group === 'Goose' && (
                               <div className="flex-shrink-0 ml-2">
-                                <img 
-                                  src={gooseGif} 
-                                  alt="Goose" 
-                                  className="h-4 w-4 filter drop-shadow-lg" 
-                                  style={{ 
-                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))' 
-                                  }} 
+                                <img
+                                  src={gooseGif}
+                                  alt="Goose"
+                                  className="h-4 w-4 filter drop-shadow-lg"
+                                  style={{
+                                    filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 5))'
+                                  }}
                                 />
                               </div>
                             )}
@@ -1315,18 +1343,18 @@ export function Home() {
             )}
           </div>
         </div>
-        
+
         {/* Right Column - adjust width based on image aspect ratio */}
         <div className="w-full lg:w-[57%] space-y-6">
           {/* Cover Image with fixed height - hidden on mobile */}
           <div className="hidden md:block h-[342px] overflow-hidden rounded-lg">
-            <img 
-              src={coverImage} 
-              alt="Dripfield.pro banner" 
-              className="w-full h-full object-cover shadow-lg" 
+            <img
+              src={coverImage}
+              alt="Dripfield.pro banner"
+              className="w-full h-full object-cover shadow-lg"
             />
           </div>
-          
+
           {/* 2025 Stats Section */}
           <div className="bg-primary border border-black rounded-lg p-3">
             <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">2025 Stats</h2>
@@ -1348,26 +1376,38 @@ export function Home() {
                         <thead>
                           <tr className="bg-canvas border-y border-white/10">
                             <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                           {topSongs.map((song, index) => (
                             <tr
                               key={song.song_id}
-                              className={`${
-                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                } hover:bg-black/10 transition-colors text-xs`}
                             >
-                              <td className="px-4 py-0.5 text-black">
-                                <button
-                                  onClick={() => navigate(`/song/${song.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
-                                >
-                                  {song.song}
-                                </button>
+                              <td className="pl-4 text-black">
+                                <div className="flex items-center justify-between">
+                                  <button
+                                    onClick={() => navigate(`/song/${song.song_id}`)}
+                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                  >
+                                    {song.song}
+                                  </button>
+                                  {song.category_artwork && (
+                                    <img
+                                      src={song.category_artwork}
+                                      alt={`${song.song} artwork`}
+                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      onError={(e) => {
+                                        // Hide the image if it fails to load
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  )}
+                                </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center text-black">
+                              <td className="px-4 py-0.5 text-center font-semibold text-black">
                                 {song.play_count}
                               </td>
                             </tr>
@@ -1377,7 +1417,7 @@ export function Home() {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Top Show Openers */}
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
@@ -1391,26 +1431,38 @@ export function Home() {
                         <thead>
                           <tr className="bg-canvas border-y border-white/10">
                             <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                           {showOpeners.map((opener, index) => (
                             <tr
                               key={opener.song_id}
-                              className={`${
-                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                } hover:bg-black/10 transition-colors text-xs`}
                             >
-                              <td className="px-4 py-0.5 text-black">
-                                <button
-                                  onClick={() => navigate(`/song/${opener.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
-                                >
-                                  {opener.song_name}
-                                </button>
+                              <td className="pl-4 text-black">
+                                <div className="flex items-center justify-between">
+                                  <button
+                                    onClick={() => navigate(`/song/${opener.song_id}`)}
+                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                  >
+                                    {opener.song_name}
+                                  </button>
+                                  {opener.category_artwork && (
+                                    <img
+                                      src={opener.category_artwork}
+                                      alt={`${opener.song_name} artwork`}
+                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      onError={(e) => {
+                                        // Hide the image if it fails to load
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  )}
+                                </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center text-black">
+                              <td className="px-4 py-0.5 text-center font-semibold text-black">
                                 {opener.times_played}
                               </td>
                             </tr>
@@ -1420,7 +1472,7 @@ export function Home() {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Top Set Closers */}
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
@@ -1434,26 +1486,38 @@ export function Home() {
                         <thead>
                           <tr className="bg-canvas border-y border-white/10">
                             <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                           {setClosers.map((closer, index) => (
                             <tr
                               key={closer.song_id}
-                              className={`${
-                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                } hover:bg-black/10 transition-colors text-xs`}
                             >
-                              <td className="px-4 py-0.5 text-black">
-                                <button
-                                  onClick={() => navigate(`/song/${closer.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
-                                >
-                                  {closer.song_name}
-                                </button>
+                              <td className="pl-4 text-black">
+                                <div className="flex items-center justify-between">
+                                  <button
+                                    onClick={() => navigate(`/song/${closer.song_id}`)}
+                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                  >
+                                    {closer.song_name}
+                                  </button>
+                                  {closer.category_artwork && (
+                                    <img
+                                      src={closer.category_artwork}
+                                      alt={`${closer.song_name} artwork`}
+                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      onError={(e) => {
+                                        // Hide the image if it fails to load
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  )}
+                                </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center text-black">
+                              <td className="px-4 py-0.5 text-center font-semibold text-black">
                                 {closer.times_played}
                               </td>
                             </tr>
@@ -1464,7 +1528,7 @@ export function Home() {
                   )}
                 </div>
               </div>
-              
+
               {/* Right column for desktop */}
               <div>
                 {/* Most Common Not Played */}
@@ -1480,26 +1544,38 @@ export function Home() {
                         <thead>
                           <tr className="bg-canvas border-y border-white/10">
                             <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                           {notPlayedSongs.map((song, index) => (
                             <tr
                               key={song.song_id}
-                              className={`${
-                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                } hover:bg-black/10 transition-colors text-xs`}
                             >
-                              <td className="px-4 py-0.5 text-black">
-                                <button
-                                  onClick={() => navigate(`/song/${song.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
-                                >
-                                  {song.song}
-                                </button>
+                              <td className="pl-4 text-black">
+                                <div className="flex items-center justify-between">
+                                  <button
+                                    onClick={() => navigate(`/song/${song.song_id}`)}
+                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                  >
+                                    {song.song}
+                                  </button>
+                                  {song.category_artwork && (
+                                    <img
+                                      src={song.category_artwork}
+                                      alt={`${song.song} artwork`}
+                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      onError={(e) => {
+                                        // Hide the image if it fails to load
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  )}
+                                </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center text-black">
+                              <td className="px-4 py-0.5 text-center font-semibold text-black">
                                 {song.play_count}
                               </td>
                             </tr>
@@ -1509,7 +1585,7 @@ export function Home() {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Top Set Openers */}
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
@@ -1523,26 +1599,38 @@ export function Home() {
                         <thead>
                           <tr className="bg-canvas border-y border-white/10">
                             <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                           {setOpeners.map((opener, index) => (
                             <tr
                               key={opener.song_id}
-                              className={`${
-                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                } hover:bg-black/10 transition-colors text-xs`}
                             >
-                              <td className="px-4 py-0.5 text-black">
-                                <button
-                                  onClick={() => navigate(`/song/${opener.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
-                                >
-                                  {opener.song_name}
-                                </button>
+                              <td className="pl-4 text-black">
+                                <div className="flex items-center justify-between">
+                                  <button
+                                    onClick={() => navigate(`/song/${opener.song_id}`)}
+                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                  >
+                                    {opener.song_name}
+                                  </button>
+                                  {opener.category_artwork && (
+                                    <img
+                                      src={opener.category_artwork}
+                                      alt={`${opener.song_name} artwork`}
+                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      onError={(e) => {
+                                        // Hide the image if it fails to load
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  )}
+                                </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center text-black">
+                              <td className="px-4 py-0.5 text-center font-semibold text-black">
                                 {opener.times_played}
                               </td>
                             </tr>
@@ -1552,7 +1640,7 @@ export function Home() {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Top Encores */}
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
@@ -1566,26 +1654,38 @@ export function Home() {
                         <thead>
                           <tr className="bg-canvas border-y border-white/10">
                             <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                            <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                            <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                           {encores.map((encore, index) => (
                             <tr
                               key={encore.song_id}
-                              className={`${
-                                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                } hover:bg-black/10 transition-colors text-xs`}
                             >
-                              <td className="px-4 py-0.5 text-black">
-                                <button
-                                  onClick={() => navigate(`/song/${encore.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
-                                >
-                                  {encore.song_name}
-                                </button>
+                              <td className="pl-4 text-black">
+                                <div className="flex items-center justify-between">
+                                  <button
+                                    onClick={() => navigate(`/song/${encore.song_id}`)}
+                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                  >
+                                    {encore.song_name}
+                                  </button>
+                                  {encore.category_artwork && (
+                                    <img
+                                      src={encore.category_artwork}
+                                      alt={`${encore.song_name} artwork`}
+                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      onError={(e) => {
+                                        // Hide the image if it fails to load
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  )}
+                                </div>
                               </td>
-                              <td className="px-4 py-0.5 text-center text-black">
+                              <td className="px-4 py-0.5 text-center font-semibold text-black">
                                 {encore.times_played}
                               </td>
                             </tr>
@@ -1613,26 +1713,38 @@ export function Home() {
                       <thead>
                         <tr className="bg-canvas border-y border-white/10">
                           <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {topSongs.map((song, index) => (
                           <tr
                             key={song.song_id}
-                            className={`${
-                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                            } hover:bg-black/10 transition-colors text-xs`}
+                            className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            <td className="px-4 py-0.5 text-black">
-                              <button
-                                onClick={() => navigate(`/song/${song.song_id}`)}
-                                className="font-semibold hover:underline cursor-pointer text-left"
-                              >
-                                {song.song}
-                              </button>
+                            <td className="pl-4 text-black">
+                              <div className="flex items-center justify-between">
+                                <button
+                                  onClick={() => navigate(`/song/${song.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {song.song}
+                                </button>
+                                {song.category_artwork && (
+                                  <img
+                                    src={song.category_artwork}
+                                    alt={`${song.song} artwork`}
+                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    onError={(e) => {
+                                      // Hide the image if it fails to load
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                )}
+                              </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center text-black">
+                            <td className="px-4 py-0.5 text-center font-semibold text-black">
                               {song.play_count}
                             </td>
                           </tr>
@@ -1642,7 +1754,7 @@ export function Home() {
                   </div>
                 )}
               </div>
-              
+
               {/* 2. Most Common Not Played */}
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
@@ -1656,26 +1768,38 @@ export function Home() {
                       <thead>
                         <tr className="bg-canvas border-y border-white/10">
                           <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {notPlayedSongs.map((song, index) => (
                           <tr
                             key={song.song_id}
-                            className={`${
-                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                            } hover:bg-black/10 transition-colors text-xs`}
+                            className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            <td className="px-4 py-0.5 text-black">
-                              <button
-                                onClick={() => navigate(`/song/${song.song_id}`)}
-                                className="font-semibold hover:underline cursor-pointer text-left"
-                              >
-                                {song.song}
-                              </button>
+                            <td className="pl-4 text-black">
+                              <div className="flex items-center justify-between">
+                                <button
+                                  onClick={() => navigate(`/song/${song.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {song.song}
+                                </button>
+                                {song.category_artwork && (
+                                  <img
+                                    src={song.category_artwork}
+                                    alt={`${song.song} artwork`}
+                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    onError={(e) => {
+                                      // Hide the image if it fails to load
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                )}
+                              </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center text-black">
+                            <td className="px-4 py-0.5 text-center font-semibold text-black">
                               {song.play_count}
                             </td>
                           </tr>
@@ -1685,7 +1809,7 @@ export function Home() {
                   </div>
                 )}
               </div>
-              
+
               {/* 3. Top Show Openers */}
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
@@ -1699,26 +1823,38 @@ export function Home() {
                       <thead>
                         <tr className="bg-canvas border-y border-white/10">
                           <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {showOpeners.map((opener, index) => (
                           <tr
                             key={opener.song_id}
-                            className={`${
-                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                            } hover:bg-black/10 transition-colors text-xs`}
+                            className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            <td className="px-4 py-0.5 text-black">
-                              <button
-                                onClick={() => navigate(`/song/${opener.song_id}`)}
-                                className="font-semibold hover:underline cursor-pointer text-left"
-                              >
-                                {opener.song_name}
-                              </button>
+                            <td className="pl-4 text-black">
+                              <div className="flex items-center justify-between">
+                                <button
+                                  onClick={() => navigate(`/song/${opener.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {opener.song_name}
+                                </button>
+                                {opener.category_artwork && (
+                                  <img
+                                    src={opener.category_artwork}
+                                    alt={`${opener.song_name} artwork`}
+                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    onError={(e) => {
+                                      // Hide the image if it fails to load
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                )}
+                              </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center text-black">
+                            <td className="px-4 py-0.5 text-center font-semibold text-black">
                               {opener.times_played}
                             </td>
                           </tr>
@@ -1728,7 +1864,7 @@ export function Home() {
                   </div>
                 )}
               </div>
-              
+
               {/* 4. Top Set Openers */}
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
@@ -1742,26 +1878,38 @@ export function Home() {
                       <thead>
                         <tr className="bg-canvas border-y border-white/10">
                           <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {setOpeners.map((opener, index) => (
                           <tr
                             key={opener.song_id}
-                            className={`${
-                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                            } hover:bg-black/10 transition-colors text-xs`}
+                            className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            <td className="px-4 py-0.5 text-black">
-                              <button
-                                onClick={() => navigate(`/song/${opener.song_id}`)}
-                                className="font-semibold hover:underline cursor-pointer text-left"
-                              >
-                                {opener.song_name}
-                              </button>
+                            <td className="pl-4 text-black">
+                              <div className="flex items-center justify-between">
+                                <button
+                                  onClick={() => navigate(`/song/${opener.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {opener.song_name}
+                                </button>
+                                {opener.category_artwork && (
+                                  <img
+                                    src={opener.category_artwork}
+                                    alt={`${opener.song_name} artwork`}
+                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    onError={(e) => {
+                                      // Hide the image if it fails to load
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                )}
+                              </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center text-black">
+                            <td className="px-4 py-0.5 text-center font-semibold text-black">
                               {opener.times_played}
                             </td>
                           </tr>
@@ -1771,7 +1919,7 @@ export function Home() {
                   </div>
                 )}
               </div>
-              
+
               {/* 5. Top Set Closers */}
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
@@ -1785,26 +1933,38 @@ export function Home() {
                       <thead>
                         <tr className="bg-canvas border-y border-white/10">
                           <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {setClosers.map((closer, index) => (
                           <tr
                             key={closer.song_id}
-                            className={`${
-                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                            } hover:bg-black/10 transition-colors text-xs`}
+                            className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            <td className="px-4 py-0.5 text-black">
-                              <button
-                                onClick={() => navigate(`/song/${closer.song_id}`)}
-                                className="font-semibold hover:underline cursor-pointer text-left"
-                              >
-                                {closer.song_name}
-                              </button>
+                            <td className="pl-4 text-black">
+                              <div className="flex items-center justify-between">
+                                <button
+                                  onClick={() => navigate(`/song/${closer.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {closer.song_name}
+                                </button>
+                                {closer.category_artwork && (
+                                  <img
+                                    src={closer.category_artwork}
+                                    alt={`${closer.song_name} artwork`}
+                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    onError={(e) => {
+                                      // Hide the image if it fails to load
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                )}
+                              </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center text-black">
+                            <td className="px-4 py-0.5 text-center font-semibold text-black">
                               {closer.times_played}
                             </td>
                           </tr>
@@ -1814,7 +1974,7 @@ export function Home() {
                   </div>
                 )}
               </div>
-              
+
               {/* 6. Top Encores */}
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
@@ -1828,26 +1988,38 @@ export function Home() {
                       <thead>
                         <tr className="bg-canvas border-y border-white/10">
                           <th className="px-4 py-1 text-left text-s font-semibold text-black">Song</th>
-                          <th className="px-4 py-1 w-[75px] text-center text-s font-semibold text-black">#</th>
+                          <th className="px-1 py-1 w-[50px] text-center text-s font-semibold text-black">#</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {encores.map((encore, index) => (
                           <tr
                             key={encore.song_id}
-                            className={`${
-                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                            } hover:bg-black/10 transition-colors text-xs`}
+                            className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                              } hover:bg-black/10 transition-colors text-xs`}
                           >
-                            <td className="px-4 py-0.5 text-black">
-                              <button
-                                onClick={() => navigate(`/song/${encore.song_id}`)}
-                                className="font-semibold hover:underline cursor-pointer text-left"
-                              >
-                                {encore.song_name}
-                              </button>
+                            <td className="pl-4 text-black">
+                              <div className="flex items-center justify-between">
+                                <button
+                                  onClick={() => navigate(`/song/${encore.song_id}`)}
+                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                >
+                                  {encore.song_name}
+                                </button>
+                                {encore.category_artwork && (
+                                  <img
+                                    src={encore.category_artwork}
+                                    alt={`${encore.song_name} artwork`}
+                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    onError={(e) => {
+                                      // Hide the image if it fails to load
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                )}
+                              </div>
                             </td>
-                            <td className="px-4 py-0.5 text-center text-black">
+                            <td className="px-4 py-0.5 text-center font-semibold text-black">
                               {encore.times_played}
                             </td>
                           </tr>

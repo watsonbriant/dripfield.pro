@@ -201,6 +201,15 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
     }
   };
   
+  const getSortIcon = (field: keyof PlayerStats) => {
+    if (sortField !== field) {
+      return null;
+    }
+    return sortDirection === 'asc' ?
+      <ChevronUp className="w-4 h-4 inline-block ml-1 text-black" /> :
+      <ChevronDown className="w-4 h-4 inline-block ml-1 text-black" />;
+  };
+
   const sortStandings = (
     data: PlayerStats[], 
     field: keyof PlayerStats, 
@@ -248,29 +257,29 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
   };
   
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4 mt-6">
-      <h2 className="text-xl font-semibold text-white/90 mb-4">
-        <div className="flex items-center gap-4">
-          <Trophy className="w-5 h-5 text-yellow-400" />
+    <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+      <div className="flex items-center gap-2 mb-4">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+          <Trophy className="w-5 h-5 mr-2" />
           <span>Standings</span>
-          <span className="px-2 py-0.5 text-sm font-medium rounded bg-[#ffe6c7] text-[#0c1d27]">
-            {activeLeague}
-          </span>
-        </div>
-      </h2>
+        </h2>
+        <span className="px-3 py-1 text-sm font-medium rounded-full bg-secondary text-black border border-black">
+          {activeLeague}
+        </span>
+      </div>
       
       {loading ? (
-        <div className="text-center py-8">
+        <div className="text-center py-12">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-[#fce7ca]/70 mt-4">Loading standings...</p>
+          <p className="text-black mt-4">Loading standings...</p>
         </div>
       ) : standings.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-[#fce7ca]/70">No standings available yet for this league.</p>
+          <p className="text-black">No standings available yet for this league.</p>
         </div>
       ) : (
         <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
@@ -287,125 +296,124 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
               <col className="w-[65px] min-w-[65px]" /> {/* Show Closers Picked */}
             </colgroup>
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-1 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap text-center">
+              <tr className="bg-canvas border-y border-black/10">
+                <th className="px-1 py-1 text-left text-xs font-semibold text-black whitespace-nowrap text-center">
                   Rank
                 </th>
-                <th className="px-3 py-2 text-left text-xs font-semibold text-white/90 whitespace-nowrap">
+                <th className="px-3 py-1 text-left text-xs font-semibold text-black whitespace-nowrap">
                   <button 
-                    className={`flex items-center space-x-1 focus:outline-none ${sortField === 'username' ? 'text-tertiary' : ''}`}
+                    className="flex items-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded"
                     onClick={() => handleSort('username')}
                   >
                     <span>User</span>
+                    {getSortIcon('username')}
                   </button>
                 </th>
-                <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
                   <button 
-                    className={`flex items-center space-x-1 justify-center mx-auto focus:outline-none ${sortField === 'totalPoints' ? 'text-tertiary' : ''}`}
+                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                     onClick={() => handleSort('totalPoints')}
                   >
                     <span>Total Points</span>
+                    {getSortIcon('totalPoints')}
                   </button>
                 </th>
-                <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
                   <button 
-                    className={`flex items-center space-x-1 justify-center mx-auto focus:outline-none ${sortField === 'showsPlayed' ? 'text-tertiary' : ''}`}
+                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                     onClick={() => handleSort('showsPlayed')}
                   >
                     <span>Shows Played</span>
+                    {getSortIcon('showsPlayed')}
                   </button>
                 </th>
-                <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
                   <button 
-                    className={`flex items-center space-x-1 justify-center mx-auto focus:outline-none ${sortField === 'avgPointsPerShow' ? 'text-tertiary' : ''}`}
+                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                     onClick={() => handleSort('avgPointsPerShow')}
                   >
                     <span>Points Per Show</span>
+                    {getSortIcon('avgPointsPerShow')}
                   </button>
                 </th>
-                <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
                   <button 
-                    className={`flex items-center space-x-1 justify-center mx-auto focus:outline-none ${sortField === 'songsPicked' ? 'text-tertiary' : ''}`}
+                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                     onClick={() => handleSort('songsPicked')}
                   >
-                    <span>Songs Correctly Picked</span>
+                    <span>Songs Picked</span>
+                    {getSortIcon('songsPicked')}
                   </button>
                 </th>
-                <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
                   <button 
-                    className={`flex items-center space-x-1 justify-center mx-auto focus:outline-none ${sortField === 'setsPicked' ? 'text-tertiary' : ''}`}
+                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                     onClick={() => handleSort('setsPicked')}
                   >
-                    <span>Sets Correctly Picked</span>
+                    <span>Sets Picked</span>
+                    {getSortIcon('setsPicked')}
                   </button>
                 </th>
-                <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
                   <button 
-                    className={`flex items-center space-x-1 justify-center mx-auto focus:outline-none ${sortField === 'showOpenersPicked' ? 'text-tertiary' : ''}`}
+                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                     onClick={() => handleSort('showOpenersPicked')}
                   >
-                    <span>Show Openers Picked</span>
+                    <span>Openers Picked</span>
+                    {getSortIcon('showOpenersPicked')}
                   </button>
                 </th>
-                <th className="px-0.5 py-2 text-center text-xs font-semibold text-white/90">
+                <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
                   <button 
-                    className={`flex items-center space-x-1 justify-center mx-auto focus:outline-none ${sortField === 'showClosersPicked' ? 'text-tertiary' : ''}`}
+                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                     onClick={() => handleSort('showClosersPicked')}
                   >
-                    <span>Show Closers Picked</span>
+                    <span>Closers Picked</span>
+                    {getSortIcon('showClosersPicked')}
                   </button>
                 </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-black/5">
               {standings.map((player, index) => (
                 <tr 
                   key={player.userId} 
                   className={`
                     ${user && player.userId === user.id 
-                      ? 'bg-tertiary/80 text-white' 
+                      ? 'bg-[#f9ae37]/30' 
                       : index % 2 === 0 
-                        ? 'bg-primary/30' 
-                        : 'bg-[#0c151c]'
+                        ? 'bg-primary' 
+                        : 'bg-canvas'
                     } 
-                    hover:bg-white/10 transition-colors
+                    hover:bg-black/10 transition-colors
                   `}
                 >
-                  <td className="px-1 py-1 text-xs text-center font-semibold"
-                    style={{ color: 'white' }}>
+                  <td className="px-1 py-0.5 text-xs text-center font-semibold text-black">
                     {index + 1}
                   </td>
-                  <td className="px-3 py-1 whitespace-normal font-medium text-xs"
-                    style={{ color: 'white' }}>
+                  <td className="px-3 py-0.5 whitespace-normal font-medium text-xs text-black">
                     {player.username}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center font-semibold"
-                    style={{ color: 'white' }}>
+                  <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-semibold text-[#a9682e]">
                     {player.totalPoints}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: 'white' }}>
+                  <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
                     {player.showsPlayed}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: 'white' }}>
+                  <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
                     {player.avgPointsPerShow.toFixed(2)}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: 'white' }}>
+                  <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
                     {player.songsPicked}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: 'white' }}>
+                  <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
                     {player.setsPicked}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: 'white' }}>
+                  <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
                     {player.showOpenersPicked}
                   </td>
-                  <td className="px-0.5 py-1 whitespace-nowrap text-xs text-center"
-                    style={{ color: 'white' }}>
+                  <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
                     {player.showClosersPicked}
                   </td>
                 </tr>

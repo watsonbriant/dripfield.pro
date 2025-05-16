@@ -83,12 +83,12 @@ export function SetlistGame() {
     const showDateTime = new Date(showTime);
     const oneHourBefore = new Date(showDateTime);
     oneHourBefore.setHours(oneHourBefore.getHours() - 1);
-  
+
     const isSelectionClosed = now >= oneHourBefore;
-    
+
     // Calculate if less than 24 hours remaining
     const isLessThan24Hours = oneHourBefore.getTime() - now.getTime() < 24 * 60 * 60 * 1000;
-  
+
     // Calculate time remaining
     let timeRemaining = '';
     if (!isSelectionClosed) {
@@ -96,7 +96,7 @@ export function SetlistGame() {
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-  
+
       if (days > 0) {
         timeRemaining = `${days}d ${hours}h`;
       } else if (hours > 0) {
@@ -105,14 +105,14 @@ export function SetlistGame() {
         timeRemaining = `${minutes}m`;
       }
     }
-  
+
     return { timeRemaining, isSelectionClosed, isLessThan24Hours };
   }, []);
 
   const fetchGameShows = useCallback(async () => {
     try {
       setLoading(true);
-  
+
       // Query to get shows data remains the same
       let query = supabase
         .from('shows')
@@ -120,19 +120,19 @@ export function SetlistGame() {
         .eq('show_tour', activeLeague)
         .eq('show_issetlistgame', true)
         .order('show_canonid', { ascending: true });
-  
+
       const { data, error } = await query;
-  
+
       if (error) {
         console.error('Error fetching game shows:', error.message, error.details);
         return;
       }
-  
+
       if (data) {
         // Process data to add time remaining calculations
         const processedShows = data.map(show => {
           const { timeRemaining, isSelectionClosed, isLessThan24Hours } = calculateTimeRemaining(show.show_time);
-  
+
           return {
             ...show,
             timeRemaining,
@@ -141,17 +141,17 @@ export function SetlistGame() {
             playerCount: 0 // Initialize player count
           };
         });
-  
+
         // If user is logged in, check for existing submissions
         if (user) {
           const showIds = processedShows.map(show => show.show_id);
-  
+
           const { data: submissionsData, error: submissionsError } = await supabase
             .from('setlist_game_submissions')
             .select('show_id, submission_id, score')
             .eq('user_id', user.id)
             .in('show_id', showIds);
-  
+
           if (submissionsError) {
             console.error('Error fetching user submissions:', submissionsError.message, submissionsError.details);
           } else if (submissionsData) {
@@ -163,7 +163,7 @@ export function SetlistGame() {
               };
               return acc;
             }, {} as Record<string, { submission_id: string; score: number | null }>);
-  
+
             // Add submission_id and score to each show if it exists
             processedShows.forEach(show => {
               if (submissionMap[show.show_id]) {
@@ -173,7 +173,7 @@ export function SetlistGame() {
             });
           }
         }
-  
+
         // Improved player count fetching with better error handling
         for (const show of processedShows) {
           try {
@@ -182,16 +182,16 @@ export function SetlistGame() {
               .from('setlist_game_submissions')
               .select('*', { count: 'exact', head: true })
               .eq('show_id', show.show_id);
-            
+
             if (error) {
               console.error(`Error fetching player count for show ${show.show_id}:`, error.message, error.details);
-              
+
               // Fallback to a simpler query if the first one fails
               const { count: fallbackCount, error: fallbackError } = await supabase
                 .from('setlist_game_submissions')
                 .select('submission_id', { count: 'exact', head: true })
                 .eq('show_id', show.show_id);
-                
+
               if (fallbackError) {
                 console.error(`Fallback player count query failed for show ${show.show_id}:`, fallbackError);
                 // Keep default 0 if both queries fail
@@ -206,7 +206,7 @@ export function SetlistGame() {
             // Keep default player count of 0 if query fails
           }
         }
-  
+
         setGameShows(processedShows);
       }
     } catch (error) {
@@ -360,193 +360,193 @@ export function SetlistGame() {
   };
 
   // Updated scoring function with fixes for multi-instance songs and show closer
-const handleScoreSubmissions = async () => {
-  if (!selectedShowToScore) {
-    return;
-  }
-
-  try {
-    setIsScoring(true);
-    setScoringError(null); // Reset any previous errors
-    console.log("Beginning scoring process for show ID:", selectedShowToScore);
-
-    // Step 1: Count total songs played at this show
-    const { data: setlistData, error: setlistError } = await supabase
-      .from('setlist_entries')
-      .select('entry_id')
-      .eq('entry_show', selectedShowToScore);
-
-    if (setlistError) {
-      console.error('Error fetching setlist:', setlistError);
-      throw new Error(`Failed to fetch setlist: ${setlistError.message}`);
+  const handleScoreSubmissions = async () => {
+    if (!selectedShowToScore) {
+      return;
     }
 
-    const totalSongsPlayed = setlistData.length;
-    console.log(`Total songs played at this show: ${totalSongsPlayed}`);
+    try {
+      setIsScoring(true);
+      setScoringError(null); // Reset any previous errors
+      console.log("Beginning scoring process for show ID:", selectedShowToScore);
 
-    // Step 2: Get actual setlist data (for more detailed processing)
-    const { data: actualSetlistData, error: actualSetlistError } = await supabase
-      .from('setlist_entries')
-      .select('entry_id, entry_song, entry_set, entry_setnum, entry_placement')
-      .eq('entry_show', selectedShowToScore)
-      .order('entry_set', { ascending: true })
-      .order('entry_setnum', { ascending: true });
+      // Step 1: Count total songs played at this show
+      const { data: setlistData, error: setlistError } = await supabase
+        .from('setlist_entries')
+        .select('entry_id')
+        .eq('entry_show', selectedShowToScore);
 
-    if (actualSetlistError) {
-      console.error('Error fetching actual setlist data:', actualSetlistError);
-      throw actualSetlistError;
-    }
+      if (setlistError) {
+        console.error('Error fetching setlist:', setlistError);
+        throw new Error(`Failed to fetch setlist: ${setlistError.message}`);
+      }
 
-    console.log("Fetched actual setlist data:", actualSetlistData);
+      const totalSongsPlayed = setlistData.length;
+      console.log(`Total songs played at this show: ${totalSongsPlayed}`);
 
-    // Step 3: Find the last song of the show
-    const actualLastSong = actualSetlistData && actualSetlistData.length > 0 
-      ? actualSetlistData[actualSetlistData.length - 1] 
-      : null;
+      // Step 2: Get actual setlist data (for more detailed processing)
+      const { data: actualSetlistData, error: actualSetlistError } = await supabase
+        .from('setlist_entries')
+        .select('entry_id, entry_song, entry_set, entry_setnum, entry_placement')
+        .eq('entry_show', selectedShowToScore)
+        .order('entry_set', { ascending: true })
+        .order('entry_setnum', { ascending: true });
 
-    if (actualLastSong) {
-      console.log(`Actual last song: ${actualLastSong.entry_song}, Set ${actualLastSong.entry_set}, Position ${actualLastSong.entry_setnum}`);
-    } else {
-      console.log("No last song found");
-    }
+      if (actualSetlistError) {
+        console.error('Error fetching actual setlist data:', actualSetlistError);
+        throw actualSetlistError;
+      }
 
-    // Step 4: Get all submissions for this show
-    const { data: submissionsData, error: submissionsError } = await supabase
-      .from('setlist_game_submissions')
-      .select('submission_id, user_id, total_songs_picked')
-      .eq('show_id', selectedShowToScore);
+      console.log("Fetched actual setlist data:", actualSetlistData);
 
-    if (submissionsError) {
-      console.error('Error fetching submissions:', submissionsError);
-      throw submissionsError;
-    }
+      // Step 3: Find the last song of the show
+      const actualLastSong = actualSetlistData && actualSetlistData.length > 0
+        ? actualSetlistData[actualSetlistData.length - 1]
+        : null;
 
-    console.log(`Found ${submissionsData.length} submissions to score`);
+      if (actualLastSong) {
+        console.log(`Actual last song: ${actualLastSong.entry_song}, Set ${actualLastSong.entry_set}, Position ${actualLastSong.entry_setnum}`);
+      } else {
+        console.log("No last song found");
+      }
 
-    // Step 5: For each submission, update total_songs_played and score picks
-    for (const submission of submissionsData) {
-      console.log(`\nScoring submission ${submission.submission_id} for user ${submission.user_id}`);
-      let totalScore = 0;
-
-      // Update total_songs_played
-      await supabase
+      // Step 4: Get all submissions for this show
+      const { data: submissionsData, error: submissionsError } = await supabase
         .from('setlist_game_submissions')
-        .update({ total_songs_played: totalSongsPlayed })
-        .eq('submission_id', submission.submission_id);
+        .select('submission_id, user_id, total_songs_picked')
+        .eq('show_id', selectedShowToScore);
 
-      // Get all picks for this submission
-      const { data: picksData, error: picksError } = await supabase
-        .from('setlist_game_picks')
-        .select('pick_id, song, set, setnum, placement')
-        .eq('submission_id', submission.submission_id);
-
-      if (picksError) {
-        console.error('Error fetching picks:', picksError);
-        continue; // Skip to next submission if there's an error
+      if (submissionsError) {
+        console.error('Error fetching submissions:', submissionsError);
+        throw submissionsError;
       }
 
-      console.log(`Found ${picksData.length} picks to score`);
+      console.log(`Found ${submissionsData.length} submissions to score`);
 
-      // Create a dictionary of songs in setlist for quick lookup
-      const setlistSongs = {};
-      actualSetlistData.forEach(entry => {
-        if (!setlistSongs[entry.entry_song]) {
-          setlistSongs[entry.entry_song] = [];
-        }
-        setlistSongs[entry.entry_song].push({
-          set: entry.entry_set,
-          setnum: entry.entry_setnum,
-          placement: entry.entry_placement
-        });
-      });
-      
-      // Score each pick
-      for (const pick of picksData) {
-        let pickScore = 0;
-        let resultString = 'not_played';
-        console.log(`\nScoring pick: ${pick.song} in Set ${pick.set}, Position ${pick.setnum}, Placement ${pick.placement || 'None'}`);
-      
-        // Check if song was played (using our dictionary for faster lookup)
-        const songInstances = setlistSongs[pick.song] || [];
-        
-        if (songInstances.length > 0) {
-          console.log(`Song was played ${songInstances.length} times in the setlist`);
-          
-          // Start with basic song match (2 points)
-          pickScore = 2;
-          resultString = 'correct_song';
-          
-          // Check for correct set match
-          const correctSetMatch = songInstances.some(instance => pick.set === instance.set);
-          
-          // Define setAndPositionMatch outside the if block so it's available in all scopes
-          let setAndPositionMatch = false;
-          
-          if (correctSetMatch) {
-            console.log(`User picked correct set: ${pick.set}`);
-            pickScore = 4;
-            resultString = 'correct_song_set';
-            
-            // Check for correct setnum within that set
-            setAndPositionMatch = songInstances.some(instance => 
-              pick.set === instance.set && pick.setnum === instance.setnum
-            );
-            
-            if (setAndPositionMatch) {
-              console.log(`User picked correct setnum within set: ${pick.setnum}`);
-              pickScore = 7;
-              resultString = 'correct_song_set_setnum';
-            }
-          }
-          
-          // Check for special placements (Opener, Closer, Encore)
-          const userPlacement = pick.placement || '';
-          const hasOpener = userPlacement.includes('Opener');
-          const hasCloser = userPlacement.includes('Closer');
-          const hasEncore = userPlacement.includes('Encore');
-          
-          // Check if the song had the same placement in any instance
-          const matchingPlacementInstance = songInstances.find(instance => {
-            const actualPlacement = instance.placement || '';
-            return (hasOpener && actualPlacement.includes('Opener')) ||
-                  (hasCloser && actualPlacement.includes('Closer')) ||
-                  (hasEncore && actualPlacement.includes('Encore'));
-          });
-          
-          if (matchingPlacementInstance) {
-            console.log(`User picked correct placement: ${userPlacement}`);
-            
-            // Check which special case applies based on the points awarded
-            if (correctSetMatch && matchingPlacementInstance.set === pick.set) {
-              if (setAndPositionMatch && matchingPlacementInstance.setnum === pick.setnum) {
-                // Correct song, set, setnum, and placement
-                pickScore = 10;
-                resultString = 'correct_song_set_setnum_openercloserencore';
-              } else {
-                // Correct song, set, and placement
-                pickScore = 7;
-                resultString = 'correct_song_set_openercloserencore';
-              }
-            } else if (pickScore <= 2) {
-              // Only the song and placement are correct (no set match)
-              pickScore = 5;
-              resultString = 'correct_song_openercloserencore';
-            }
-          }
-        } else {
-          console.log(`Song was not played in the setlist`);
-        }
-        
-        // Add to total score
-        totalScore += pickScore;
-        console.log(`Score for this pick: ${pickScore}, result: ${resultString}`);
-        
-        // Update the pick's score and result
+      // Step 5: For each submission, update total_songs_played and score picks
+      for (const submission of submissionsData) {
+        console.log(`\nScoring submission ${submission.submission_id} for user ${submission.user_id}`);
+        let totalScore = 0;
+
+        // Update total_songs_played
         await supabase
+          .from('setlist_game_submissions')
+          .update({ total_songs_played: totalSongsPlayed })
+          .eq('submission_id', submission.submission_id);
+
+        // Get all picks for this submission
+        const { data: picksData, error: picksError } = await supabase
           .from('setlist_game_picks')
-          .update({ score: pickScore, result: resultString })
-          .eq('pick_id', pick.pick_id);
-      }
+          .select('pick_id, song, set, setnum, placement')
+          .eq('submission_id', submission.submission_id);
+
+        if (picksError) {
+          console.error('Error fetching picks:', picksError);
+          continue; // Skip to next submission if there's an error
+        }
+
+        console.log(`Found ${picksData.length} picks to score`);
+
+        // Create a dictionary of songs in setlist for quick lookup
+        const setlistSongs = {};
+        actualSetlistData.forEach(entry => {
+          if (!setlistSongs[entry.entry_song]) {
+            setlistSongs[entry.entry_song] = [];
+          }
+          setlistSongs[entry.entry_song].push({
+            set: entry.entry_set,
+            setnum: entry.entry_setnum,
+            placement: entry.entry_placement
+          });
+        });
+
+        // Score each pick
+        for (const pick of picksData) {
+          let pickScore = 0;
+          let resultString = 'not_played';
+          console.log(`\nScoring pick: ${pick.song} in Set ${pick.set}, Position ${pick.setnum}, Placement ${pick.placement || 'None'}`);
+
+          // Check if song was played (using our dictionary for faster lookup)
+          const songInstances = setlistSongs[pick.song] || [];
+
+          if (songInstances.length > 0) {
+            console.log(`Song was played ${songInstances.length} times in the setlist`);
+
+            // Start with basic song match (2 points)
+            pickScore = 2;
+            resultString = 'correct_song';
+
+            // Check for correct set match
+            const correctSetMatch = songInstances.some(instance => pick.set === instance.set);
+
+            // Define setAndPositionMatch outside the if block so it's available in all scopes
+            let setAndPositionMatch = false;
+
+            if (correctSetMatch) {
+              console.log(`User picked correct set: ${pick.set}`);
+              pickScore = 4;
+              resultString = 'correct_song_set';
+
+              // Check for correct setnum within that set
+              setAndPositionMatch = songInstances.some(instance =>
+                pick.set === instance.set && pick.setnum === instance.setnum
+              );
+
+              if (setAndPositionMatch) {
+                console.log(`User picked correct setnum within set: ${pick.setnum}`);
+                pickScore = 7;
+                resultString = 'correct_song_set_setnum';
+              }
+            }
+
+            // Check for special placements (Opener, Closer, Encore)
+            const userPlacement = pick.placement || '';
+            const hasOpener = userPlacement.includes('Opener');
+            const hasCloser = userPlacement.includes('Closer');
+            const hasEncore = userPlacement.includes('Encore');
+
+            // Check if the song had the same placement in any instance
+            const matchingPlacementInstance = songInstances.find(instance => {
+              const actualPlacement = instance.placement || '';
+              return (hasOpener && actualPlacement.includes('Opener')) ||
+                (hasCloser && actualPlacement.includes('Closer')) ||
+                (hasEncore && actualPlacement.includes('Encore'));
+            });
+
+            if (matchingPlacementInstance) {
+              console.log(`User picked correct placement: ${userPlacement}`);
+
+              // Check which special case applies based on the points awarded
+              if (correctSetMatch && matchingPlacementInstance.set === pick.set) {
+                if (setAndPositionMatch && matchingPlacementInstance.setnum === pick.setnum) {
+                  // Correct song, set, setnum, and placement
+                  pickScore = 10;
+                  resultString = 'correct_song_set_setnum_openercloserencore';
+                } else {
+                  // Correct song, set, and placement
+                  pickScore = 7;
+                  resultString = 'correct_song_set_openercloserencore';
+                }
+              } else if (pickScore <= 2) {
+                // Only the song and placement are correct (no set match)
+                pickScore = 5;
+                resultString = 'correct_song_openercloserencore';
+              }
+            }
+          } else {
+            console.log(`Song was not played in the setlist`);
+          }
+
+          // Add to total score
+          totalScore += pickScore;
+          console.log(`Score for this pick: ${pickScore}, result: ${resultString}`);
+
+          // Update the pick's score and result
+          await supabase
+            .from('setlist_game_picks')
+            .update({ score: pickScore, result: resultString })
+            .eq('pick_id', pick.pick_id);
+        }
 
         // Step 6a: Handle show opener bonus - NEW CODE
         const { data: firstPickData, error: firstPickError } = await supabase
@@ -562,7 +562,7 @@ const handleScoreSubmissions = async () => {
         } else if (firstPickData && firstPickData.length > 0 && actualSetlistData && actualSetlistData.length > 0) {
           // Get the first song of the actual setlist
           const actualFirstSong = actualSetlistData[0];
-          
+
           console.log(`User's first pick: ${firstPickData[0].song}, first song of show: ${actualFirstSong.entry_song}`);
 
           // Check if first pick matches actual first song
@@ -570,20 +570,20 @@ const handleScoreSubmissions = async () => {
 
           if (isShowOpenerCorrect) {
             console.log(`User correctly picked the show opener`);
-            
+
             // Add show opener bonus to both pick and total score
             const currentPickScore = firstPickData[0].score || 0;
             const showopenerBonus = 3;
             const newPickScore = currentPickScore + showopenerBonus;
-            
+
             console.log(`Adding +${showopenerBonus} points to ${firstPickData[0].song} (from ${currentPickScore} to ${newPickScore})`);
-            
+
             totalScore += showopenerBonus;
-            
+
             // Update the pick with new score and set showopener_correct to TRUE
             await supabase
               .from('setlist_game_picks')
-              .update({ 
+              .update({
                 score: newPickScore,
                 showopener_correct: true
               })
@@ -610,20 +610,20 @@ const handleScoreSubmissions = async () => {
 
           if (isShowCloserCorrect) {
             console.log(`User correctly picked the show closer`);
-            
+
             // Add show closer bonus to both pick and total score
             const currentPickScore = lastPickData[0].score || 0;
             const showcloserBonus = 3;
             const newPickScore = currentPickScore + showcloserBonus;
-            
+
             console.log(`Adding +${showcloserBonus} points to ${lastPickData[0].song} (from ${currentPickScore} to ${newPickScore})`);
-            
+
             totalScore += showcloserBonus;
-            
+
             // Update the pick with new score and set showcloser_correct to TRUE
             await supabase
               .from('setlist_game_picks')
-              .update({ 
+              .update({
                 score: newPickScore,
                 showcloser_correct: true
               })
@@ -635,9 +635,9 @@ const handleScoreSubmissions = async () => {
         if (submission.total_songs_picked > totalSongsPlayed) {
           const excessSongs = submission.total_songs_picked - totalSongsPlayed;
           const penalty = excessSongs * 3;
-          
+
           console.log(`Applying penalty of -${penalty} points for ${excessSongs} excess songs`);
-          
+
           totalScore -= penalty;
         }
 
@@ -649,21 +649,21 @@ const handleScoreSubmissions = async () => {
           .update({ score: totalScore })
           .eq('submission_id', submission.submission_id);
       }
-  
+
       // Step 9: Mark the show as scored
       const { error: updateError } = await supabase
         .from('shows')
         .update({ show_scored: true })
         .eq('show_id', selectedShowToScore);
-  
+
       if (updateError) {
         console.error('Error updating show_scored:', updateError);
         throw updateError;
       }
-  
+
       console.log("Scoring completed successfully!");
       setScoringComplete(true);
-  
+
       // Step 10: Refresh the list of shows to update UI
       setTimeout(() => {
         fetchGameShows();
@@ -671,7 +671,7 @@ const handleScoreSubmissions = async () => {
         setScoringComplete(false);
         setSelectedShowToScore(null);
       }, 2000);
-  
+
     } catch (error) {
       console.error('Error scoring submissions:', error);
       setScoringError(error?.message || 'Failed to score submissions. Please try again.');
@@ -738,40 +738,39 @@ const handleScoreSubmissions = async () => {
     <div className="max-w-[1280px] mx-auto">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
         <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
-          <h1 className="text-3xl font-bold text-white mb-1">Echo of a Show</h1>
-          <h2 className="text-sm font-semibold text-tertiary">A Setlist Game for Goose the Band</h2>
+          <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Echo of a Show</h1>
+          <h2 className="text-sm font-semibold text-black mt-1">A Setlist Game for Goose the Band</h2>
         </div>
-        
+
         <div className="flex gap-3 justify-center md:justify-start">
-          <a 
-            href="https://bsky.app/profile/echoofashow.bsky.social" 
-            target="_blank" 
+          <a
+            href="https://bsky.app/profile/echoofashow.bsky.social"
+            target="_blank"
             rel="noopener noreferrer"
+            className="text-black hover:text-[#a9682e] transition-colors"
           >
-            <FontAwesomeIcon 
-              icon={faBluesky} 
-              size="2x" 
-              style={{ color: '#ffffff' }} 
+            <FontAwesomeIcon
+              icon={faBluesky}
+              size="2x"
             />
           </a>
 
-          <a 
-            href="https://x.com/echoofashow" 
-            target="_blank" 
+          <a
+            href="https://x.com/echoofashow"
+            target="_blank"
             rel="noopener noreferrer"
-            className="mr-4"
+            className="mr-4 text-black hover:text-[#a9682e] transition-colors"
           >
-            <FontAwesomeIcon 
-              icon={faXTwitter} 
-              size="2x" 
-              style={{ color: '#ffffff' }} 
+            <FontAwesomeIcon
+              icon={faXTwitter}
+              size="2x"
             />
           </a>
 
           {/* How to Play Button - visible to everyone */}
           <button
             onClick={() => setShowRulesModal(true)}
-            className="px-3 py-1.5 bg-tertiary hover:bg-tertiary/80 text-white font-semibold rounded-md transition-colors flex items-center gap-1 text-sm"
+            className="px-3 py-1.5 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-semibold rounded-md transition-colors flex items-center gap-1 text-sm border border-black"
           >
             <HelpCircle className="w-4 h-4" />
             <span>How to Play</span>
@@ -781,7 +780,7 @@ const handleScoreSubmissions = async () => {
           {isAdminUser && (
             <button
               onClick={() => setShowScoringModal(true)}
-              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors text-sm"
+              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors text-sm border border-black"
             >
               Score Show
             </button>
@@ -790,27 +789,27 @@ const handleScoreSubmissions = async () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-[#fce7ca]/70 mt-4">Loading setlist games...</p>
+          <p className="text-black mt-4">Loading setlist games...</p>
         </div>
       ) : (
         <div className="space-y-6">
           {!user && (
-            <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-white/90 mb-4">How To Play</h2>
-              <div className="mt-4 p-3 bg-tertiary/20 rounded border border-tertiary/40">
-                <p className="text-white font-medium text-sm">
+            <div className="bg-primary border border-black rounded-lg p-3">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">How To Play</h2>
+              <div className="mt-4 p-3 bg-[#f9ae37]/20 rounded border border-[#f9ae37]/40">
+                <p className="text-black font-medium text-sm">
                   You need to be logged in to participate in the Setlist Game.{' '}
-                  <Link to="/login" className="text-tertiary hover:underline">
+                  <Link to="/login" className="text-[#a9682e] hover:underline">
                     Log in
                   </Link>
                   {' '}or{' '}
-                  <Link to="/signup" className="text-tertiary hover:underline">
+                  <Link to="/signup" className="text-[#a9682e] hover:underline">
                     Sign up
                   </Link>
                   {' '}to start playing!
@@ -819,40 +818,40 @@ const handleScoreSubmissions = async () => {
             </div>
           )}
 
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4 mt-6">
-            <h2 className="text-xl font-semibold text-white/90 mb-4 flex justify-between">
-              <div className="flex items-center gap-4">
-                <ListMusic className="w-5 h-5 text-yellow-400" />
+          <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+                <ListMusic className="w-5 h-5 mr-2" />
                 <span>Active League</span>
-                <span className="px-2 py-0.5 text-sm font-medium rounded bg-[#ffe6c7] text-[#0c1d27]">
-                  {activeLeague}
-                </span>
-              </div>
-            </h2>
+              </h2>
+              <span className="px-3 py-1 text-sm font-medium rounded-full bg-secondary text-black border border-black">
+                {activeLeague}
+              </span>
+            </div>
 
             {gameShows.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-[#fce7ca]/70">No active games found in this league.</p>
+                <p className="text-black">No active games found in this league.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse min-w-max">
-                <thead>
-                  <tr className="bg-[#0e151b] border-y border-white/10">
-                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Date</th>
-                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Venue</th>
-                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Location</th>
-                    <th className="px-4 py-2 text-left text-s font-semibold text-white/90 whitespace-nowrap">Detail</th>
-                    <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Status</th>
-                    <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Players</th>
-                    {/* Conditionally render Score column */}
-                    {user && (
-                      <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Score</th>
-                    )}
-                    <th className="px-4 py-2 text-center text-s font-semibold text-white/90 whitespace-nowrap">Picks</th>
-                  </tr>
-                </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <thead>
+                    <tr className="bg-canvas border-y border-black/10">
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Date</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Venue</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Location</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Detail</th>
+                      <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Status</th>
+                      <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Players</th>
+                      {/* Conditionally render Score column */}
+                      {user && (
+                        <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Score</th>
+                      )}
+                      <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Picks</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black/5">
                     {gameShows.map((show) => {
                       // Sort shows to determine the next upcoming show
                       const sortedShows = [...gameShows].sort((a, b) => {
@@ -872,24 +871,24 @@ const handleScoreSubmissions = async () => {
                       // Determine background color based on show status
                       let bgColor;
                       if (show.show_scored) {
-                        bgColor = 'bg-[#0a1016]'; // Darkest shade for closed and scored shows
+                        bgColor = 'bg-canvas'; // For closed and scored shows
                       } else if (nextUpcomingShow && show.show_id === nextUpcomingShow.show_id) {
-                        bgColor = 'bg-[#172330]'; // Lightest shade for next upcoming show
+                        bgColor = 'bg-primary'; // For next upcoming show
                       } else {
-                        bgColor = 'bg-[#0c151c]'; // Middle shade for other shows
+                        bgColor = 'bg-canvas'; // For other shows
                       }
 
                       return (
                         <tr
                           key={show.show_id}
-                          className={`${bgColor} hover:bg-white/10 transition-colors text-xs`}
+                          className={`${bgColor} hover:bg-black/10 transition-colors text-xs`}
                         >
-                          <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                          <td className="px-4 py-0.5 text-black whitespace-nowrap">
                             <span className="font-semibold">
                               {user ? (
                                 <Link
                                   to={`/setlistgame/${show.show_id}`}
-                                  className="hover:text-white transition-colors table-link"
+                                  className="hover:text-[#a9682e] transition-colors table-link"
                                 >
                                   {show.show_date
                                     .split('-')
@@ -908,44 +907,44 @@ const handleScoreSubmissions = async () => {
                               )}
                             </span>
                           </td>
-                          <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                          <td className="px-4 py-0.5 text-black whitespace-nowrap">
                             {show.show_subvenue}
                           </td>
-                          <td className="px-4 py-1 text-[#fce7ca]/70 whitespace-nowrap">
+                          <td className="px-4 py-0.5 text-black/70 whitespace-nowrap">
                             {show.show_venue_location}
                           </td>
-                          <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                          <td className="px-4 py-0.5 text-black whitespace-nowrap">
                             {show.show_detail || ''}
                           </td>
-                          <td className="px-4 py-1 whitespace-nowrap text-center">
+                          <td className="px-4 py-0.5 whitespace-nowrap text-center">
                             {show.show_scored ? (
-                              <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-md text-xs">
+                              <span className="px-2 py-1 bg-blue-500/20 text-blue-700 rounded-md text-xs border border-blue-500/30">
                                 Scored
                               </span>
                             ) : show.isSelectionClosed ? (
-                              <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded-md text-xs">
+                              <span className="px-2 py-1 bg-red-500/20 text-red-700 rounded-md text-xs border border-red-500/30">
                                 Closed
                               </span>
                             ) : show.isLessThan24Hours ? (
-                              <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded-md text-xs">
+                              <span className="px-2 py-1 bg-yellow-500/20 text-yellow-700 rounded-md text-xs border border-yellow-500/30">
                                 {show.timeRemaining} left
                               </span>
                             ) : (
-                              <span className="px-2 py-1 bg-green-500/20 text-green-300 rounded-md text-xs">
+                              <span className="px-2 py-1 bg-green-500/20 text-green-700 rounded-md text-xs border border-green-500/30">
                                 {show.timeRemaining} left
                               </span>
                             )}
                           </td>
-                          <td className="px-4 py-1 text-center">
-                            <span className="text-[#fce7ca]/70 text-xs">
+                          <td className="px-4 py-0.5 text-center">
+                            <span className="text-black/70 text-xs">
                               {show.playerCount !== undefined ? show.playerCount : '-'}
                             </span>
                           </td>
                           {/* Conditionally render Score cell */}
                           {user && (
-                            <td className="px-4 py-1 text-center">
+                            <td className="px-4 py-0.5 text-center">
                               {user && show.score !== undefined && show.show_scored ? (
-                                <span className="text-yellow-400 font-bold">
+                                <span className="text-[#a9682e] font-bold">
                                   {show.score}
                                 </span>
                               ) : (
@@ -953,31 +952,31 @@ const handleScoreSubmissions = async () => {
                               )}
                             </td>
                           )}
-                          <td className="px-4 py-1 text-center">
+                          <td className="px-4 py-0.5 text-center">
                             {show.show_scored ? (
                               user && show.submission_id ? (
                                 <button
-                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors inline-block"
+                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors inline-block border border-blue-800"
                                   onClick={() => handleViewSubmission(show)}
                                 >
                                   View Results
                                 </button>
                               ) : (
-                                <span className="px-3 py-1 bg-gray-500/50 text-white/50 text-xs font-medium rounded inline-block">
+                                <span className="px-3 py-1 bg-gray-200 text-gray-500 text-xs font-medium rounded inline-block border border-gray-300">
                                   Scored
                                 </span>
                               )
                             ) : show.isSelectionClosed ? (
                               user && show.submission_id ? (
                                 <button
-                                  className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-medium rounded transition-colors inline-block"
+                                  className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-medium rounded transition-colors inline-block border border-gray-800"
                                   onClick={() => handleViewSubmission(show)}
                                 >
                                   View Picks
                                 </button>
                               ) : (
                                 <button
-                                  className="px-3 py-1 bg-gray-500/50 text-white/50 text-xs font-medium rounded cursor-not-allowed inline-block"
+                                  className="px-3 py-1 bg-gray-200 text-gray-500 text-xs font-medium rounded cursor-not-allowed inline-block border border-gray-300"
                                   disabled
                                 >
                                   Closed
@@ -986,7 +985,7 @@ const handleScoreSubmissions = async () => {
                             ) : (
                               user ? (
                                 <button
-                                  className="px-3 py-1 bg-tertiary hover:bg-tertiary/80 text-white text-xs font-medium rounded transition-colors inline-block"
+                                  className="px-3 py-1 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black text-xs font-medium rounded transition-colors inline-block border border-black"
                                   onClick={() => handleSelectSongs(show)}
                                 >
                                   {show.submission_id ? 'Edit Picks' : 'Make Picks'}
@@ -994,7 +993,7 @@ const handleScoreSubmissions = async () => {
                               ) : (
                                 <Link
                                   to="/login"
-                                  className="px-3 py-1 bg-tertiary/50 hover:bg-tertiary/60 text-white text-xs font-medium rounded transition-colors inline-block"
+                                  className="px-3 py-1 bg-[#f9ae37]/50 hover:bg-[#f9ae37]/70 text-black text-xs font-medium rounded transition-colors inline-block border border-black/30"
                                 >
                                   Login to Play
                                 </Link>
@@ -1033,29 +1032,29 @@ const handleScoreSubmissions = async () => {
             className="fixed inset-0 bg-black/50 z-50"
             onClick={() => setShowScoringModal(false)}
           />
-          <div className="fixed inset-x-4 inset-y-auto top-1/4 md:inset-x-auto md:left-1/2 md:top-1/3 md:transform md:-translate-x-1/2 z-50 bg-primary rounded-lg border border-white/10 shadow-xl md:w-[500px] p-4">
+          <div className="fixed inset-x-4 inset-y-auto top-1/4 md:inset-x-auto md:left-1/2 md:top-1/3 md:transform md:-translate-x-1/2 z-50 bg-primary rounded-lg border border-black shadow-xl md:w-[500px] p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white/90">Score Setlist Game</h3>
+              <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">Score Setlist Game</h3>
               <button
                 onClick={() => setShowScoringModal(false)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
               >
-                <X className="w-5 h-5 text-white/70" />
+                <X className="w-5 h-5 text-black" />
               </button>
             </div>
 
             {scoringComplete ? (
-              <div className="bg-green-500/20 text-green-300 px-4 py-3 rounded-lg mb-4">
+              <div className="bg-green-500/20 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-500/30">
                 Scoring completed successfully!
               </div>
             ) : scoringError ? (
-              <div className="bg-red-500/20 text-red-300 px-4 py-3 rounded-lg mb-4">
+              <div className="bg-red-500/20 text-red-700 px-4 py-3 rounded-lg mb-4 border border-red-500/30">
                 <p className="font-semibold">Error occurred:</p>
                 <p>{scoringError}</p>
               </div>
             ) : (
               <>
-                <p className="text-[#fce7ca]/90 mb-4">
+                <p className="text-black mb-4">
                   Select a show to score all submissions for:
                 </p>
 
@@ -1063,7 +1062,7 @@ const handleScoreSubmissions = async () => {
                   <select
                     value={selectedShowToScore || ''}
                     onChange={(e) => setSelectedShowToScore(e.target.value)}
-                    className="w-full px-3 py-2 bg-black/30 border border-white/10 rounded-md text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary appearance-none"
+                    className="w-full px-3 py-2 bg-white border border-black rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#f9ae37] appearance-none"
                   >
                     <option value="">Select a show...</option>
                     {gameShows.map((show) => (
@@ -1073,25 +1072,25 @@ const handleScoreSubmissions = async () => {
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <ChevronDown className="w-5 h-5 text-white/50" />
+                    <ChevronDown className="w-5 h-5 text-black/50" />
                   </div>
                 </div>
 
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setShowScoringModal(false)}
-                    className="px-4 py-2 bg-[#0e151b] hover:bg-tertiary/20 text-white font-medium rounded-md transition-colors border border-white/10"
+                    className="px-4 py-2 bg-red-500 hover:bg-red-700 text-black font-medium rounded-md transition-colors border border-black"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleScoreSubmissions}
                     disabled={!selectedShowToScore || isScoring}
-                    className="px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-white font-medium rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors disabled:bg-[#f9ae37]/50 disabled:cursor-not-allowed flex items-center gap-2 border border-black"
                   >
                     {isScoring ? (
                       <>
-                        <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                        <div className="w-4 h-4 rounded-full border-2 border-black/20 border-t-black animate-spin"></div>
                         <span>Scoring...</span>
                       </>
                     ) : (

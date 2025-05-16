@@ -192,7 +192,7 @@ function App() {
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
         <header className="z-20 bg-primary border-b border-black/15 px-6 py-1 md:sticky md:top-0">
-          <div className="flex items-center">
+          <div className="flex items-center max-w-[1280px] mx-auto w-full">
           <button
             onClick={handleLogoClick}
             className="focus:outline-none mr-4 relative"
@@ -261,7 +261,7 @@ function App() {
         <div className="flex-1 flex flex-col min-h-screen md:min-h-0 overflow-auto">
           {/* Mobile-only header */}
           <header className="z-20 bg-primary border-b border-white/10 p-4 lg:hidden">
-            <div className="relative flex items-center justify-center">
+            <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 className="absolute left-0 p-2 rounded-md bg-[#f9ae37] hover:bg-tertiary text-black transition-colors border border-black"
