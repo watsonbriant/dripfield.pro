@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { formatInTimeZone } from 'date-fns-tz';
 import { GuestSearch } from './GuestSearch';
 import GuestPerformanceChart from './GuestPerformanceChart';
 import { SongsPlayed } from './SongsPlayed';
@@ -41,8 +40,9 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#f9ae37" 
           strokeWidth="8"
+          strokeOpacity="0.3"
         />
         {/* Progress circle */}
         <circle 
@@ -50,7 +50,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -59,7 +59,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -283,13 +283,17 @@ export function Guest() {
     setSelectedSong(currentSong => currentSong === song ? null : song);
   };
 
-  // Full page loading state with circular progress
+  // Full page loading state with pulses instead of circular progress
   if (loading) {
     return (
-      <div className="max-w-[872px] mx-auto">
+      <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
-          <CircularProgress value={loadingProgress} />
-          <p className="text-[#fce7ca]/70 mt-4">Loading guest data...</p>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading guest data...</p>
         </div>
       </div>
     );
@@ -297,9 +301,9 @@ export function Guest() {
 
   if (!guest) {
     return (
-      <div className="max-w-[872px] mx-auto">
+      <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Guest not found</p>
+          <p className="text-black">Guest not found</p>
         </div>
       </div>
     );
@@ -308,65 +312,74 @@ export function Guest() {
   return (
     <div className="max-w-[872px] mx-auto">
       <div className="flex justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">
+        <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">
           {guest.guest}
-        </h1>
+        </h2>
         <GuestSearch />
       </div>
       
       {guest.guest_instrument && (
-        <div className="mt-2">
-          <div className="text-[#fce7ca] text-sm font-semibold">{guest.guest_instrument}</div>
+        <div className="mb-4">
+          <div className="text-black text-sm font-semibold">{guest.guest_instrument}</div>
         </div>
       )}
 
-      <div className="mt-6 mb-8 space-y-6">
+      <div className="space-y-6 mb-8">
         {/* Top row with Song List and Performances by Group side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Song List - Only show if there are performances */}
-            {performances.length > 0 && (
-              <SongsPlayed 
-                guestId={guestId} 
-                isLoading={loading} 
-                selectedSong={selectedSong}
-                onSongClick={handleSongClick}
-                CircularProgress={CircularProgress}
-              />
-            )}
+          {performances.length > 0 && (
+            <div className="h-full">
+              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
+                <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Songs Played</h2>
+                <div className="max-h-[320px] overflow-y-auto">
+                  <SongsPlayed 
+                    guestId={guestId} 
+                    isLoading={loading} 
+                    selectedSong={selectedSong}
+                    onSongClick={handleSongClick}
+                    CircularProgress={CircularProgress}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Performances by Group */}
           {performances.length > 0 ? (
-            <div className="bg-[#172330] border border-white/10 rounded-lg p-4 h-full">
-              <div className="text-xl font-semibold text-white/90 mb-3">Shows by Group</div>
-              <div className="max-h-[320px] overflow-y-auto">
-                <div className="space-y-1">
-                  {Object.entries(
-                    performances.reduce((acc, show) => {
-                      const group = show.show_group || 'Unknown';
-                      acc[group] = (acc[group] || 0) + 1;
-                      return acc;
-                    }, {} as Record<string, number>)
-                  )
-                    .sort(([groupA, countA], [groupB, countB]) => {
-                      // First sort by count (descending)
-                      if (countB !== countA) {
-                        return countB - countA;
-                      }
-                      // Then by group name (alphabetically)
-                      return groupA.localeCompare(groupB);
-                    })
-                    .map(([group, count]) => (
-                      <div 
-                        key={group} 
-                        className={`text-[#fce7ca] text-sm flex justify-between font-semibold cursor-pointer ${
-                          selectedGroup === group ? 'bg-[#594e5f]/40' : 'hover:bg-[#594e5f]/20'
-                        }`}
-                        onClick={() => handleGroupClick(group)}
-                      >
-                        <span>{group}</span>
-                        <span>{count}</span>
-                      </div>
-                    ))}
+            <div className="h-full">
+              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
+                <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Shows by Group</h2>
+                <div className="max-h-[320px] overflow-y-auto">
+                  <div className="space-y-1">
+                    {Object.entries(
+                      performances.reduce((acc, show) => {
+                        const group = show.show_group || 'Unknown';
+                        acc[group] = (acc[group] || 0) + 1;
+                        return acc;
+                      }, {} as Record<string, number>)
+                    )
+                      .sort(([groupA, countA], [groupB, countB]) => {
+                        // First sort by count (descending)
+                        if (countB !== countA) {
+                          return countB - countA;
+                        }
+                        // Then by group name (alphabetically)
+                        return groupA.localeCompare(groupB);
+                      })
+                      .map(([group, count]) => (
+                        <div 
+                          key={group} 
+                          className={`text-black text-sm flex justify-between font-semibold cursor-pointer ${
+                            selectedGroup === group ? 'bg-[#f9ae37]/40' : 'hover:bg-[#f9ae37]/20'
+                          }`}
+                          onClick={() => handleGroupClick(group)}
+                        >
+                          <span>{group}</span>
+                          <span>{count}</span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -375,15 +388,17 @@ export function Guest() {
 
         {/* Performance Chart */}
         {performances.length > 0 ? (
-          <GuestPerformanceChart 
-            performances={performances} 
-            selectedGroup={selectedGroup}
-            selectedSong={selectedSong}
-            songShowMap={songShowMap}
-          />
+          <div className="overflow-x-auto">
+            <GuestPerformanceChart 
+              performances={performances} 
+              selectedGroup={selectedGroup}
+              selectedSong={selectedSong}
+              songShowMap={songShowMap}
+            />
+          </div>
         ) : (
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-            <p className="text-[#fce7ca]/90 text-center">
+          <div className="bg-primary border border-black rounded-lg p-4">
+            <p className="text-black text-center">
               <span className="font-semibold">{guest.guest}</span> hasn't performed as a guest.
             </p>
           </div>

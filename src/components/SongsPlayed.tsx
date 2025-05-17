@@ -44,8 +44,9 @@ const DefaultCircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#f9ae37" 
           strokeWidth="8"
+          strokeOpacity="0.3"
         />
         {/* Progress circle */}
         <circle 
@@ -53,7 +54,7 @@ const DefaultCircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -62,7 +63,7 @@ const DefaultCircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-sm font-bold text-[#fce7ca]">
+      <div className="absolute text-sm font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -303,8 +304,7 @@ export function SongsPlayed({
   
   if (isLoading || loading) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4 h-full">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">Unique Songs Played</h2>
+      <div className="max-h-[320px] overflow-y-auto">
         <div className="flex items-center justify-center py-6">
           <CircularProgress value={loadingProgress} />
         </div>
@@ -316,17 +316,17 @@ export function SongsPlayed({
   const maxCount = Math.max(...songSpreadData.map(cat => cat.count));
   
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4 h-full">
+    <div>
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-xl font-semibold text-white/90">
-          {songs.length} Unique Songs Played
+        <h2 className="text-black font-semibold">
+          {songs.length} Unique Songs
         </h2>
         <button 
           onClick={() => setIsSpreadModalOpen(true)} 
-          className="text-[#fce7ca] hover:text-white transition-colors"
+          className="text-black hover:text-[#a9682e] transition-colors"
           aria-label="Show song spread"
         >
-          <ChartBarDecreasing size={20} />
+          <ChartBarDecreasing size={18} />
         </button>
       </div>
       
@@ -337,16 +337,16 @@ export function SongsPlayed({
           placeholder="Search songs..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-[#1f2935] border border-white/10 rounded-md px-3 py-1.5 text-sm text-white/90 focus:outline-none focus:ring-1 focus:ring-[#594e5f] bg-primary"
+          className="w-full bg-canvas border border-black rounded-md px-3 py-1.5 text-sm text-black focus:outline-none focus:ring-1 focus:ring-[#a9682e] placeholder-black/60"
         />
       </div>
       
       {sortedSongs.length > 0 ? (
         <div className="relative">
           {/* Sticky table header */}
-          <div className="sticky top-0 z-10 bg-[#172330] grid grid-cols-2 text-sm text-white/80 border-b border-white/10 pb-1 mb-2">
+          <div className="sticky top-0 z-10 bg-primary grid grid-cols-2 text-sm text-black border-b border-black/10 pb-1 mb-2">
             <div 
-              className="cursor-pointer hover:text-white flex items-center"
+              className="cursor-pointer hover:text-[#a9682e] flex items-center"
               onClick={() => handleSortClick('song')}
             >
               <span>Song</span>
@@ -355,7 +355,7 @@ export function SongsPlayed({
               )}
             </div>
             <div 
-              className="cursor-pointer hover:text-white text-right flex items-center justify-end"
+              className="cursor-pointer hover:text-[#a9682e] text-right flex items-center justify-end"
               onClick={() => handleSortClick('count')}
             >
               <span>Count</span>
@@ -372,54 +372,54 @@ export function SongsPlayed({
                 <div 
                   key={index} 
                   onClick={() => onSongClick(song.song)}
-                  className={`flex justify-between text-sm font-semibold cursor-pointer hover:bg-[#594e5f]/20 ${
+                  className={`flex justify-between text-sm font-semibold cursor-pointer ${
                     selectedSong === song.song 
-                      ? 'text-[#fe6b01] bg-[#594e5f]/30' 
-                      : 'text-[#fce7ca]'
+                      ? 'bg-[#f9ae37]/40' 
+                      : 'hover:bg-[#f9ae37]/20'
                   }`}
                 >
-                  <span className="truncate">{song.song}</span>
-                  <span>{song.play_count}</span>
+                  <span className="truncate text-black">{song.song}</span>
+                  <span className="text-black">{song.play_count}</span>
                 </div>
               ))}
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="text-black/70 text-center py-4">
+          {searchTerm ? 'No songs match your search.' : 'No songs found.'}
+        </div>
+      )}
+      
+      {/* Song Spread Modal */}
+      <Modal
+        isOpen={isSpreadModalOpen}
+        onClose={() => setIsSpreadModalOpen(false)}
+        title="Song Category Spread"
+      >
+        <div className="space-y-1.5 max-h-[80vh] overflow-y-auto p-1">
+          {songSpreadData.map(({ category, count, songs }) => (
+            <div key={category}>
+              <div className="text-black text-sm font-semibold">
+                {category}
+              </div>
+              <div className="h-5 rounded overflow-hidden">
+                <div 
+                  className="h-full bg-[#f9ae37] rounded relative"
+                  style={{ 
+                    width: `${(count / maxCount) * 100}%`,
+                    minWidth: count < 10 ? '24px' : count < 100 ? '32px' : count < 1000 ? '40px' : '48px'
+                  }}
+                >
+                  <div className="absolute right-0 top-0 h-full flex items-center pr-2">
+                    <span className="text-black text-sm font-semibold">{count}</span>
+                  </div>
                 </div>
-              ) : (
-                <div className="text-[#fce7ca]/70 text-center py-4">
-                  {searchTerm ? 'No songs match your search.' : 'No songs found.'}
-                </div>
-              )}
-              
-              {/* Song Spread Modal */}
-              <Modal
-                isOpen={isSpreadModalOpen}
-                onClose={() => setIsSpreadModalOpen(false)}
-                title="Song Category Spread"
-              >
-                <div className="space-y-1.5 max-h-[80vh] overflow-y-auto p-1">
-                  {songSpreadData.map(({ category, count, songs }) => (
-                    <div key={category}>
-                      <div className="text-[#ffffff]/90 text-sm font-semibold">
-                        {category}
-                      </div>
-                      <div className="h-5 rounded overflow-hidden">
-                        <div 
-                          className="h-full bg-[#594e5f] rounded relative"
-                          style={{ 
-                            width: `${(count / maxCount) * 100}%`,
-                            minWidth: count < 10 ? '24px' : count < 100 ? '32px' : count < 1000 ? '40px' : '48px'
-                          }}
-                        >
-                          <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                            <span className="text-[#fce7ca] text-sm font-semibold">{count}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Modal>
+              </div>
             </div>
-          );
-        }
+          ))}
+        </div>
+      </Modal>
+    </div>
+  );
+}

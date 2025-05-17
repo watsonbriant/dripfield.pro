@@ -307,7 +307,7 @@ export function Song() {
   return (
     <div className="max-w-[872px] mx-auto">
       <div className="flex justify-between">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-6">{song.song}</h2>
+        <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-6">{song.song}</h2>
         <SongSearch />
       </div>
     
@@ -328,12 +328,12 @@ export function Song() {
             <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
               <div className="space-y-4">
                 <div>
-                  <div className="text-black mb-1 font-semibold">Category</div>
-                  <div className="text-black text-sm font-semibold">{song.song_category}</div>
+                  <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Category</h2>
+                  <div className="text-black text-sm font-semibold mb-1">{song.song_category}</div>
                 </div>
                 {song.song_originalartist && (
                   <div>
-                    <div className="text-black mb-1 font-semibold">Original Artist</div>
+                    <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Original Artist</h2>
                     <div className="text-black text-sm font-semibold">{song.song_originalartist}</div>
                   </div>
                 )}
@@ -348,9 +348,9 @@ export function Song() {
                 {stats.hasRarity && (
                   <>
                     <div className="flex items-center mb-1">
-                      <div className="text-black font-semibold">Song Rarity</div>
+                      <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Song Rarity</h2>
                       <span 
-                        className="text-white text-sm font-semibold px-2 py-0.5 rounded-md inline-block ml-6"
+                        className="text-white text-sm font-semibold px-2 py-0.5 mb-1 rounded-md inline-block ml-6"
                         style={{ 
                           backgroundColor: getRarityColor(stats.rarity) 
                         }}
@@ -362,7 +362,7 @@ export function Song() {
                   </>
                 )}
                 <div className={!stats.hasRarity ? "mt-0" : ""}>
-                  <div className="text-black font-semibold mb-1">Performances by Group</div>
+                  <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mt-1 mb-1">Performances by Group</h2>
                   <div className="space-y-1">
                     {stats.groupCounts.map(({ group, count }) => (
                       <div 
