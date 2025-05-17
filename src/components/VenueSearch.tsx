@@ -93,7 +93,7 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
       <div className="md:hidden">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#f9ae37]/90 transition-colors border border-black"
+          className="p-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors border border-black"
         >
           <Search className="w-6 h-6" />
         </button>
@@ -109,7 +109,7 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search venues..."
-                className="w-full px-4 py-2 rounded-lg border border-black bg-white text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37]"
+                className="w-full px-4 py-2 rounded-md border border-black bg-canvas text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e]"
               />
             </div>
             <div className="divide-y divide-black/10">
@@ -117,9 +117,9 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
                 <button
                   key={`${venue.subvenue}-${venue.subvenue_venue}`}
                   onClick={() => handleVenueSelect(venue)}
-                  className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
+                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-black"
                 >
-                  <span className="text-black">
+                  <span>
                     {venue.subvenue}
                     {venue.subvenue_venue_location && (
                       <>
@@ -131,7 +131,7 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
                 </button>
               ))}
               {filteredVenues.length === 0 && (
-                <div className="px-4 py-3 text-sm text-black/50 italic">
+                <div className="px-4 py-2 text-sm text-black/60 italic">
                   No venues found
                 </div>
               )}
@@ -150,7 +150,7 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
       </div>
       {isDropdownOpen && (
         <div className={`absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
-          window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-[432px] max-h-96'
+          window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-96 max-h-96'
         }`}>
           <div className="p-2">
             <div className="relative">
@@ -159,9 +159,9 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search venues..."
-                className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-white text-black text-sm focus:outline-none focus:ring-1 focus:ring-[#f9ae37]"
+                className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-black text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] placeholder-black/60"
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
             </div>
           </div>
           <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
@@ -169,21 +169,19 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
               <button
                 key={`${venue.subvenue}-${venue.subvenue_venue}`}
                 onClick={() => handleVenueSelect(venue)}
-                className="w-full text-left px-4 py-1.5 text-sm hover:bg-black/10 transition-colors font-semibold"
+                className="w-full text-left px-4 py-1 text-sm text-black font-semibold hover:bg-canvas transition-colors"
               >
-                <div>
-                  {venue.subvenue}
-                  {venue.subvenue_venue_location && (
-                    <>
-                      <span className="text-black/70">&nbsp;&nbsp;&nbsp;</span>
-                      <span className="text-xs text-black/60">{venue.subvenue_venue_location}</span>
-                    </>
-                  )}
-                </div>
+                {venue.subvenue}
+                {venue.subvenue_venue_location && (
+                  <>
+                    <span className="text-black/70">&nbsp;&nbsp;&nbsp;</span>
+                    <span className="text-xs text-black/60">{venue.subvenue_venue_location}</span>
+                  </>
+                )}
               </button>
             ))}
             {filteredVenues.length === 0 && (
-              <div className="px-4 py-2 text-sm text-black/70 italic">
+              <div className="px-4 py-2 text-sm text-black/60 italic">
                 No venues found
               </div>
             )}

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { formatInTimeZone } from 'date-fns-tz';
 import { VenueSearch } from './VenueSearch';
-import VenueSongMatrix from './VenueSongMatrix'; // Import VenueSongMatrix component
+import VenueSongMatrix from './VenueSongMatrix';
 
 interface Show {
   show_id: string;
@@ -192,14 +192,14 @@ export function Venue() {
 
   if (loading) {
     return (
-      <div className="max-w-[872px] mx-auto">
+      <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-300"></div>
           </div>
-          <p className="text-[#fce7ca]/70 mt-4">Loading venue data...</p>
+          <p className="text-black mt-4">Loading venue data...</p>
         </div>
       </div>
     );
@@ -207,9 +207,9 @@ export function Venue() {
 
   if (!venue) {
     return (
-      <div className="max-w-[872px] mx-auto">
+      <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Venue not found</p>
+          <p className="text-black">Venue not found</p>
         </div>
       </div>
     );
@@ -218,45 +218,45 @@ export function Venue() {
   return (
     <div className="max-w-[872px] mx-auto">
       <div className="flex justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">
+        <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">
           {venue.venue}
-        </h1>
+        </h2>
         <VenueSearch />
       </div>
       
       {venue.venue_location && (
-        <div className="mt-2">
-          <div className="text-[#fce7ca] text-sm font-semibold">{venue.venue_location}</div>
+        <div className="mb-4">
+          <div className="text-black text-sm font-semibold">{venue.venue_location}</div>
         </div>
       )}
 
-      <div className="mt-6 space-y-6">
+      <div className="space-y-6 mb-8">
         {/* Shows List */}
-        <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-          <h2 className="text-xl font-semibold text-white/90 mb-4">Shows</h2>
+        <div className="bg-primary border border-black rounded-lg p-4">
+          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Shows</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse min-w-max">
               <thead>
-                <tr className="bg-[#0e151b] border-y border-white/10">
-                  <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Date</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Group</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Venue</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Tour</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Detail</th>
+                <tr className="bg-canvas border-y border-black/10">
+                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Date</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Group</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Venue</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Tour</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Detail</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-black/5">
                 {shows.map((show, index) => (
                   <tr
                     key={show.show_id}
                     className={`${
-                      index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                    } hover:bg-white/10 transition-colors text-xs`}
+                      index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                    } hover:bg-black/10 transition-colors text-xs`}
                   >
-                    <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                    <td className="px-4 py-1 text-black whitespace-nowrap">
                       <button
                         onClick={() => navigate(`/setlist/${show.show_id}`)}
-                        className="font-semibold hover:text-white transition-colors table-link"
+                        className="font-semibold hover:text-[#a9682e] transition-colors table-link"
                       >
                         {formatInTimeZone(
                           new Date(show.show_date),
@@ -265,27 +265,27 @@ export function Venue() {
                         )}
                       </button>
                     </td>
-                    <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                    <td className="px-4 py-1 text-black whitespace-nowrap">
                       {show.show_group}
                     </td>
-                    <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                    <td className="px-4 py-1 text-black whitespace-nowrap">
                       {show.show_subvenue}
                     </td>
-                    <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                    <td className="px-4 py-1 text-black whitespace-nowrap">
                       {show.show_tour && (
                         <button
                           onClick={() => navigate(`/tours/${show.tours?.tour_id}`)}
-                          className="hover:underline hover:text-white transition-colors"
+                          className="hover:underline hover:text-[#a9682e] transition-colors"
                         >
                           {show.show_tour}
                         </button>
                       )}
                     </td>
-                    <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                    <td className="px-4 py-1 text-black whitespace-nowrap">
                       {show.show_detail && show.show_detail}
                       {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
                       {show.show_alert && 
-                        <span className="text-tertiary">
+                        <span className="text-red-600">
                           <strong>[{show.show_alert}]</strong>
                         </span>
                       }
@@ -299,11 +299,13 @@ export function Venue() {
         
         {/* Venue Song Matrix */}
         {shows.length > 0 && (
-          <VenueSongMatrix 
-            shows={shows}
-            songIdMap={songIdMap}
-            yearIdMap={yearIdMap}
-          />
+          <div className="overflow-x-auto">
+            <VenueSongMatrix 
+              shows={shows}
+              songIdMap={songIdMap}
+              yearIdMap={yearIdMap}
+            />
+          </div>
         )}
       </div>
     </div>

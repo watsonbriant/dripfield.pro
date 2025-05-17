@@ -17,6 +17,7 @@ interface SongSpreadItem {
   category: string;
   count: number;
   canonid: number;
+  artwork: string | null;
   songs: {
     song: string;
     playCount: number;
@@ -214,7 +215,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
         });
         
         // Prepare song spread data
-        prepareSongSpreadData(matrixData, categoryMap);
+        await prepareSongSpreadData(matrixData, categoryMap);
         
         setIsLoading(false);
       } catch (error) {
@@ -231,8 +232,8 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
     }
   }, [shows]);
   
-  // Function to prepare song spread data similar to SongsPlayed component
-  const prepareSongSpreadData = (
+  // Update the prepareSongSpreadData function to properly handle the async artwork fetch
+  const prepareSongSpreadData = async (
     matrixData: Record<string, Array<any>>,
     categoryMap: Record<string, { category: string, canonid: number, artist?: string }>
   ) => {
@@ -269,11 +270,30 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
       }
     });
     
-    // Convert to sorted array for the spread chart
+    // Fetch category artwork first
+    let categoryArtwork: Record<string, string | null> = {};
+    try {
+      const categories = Object.values(categoryMap).map(info => info.category);
+      const { data: categoriesData, error } = await supabase
+        .from('categories')
+        .select('category, category_artwork')
+        .in('category', categories);
+        
+      if (!error && categoriesData) {
+        categoriesData.forEach(cat => {
+          categoryArtwork[cat.category] = cat.category_artwork;
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching category artwork:', error);
+    }
+    
+    // Now that we have artwork, create the spread data
     const spreadData = Object.keys(categoryTotalPerformances).map(category => ({
       category,
       count: categoryTotalPerformances[category],
       canonid: categoryCanonIds[category] || 9999,
+      artwork: categoryArtwork[category] || null,
       songs: categorySongs[category].sort((a, b) => b.playCount - a.playCount)
     })).sort((a, b) => {
       if (b.count !== a.count) {
@@ -306,7 +326,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
     
     // For Main Set entries, use the specified color from the attachment (dark navy)
     if (placement.startsWith('Main Set')) {
-      return '#1a212e'; // Dark navy color
+      return '#000000'; // Dark navy color from the attachment
     }
     
     return colorMap[placement] || '#1C4482'; // Default to navy if no specific color
@@ -314,10 +334,10 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">Songs Played</h2>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">Song Matrix</h2>
         <div className="flex justify-center items-center h-40">
-          <div className="animate-pulse text-[#fce7ca]/70">Loading songs played...</div>
+          <div className="animate-pulse text-black">Loading song matrix...</div>
         </div>
       </div>
     );
@@ -325,18 +345,18 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
 
   if (errorMessage) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">Songs Played</h2>
-        <div className="text-center py-6 text-red-400">{errorMessage}</div>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">Song Matrix</h2>
+        <div className="text-center py-6 text-red-500">{errorMessage}</div>
       </div>
     );
   }
 
   if (songMatrix.songs.length === 0) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">Songs Played</h2>
-        <div className="text-center py-6 text-[#fce7ca]/70">No song data available for this venue</div>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">Song Matrix</h2>
+        <div className="text-center py-6 text-black">No song data available for this venue</div>
       </div>
     );
   }
@@ -387,15 +407,15 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
   const maxCount = Math.max(...songSpreadData.map(cat => cat.count), 1);
   
   return (
-    <div className={`${!hideTitle ? "bg-[#172330] border border-white/10 rounded-lg p-4" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-black rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-semibold text-white/90">
+          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">
             {songMatrix.songs.length} Songs Played
           </h2>
           <button 
             onClick={() => setIsSpreadModalOpen(true)} 
-            className="text-[#fce7ca] hover:text-white transition-colors"
+            className="text-black hover:text-[#a9682e] transition-colors"
             aria-label="Show song spread"
           >
             <ChartBarDecreasing size={20} />
@@ -407,16 +427,16 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
         <table className="w-full border-collapse min-w-max">
           <thead>
             {/* Year headers row */}
-            <tr className="bg-[#0e151b]" style={{ borderBottom: '1px solid #272d31' }}>
+            <tr className="bg-canvas border-y border-black/10">
               {/* Song cell that spans both rows */}
               <th 
-                className="px-2 py-1 text-left text-xs font-semibold text-white/90"
+                className="px-2 py-1 text-left text-xs font-bold text-black whitespace-nowrap"
                 rowSpan={2}
                 style={{ 
                   verticalAlign: 'bottom',
-                  borderRight: '1px solid #272d31',
-                  borderTop: '1px solid #272d31',
-                  borderLeft: '1px solid #272d31'
+                  borderRight: '1px solid rgba(0,0,0,0.1)',
+                  borderTop: '1px solid rgba(0,0,0,0.1)',
+                  borderLeft: '1px solid rgba(0,0,0,0.1)'
                 }}
               >
                 Song
@@ -429,10 +449,10 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                   <th 
                     key={`year-${i}`} 
                     colSpan={colSpan}
-                    className="px-1 py-1 text-center text-xs font-semibold bg-[#0e151b]"
+                    className="px-1 py-1 text-center text-xs font-semibold text-black"
                     style={{
-                      borderRight: '1px solid #272d31',
-                      borderTop: '1px solid #272d31'
+                      borderRight: '1px solid rgba(0,0,0,0.1)',
+                      borderTop: '1px solid rgba(0,0,0,0.1)'
                     }}
                   >
                     <button 
@@ -442,7 +462,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                           navigate(`/years/${yearId}`);
                         }
                       }}
-                      className="hover:text-white hover:underline text-[#fce7ca]/90 transition-colors"
+                      className="hover:text-[#a9682e] hover:underline transition-colors"
                     >
                       {group.year}
                     </button>
@@ -452,7 +472,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
             </tr>
             
             {/* Date headers row */}
-            <tr className="bg-[#0e151b]" style={{ borderTop: '1px solid #272d31', borderBottom: '1px solid #272d31' }}>
+            <tr className="bg-canvas border-y border-black/10">
               {songMatrix.showDates.map((date, index) => {
                 // Find the corresponding show from the shows array
                 const showId = shows[index]?.show_id || "";
@@ -460,15 +480,15 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                 return (
                   <th 
                     key={index} 
-                    className="px-1 py-1 text-center text-xs font-semibold text-white/90 whitespace-nowrap" 
+                    className="px-1 py-1 text-center text-xs font-semibold text-black whitespace-nowrap" 
                     style={{ 
                       width: 'min-content',
-                      borderRight: '1px solid #272d31'
+                      borderRight: '1px solid rgba(0,0,0,0.1)'
                     }}
                   >
                     <button 
                       onClick={() => navigate(`/setlist/${showId}`)}
-                      className="hover:text-white hover:underline text-[#fce7ca]/90 transition-colors"
+                      className="hover:text-[#a9682e] hover:underline transition-colors"
                     >
                       {date}
                     </button>
@@ -477,22 +497,18 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y" style={{ borderColor: '#272d31' }}>
-            {songMatrix.songs.map((song) => {
+          <tbody className="divide-y divide-[#d9c3a5]">
+            {songMatrix.songs.map((song, songIndex) => {
               const performances = songMatrix.data[song] || [];
               
               return (
                 <tr 
                   key={song} 
-                  className="bg-[#0e151b]"
-                  style={{ borderBottom: '1px solid #272d31' }}
+                  className={songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'}
                 >
                   <td 
-                    className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap font-semibold text-xs"
-                    style={{
-                      borderRight: '1px solid #272d31',
-                      borderLeft: '1px solid #272d31'
-                    }}
+                    className="px-2 py-0.5 text-black whitespace-nowrap font-semibold text-xs border"
+                    style={{ borderColor: 'rgb(217, 195, 165)' }}
                   >
                     <button 
                       onClick={() => {
@@ -501,7 +517,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                           navigate(`/song/${songId}`);
                         }
                       }}
-                      className="hover:text-white hover:underline transition-colors cursor-pointer"
+                      className="hover:text-[#a9682e] hover:underline transition-colors cursor-pointer"
                     >
                       {song}
                     </button>
@@ -515,7 +531,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                       <td 
                         key={`${song}-${show.show_id}`} 
                         className="text-center border"
-                        style={{ backgroundColor: bgColor, borderColor: '#272d31' }}
+                        style={{ backgroundColor: bgColor, borderColor: 'rgb(217, 195, 165)' }}
                       >
                         {performance && (
                           <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
@@ -539,21 +555,32 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
         title="Song Category Spread"
       >
         <div className="space-y-1.5 max-h-[80vh] overflow-y-auto p-1">
-          {songSpreadData.map(({ category, count, songs }) => (
+          {songSpreadData.map(({ category, count, songs, artwork }) => (
             <div key={category}>
-              <div className="text-[#ffffff]/90 text-sm font-semibold">
+              <div className="text-black text-sm font-semibold">
                 {category}
               </div>
               <div className="h-5 rounded overflow-hidden">
                 <div 
-                  className="h-full bg-[#594e5f] rounded relative"
+                  className="h-full bg-[#f9ae37] rounded border border-black relative flex items-center"
                   style={{ 
                     width: `${(count / maxCount) * 100}%`,
-                    minWidth: count < 10 ? '24px' : count < 100 ? '32px' : count < 1000 ? '40px' : '48px'
+                    minWidth: '42px'
                   }}
                 >
+                  {artwork && (
+                    <img 
+                      src={artwork} 
+                      alt=""
+                      onError={(e) => {
+                        console.error(`Failed to load image for ${category}:`, artwork);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      className="h-4 w-4 ml-0.5 object-cover rounded-sm"
+                    />
+                  )}
                   <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                    <span className="text-[#fce7ca] text-sm font-semibold">{count}</span>
+                    <span className="text-black text-sm font-semibold">{count}</span>
                   </div>
                 </div>
               </div>

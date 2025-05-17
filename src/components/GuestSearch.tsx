@@ -124,7 +124,7 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
       </div>
       {isDropdownOpen && (
         <div className={`absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
-          window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-64 max-h-96'
+          window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-96 max-h-96'
         }`}>
           <div className="p-2">
             <div className="relative">
