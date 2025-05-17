@@ -62,7 +62,7 @@ export function SongSearch({ className = '' }: SongSearchProps) {
       <div className="md:hidden">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#f9ae37]/90 transition-colors border border-black"
+          className="p-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors border border-black"
         >
           <Search className="w-6 h-6" />
         </button>
@@ -78,7 +78,7 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search songs..."
-                className="w-full px-4 py-2 rounded-lg border border-black bg-white text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37]"
+                className="w-full px-4 py-2 rounded-md border border-black bg-canvas text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e]"
               />
             </div>
             <div className="divide-y divide-black/10">
@@ -91,11 +91,16 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                     setSearchTerm('');
                     navigate(`/song/${song.song_id}`);
                   }}
-                  className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
+                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-black"
                 >
-                  <span className="text-black">{song.song}</span>
+                  {song.song}
                 </button>
               ))}
+              {filteredSongs.length === 0 && (
+                <div className="px-4 py-2 text-sm text-black/60 italic">
+                  No songs found
+                </div>
+              )}
             </div>
           </div>
         </Modal>
@@ -120,9 +125,9 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search songs..."
-                className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-white text-black text-sm focus:outline-none focus:ring-1 focus:ring-[#f9ae37]"
+                className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-black text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] placeholder-black/60"
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
             </div>
           </div>
           <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
@@ -135,13 +140,13 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                   setSearchTerm('');
                   navigate(`/song/${song.song_id}`);
                 }}
-                className="w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors"
+                className="w-full text-left px-4 py-1 text-sm text-black font-semibold hover:bg-canvas transition-colors"
               >
                 {song.song}
               </button>
             ))}
             {filteredSongs.length === 0 && (
-              <div className="px-4 py-2 text-sm text-black/70 italic">
+              <div className="px-4 py-2 text-sm text-black/60 italic">
                 No songs found
               </div>
             )}
