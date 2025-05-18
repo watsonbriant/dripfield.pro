@@ -446,7 +446,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
   return (
     <div className="bg-primary p-4 rounded-lg border border-black">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Shows You've Attended</h3>
+        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Shows Attended</h3>
         
         {/* Only show manage button for user's own profile and if not readOnly */}
         {isOwnProfile && !readOnly && (
