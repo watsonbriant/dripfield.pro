@@ -26,7 +26,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#d9c3a5" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -35,7 +35,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -44,7 +44,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-[#a9682e]">
         {Math.round(value)}%
       </div>
     </div>
@@ -63,6 +63,7 @@ interface SongSpreadItem {
   category: string;
   count: number;
   canonid: number;
+  artwork: string | null;
   songs: {
     song: string;
     playCount: number;
@@ -475,7 +476,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
         });
         
         // Prepare song spread data
-        prepareSongSpreadData(matrixData, categoryMap);
+        await prepareSongSpreadData(matrixData, categoryMap);
         
         setLoadingProgress(100);
         
@@ -540,7 +541,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   }, [songMatrix, matrixSortMode, shows]);
   
   // Function to prepare song spread data similar to SongsPlayed component
-  const prepareSongSpreadData = (
+  const prepareSongSpreadData = async (
     matrixData: Record<string, Array<any>>,
     categoryMap: Record<string, { category: string, canonid: number, artist?: string }>
   ) => {
@@ -577,11 +578,30 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
       }
     });
     
-    // Convert to sorted array for the spread chart
+    // Fetch category artwork first
+    let categoryArtwork: Record<string, string | null> = {};
+    try {
+      const categories = Object.keys(categoryTotalPerformances);
+      const { data: categoriesData, error } = await supabase
+        .from('categories')
+        .select('category, category_artwork')
+        .in('category', categories);
+        
+      if (!error && categoriesData) {
+        categoriesData.forEach(cat => {
+          categoryArtwork[cat.category] = cat.category_artwork;
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching category artwork:', error);
+    }
+    
+    // Now that we have artwork, create the spread data
     const spreadData = Object.keys(categoryTotalPerformances).map(category => ({
       category,
       count: categoryTotalPerformances[category],
       canonid: categoryCanonIds[category] || 9999,
+      artwork: categoryArtwork[category] || null,
       songs: categorySongs[category].sort((a, b) => b.playCount - a.playCount)
     })).sort((a, b) => {
       if (b.count !== a.count) {
@@ -614,7 +634,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
     
     // For Main Set entries, use the specified color from the attachment (dark navy)
     if (placement.startsWith('Main Set')) {
-      return '#1a212e'; // Dark navy color
+      return '#000000'; // Dark navy color from TourSongMatrix
     }
     
     return colorMap[placement] || '#1C4482'; // Default to navy if no specific color
@@ -632,11 +652,11 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   // Get title text based on profile ownership
   const getTitle = () => {
     if (isOwnProfile) {
-      return `${songMatrix.songs.length} Songs You've Seen`;
+      return `${songMatrix.songs.length} Songs`;
     } else if (username) {
-      return `${songMatrix.songs.length} Songs Seen`;
+      return `${songMatrix.songs.length} Songs`;
     } else {
-      return `${songMatrix.songs.length} Songs Seen`;
+      return `${songMatrix.songs.length} Songs`;
     }
   };
 
@@ -673,18 +693,20 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center h-56">
-        <CircularProgress value={loadingProgress} />
-        <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">Song Matrix</h2>
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-pulse text-black">{getLoadingMessage()}</div>
+        </div>
       </div>
     );
   }
 
   if (errorMessage) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">{getTitle()}</h2>
-        <div className="text-center py-6 text-red-400">{getErrorMessage()}</div>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">{getTitle()}</h2>
+        <div className="text-center py-6 text-red-500">{getErrorMessage()}</div>
       </div>
     );
   }
@@ -696,9 +718,9 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
 
   if (noShows) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
-        <div className="text-center py-6 text-[#fce7ca]/70">
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
+        <div className="text-center py-6 text-black">
           {getNoShowsMessage()}
         </div>
       </div>
@@ -707,9 +729,9 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
 
   if (noSongData) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
-        <div className="text-center py-6 text-[#fce7ca]/70">{getNoSongDataMessage()}</div>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
+        <div className="text-center py-6 text-black">{getNoSongDataMessage()}</div>
       </div>
     );
   }
@@ -760,23 +782,23 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   const maxCount = Math.max(...songSpreadData.map(cat => cat.count), 1);
   
   return (
-    <div className={`${!hideTitle ? "bg-[#172330] border border-white/10 rounded-lg p-4" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-black rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-semibold text-white/90">
+          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
             {getTitle()}
           </h2>
           <div className="flex items-center gap-4">
             {/* Desktop version of sort controls */}
-            <div className="hidden md:flex items-center bg-[#0e151b] rounded-md border border-white/10 py-1 px-2">
-              <span className="text-[#fce7ca]/90 text-xs mr-2 font-semibold">Sort:</span>
+            <div className="hidden md:flex items-center bg-canvas rounded-md border border-black py-1 px-2">
+              <span className="text-black text-xs mr-2 font-semibold">Sort:</span>
               <div className="flex gap-1">
                 <button 
                   onClick={() => setMatrixSortMode('alphabetical')}
                   className={`px-2 py-0.5 text-xs rounded ${
                     matrixSortMode === 'alphabetical' 
-                      ? 'bg-[#ec742e] text-white' 
-                      : 'text-[#fce7ca]/90 hover:bg-white/10'
+                      ? 'bg-[#f9ae37] text-black' 
+                      : 'text-black hover:bg-[#f9ae37]/20'
                   }`}
                 >
                   A-Z
@@ -785,8 +807,8 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                   onClick={() => setMatrixSortMode('chronological')}
                   className={`px-2 py-0.5 text-xs rounded ${
                     matrixSortMode === 'chronological' 
-                      ? 'bg-[#ec742e] text-white' 
-                      : 'text-[#fce7ca]/90 hover:bg-white/10'
+                      ? 'bg-[#f9ae37] text-black' 
+                      : 'text-black hover:bg-[#f9ae37]/20'
                   }`}
                 >
                   First Seen
@@ -795,8 +817,8 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                   onClick={() => setMatrixSortMode('playcount')}
                   className={`px-2 py-0.5 text-xs rounded ${
                     matrixSortMode === 'playcount' 
-                      ? 'bg-[#ec742e] text-white' 
-                      : 'text-[#fce7ca]/90 hover:bg-white/10'
+                      ? 'bg-[#f9ae37] text-black' 
+                      : 'text-black hover:bg-[#f9ae37]/20'
                   }`}
                 >
                   Most Seen
@@ -807,7 +829,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             {/* Mobile version - sort button */}
             <button 
               onClick={() => setIsSortModalOpen(true)}
-              className="md:hidden flex items-center justify-center bg-[#fce7ca] rounded-md border border-white/10 p-1.5"
+              className="md:hidden flex items-center justify-center bg-[#f9ae37] rounded-md border border-black/10 p-1.5"
               aria-label="Sort options"
             >
               <ArrowDownUp className="w-4 h-4 text-black" />
@@ -816,7 +838,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             {/* Chart button */}
             <button 
               onClick={() => setIsSpreadModalOpen(true)} 
-              className="text-[#fce7ca] hover:text-white transition-colors"
+              className="text-black hover:text-[#a9682e] transition-colors"
               aria-label="Show song spread"
             >
               <ChartBarDecreasing size={20} />
@@ -829,17 +851,15 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
         <table className="w-full border-collapse min-w-max">
           <thead>
             {/* Year headers row */}
-            <tr className="bg-[#0e151b]" style={{ borderBottom: '1px solid #272d31' }}>
+            <tr className="bg-canvas border-y border-[#d9c3a5]">
               {/* Song cell that spans both rows */}
               <th 
-                className="px-2 py-1 text-left text-xs font-semibold text-white/90"
+                className="px-2 py-1 text-left text-xs font-bold text-black"
                 rowSpan={2}
                 style={{ 
-                  verticalAlign: 'bottom',
-                  borderRight: '1px solid #272d31',
-                  borderTop: '1px solid #272d31',
-                  borderLeft: '1px solid #272d31'
+                  verticalAlign: 'bottom'
                 }}
+                className="border-l border-r border-black/10"
               >
                 Song
               </th>
@@ -851,10 +871,10 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                   <th 
                     key={`year-${i}`} 
                     colSpan={colSpan}
-                    className="px-1 py-1 text-center text-xs font-semibold bg-[#0e151b]"
+                    className="px-1 py-1 text-center text-xs font-bold bg-canvas"
                     style={{
-                      borderRight: '1px solid #272d31',
-                      borderTop: '1px solid #272d31'
+                      borderRight: '1px solid #d9c3a5',
+                      borderTop: '1px solid #d9c3a5'
                     }}
                   >
                     <button 
@@ -864,7 +884,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                           navigate(`/years/${yearId}`);
                         }
                       }}
-                      className="hover:text-white hover:underline text-[#fce7ca]/90 transition-colors"
+                      className="hover:text-[#a9682e] hover:underline transition-colors"
                     >
                       {group.year}
                     </button>
@@ -874,7 +894,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             </tr>
             
             {/* Date headers row */}
-            <tr className="bg-[#0e151b]" style={{ borderTop: '1px solid #272d31', borderBottom: '1px solid #272d31' }}>
+            <tr className="bg-canvas border-y border-[#d9c3a5]">
               {shows.map((show, index) => {
                 const showId = show.show_id;
                 // Format date as MM.DD
@@ -887,15 +907,14 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                 return (
                   <th 
                     key={index} 
-                    className="px-1 py-1 text-center text-xs font-semibold text-white/90 whitespace-nowrap" 
+                    className="px-1 py-1 text-center text-xs font-semibold text-black whitespace-nowrap border-l border-r border-black/10" 
                     style={{ 
-                      width: 'min-content',
-                      borderRight: '1px solid #272d31'
+                      width: 'min-content'
                     }}
                   >
                     <button 
                       onClick={() => navigate(`/setlist/${showId}`)}
-                      className="hover:text-white hover:underline text-[#fce7ca]/90 transition-colors"
+                      className="hover:text-[#a9682e] hover:underline transition-colors"
                     >
                       {formattedDate}
                     </button>
@@ -904,23 +923,18 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y" style={{ borderColor: '#272d31' }}>
+          <tbody className="divide-y divide-[#d9c3a5]">
           {sortedSongs.map((song) => {
             const performances = songMatrix.data[song] || [];
+            const songIndex = sortedSongs.indexOf(song);
             
             return (
               <tr 
                 key={song} 
-                className="bg-[#0e151b]"
-                style={{ borderBottom: '1px solid #272d31' }}
+                className={songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'}
               >
-                <td 
-                  className="px-2 py-0.5 text-[#fce7ca]/90 whitespace-nowrap font-semibold text-xs"
-                  style={{
-                    borderRight: '1px solid #272d31',
-                    borderLeft: '1px solid #272d31'
-                  }}
-                >
+                <td className="px-2 py-0.5 text-black whitespace-nowrap font-semibold text-xs border"
+                    style={{ borderColor: 'rgb(217, 195, 165)' }}>
                   <button 
                     onClick={() => {
                       const songId = songIdMap[song];
@@ -928,7 +942,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                         navigate(`/song/${songId}`);
                       }
                     }}
-                    className="hover:text-white hover:underline transition-colors cursor-pointer"
+                    className="hover:text-[#a9682e] hover:underline transition-colors cursor-pointer"
                   >
                     {song}
                   </button>
@@ -942,7 +956,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                     <td 
                       key={`${song}-${show.show_id}`} 
                       className="text-center border"
-                      style={{ backgroundColor: bgColor, borderColor: '#272d31' }}
+                      style={{ backgroundColor: bgColor, borderColor: 'rgb(217, 195, 165)' }}
                     >
                       {performance && (
                         <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
@@ -966,21 +980,32 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
         title="Song Category Spread"
       >
         <div className="space-y-1.5 max-h-[80vh] overflow-y-auto p-1">
-          {songSpreadData.map(({ category, count, songs }) => (
+          {songSpreadData.map(({ category, count, songs, artwork }) => (
             <div key={category}>
-              <div className="text-[#ffffff]/90 text-sm font-semibold">
+              <div className="text-black text-sm font-semibold">
                 {category}
               </div>
               <div className="h-5 rounded overflow-hidden">
                 <div 
-                  className="h-full bg-[#594e5f] rounded relative"
+                  className="h-full bg-[#f9ae37] rounded border border-black relative flex items-center"
                   style={{ 
                     width: `${(count / maxCount) * 100}%`,
-                    minWidth: count < 10 ? '24px' : count < 100 ? '32px' : count < 1000 ? '40px' : '48px'
+                    minWidth: '42px'
                   }}
                 >
+                  {artwork && (
+                    <img 
+                      src={artwork} 
+                      alt=""
+                      onError={(e) => {
+                        console.error(`Failed to load image for ${category}:`, artwork);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      className="h-4 w-4 ml-0.5 object-cover rounded-sm"
+                    />
+                  )}
                   <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                    <span className="text-[#fce7ca] text-sm font-semibold">{count}</span>
+                    <span className="text-black text-sm font-semibold">{count}</span>
                   </div>
                 </div>
               </div>
@@ -1004,7 +1029,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             className={`w-full px-4 py-2 text-left rounded ${
               matrixSortMode === 'alphabetical' 
                 ? 'bg-[#ec742e] text-white' 
-                : 'text-[#fce7ca]/90 hover:bg-white/5'
+                : 'text-black hover:bg-[#f9ae37]/10'
             }`}
           >
             A-Z
@@ -1017,7 +1042,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             className={`w-full px-4 py-2 text-left rounded ${
               matrixSortMode === 'chronological' 
                 ? 'bg-[#ec742e] text-white' 
-                : 'text-[#fce7ca]/90 hover:bg-white/5'
+                : 'text-black hover:bg-[#f9ae37]/10'
             }`}
           >
             First Seen
@@ -1030,7 +1055,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             className={`w-full px-4 py-2 text-left rounded ${
               matrixSortMode === 'playcount' 
                 ? 'bg-[#ec742e] text-white' 
-                : 'text-[#fce7ca]/90 hover:bg-white/5'
+                : 'text-black hover:bg-[#f9ae37]/10'
             }`}
           >
             Most Seen

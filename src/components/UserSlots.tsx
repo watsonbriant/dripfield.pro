@@ -44,7 +44,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#dad0bc" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -53,7 +53,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -62,7 +62,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -426,7 +426,7 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
         {songs.map((song, index) => (
           <React.Fragment key={`${song.song}-${index}`}>
             {index > 0 && (
-              <MoveRight className="text-red-400 inline w-[1rem] h-[1rem] mx-1" />
+              <MoveRight className="text-red-500 inline w-[1rem] h-[1rem] mx-1" />
             )}
             <a 
               onClick={() => {
@@ -435,7 +435,7 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
                   navigate(`/song/${songId}`);
                 }
               }}
-              className="font-semibold hover:text-white transition-colors text-[#fce7ca]/90 table-link cursor-pointer inline"
+              className="font-semibold hover:text-[#a9682e] transition-colors text-black table-link cursor-pointer inline"
             >
               {song.song}
             </a>
@@ -498,48 +498,44 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
     return (
       <div className="flex flex-col justify-center items-center h-56">
         <CircularProgress value={loadingProgress} />
-        <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+        <p className="text-black mt-4">{getLoadingMessage()}</p>
       </div>
     );
   }
 
   if (!effectiveUserId) {
     return (
-      <div className="text-center py-12">
-        <p className="text-[#fce7ca]/70">{getNoUserMessage()}</p>
+      <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+        <p className="text-black">{getNoUserMessage()}</p>
       </div>
     );
   }
 
   if (attendedShowIds.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-[#fce7ca]/70">{getNoShowsMessage()}</p>
+      <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+        <p className="text-black">{getNoShowsMessage()}</p>
       </div>
     );
   }
 
   if (!hasSlotEntries) {
     return (
-      <div className="text-center py-12">
-        <p className="text-[#fce7ca]/70">{getNoSlotsMessage()}</p>
+      <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+        <p className="text-black">{getNoSlotsMessage()}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <h2 className="text-xl font-semibold text-white/90 mb-4">
-          {getTitle()}
-        </h2>
-        
+      <div className="bg-primary border border-black rounded-lg p-3">       
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
+              <tr className="bg-canvas border-y border-white/10">
                 <th 
-                  className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-white/90">
+                  className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-black">
                   Date
                 </th>
                 {activeColumns.map(column => (
@@ -549,9 +545,7 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
                     style={{ 
                       width: '190px',
                       minWidth: '190px',
-                      backgroundColor: getColumnBackgroundColor(column),
-                      borderTop: '1px solid #2b333b',
-                      borderBottom: '1px solid #2b333b'
+                      backgroundColor: getColumnBackgroundColor(column)
                     }}
                   >
                     {column.split('_').map(word => 
@@ -568,14 +562,14 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
                 <tr
                   key={`slot-${slot.show_id}`}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                  } hover:bg-white/10 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                  } hover:bg-black/10 transition-colors text-xs`}
                 >
-                  <td className="w-[85px] min-w-[85px] px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="w-[85px] min-w-[85px] px-4 py-1 text-black whitespace-nowrap">
                     <span className="font-semibold">
                       <button
                         onClick={() => navigate(`/setlist/${slot.show_id}`)}
-                        className="hover:text-white transition-colors table-link"
+                        className="hover:text-[#a9682e] transition-colors table-link"
                       >
                         {slot.Show_Date
                           .split('-')
@@ -588,13 +582,11 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
                   {activeColumns.map(column => (
                     <td 
                       key={`${slot.show_id}-${column}`} 
-                      className="px-4 py-1 text-[#fce7ca]/90 text-left align-middle"
+                      className="px-4 py-1 text-left align-middle"
                       style={{ 
                         width: '190px',
                         minWidth: '190px',
                         maxWidth: '190px',
-                        borderTop: '1px solid #1f2830',
-                        borderBottom: index === slots.length - 1 ? 'none' : '1px solid #1f2830',
                         wordWrap: 'break-word',
                         overflowWrap: 'break-word',
                         textAlign: 'left'

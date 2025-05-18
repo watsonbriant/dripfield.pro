@@ -16,7 +16,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#dad0bc" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -25,7 +25,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -34,7 +34,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -647,23 +647,61 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
     fetchLooseEndsAndCheckCompletion();
   }, [userId]);
 
+  // Map category to color like in Home component
+  const getCategoryColor = (category: string): string => {
+    switch(category) {
+      case 'Completionist':
+        return 'bg-[#f9ae37]'; // Yellow
+      case 'Side Projects':
+        return 'bg-[#f9ae37]'; // Teal
+      case 'Song Debuts':
+        return 'bg-[#f9ae37]'; // Dark green
+      case 'Goosemas':
+        return 'bg-[#f9ae37]'; // Orange
+      case 'Tour Stats':
+        return 'bg-[#f9ae37]'; // Burgundy
+      case 'Show Stats':
+        return 'bg-[#f9ae37]'; // Red
+      default:
+        return 'bg-[#f9ae37]'; // Default yellow
+    }
+  };
+
+  // Map category to text color
+  const getCategoryTextColor = (category: string): string => {
+    switch(category) {
+      case 'Completionist':
+        return 'text-black'; // Black text on yellow
+      case 'Side Projects':
+      case 'Song Debuts':
+      case 'Goosemas':
+      case 'Tour Stats':
+      case 'Show Stats':
+        return 'text-black'; // White text on darker colors
+      default:
+        return 'text-black'; // Default black text
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex flex-col justify-center items-center h-56">
-        <CircularProgress value={loadingProgress} />
-        <p className="text-[#fce7ca]/70 mt-4">Loading Loose Ends...</p>
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <div className="flex flex-col justify-center items-center h-56">
+          <CircularProgress value={loadingProgress} />
+          <p className="text-black mt-4">Loading Loose Ends...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-400">Error loading Loose Ends</p>
-        <p className="text-white/70 text-sm mt-2">{error}</p>
+      <div className="bg-primary border border-black rounded-lg p-3 text-center py-12">
+        <p className="text-red-600 font-semibold">Error loading Loose Ends</p>
+        <p className="text-black text-sm mt-2">{error}</p>
         <button 
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-tertiary text-white rounded-lg"
+          className="mt-4 px-4 py-2 bg-[#f9ae37] text-black rounded-lg border border-black"
         >
           Retry
         </button>
@@ -673,8 +711,8 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (categories.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-white/70">No Loose Ends found</p>
+      <div className="bg-primary border border-black rounded-lg p-3 text-center py-12">
+        <p className="text-black">No Loose Ends found</p>
       </div>
     );
   }
@@ -682,12 +720,12 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl text-white/90 font-semibold">Loose Ends</h3>
+        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Loose Ends</h3>
       </div>
       
       {categories.map((category) => (
         <div key={category} className="mb-10">
-          <h4 className="text-lg text-white font-semibold mb-4 border-b border-white/10 pb-2">
+          <h4 className={`text-lg font-mohr ${getCategoryColor(category)} ${getCategoryTextColor(category)} inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4`}>
             {category}
           </h4>
           
@@ -695,7 +733,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
             {groupedLooseEnds[category].map((looseEnd) => (
               <div
                 key={looseEnd.end_id}
-                className="bg-[#172330] border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-all flex flex-col"
+                className="bg-primary border border-black rounded-lg overflow-hidden hover:bg-canvas transition-all flex flex-col"
               >
                 <div className="relative pb-[49.25%]">
                   <img
@@ -714,30 +752,30 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                 </div>
                 <div className="p-4 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-lg font-semibold text-black">
                       {looseEnd.end}
                     </h3>
                     
                     {looseEnd.isCompleted && (
-                      <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full ml-2">
+                      <span className="bg-[#006400] text-white text-xs px-2 py-1 rounded-full ml-2 border border-black">
                         Collected
                       </span>
                     )}
                   </div>
                   
-                  <p className="text-[#fce7ca]/90 text-sm mb-3 flex-grow">
+                  <p className="text-black text-sm mb-3 flex-grow">
                     {looseEnd.end_description}
                   </p>
                   
                   {looseEnd.progress && (
                     <div className="mt-auto">
-                      <div className="flex justify-between text-xs text-white/70 mb-1">
+                      <div className="flex justify-between text-xs text-black mb-1">
                         <span>{looseEnd.progress.seen}/{looseEnd.progress.total}</span>
                         <span>{looseEnd.progress.percentage}%</span>
                       </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div className="w-full bg-gray-300 rounded-full h-2 overflow-hidden border border-black">
                         <div 
-                          className={`h-2 rounded-full ${looseEnd.isCompleted ? 'bg-green-600' : 'bg-blue-600'}`}
+                          className={`h-2 ${looseEnd.isCompleted ? 'bg-[#006400]' : 'bg-[#E17401]'}`}
                           style={{ width: `${looseEnd.progress.percentage}%` }}
                         ></div>
                       </div>

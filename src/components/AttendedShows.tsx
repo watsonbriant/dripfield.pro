@@ -92,7 +92,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#e5e5e5" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -101,7 +101,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -110,7 +110,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -391,8 +391,8 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
 
   if (!effectiveUserId) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-        <p className="text-[#fce7ca]/90">Please log in to see attended shows.</p>
+      <div className="bg-primary border border-black rounded-lg p-4">
+        <p className="text-black">Please log in to see attended shows.</p>
       </div>
     );
   }
@@ -408,10 +408,10 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+      <div className="bg-primary border border-black rounded-lg p-4">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
-          <p className="text-[#fce7ca]/70 mt-4">
+          <p className="text-black mt-4">
             {isOwnProfile 
               ? "Loading your attended shows..." 
               : `Loading ${username ? username + "'s" : "their"} attended shows...`}
@@ -444,9 +444,9 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
   };
 
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+    <div className="bg-primary p-4 rounded-lg border border-black">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-white">{getTitle()}</h2>
+        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Shows You've Attended</h3>
         
         {/* Only show manage button for user's own profile and if not readOnly */}
         {isOwnProfile && !readOnly && (
@@ -457,30 +457,30 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                 onManagingToggle(true);
               }
             }}
-            className="flex items-center gap-2 bg-tertiary hover:bg-tertiary/80 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black px-3 py-1.5 rounded-full text-sm font-semibold transition-colors border border-black"
           >
-            <span className="hidden md:inline">Manage Shows</span>
+            <span className="hidden md:inline font-semibold">Manage Shows</span>
             <TicketPlus className="w-4 h-4" />
           </button>
         )}
       </div>
 
       {attendedShows.length === 0 ? (
-        <p className="text-[#fce7ca]/90">{getEmptyMessage()}</p>
+        <p className="text-black">{getEmptyMessage()}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-2 py-2 text-center text-s font-semibold text-white/90">#</th>
-                <th className="px-4 py-2 text-center text-s font-semibold text-white/90">Date</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Group</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Tour</th>
-                <th className="px-4 py-2 text-center text-s font-semibold text-white/90">Length</th>
-                <th className="px-4 py-2 text-center text-s font-semibold text-white/90">Rarity</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Venue</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Location</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-white/90">Detail</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-2 py-2 text-center text-s font-semibold text-black">#</th>
+                <th className="px-4 py-2 text-center text-s font-semibold text-black">Date</th>
+                <th className="px-4 py-2 text-left text-s font-semibold text-black">Group</th>
+                <th className="px-4 py-2 text-left text-s font-semibold text-black">Tour</th>
+                <th className="px-4 py-2 text-center text-s font-semibold text-black">Length</th>
+                <th className="px-4 py-2 text-center text-s font-semibold text-black">Rarity</th>
+                <th className="px-4 py-2 text-left text-s font-semibold text-black">Venue</th>
+                <th className="px-4 py-2 text-left text-s font-semibold text-black">Location</th>
+                <th className="px-4 py-2 text-left text-s font-semibold text-black">Detail</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -488,8 +488,8 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                 <tr
                   key={attendedShow.id}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                  } hover:bg-white/10 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                  } hover:bg-black/10 transition-colors text-xs`}
                 >
                   <td className="px-2 py-1 text-white font-semibold text-center whitespace-nowrap" style={{ backgroundColor: '#006400' }}>
                     {index + 1}
@@ -497,7 +497,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                   <td className="px-4 py-1 text-center whitespace-nowrap">
                     <button
                       onClick={() => navigate(`/setlist/${attendedShow.show_id}`)}
-                      className="font-semibold hover:text-white transition-colors table-link text-[#fce7ca]/90"
+                      className="font-semibold hover:text-[#a9682e] transition-colors table-link text-black"
                     >
                       {attendedShow.show?.show_date && formatInTimeZone(
                         new Date(attendedShow.show.show_date),
@@ -506,10 +506,10 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       )}
                     </button>
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-1 text-black whitespace-nowrap">
                     {attendedShow.show?.show_group}
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-1 text-black whitespace-nowrap">
                     {attendedShow.show?.show_tour && (
                       <button
                         onClick={() => {
@@ -517,21 +517,21 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                             navigate(`/tours/${attendedShow.show.tours.tour_id}`);
                           }
                         }}
-                        className="hover:underline hover:text-white transition-colors"
+                        className="hover:underline hover:text-[#a9682e] transition-colors"
                       >
                         {attendedShow.show.show_tour}
                       </button>
                     )}
                   </td>
                   <td className="px-4 py-1 text-center whitespace-nowrap">
-                    <span className="text-[#fce7ca]/90">
+                    <span className="text-black">
                       {attendedShow.show?.show_length || ''}
                     </span>
                   </td>
                   <td className="px-4 py-1 text-center whitespace-nowrap">
                     {attendedShow.show?.show_rarity ? (
                       <span 
-                        className="text-white font-medium px-2 py-0.5 rounded-md inline-block"
+                        className="text-white font-medium px-2 py-0.5 rounded-md inline-block border border-black"
                         style={{ 
                           backgroundColor: getRarityColor(attendedShow.show.show_rarity) 
                         }}
@@ -539,29 +539,29 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                         {attendedShow.show.show_rarity}
                       </span>
                     ) : (
-                      <span className="text-[#fce7ca]/90"></span>
+                      <span className="text-black"></span>
                     )}
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-1 text-black whitespace-nowrap">
                     <button
                       onClick={() => {
                         if (attendedShow.show?.show_subvenue_venue) {
                           navigate(`/venue/${encodeURIComponent(attendedShow.show.show_subvenue_venue)}`);
                         }
                       }}
-                      className="hover:text-white hover:underline transition-colors"
+                      className="hover:text-[#a9682e] hover:underline transition-colors"
                     >
                       {attendedShow.show?.show_subvenue}
                     </button>
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-1 text-black whitespace-nowrap">
                     {attendedShow.show?.show_venue_location}
                   </td>
-                  <td className="px-4 py-1 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-1 text-black whitespace-nowrap">
                     {attendedShow.show?.show_detail && attendedShow.show.show_detail}
                     {attendedShow.show?.show_detail && attendedShow.show?.show_alert && <>&nbsp;&nbsp;</>}
                     {attendedShow.show?.show_alert && 
-                      <span className="text-tertiary">
+                      <span className="text-[#f9ae37]">
                         <strong>[{attendedShow.show.show_alert}]</strong>
                       </span>
                     }

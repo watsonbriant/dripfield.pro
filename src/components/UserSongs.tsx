@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 type Song = {
@@ -42,7 +41,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#e5e5e5" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -51,7 +50,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -60,7 +59,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -620,7 +619,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
     
     return (
       <div className="mb-8">
-        <h3 className="text-xl text-[#fce7ca]/90 font-semibold mb-4">{title}</h3>
+        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">{title}</h3>
         <div className={`grid grid-cols-1 ${
           sectionType === 'covers' 
             ? 'sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2' 
@@ -634,18 +633,18 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
                 return (
                   <div 
                     key={category.category} 
-                    className="bg-[#172330] rounded-lg p-4 border border-white/10 h-auto w-full relative"
+                    className="bg-primary rounded-lg p-4 border border-black h-auto w-full relative"
                   >
-                    <div className="flex items-center justify-between mb-1 pb-2 border-b border-white/10">
-                      <h3 className="text-lg font-semibold text-white">
+                    <div className="flex items-center justify-between mb-1 pb-2 border-b border-black/20">
+                      <h4 className="text-lg font-semibold text-black">
                         {category.category || category.category}
-                      </h3>
+                      </h4>
                       {category.category_artwork && (
                         <div className="h-7 flex-shrink-0">
                           <img 
                             src={category.category_artwork} 
                             alt={`${category.category} artwork`}
-                            className="h-full object-contain rounded"
+                            className="h-full object-contain rounded border border-black/10"
                           />
                         </div>
                       )}
@@ -658,18 +657,18 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
                         return (
                           <li 
                             key={song.song_id} 
-                            className="text-xs hover:bg-white/10 transition-colors py-0.5 px-1 rounded cursor-pointer"
+                            className="text-xs hover:bg-black/5 transition-colors py-0.5 px-1 rounded cursor-pointer"
                             onClick={() => navigate(`/song/${song.song_id}`)}
                           >
                             <span 
                               className={`${seen 
-                                ? 'font-bold hover:text-white hover:underline transition-colors text-left text-xs text-tertiary' 
-                                : 'text-white/70'}`}
+                                ? 'font-bold hover:text-[#f9ae37] hover:underline transition-colors text-left text-xs text-[#a9682e]' 
+                                : 'text-black/70'}`}
                             >
                               {song.song}
                             </span>
                             {seen && (
-                              <span className="ml-2 text-white font-semibold">({count})</span>
+                              <span className="ml-2 text-black font-semibold">({count})</span>
                             )}
                           </li>
                         );
@@ -689,7 +688,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
     return (
       <div className="flex flex-col justify-center items-center h-56">
         <CircularProgress value={loadingProgress} />
-        <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+        <p className="text-black mt-4">{getLoadingMessage()}</p>
       </div>
     );
   }

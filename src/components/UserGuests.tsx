@@ -33,7 +33,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#dad0bc" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -42,7 +42,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -51,7 +51,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -434,14 +434,14 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
     return (
       <div className="flex flex-col justify-center items-center h-56">
         <CircularProgress value={loadingProgress} />
-        <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+        <p className="text-black mt-4">{getLoadingMessage()}</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-[#172330] p-4 rounded-lg border border-white/10">
+      <div className="bg-primary p-4 rounded-lg border border-black">
         <div className="text-center text-red-500 py-8">{getErrorMessage()}</div>
       </div>
     );
@@ -449,8 +449,8 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
 
   if (Object.keys(guestsByCategory).length === 0) {
     return (
-      <div className="bg-[#172330] p-4 rounded-lg border border-white/10">
-        <div className="text-center text-white/70 py-12">
+      <div className="bg-primary p-4 rounded-lg border border-black">
+        <div className="text-center text-black py-12">
           <p>{getEmptyStateMessage()}</p>
         </div>
       </div>
@@ -470,17 +470,36 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
     // Use the mapped display name or fallback to the original category name
     const displayName = categoryDisplayNames[category] || category;
     
+    // Generate a color for the category header based on the category name
+    let headerBgColor = '';
+    switch(category) {
+      case 'Goose (current)':
+        headerBgColor = 'bg-[#006400]'; // Dark green
+        break;
+      case 'Goose (former)':
+        headerBgColor = 'bg-[#7C2128]'; // Burgundy
+        break;
+      case 'Guest':
+        headerBgColor = 'bg-tertiary'; // Using the tertiary color
+        break;
+      case 'Group':
+        headerBgColor = 'bg-[#019B7A]'; // Teal
+        break;
+      default:
+        headerBgColor = 'bg-[#E17401]'; // Orange (default)
+    }
+    
     return (
-      <div className="mb-6 bg-[#172330] p-4 rounded-lg border border-white/10" key={category}>
-        <h2 className="text-xl font-semibold text-white/90 mb-2">{displayName}</h2>
+      <div className="mb-6 bg-primary p-4 rounded-lg border border-black" key={category}>
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">{displayName}</h2>
       
         <div className="overflow-x-auto relative">
           <table className="w-full border-collapse table-fixed">
             <thead>
-              <tr className="bg-[#0e151b] border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-white/90 whitespace-nowrap w-[40%]">Guest</th>
-                <th className="px-4 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap w-[30%]"># of Songs</th>
-                <th className="px-4 py-1 text-center text-s font-semibold text-white/90 whitespace-nowrap w-[30%]"># of Shows</th>
+              <tr className="bg-canvas border-y border-white/10">
+                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap w-[40%]">Guest</th>
+                <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-[30%]"># of Songs</th>
+                <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-[30%]"># of Shows</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -488,19 +507,19 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
                 <tr
                   key={guest.guest_id}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary/30' : 'bg-[#0c151c]'
-                  } hover:bg-white/10 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                  } hover:bg-black/10 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-0.5 text-[#fce7ca]/90 whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
                     <button
                       onClick={() => navigate(`/guest/${guest.guest_id}`)}
-                      className="font-semibold hover:text-white hover:underline transition-colors"
+                      className="font-semibold hover:text-[#a9682e] hover:underline transition-colors"
                     >
                       {guest.guest}
                     </button>
                   </td>
-                  <td className="px-4 py-0.5 text-center text-[#fce7ca]/90 whitespace-nowrap">{guest.song_count}</td>
-                  <td className="px-4 py-0.5 text-center text-[#fce7ca]/90 whitespace-nowrap">{guest.show_count}</td>
+                  <td className="px-4 py-0.5 text-center text-black whitespace-nowrap">{guest.song_count}</td>
+                  <td className="px-4 py-0.5 text-center text-black whitespace-nowrap">{guest.show_count}</td>
                 </tr>
               ))}
             </tbody>
@@ -512,7 +531,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
   
   // Main render
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-[1280px] mx-auto">
       {/* Render all categories in alphabetical order */}
       {Object.keys(guestsByCategory)
         .sort((a, b) => a.localeCompare(b)) // Sort categories alphabetically

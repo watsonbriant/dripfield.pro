@@ -266,17 +266,17 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
 
   if (loading) {
     return (
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+      <div className="bg-primary border border-black rounded-lg p-3">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
-          <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+          <p className="text-black mt-4">{getLoadingMessage()}</p>
         </div>
       </div>
     );
   }
 
   if (showData.length === 0) {
-    return <div className="text-center text-white/70 py-10 bg-[#172330] p-4 rounded-lg border border-white/10">
+    return <div className="text-center text-black py-10 bg-primary p-4 rounded-lg border border-black">
       {getEmptyStateMessage()}
     </div>;
   }
@@ -285,8 +285,8 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
   const filteredData = showData.filter(year => year.gooseCount > 0 || year.otherCount > 0);
 
   return (
-    <div className="bg-[#172330] p-4 rounded-lg border border-white/10">
-      <h3 className="text-xl text-white/90 font-semibold mb-4">{getChartTitle()}</h3>
+    <div className="bg-primary p-3 rounded-lg border border-black">
+      <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">{getChartTitle()}</h3>
       <div className="overflow-x-auto">
         <div className="h-80 min-w-[768px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -297,27 +297,29 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis 
                 dataKey="year" 
-                stroke="#aaa"
-                tick={{ fill: '#aaa', fontSize: 12, fontWeight: 600 }}
+                stroke="#333"
+                tick={{ fill: '#000', fontSize: 12, fontWeight: 600 }}
                 axisLine={{ stroke: '#333' }}
                 tickLine={{ stroke: '#333' }}
                 dy={10} // Add padding above x-axis values
               />
               <YAxis 
-                stroke="#aaa" 
+                stroke="#333" 
                 allowDecimals={false}
                 domain={[0, 'auto']}
-                tick={{ fill: '#aaa', fontSize: 12, fontWeight: 600 }}
+                tick={{ fill: '#000', fontSize: 12, fontWeight: 600 }}
                 axisLine={{ stroke: '#333' }}
                 tickLine={{ stroke: '#333' }}
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#1f2937', 
-                  borderColor: '#374151',
-                  color: '#fff',
+                  backgroundColor: '#fce7ca', 
+                  borderColor: '#000',
+                  color: '#000',
                   fontSize: '12px',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  borderRadius: '4px',
+                  border: '1px solid #000'
                 }}
                 formatter={(value, name) => [`${value}`, `${name}`]}
                 labelFormatter={(year) => `${year}`}
@@ -344,8 +346,8 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
                 type="linear" 
                 dataKey="otherCount" 
                 name="Other" 
-                stroke="#ef8ba1" 
-                fill="#ef8ba1"
+                stroke="#7C2128" 
+                fill="#7C2128"
                 fillOpacity={0.6}
               />
             </AreaChart>

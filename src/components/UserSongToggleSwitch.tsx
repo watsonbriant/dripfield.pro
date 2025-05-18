@@ -13,28 +13,26 @@ const UserSongToggleSwitch: React.FC<UserSongToggleSwitchProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       <LayoutList 
         size={16} 
-        className={`${!isRight ? 'text-[#ffffff]' : 'text-[#fce7ca]'} mr-1`} 
+        className={`${!isRight ? 'text-black' : 'text-[#756d61]'}`} 
       />
       <button
         role="switch"
         aria-checked={isRight}
         onClick={() => onToggle(!isRight)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ec742e]/50 ${
-          isRight ? 'bg-[#fce7ca]' : 'bg-[#fce7ca]'
-        }`}
+        className="relative inline-flex h-6 w-12 items-center rounded-full border border-black transition-colors bg-[#f9ae37]"
       >
         <span
-          className={`absolute h-4 w-4 rounded-full bg-[#172330] transition-transform duration-200 ${
-            isRight ? 'translate-x-6' : 'translate-x-1'
+          className={`absolute h-4 w-4 rounded-full bg-black transition-transform duration-200 ${
+            isRight ? 'left-7' : 'left-1'
           }`}
         />
       </button>
       <Columns3 
         size={16} 
-        className={`${isRight ? 'text-[#ffffff]' : 'text-[#fce7ca]'} ml-1`} 
+        className={`${isRight ? 'text-black' : 'text-[#756d61]'}`} 
       />
     </div>
   );

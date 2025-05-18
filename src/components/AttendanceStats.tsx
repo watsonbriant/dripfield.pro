@@ -33,7 +33,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#e5e5e5" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -42,7 +42,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -51,7 +51,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -424,32 +424,32 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
   };
 
   return (
-    <div className="bg-[#172330] p-4 rounded-lg border border-white/10">
-      <h3 className="text-xl text-white/90 font-semibold mb-4">{getTitle()}</h3>
+    <div className="bg-primary p-4 rounded-lg border border-black">
+      <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">{getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
-          <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+          <p className="text-black mt-4">{getLoadingMessage()}</p>
         </div>
       ) : (
         <div className="space-y-6">
           {/* Desktop view - cards */}
           <div className="hidden md:grid grid-cols-3 gap-4">
-            <div className="bg-[#1E2A3A] p-3 rounded-md relative border border-white/10">
-              <div className="text-white/80 text-sm font-semibold">{getShowsLabel()}</div>
-              <div className="text-2xl font-bold text-white mt-1">{showsCount}</div>
-              <Calendar className="h-5 w-5 text-[#fce7ca] absolute bottom-2 right-2" />
+            <div className="bg-canvas p-3 rounded-md relative border border-black">
+              <div className="text-black text-sm font-semibold">{getShowsLabel()}</div>
+              <div className="text-2xl font-bold text-black mt-1">{showsCount}</div>
+              <Calendar className="h-5 w-5 text-[#a9682e] absolute bottom-2 right-2" />
             </div>
-            <div className="bg-[#1E2A3A] p-3 rounded-md relative border border-white/10">
-              <div className="text-white/80 text-sm font-semibold">{getVenuesLabel()}</div>
-              <div className="text-2xl font-bold text-white mt-1">{venuesCount}</div>
-              <Building2 className="h-5 w-5 text-[#fce7ca] absolute bottom-2 right-2" />
+            <div className="bg-canvas p-3 rounded-md relative border border-black">
+              <div className="text-black text-sm font-semibold">{getVenuesLabel()}</div>
+              <div className="text-2xl font-bold text-black mt-1">{venuesCount}</div>
+              <Building2 className="h-5 w-5 text-[#a9682e] absolute bottom-2 right-2" />
             </div>
-            <div className="bg-[#1E2A3A] p-3 rounded-md relative border border-white/10">
-              <div className="text-white/80 text-sm font-semibold">{getSongsLabel()}</div>
-              <div className="text-2xl font-bold text-white mt-1">{songsCount}</div>
-              <Music className="h-5 w-5 text-[#fce7ca] absolute bottom-2 right-2" />
+            <div className="bg-canvas p-3 rounded-md relative border border-black">
+              <div className="text-black text-sm font-semibold">{getSongsLabel()}</div>
+              <div className="text-2xl font-bold text-black mt-1">{songsCount}</div>
+              <Music className="h-5 w-5 text-[#a9682e] absolute bottom-2 right-2" />
             </div>
           </div>
           
@@ -457,28 +457,28 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           <div className="md:hidden space-y-4">
             <ul className="space-y-2 text-sm">
               <li className="flex items-center">
-                <Calendar className="h-4 w-4 text-[#fce7ca] mr-2" />
-                <span className="text-tertiary font-semibold">{showsCount}</span>
-                <span className="text-[#fce7ca] font-semibold ml-2">{getShowsLabel()}</span>
+                <Calendar className="h-4 w-4 text-[#a9682e] mr-2" />
+                <span className="text-[#f9ae37] font-semibold">{showsCount}</span>
+                <span className="text-black font-semibold ml-2">{getShowsLabel()}</span>
               </li>
               <li className="flex items-center">
-                <Building2 className="h-4 w-4 text-[#fce7ca] mr-2" />
-                <span className="text-tertiary font-semibold">{venuesCount}</span>
-                <span className="text-[#fce7ca] font-semibold ml-2">{getVenuesLabel()}</span>
+                <Building2 className="h-4 w-4 text-[#a9682e] mr-2" />
+                <span className="text-[#f9ae37] font-semibold">{venuesCount}</span>
+                <span className="text-black font-semibold ml-2">{getVenuesLabel()}</span>
               </li>
               <li className="flex items-center">
-                <Music className="h-4 w-4 text-[#fce7ca] mr-2" />
-                <span className="text-tertiary font-semibold">{songsCount}</span>
-                <span className="text-[#fce7ca] font-semibold ml-2">{getSongsLabel()}</span>
+                <Music className="h-4 w-4 text-[#a9682e] mr-2" />
+                <span className="text-[#f9ae37] font-semibold">{songsCount}</span>
+                <span className="text-black font-semibold ml-2">{getSongsLabel()}</span>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-xl md:text-xl text-white/90 font-semibold mb-4">{getToursLabel()}</h3>
+            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">{getToursLabel()}</h3>
             <div className="space-y-1 max-h-64 overflow-y-auto pr-2">
               {tourCounts.length === 0 ? (
-                <p className="text-white/60 italic">{getNoToursMessage()}</p>
+                <p className="text-black/60 italic">{getNoToursMessage()}</p>
               ) : (
                 <ul className="space-y-1 text-sm">
                   {tourCounts.map((tour) => (
@@ -488,11 +488,11 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
                     >
                       <button 
                         onClick={() => navigate(`/tours/${tour.tour_id}`)}
-                        className="text-[#fce7ca] hover:underline font-semibold"
+                        className="text-black hover:text-[#a9682e] hover:underline font-semibold"
                       >
                         {tour.tour}
                       </button>
-                      <span className="text-white/90 ml-2">({tour.count})</span>
+                      <span className="text-black/90 ml-2">({tour.count})</span>
                     </li>
                   ))}
                 </ul>

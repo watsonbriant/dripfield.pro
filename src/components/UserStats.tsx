@@ -41,6 +41,7 @@ interface StatData {
   showLength?: boolean;
   songNameKey?: string;
   songIdKey?: string;
+  bgColor?: string;
 }
 
 // CircularProgress component for reuse
@@ -58,7 +59,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#dad0bc" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -67,7 +68,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -76,7 +77,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -990,6 +991,28 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
       return baseTitle;
     };
     
+    // Get color background for each stat type
+    const getStatBgColor = (type: string): string => {
+      switch(type) {
+        case 'topSongs':
+          return 'bg-[#f9ae37]'; // Use existing tertiary color
+        case 'longestPerformances':
+          return 'bg-[#f9ae37]'; // Burgundy
+        case 'notSeenSongs':
+          return 'bg-[#f9ae37]'; // Red
+        case 'showOpeners':
+          return 'bg-[#006400]'; // Dark green
+        case 'setOpeners':
+          return 'bg-[#019B7A]'; // Teal
+        case 'setClosers':
+          return 'bg-[#E17401]'; // Orange
+        case 'encoreSongs':
+          return 'bg-[#7C2128]'; // Burgundy
+        default:
+          return 'bg-[#f9ae37]'; // Default yellow
+      }
+    };
+    
     // Create a stat box component for reuse
     const StatBox = ({ 
       title, 
@@ -999,7 +1022,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
       showDate = false,
       showLength = false,
       songNameKey = 'song',
-      songIdKey = 'song_id'
+      songIdKey = 'song_id',
+      type
     }: { 
       title: string;
       data: any[];
@@ -1009,40 +1033,50 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
       showLength?: boolean;
       songNameKey?: string;
       songIdKey?: string;
+      type: string;
     }) => (
-      <div className="bg-[#172330] rounded-lg border border-white/10 p-4 w-full h-full">
-        <h3 className="text-lg font-semibold text-white/90 mb-3">{getPersonalizedTitle(title)}</h3>
+      <div className="bg-primary border border-black rounded-lg p-3 w-full h-full">
+        <h3 className={`text-lg font-bold ${getStatBgColor(type)} ${
+          type === 'showOpeners' || type === 'setOpeners' || type === 'setClosers' || type === 'encoreSongs' 
+            ? 'text-white' 
+            : 'text-black'
+        } inline-block px-3 pt-0.5 pb-0.5 rounded-full border border-black mb-2`}>
+          {getPersonalizedTitle(title)}
+        </h3>
         {loading ? (
           <div className="flex justify-center items-center h-40">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-tertiary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-black"></div>
           </div>
         ) : data.length === 0 ? (
           <div className="text-center h-40 flex items-center justify-center">
-            <p className="text-white/60">No data available</p>
+            <p className="text-black">No data available</p>
           </div>
         ) : (
           <div>
             {data.map((item, index) => (
-              <div key={index} className="flex justify-between items-start">
-                <div className="flex-1">
+              <div 
+                key={index} 
+                className={`flex justify-between items-start py-0.5 ${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10`}
+              >
+                <div className="flex-1 pl-2">
                   <div className="flex items-center">
                     <button
                       onClick={() => navigate(`/song/${item[songIdKey]}`)}
-                      className="text-[#fce7ca]/90 hover:underline text-left font-semibold text-sm"
+                      className="text-black hover:text-[#a9682e] text-left font-semibold text-sm hover:underline"
                     >
                       {item[songNameKey]}
                     </button>
                     {showDate && item.show_date && (
                       <button
                         onClick={() => navigate(`/setlist/${item.show_id}`)}
-                        className="hover:underline text-xs text-white/60 ml-2"
+                        className="hover:underline text-xs text-black ml-2"
                       >
                         [{item.show_date}]
                       </button>
                     )}
                   </div>
                 </div>
-                <div className="text-sm text-tertiary font-medium ml-2">
+                <div className="text-sm text-black font-semibold pr-2">
                   {showLength ? formatTimeInterval(item.length) : item[countKey]}
                 </div>
               </div>
@@ -1133,10 +1167,10 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
     
     if (loading) {
       return (
-        <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+        <div className="bg-primary border border-black rounded-lg p-3">
           <div className="flex flex-col justify-center items-center h-56">
             <CircularProgress value={loadingProgress} />
-            <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+            <p className="text-black mt-4">{getLoadingMessage()}</p>
           </div>
         </div>
       );
@@ -1145,9 +1179,9 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
     // If no user ID found, show an appropriate message
     if (!effectiveUserId) {
       return (
-        <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+        <div className="bg-primary border border-black rounded-lg p-3">
           <div className="text-center py-6">
-            <p className="text-[#fce7ca]/70">No user data available.</p>
+            <p className="text-black">No user data available.</p>
           </div>
         </div>
       );
@@ -1164,9 +1198,9 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
     
     if (hasNoData) {
       return (
-        <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+        <div className="bg-primary border border-black rounded-lg p-3">
           <div className="text-center py-6">
-            <p className="text-[#fce7ca]/70">
+            <p className="text-black">
               {isOwnProfile 
                 ? "No stats available. Start adding shows you've attended!" 
                 : `${username ? username : "This user"} hasn't added any attended shows yet.`}
@@ -1190,6 +1224,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
                 showLength={stat.showLength}
                 songNameKey={stat.songNameKey}
                 songIdKey={stat.songIdKey}
+                type={stat.type}
               />
             </div>
           ))}

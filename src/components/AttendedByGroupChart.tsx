@@ -25,7 +25,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#e5e5e5" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -34,7 +34,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#f9ae37" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -43,7 +43,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-bold text-black">
         {Math.round(value)}%
       </div>
     </div>
@@ -217,16 +217,16 @@ const AttendedByGroupChart: React.FC<AttendedByGroupChartProps> = ({ userId }) =
   };
 
   return (
-    <div className="bg-[#172330] p-4 rounded-xl border border-white/10">
-      <h3 className="text-xl text-white/90 font-semibold mb-4">{getTitle()}</h3>
+    <div className="bg-primary p-4 rounded-lg border border-black">
+      <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">{getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
-          <p className="text-[#fce7ca]/70 mt-4">{getLoadingMessage()}</p>
+          <p className="text-black mt-4">{getLoadingMessage()}</p>
         </div>
       ) : chartData.length === 0 ? (
-        <div className="text-white/70 flex justify-center items-center h-40">{getEmptyMessage()}</div>
+        <div className="text-black flex justify-center items-center h-40">{getEmptyMessage()}</div>
       ) : (
         <div className="h-60">
           <ResponsiveContainer width="100%" height="100%">
@@ -252,13 +252,14 @@ const AttendedByGroupChart: React.FC<AttendedByGroupChartProps> = ({ userId }) =
                 }}
                 separator=""
                 contentStyle={{ 
-                  backgroundColor: '#0f172a', 
-                  borderColor: 'rgba(255,255,255,0.1)',
+                  backgroundColor: '#ffffff', 
+                  borderColor: '#000000',
+                  borderWidth: '1px',
                   fontSize: '0.85rem',
                   padding: '4px 8px'
                 }}
                 itemStyle={{ 
-                  color: '#ffffff',
+                  color: '#000000',
                   fontWeight: 600
                 }}
                 wrapperStyle={{ outline: 'none' }}
