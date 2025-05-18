@@ -134,7 +134,7 @@ export const UserMenu: React.FC = () => {
               setSparkle({ show: false, x: 0, y: 0 });
             }, 500); // Animation duration
           }
-        }}
+        }} 
       >
         Sign In
         {sparkle.show && !isMobile && (
