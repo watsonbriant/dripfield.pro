@@ -1126,7 +1126,7 @@ category_artwork
                   <SetlistDisplay setlist={setlist} navigate={navigate} />
                 ) : (
                   <div>
-                    <p className="text-white text-sm">Setlist not available.</p>
+                    <p className="text-black text-sm">Setlist not available.</p>
                   </div>
                 )}
               </div>
