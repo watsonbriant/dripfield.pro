@@ -120,7 +120,7 @@ export const UserMenu: React.FC = () => {
             // Get click position relative to the button
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const y = e.clientY - rect.top; 
             
             // Show sparkle
             setSparkle({ show: true, x, y });
