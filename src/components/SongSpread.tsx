@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
+// Update the interface to match the structure we actually have
 interface SetlistEntry {
   entry_song: string;
-  song_category: string;
+  song_category?: string;
   category_canonid?: number;
   song_originalartist?: string;
+  category_artwork?: string;
+  songs: {
+    song_id: string;
+    song_category: string;
+    song_originalartist: string | null;
+    categories: {
+      category_canonid: number;
+      category_artwork: string | null;
+    };
+  };
 }
 
 interface SongSpreadProps {
@@ -14,12 +26,57 @@ interface SongSpreadProps {
 const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [categoryArtwork, setCategoryArtwork] = useState<Record<string, string>>({});
+  
+  // Fetch artwork for categories directly from the database
+  useEffect(() => {
+    const fetchCategoryArtwork = async () => {
+      try {
+        // Extract unique category names from the setlist
+        const categories = [...new Set(setlist.map(entry => entry.songs?.song_category).filter(Boolean))];
+        
+        console.log('Fetching artwork for categories:', categories);
+        
+        if (categories.length > 0) {
+          // Fetch artwork for these categories from the categories table
+          const { data, error } = await supabase
+            .from('categories')
+            .select('category, category_artwork')
+            .in('category', categories);
+            
+          if (error) {
+            console.error('Error fetching category artwork:', error);
+            return;
+          }
+          
+          console.log('Category artwork data from database:', data);
+          
+          // Create a mapping of category names to artwork URLs
+          const artworkMap = data.reduce((map, item) => {
+            if (item.category && item.category_artwork) {
+              map[item.category] = item.category_artwork;
+            }
+            return map;
+          }, {} as Record<string, string>);
+          
+          console.log('Final category artwork map:', artworkMap);
+          setCategoryArtwork(artworkMap);
+        }
+      } catch (error) {
+        console.error('Failed to fetch category artwork:', error);
+      }
+    };
+    
+    fetchCategoryArtwork();
+  }, [setlist]);
 
   // Count unique songs per category and collect songs for each category
   const categoryData = setlist.reduce((acc, entry) => {
-    const songKey = `${entry.entry_song}-${entry.song_category}`;
-    const category = entry.song_category || 'undefined';
+    const category = entry.songs?.song_category || 'undefined';
     
+    const songKey = `${entry.entry_song}-${category}`;
+    
+    // Only count each unique song once
     if (!acc.songsSeen.has(songKey)) {
       acc.songsSeen.add(songKey);
       acc.counts[category] = (acc.counts[category] || 0) + 1;
@@ -30,45 +87,55 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
       }
       
       // Add song to category's song list with original artist if applicable
-      const songWithArtist = ['Cover Songs', 'Live Collaborations'].includes(category) && entry.song_originalartist
+      const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
+      const originalArtist = entry.songs?.song_originalartist;
+      
+      const songWithArtist = hasArtist && originalArtist
         ? { 
             song: entry.entry_song,
-            artist: entry.song_originalartist,
+            artist: originalArtist,
             isSpecialCategory: true
           }
         : { 
             song: entry.entry_song,
             isSpecialCategory: false
           };
-        
-      const songExists = acc.songs[category].some(s => 
-        (typeof s === 'string' && s === songWithArtist.song) ||
-        (typeof s === 'object' && s.song === songWithArtist.song)
-      );
+      
+      const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
       
       if (!songExists) {
         acc.songs[category].push(songWithArtist);
       }
     }
+    
     return acc;
-  }, { counts: {}, songs: {}, songsSeen: new Set() });
+  }, { 
+    counts: {} as Record<string, number>, 
+    songs: {} as Record<string, any[]>, 
+    songsSeen: new Set<string>()
+  });
 
   // Sort songs alphabetically within each category
   Object.keys(categoryData.songs).forEach(category => {
-    categoryData.songs[category].sort((a, b) => {
-      const songA = typeof a === 'string' ? a : a.song;
-      const songB = typeof b === 'string' ? b : b.song;
-      return songA.localeCompare(songB);
-    });
+    categoryData.songs[category].sort((a, b) => a.song.localeCompare(b.song));
   });
 
   // Create a map of categories to their canonids
   const categoryCanonIds = setlist.reduce((acc, entry) => {
-    if (entry.song_category && entry.category_canonid) {
-      acc[entry.song_category] = entry.category_canonid;
+    // Determine the correct category
+    const category = entry.songs?.song_category || 'undefined';
+    
+    // Try to find the canonid in multiple possible locations
+    if (category !== 'undefined') {
+      // Direct canonid property
+      if (entry.songs?.categories?.category_canonid !== undefined) {
+        acc[category] = entry.songs.categories.category_canonid;
+      } else if (entry.category_canonid !== undefined) {
+        acc[category] = entry.category_canonid;
+      }
     }
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
 
   // Convert to array and sort by count (descending) then by canonid (ascending)
   const sortedCategories = Object.entries(categoryData.counts)
@@ -76,6 +143,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
       category,
       count,
       canonid: categoryCanonIds[category] || 0,
+      artwork: categoryArtwork[category] || null,
       songs: categoryData.songs[category]
     }))
     .sort((a, b) => {
@@ -88,13 +156,15 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
   const maxCount = Math.max(...Object.values(categoryData.counts));
 
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-      <h3 className="text-lg font-semibold text-white mb-4">Song Spread</h3>
+    <div className="bg-primary border border-black rounded-lg p-3">
+      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+        Song Spread
+      </h2>
       <div className="space-y-1.5">
-        {sortedCategories.map(({ category, count, songs }) => (
+        {sortedCategories.map(({ category, count, songs, artwork }) => (
           <div key={category}>
             <div 
-              className="text-[#ffffff]/90 text-sm font-semibold cursor-pointer"
+              className="text-black text-sm font-semibold cursor-pointer"
               onMouseEnter={(e) => {
                 setHoveredCategory(category);
                 setMousePosition({ x: e.clientX, y: e.clientY });
@@ -118,20 +188,32 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
               onMouseLeave={() => setHoveredCategory(null)}
             >
               <div 
-                className="h-full bg-[#594e5f] rounded relative"
+                className="h-full bg-[#f9ae37] rounded border border-black relative flex items-center"
                 style={{ 
                   width: `${(count / maxCount) * 100}%`,
-                  minWidth: '22px'
+                  minWidth: '42px'
                 }}
               >
+                {artwork && (
+                  <img 
+                    src={artwork} 
+                    alt=""
+                    onError={(e) => {
+                      console.error(`Failed to load image for ${category}. URL was:`, artwork);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                    onLoad={() => console.log(`Successfully loaded artwork for ${category}`)}
+                    className="h-4 w-4 ml-0.5 object-cover rounded-sm"
+                  />
+                )}
                 <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                  <span className="text-[#fce7ca] text-sm font-semibold">{count}</span>
+                  <span className="text-black text-sm font-semibold">{count}</span>
                 </div>
               </div>
             </div>
             {hoveredCategory === category && (
               <div 
-                className="fixed bg-[#594e5f] text-[#fce7ca] px-3 py-1.5 rounded shadow-lg min-w-max z-[9999] text-xs"
+                className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999] text-xs"
                 style={{
                   left: `${mousePosition.x + 10}px`,
                   top: `${mousePosition.y - 10}px`
@@ -139,14 +221,8 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
               >
                 {songs.map((song, index) => (
                   <div key={index}>
-                    {typeof song === 'string' ? (
-                      <span className="font-semibold">{song}</span>
-                    ) : (
-                      <>
-                        <span className="font-semibold">{song.song}</span>
-                        {song.isSpecialCategory && song.artist && <>&nbsp;&nbsp;[{song.artist}]</>}
-                      </>
-                    )}
+                    <span className="font-semibold">{song.song}</span>
+                    {song.isSpecialCategory && song.artist && <>&nbsp;&nbsp;[{song.artist}]</>}
                   </div>
                 ))}
               </div>

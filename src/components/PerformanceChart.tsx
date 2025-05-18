@@ -553,7 +553,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
         {/* Tooltip (only shown in timeline view) */}
         {viewMode === 'timeline' && hoveredPerformance && (
           <div 
-            className="fixed bg-[#f9ae37] text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+            className="fixed bg-secondary text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
             style={{
               left: `${mousePosition.x + 10}px`,
               top: `${mousePosition.y - 10}px`,

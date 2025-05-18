@@ -87,8 +87,8 @@ const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ showId, 
       className={`p-1 rounded-lg transition-all ${
         error ? 'bg-red-800 text-white' :
         isAttended
-          ? 'bg-green-600 hover:bg-red-600 text-white'
-          : 'text-white border-[#fce7ca]/80 hover:bg-green-600 hover:text-white'
+          ? 'border border-black bg-green-600 hover:bg-red-600 text-white'
+          : 'text-black border-black border bg-[#f9ae37]  hover:bg-green-600 hover:text-white'
       } ${className}`}
     >
       {isLoading ? (

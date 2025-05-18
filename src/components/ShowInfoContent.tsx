@@ -33,9 +33,9 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
   const navigate = useNavigate();
   
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
+    <div className="bg-primary border border-black rounded-lg p-4">
       <div className="flex justify-between items-center">
-        <div className="text-xl font-bold text-white">
+        <div className="text-xl font-bold text-black">
           {formatInTimeZone(
             new Date(show.show_date),
             'UTC',
@@ -46,18 +46,18 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
       </div>
       <div className="mt-2 space-y-4">
         <div className="space-y-1">
-          <p className="text-lg font-semibold text-[#fce7ca]/90 leading-5">{show.show_group}</p>
+          <p className="text-lg font-semibold text-black leading-5">{show.show_group}</p>
           {show.show_detail && (
-            <p className="text-sm text-white">{show.show_detail}</p>
+            <p className="text-sm text-black">{show.show_detail}</p>
           )}
         </div>
-        <hr className="border-white/10" />
+        <hr className="border-black/10" />
         <div className="space-y-1">
-          <p className="text-md font-semibold text-[#fce7ca]/90 leading-5 text-left w-full">
+          <p className="text-md font-semibold text-black leading-5 text-left w-full">
             {navigateToVenue ? (
               <button 
                 onClick={navigateToVenue}
-                className="hover:text-white hover:underline transition-colors cursor-pointer text-left w-full"
+                className="hover:text-[#a9682e] hover:underline transition-colors cursor-pointer text-left w-full"
               >
                 {show.show_subvenue}
               </button>
@@ -65,16 +65,16 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
               <span className="text-left w-full">{show.show_subvenue}</span>
             )}
           </p>
-          <p className="text-sm text-white text-left w-full">{show.show_venue_location}</p>
+          <p className="text-sm text-black text-left w-full">{show.show_venue_location}</p>
         </div>
-        {/* Added tour information with horizontal divider */}
+        {/* Tour information with horizontal divider */}
         {show.show_tour && (
           <>
-            <hr className="border-white/10" />
+            <hr className="border-black/10" />
             <div className="space-y-1">
-              <p className="text-md font-semibold text-[#fce7ca]/90 leading-5 text-center">
+              <p className="text-md font-semibold text-black leading-5 text-center">
                 <span 
-                  className="cursor-pointer hover:underline"
+                  className="cursor-pointer hover:text-[#a9682e] hover:underline transition-colors"
                   onClick={() => navigate(`/tours/${show.tour_id}`)}
                 >
                   {show.show_tour}
@@ -85,8 +85,8 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
                   <button 
                     className={`p-1 rounded-full border ${
                       showPosition.prevShowId 
-                        ? 'text-white hover:bg-[#ec742e] hover:text-primary hover:border-transparent' 
-                        : 'text-[#484f59] border-white/20 cursor-not-allowed'
+                        ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
+                        : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
                     } transition-colors`}
                     onClick={() => {
                       if (showPosition.prevShowId) {
@@ -97,14 +97,14 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
                   >
                     <ArrowLeft size={12} />
                   </button>
-                  <span className="text-sm text-white">
+                  <span className="text-sm text-black">
                     Show {showPosition.current} of {showPosition.total}
                   </span>
                   <button 
                     className={`p-1 rounded-full border ${
                       showPosition.nextShowId 
-                        ? 'text-white hover:bg-[#ec742e] hover:text-primary hover:border-transparent' 
-                        : 'text-[#484f59] border-white/20 cursor-not-allowed'
+                        ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
+                        : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
                     } transition-colors`}
                     onClick={() => {
                       if (showPosition.nextShowId) {
@@ -117,7 +117,7 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
                   </button>
                 </div>
               ) : (
-                <p className="text-sm text-white">
+                <p className="text-sm text-black">
                   {show.show_canonid ? "Show information loading..." : "Non-canonical show"}
                 </p>
               )}

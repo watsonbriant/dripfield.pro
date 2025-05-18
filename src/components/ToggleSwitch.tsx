@@ -1,4 +1,3 @@
-import React from 'react';
 import coachLogo from '../img/Coach.png';
 
 interface ToggleSwitchProps {
@@ -13,8 +12,8 @@ const ToggleSwitch = ({ checked, onChange }: ToggleSwitchProps) => {
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ec742e]/50 ${
-          checked ? 'bg-tertiary' : 'bg-[#fce7ca]'
+        className={`relative inline-flex h-6 w-12 border border-black items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ec742e]/50 ${
+          checked ? 'bg-[#f9ae37]' : 'bg-primary'
         }`}
       >
         <span

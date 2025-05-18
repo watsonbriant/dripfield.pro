@@ -6,7 +6,6 @@ import { supabase } from '../lib/supabase';
 import { formatInTimeZone } from 'date-fns-tz';
 import FullSetlistDisplay from './FullSetlistDisplay';
 import ToggleSwitch from './ToggleSwitch';
-import ReleaseContainer from './ReleaseContainer';
 
 interface Tour {
   tour: string;
@@ -361,8 +360,13 @@ export function Setlist() {
   if (loading) {
     return (
       <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Loading setlist...</p>
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading setlist...</p>
         </div>
       </div>
     );
@@ -371,8 +375,8 @@ export function Setlist() {
   if (!show) {
     return (
       <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
-          <p className="text-[#fce7ca]/70">Show not found</p>
+        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+          <p className="text-black">Show not found</p>
         </div>
       </div>
     );
@@ -381,8 +385,8 @@ export function Setlist() {
   return (
     <div className="max-w-[1280px] mx-auto">
       {/* Header section */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">
           Setlist
         </h1>
         <div className="flex gap-4">
@@ -396,7 +400,7 @@ export function Setlist() {
             <div className="md:block">
               <button
                 onClick={() => setIsShowDatesDropdownOpen(!isShowDatesDropdownOpen)}
-                className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-2 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap"
+                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
               >
                 Shows
                 <ChevronDown className="w-4 h-4" />
@@ -405,7 +409,7 @@ export function Setlist() {
             {isShowDatesDropdownOpen && (
               <div 
                 ref={showDatesDropdownListRef}
-                className="absolute right-0 mt-2 py-2 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
+                className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
               >
                 {showDates.map((showDate) => (
                   <button
@@ -415,12 +419,12 @@ export function Setlist() {
                       navigate(`/setlist/${showDate.show_id}`);
                       setIsShowDatesDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary transition-colors ${
-                      showId === showDate.show_id ? 'bg-surface-secondary' : ''
+                    className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
+                      showId === showDate.show_id ? 'bg-[#f9ae37]' : ''
                     }`}
                   >
                     <div className="flex justify-between items-center">
-                      <div className="truncate">
+                      <div className="truncate text-black">
                         <span className="font-semibold">
                           {showDate.formatted_show_date} 
                           {showDate.show_venue_location && (
@@ -432,12 +436,12 @@ export function Setlist() {
                       </div>
                       <div className="flex items-center gap-2 text-xs shrink-0">
                         {showDate.show_rarity_percentage && (
-                          <span className="px-2 py-0.5 bg-primary/20 rounded">
+                          <span className="px-2 py-0.5 bg-canvas rounded border border-black/20 text-black">
                             {showDate.show_rarity_percentage}
                           </span>
                         )}
                         {showDate.total_entry_length && (
-                          <span className="px-2 py-0.5 bg-primary/20 rounded">
+                          <span className="px-2 py-0.5 bg-canvas rounded border border-black/20 text-black">
                             {showDate.total_entry_length}
                           </span>
                         )}
@@ -452,7 +456,7 @@ export function Setlist() {
             <div className="md:hidden">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-4 h-10 rounded-lg bg-[#fce7ca] text-primary hover:bg-[#fce7ca]/90 transition-colors flex items-center"
+                className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#fce7ca]/90 transition-colors border border-black"
               >
                 <MapPin className="w-6 h-6" />
               </button>
@@ -462,7 +466,7 @@ export function Setlist() {
                 title="Select Tour"
               >
                 <div className="space-y-0">
-                  <div className="divide-y divide-white/10">
+                  <div className="divide-y divide-black/10">
                     {tours.map((tour) => (
                       <button
                         key={tour.tour}
@@ -470,9 +474,9 @@ export function Setlist() {
                           navigate(`/tours/${tour.tour_id}`);
                           setIsModalOpen(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm rounded-lg hover:bg-white/10 transition-colors font-semibold"
+                        className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
                       >
-                        <span className="text-[#fce7ca]">{tour.tour}</span>
+                        <span className="text-black">{tour.tour}</span>
                       </button>
                     ))}
                   </div>
@@ -482,7 +486,7 @@ export function Setlist() {
             <div className="hidden md:block">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 bg-[#fce7ca] text-primary px-4 py-2 rounded-lg border border-border-primary hover:bg-surface-secondary transition-colors text-sm whitespace-nowrap"
+                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
               >
                 Tours
                 <ChevronDown className="w-4 h-4" />
@@ -491,7 +495,7 @@ export function Setlist() {
             {isDropdownOpen && (
               <div 
                 ref={dropdownListRef}
-                className="absolute right-0 mt-2 py-2 bg-[#fce7ca] border border-border-primary rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
+                className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
               >
                 {tours.map((tour) => (
                   <button
@@ -500,11 +504,11 @@ export function Setlist() {
                       navigate(`/tours/${tour.tour_id}`);
                       setIsDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary transition-colors ${
-                      show?.show_tour === tour.tour ? 'bg-surface-secondary' : ''
+                    className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
+                      show?.show_tour === tour.tour ? 'bg-[#f9ae37]' : ''
                     }`}
                   >
-                    {tour.tour}
+                    <span className="text-black">{tour.tour}</span>
                   </button>
                 ))}
               </div>
@@ -513,7 +517,7 @@ export function Setlist() {
         </div>
       </div>
       
-      {/* Setlist section */}
+      {/* Setlist section */}      
       <FullSetlistDisplay 
         setlist={setlist} 
         show={show} 

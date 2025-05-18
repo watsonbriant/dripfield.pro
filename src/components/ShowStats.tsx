@@ -137,25 +137,26 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
   if (!shouldShowLength && !shouldShowRarity) return null;
 
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4 mb-6 space-y-4">
+    <div className="bg-primary border border-black rounded-lg p-3 mb-6">
       {shouldShowLength && (
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold text-white">Show Length</h2>
-          <p className="text-[#fce7ca]/90 text-xs">
+        <div className="mb-4">
+          <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Show Length</h2>
+          <p className="text-black text-sm">
             {totalLength || 'The length of this show is unknown.'}
           </p>
         </div>
       )}
       
       {shouldShowRarity && (
-        <div className="space-y-1">
+        <div>
           <div className="flex items-center">
-            <h2 className="text-lg font-semibold text-white">Show Rarity</h2>
+            <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Show Rarity</h2>
             {rarityStats && (
               <span 
-                className="text-white text-sm font-medium px-2 py-0.5 rounded-md inline-block ml-6"
+                className="text-white text-sm font-medium px-2 py-0.5 rounded-md inline-block ml-3"
                 style={{ 
-                  backgroundColor: getRarityColor(rarityStats.percentage + '%') 
+                  backgroundColor: getRarityColor(rarityStats.percentage + '%'),
+                  border: '1px solid black'
                 }}
               >
                 {rarityStats.percentage}%
@@ -163,7 +164,7 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
             )}
           </div>
           {!rarityStats && (
-            <p className="text-[#fce7ca]/90 text-xs">
+            <p className="text-black text-sm">
               Error calculating show rarity
             </p>
           )}

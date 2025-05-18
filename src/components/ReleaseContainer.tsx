@@ -116,8 +116,8 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
   }, [showId, fetchReleases]);
 
   if (isLoading) {
-    return <div className="bg-[#172330] border border-white/10 rounded-lg p-4 mt-4 text-center">
-      <p className="text-[#fce7ca]/70">Loading releases...</p>
+    return <div className="bg-primary border border-black rounded-lg p-3 mb-4 text-center">
+      <p className="text-black">Loading releases...</p>
     </div>;
   }
 
@@ -127,7 +127,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
   }
   
   return (
-    <div className="bg-[#172330] border border-white/10 rounded-lg p-4 mb-4">
+    <div className="bg-primary border border-black rounded-lg p-3 mb-4">
       <div className="flex flex-col items-center">
         {releases.length > 0 && currentReleaseIndex < releases.length && (
           <div className="flex flex-col items-center w-full">
@@ -136,12 +136,12 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                 href={releases[currentReleaseIndex].release_link}
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="relative w-full mx-auto mb-4 block cursor-pointer"
+                className="relative w-full mx-auto mb-3 block cursor-pointer"
               >
                 <img 
                   src={releases[currentReleaseIndex].release_artwork} 
                   alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover rounded-lg border border-black"
                   onError={(e) => {
                     // Handle error silently
                     const target = e.target as HTMLImageElement;
@@ -154,7 +154,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                 <img 
                   src={releases[currentReleaseIndex].release_artwork} 
                   alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover rounded-lg border border-black"
                   onError={(e) => {
                     // Handle error silently
                     const target = e.target as HTMLImageElement;
@@ -164,7 +164,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
               </div>
             )}
             <div className="text-center">
-              <h3 className="text-base font-semibold text-[#fce7ca] leading-5">
+              <h3 className="text-base font-semibold text-black leading-5">
                 {releases[currentReleaseIndex]?.release_displayname || releases[currentReleaseIndex]?.release || 'Untitled Release'}
               </h3>
               {releases[currentReleaseIndex]?.release_link && (
@@ -172,7 +172,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                   href={releases[currentReleaseIndex].release_link} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-white hover:text-white hover:underline font-semibold text-sm mt-1 inline-block transition-colors"
+                  className="text-black hover:text-[#a9682e] hover:underline font-semibold text-sm inline-block transition-colors"
                 >
                   {getServiceIcon(releases[currentReleaseIndex].release_service)}
                   {releases[currentReleaseIndex].release_service || "Streaming Service"}
@@ -182,20 +182,32 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
             
             {/* Navigation arrows - only show if there are multiple releases */}
             {releases.length > 1 && (
-              <div className="flex justify-center items-center mt-4 gap-4">
+              <div className="flex justify-center items-center mt-2 gap-4">
                 <button
                   onClick={() => setCurrentReleaseIndex(prev => (prev - 1 + releases.length) % releases.length)}
-                  className="p-1 rounded-full border text-white border-white hover:bg-[#ec742e] hover:text-primary hover:border-transparent transition-colors"
+                  className="p-1 rounded-full border text-black bg-[#f9ae37] border-black hover:bg-white hover:text-black transition-colors"
                   aria-label="Previous release"
                 >
                   <ArrowLeft size={12} />
                 </button>
-                <span className="text-white text-sm">
-                  {currentReleaseIndex + 1} / {releases.length}
-                </span>
+                <div className="flex items-center gap-2">
+                  {releases.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentReleaseIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        currentReleaseIndex === index 
+                          ? 'bg-black' 
+                          : 'bg-[#f9ae37] border border-black hover:bg-gray-400'
+                      }`}
+                      aria-label={`Go to release ${index + 1}`}
+                      aria-current={currentReleaseIndex === index ? 'true' : 'false'}
+                    />
+                  ))}
+                </div>
                 <button
                   onClick={() => setCurrentReleaseIndex(prev => (prev + 1) % releases.length)}
-                  className="p-1 rounded-full border text-white border-white hover:bg-[#ec742e] hover:text-primary hover:border-transparent transition-colors"
+                  className="p-1 rounded-full border text-black bg-[#f9ae37] border-black hover:bg-white hover:text-black transition-colors"
                   aria-label="Next release"
                 >
                   <ArrowRight size={12} />

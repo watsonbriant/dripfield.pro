@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatInTimeZone } from 'date-fns-tz';
 import ShowStats from './ShowStats';
 import SongSpread from './SongSpread';
 import { ArrowLeft, ArrowRight, User, MoveRight } from 'lucide-react';
 import ReleaseContainer from './ReleaseContainer';
-import ShowAttendButton from './ShowAttendButton';
 import ShowInfoContent from './ShowInfoContent';
 
 interface Guest {
@@ -336,10 +334,10 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
           showPosition={showPosition} 
         />
         {show.show_coachnotes && (
-          <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-white mb-2">Show Notes</h2>
+          <div className="bg-primary border border-black rounded-lg p-4">
+            <h2 className="text-lg font-semibold text-black mb-2">Show Notes</h2>
             <div 
-              className="text-[#fce7ca]/90 text-xs [&_a]:text-tertiary hover:[&_a]:text-tertiary/80 [&_a]:font-semibold"
+              className="text-black text-xs [&_a]:text-[#a9682e] hover:[&_a]:text-[#a9682e]/80 [&_a]:font-semibold"
               dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
             />
           </div>
@@ -359,9 +357,9 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
           <div className={`flex-1 space-y-6 min-w-0 lg:mt-0 ${setlist.length === 0 ? 'lg:hidden' : ''}`}>
             {/* Setlist table */}
             {setlist.length > 0 && (
-              <div className="bg-[#172330] border border-white/10 rounded-lg p-4 overflow-x-auto">
-                <div className="min-w-[602px] divide-y divide-white/10">
-                  <div className={`${getGridClass(show.show_canonid)} text-[#fce7ca]/90 text-sm pr-2 py-2 bg-[#1a1a1a] font-semibold`}>
+              <div className="bg-primary border border-black rounded-lg p-4 overflow-x-auto">
+                <div className="min-w-[602px] divide-y divide-black/10">
+                  <div className={`${getGridClass(show.show_canonid)} text-black text-sm pr-2 py-2 bg-[#f9ae37]/50 font-semibold`}>
                     <div className="w-8 text-center">#</div>
                     <div>Song</div>
                     <div className="text-center">Time</div>
@@ -373,7 +371,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                       </>
                     )}
                     <div className="flex justify-end">
-                      <User strokeWidth={2} className="text-[#fce7ca]/90 w-5 h-5" />
+                      <User strokeWidth={2} className="text-black w-5 h-5" />
                     </div>
                   </div>
 
@@ -395,7 +393,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                           elements.push(
                             <div 
                               key={`encore-${entry.entry_id}`} 
-                              className="text-[#fce7ca]/90 text-sm py-1 px-4 bg-[#1a1a1a] text-center"
+                              className="text-black text-sm py-1 px-4 bg-tertiary/50 font-bold text-center border-b border-black/10"
                             >
                               {getEncoreLabel(entry.entry_set)}
                             </div>
@@ -408,7 +406,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                         elements.push(
                           <div 
                             key={`setbreak-${entry.entry_id}`} 
-                            className="text-[#fce7ca]/90 text-sm py-1 px-4 bg-[#1a1a1a] text-center"
+                            className="text-black text-sm py-1 px-4 bg-secondary/50 font-bold text-center border-b border-black/10"
                           >
                             Set Break
                           </div>
@@ -420,11 +418,11 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                     elements.push(
                       <div 
                         key={entry.entry_id}
-                        className={`${getGridClass(show.show_canonid)} grid-auto-columns-min-content text-[#fce7ca]/90 text-sm hover:bg-white/10 transition-colors pr-2 py-0.5 items-start`}
+                        className={`${getGridClass(show.show_canonid)} grid-auto-columns-min-content text-black text-sm hover:bg-black/10 transition-colors pr-2 py-0.5 items-start ${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'}`}
                       >
                         {/* Number column */}
                         <div
-                          className="w-8 text-white text-center rounded cursor-pointer relative"
+                          className={`w-8 ${getPlacementColor(entry.entry_placement) !== 'transparent' ? 'text-white' : 'text-black'} text-center rounded cursor-pointer relative`}
                           style={{
                             backgroundColor: getPlacementColor(entry.entry_placement)
                           }}
@@ -447,7 +445,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                         >
                           <strong>{displayNumber || '\u00A0'}</strong>
                           {!isMobile && hoveredEntry === entry.entry_id && (
-                            <div className="fixed bg-[#594e5f] text-[#fce7ca] text-xs px-3 py-1.5 rounded shadow-lg min-w-max z-[9999]"
+                            <div className="fixed text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -480,28 +478,28 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                           <div className="w-full break-words">
                             <strong>
                               <span 
-                                className="text-white mr-2 hover:underline cursor-pointer"
+                                className="text-black mr-2 hover:text-[#a9682e] transition-colors cursor-pointer"
                                 onClick={() => navigate(`/song/${entry.song_id}`)}
                               >
                                 {entry.entry_song}
                               </span>
                               {entry.entry_short && (
-                                <span className="text-red-400 mr-2 text-[0.75rem] leading-[1.25rem] font-semibold">[{entry.entry_short}]</span>
+                                <span className="text-red-600 mr-2 text-[0.75rem] leading-[1.25rem] font-semibold">[{entry.entry_short}]</span>
                               )}
                               {entry.entry_segue && (
-                                <MoveRight className="text-red-400 inline w-[1rem] h-[1rem]" />
+                                <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />
                               )}
                             </strong>
                           </div>
                           {entry.entry_coachnotes && showCoachNotes && (
                             <div 
-                              className="text-[#fce7ca]/50 text-xs mt-0.5 w-full break-words [&_a]:text-[#ec742e] [&_a]:font-semibold"
+                              className="text-black/70 text-xs mt-0.5 w-full break-words [&_a]:text-[#a9682e] [&_a]:font-semibold"
                               dangerouslySetInnerHTML={{ __html: entry.entry_coachnotes }}
                             />
                           )}
                           {!isMobile && hoveredSong === entry.entry_id && (
                             <div 
-                              className="fixed bg-[#594e5f] text-[#fce7ca] text-xs px-3 py-1.5 rounded shadow-lg min-w-max z-[9999]"
+                              className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -510,10 +508,10 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                               <div className="font-bold">
                                 <span className="mr-2">{entry.entry_song}</span>
                                 {entry.entry_short && (
-                                  <span className="text-red-400 mr-2">[{entry.entry_short}]</span>
+                                  <span className="text-red-600 mr-2">[{entry.entry_short}]</span>
                                 )}
                                 {entry.entry_segue && (
-                                  <MoveRight className="text-red-400 inline  w-[1rem] h-[1rem]" />
+                                  <MoveRight className="text-red-600 inline  w-[1rem] h-[1rem]" />
                                 )}
                               </div>
                               {entry.times_played && (
@@ -536,19 +534,19 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                         </div>
                     
                         {/* Duration column */}
-                        <div className="text-white/70 text-center">
+                        <div className="text-black/80 text-center">
                           {formatLength(entry.entry_length)}
                         </div>
 
                         {/* Last played column */}
                         {show.show_canonid !== null && (
-                          <div className={`text-white/70 text-center rounded-md ${
+                          <div className={`text-black/80 text-center rounded-md ${
                               entry.last_count?.includes('TD') 
-                                ? 'bg-[#2a6465] text-white/90' 
+                                ? 'bg-blue-300 text-black' 
                                 : entry.last_count?.includes('Debut')
-                                  ? 'bg-[#a32116] text-white/90'
+                                  ? 'bg-red-300 text-black'
                                   : ''
-                            } ${entry.last_show_id ? 'cursor-pointer hover:text-white hover:underline transition-colors' : ''}`}
+                            } ${entry.last_show_id ? 'cursor-pointer hover:text-[#a9682e] hover:underline transition-colors' : ''}`}
                             onClick={() => {
                               if (entry.last_show_id) {
                                 navigate(`/setlist/${entry.last_show_id}`);
@@ -574,7 +572,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                             <span className="font-semibold">{entry.last_count || ''}</span>
                             {!isMobile && hoveredEntry === entry.entry_id + '_last' && entry.last_show_id && (
                               <div 
-                                className="fixed bg-[#594e5f] text-[#fce7ca] text-xs px-3 py-1.5 rounded shadow-lg min-w-max z-[9999]"
+                                className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                                 style={{
                                   left: `${mousePosition.x + 10}px`,
                                   top: `${mousePosition.y - 10}px`
@@ -592,7 +590,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                     
                         {/* Tour count column */}
                         {show.show_canonid !== null && (
-                          <div className="text-white/70 text-center">
+                          <div className="text-black/80 text-center">
                             {entry.song_tour_count || ''}
                           </div>
                         )}
@@ -635,7 +633,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                           />
                           {!isMobile && hoveredPersonnel === entry.entry_id && (
                             <div 
-                              className="fixed bg-[#594e5f] text-[#fce7ca] text-xs px-3 py-1.5 rounded shadow-lg z-[9999] max-w-[300px] whitespace-normal break-words"
+                              className="fixed text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg z-[9999] max-w-[300px] whitespace-normal break-words"
                               style={{
                                 right: `${window.innerWidth - mousePosition.x + 5}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -659,9 +657,9 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
 
             {/* Callbacks container */}
             {setlist.length > 0 && show.show_callbacks && (
-              <div className="bg-[#172330] border border-white/10 rounded-lg p-4 text-sm">
+              <div className="bg-primary border border-black rounded-lg p-4 text-sm">
                 <div 
-                  className="text-[#fce7ca]/90 [&_a]:text-tertiary hover:[&_a]:text-tertiary/80 [&_a]:font-semibold"
+                  className="text-black [&_a]:text-black [&_a]:border [&_a]:border-black [&_a]:bg-[#f9ae37] [&_a]:rounded-full [&_a]:py-0.5 [&_a]:px-1 hover:[&_a]:text-black/50 [&_a]:font-bold"
                   dangerouslySetInnerHTML={{ __html: show.show_callbacks }}
                 />
               </div>
@@ -673,8 +671,8 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                 <SongSpread setlist={setlist} />
                 
                 {guestGroups.length > 0 && (
-                  <div className="bg-[#172330] border border-white/10 rounded-lg p-4 h-fit relative">
-                    <User className="w-5 h-5 text-white absolute top-4 right-4" />
+                  <div className="bg-primary border border-black rounded-lg p-4 h-fit relative">
+                    <User className="w-5 h-5 text-black absolute top-4 right-4" />
                     <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
                       {guestGroups.map((group, index) => (
                         <React.Fragment key={index}>
@@ -682,13 +680,13 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                             className="w-5 h-5 rounded"
                             style={{ backgroundColor: group.color }}
                           />
-                          <div className="text-white text-sm flex items-center flex-wrap">
+                          <div className="text-black text-sm flex items-center flex-wrap">
                             {group.guests
                               .sort((a, b) => a.guest_canonid - b.guest_canonid)
                               .map((g, gIndex) => (
                                 <React.Fragment key={g.guest_id}>
                                   <span 
-                                    className="cursor-pointer hover:underline font-semibold transition-colors"
+                                    className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold"
                                     onClick={() => navigate(`/guest/${g.guest_id}`)}
                                   >
                                     {g.guest_display_name}
@@ -719,10 +717,10 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
               showPosition={showPosition} 
             />
             {show.show_coachnotes && (
-              <div className="bg-[#172330] border border-white/10 rounded-lg p-4">
-                <h2 className="text-lg font-semibold text-white mb-2">Show Notes</h2>
+              <div className="bg-primary border border-black rounded-lg p-4">
+                <h2 className="text-lg font-semibold text-black mb-2">Show Notes</h2>
                 <div 
-                  className="text-[#fce7ca]/90 text-xs [&_a]:text-tertiary hover:[&_a]:text-tertiary/80 [&_a]:font-semibold"
+                  className="text-black text-xs [&_a]:text-[#a9682e] hover:[&_a]:text-[#a9682e]/80 [&_a]:font-semibold"
                   dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
                 />
               </div>
