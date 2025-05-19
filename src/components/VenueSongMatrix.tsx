@@ -427,16 +427,16 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
         <table className="w-full border-collapse min-w-max">
           <thead>
             {/* Year headers row */}
-            <tr className="bg-canvas border-y border-black/10">
+            <tr className="bg-canvas border-y border-[#d9c3a5]">
               {/* Song cell that spans both rows */}
               <th 
                 className="px-2 py-1 text-left text-xs font-bold text-black whitespace-nowrap"
                 rowSpan={2}
                 style={{ 
                   verticalAlign: 'bottom',
-                  borderRight: '1px solid rgba(0,0,0,0.1)',
-                  borderTop: '1px solid rgba(0,0,0,0.1)',
-                  borderLeft: '1px solid rgba(0,0,0,0.1)'
+                  borderRight: '1px solid rgb(217, 195, 165)',
+                  borderTop: '1px solid rgb(217, 195, 165)',
+                  borderLeft: '1px solid rgb(217, 195, 165)'
                 }}
               >
                 Song
@@ -451,8 +451,8 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                     colSpan={colSpan}
                     className="px-1 py-1 text-center text-xs font-semibold text-black"
                     style={{
-                      borderRight: '1px solid rgba(0,0,0,0.1)',
-                      borderTop: '1px solid rgba(0,0,0,0.1)'
+                      borderRight: '1px solid rgb(217, 195, 165)',
+                      borderTop: '1px solid rgb(217, 195, 165)'
                     }}
                   >
                     <button 
@@ -472,7 +472,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
             </tr>
             
             {/* Date headers row */}
-            <tr className="bg-canvas border-y border-black/10">
+            <tr className="bg-canvas border-y border-[#d9c3a5]">
               {songMatrix.showDates.map((date, index) => {
                 // Find the corresponding show from the shows array
                 const showId = shows[index]?.show_id || "";
@@ -483,7 +483,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                     className="px-1 py-1 text-center text-xs font-semibold text-black whitespace-nowrap" 
                     style={{ 
                       width: 'min-content',
-                      borderRight: '1px solid rgba(0,0,0,0.1)'
+                      borderRight: '1px solid rgb(217, 195, 165)'
                     }}
                   >
                     <button 

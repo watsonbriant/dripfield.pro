@@ -829,7 +829,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             {/* Mobile version - sort button */}
             <button 
               onClick={() => setIsSortModalOpen(true)}
-              className="md:hidden flex items-center justify-center bg-[#f9ae37] rounded-md border border-black/10 p-1.5"
+              className="md:hidden flex items-center justify-center bg-[#f9ae37] rounded-md border border-black p-1.5"
               aria-label="Sort options"
             >
               <ArrowDownUp className="w-4 h-4 text-black" />
