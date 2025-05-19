@@ -125,7 +125,7 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
         </div>
       ) : (
         <div className="overflow-y-auto max-h-64">
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse min-w-max">
             <thead>
               <tr className="bg-canvas border-y border-white/10">
                 <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Song</th>

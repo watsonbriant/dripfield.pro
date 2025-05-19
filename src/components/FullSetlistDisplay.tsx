@@ -359,7 +359,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
             {setlist.length > 0 && (
               <div className="bg-primary border border-black rounded-lg p-4 overflow-x-auto">
                 <div className="min-w-[602px] divide-y divide-black/10">
-                  <div className={`${getGridClass(show.show_canonid)} text-black text-sm pr-2 py-2 bg-[#f9ae37]/50 font-semibold`}>
+                  <div className={`${getGridClass(show.show_canonid)} text-black text-sm pr-2 py-1 bg-[#f9ae37]/50 font-semibold`}>
                     <div className="w-8 text-center">#</div>
                     <div>Song</div>
                     <div className="text-center">Time</div>
@@ -393,7 +393,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                           elements.push(
                             <div 
                               key={`encore-${entry.entry_id}`} 
-                              className="text-black text-sm py-1 px-4 bg-tertiary/50 font-bold text-center border-b border-black/10"
+                              className="text-black text-sm py-0.5 px-4 bg-tertiary/50 font-bold text-center border-b border-black/10"
                             >
                               {getEncoreLabel(entry.entry_set)}
                             </div>
@@ -406,7 +406,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                         elements.push(
                           <div 
                             key={`setbreak-${entry.entry_id}`} 
-                            className="text-black text-sm py-1 px-4 bg-secondary/50 font-bold text-center border-b border-black/10"
+                            className="text-black text-sm py-0.5 px-4 bg-secondary/50 font-bold text-center border-b border-black/10"
                           >
                             Set Break
                           </div>
@@ -418,7 +418,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                     elements.push(
                       <div 
                         key={entry.entry_id}
-                        className={`${getGridClass(show.show_canonid)} grid-auto-columns-min-content text-black text-sm hover:bg-black/10 transition-colors pr-2 py-0.5 items-start ${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'}`}
+                        className={`${getGridClass(show.show_canonid)} grid-auto-columns-min-content text-black text-sm hover:bg-black/10 transition-colors pr-2 py-0.5 items-start bg-primary`}
                       >
                         {/* Number column */}
                         <div

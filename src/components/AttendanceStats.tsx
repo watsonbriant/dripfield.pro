@@ -425,7 +425,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
 
   return (
     <div className="bg-primary p-4 rounded-lg border border-black">
-      <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">{getTitle()}</h3>
+      <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-1.5">{getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">
@@ -433,7 +433,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           <p className="text-black mt-4">{getLoadingMessage()}</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="md:space-y-2">
           {/* Desktop view - cards */}
           <div className="hidden md:grid grid-cols-3 gap-4">
             <div className="bg-canvas p-3 rounded-md relative border border-black">
@@ -454,28 +454,28 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           </div>
           
           {/* Mobile view - list */}
-          <div className="md:hidden space-y-4">
-            <ul className="space-y-2 text-sm">
+          <div className="md:hidden">
+            <ul className="space-y-2 text-sm mb-4">
               <li className="flex items-center">
                 <Calendar className="h-4 w-4 text-[#a9682e] mr-2" />
-                <span className="text-[#f9ae37] font-semibold">{showsCount}</span>
-                <span className="text-black font-semibold ml-2">{getShowsLabel()}</span>
+                <span className="text-black font-bold">{showsCount}</span>
+                <span className="text-black font-medium ml-2">{getShowsLabel()}</span>
               </li>
               <li className="flex items-center">
                 <Building2 className="h-4 w-4 text-[#a9682e] mr-2" />
-                <span className="text-[#f9ae37] font-semibold">{venuesCount}</span>
-                <span className="text-black font-semibold ml-2">{getVenuesLabel()}</span>
+                <span className="text-black font-bold">{venuesCount}</span>
+                <span className="text-black font-medium ml-2">{getVenuesLabel()}</span>
               </li>
               <li className="flex items-center">
                 <Music className="h-4 w-4 text-[#a9682e] mr-2" />
-                <span className="text-[#f9ae37] font-semibold">{songsCount}</span>
-                <span className="text-black font-semibold ml-2">{getSongsLabel()}</span>
+                <span className="text-black font-bold">{songsCount}</span>
+                <span className="text-black font-medium ml-2">{getSongsLabel()}</span>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">{getToursLabel()}</h3>
+            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-1.5 mt-3">{getToursLabel()}</h3>
             <div className="space-y-1 max-h-64 overflow-y-auto pr-2">
               {tourCounts.length === 0 ? (
                 <p className="text-black/60 italic">{getNoToursMessage()}</p>
