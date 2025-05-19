@@ -16,6 +16,7 @@ import navAdmin from '../img/Nav_Admin.png';
 import navBug from '../img/Nav_Bug.png';
 import navFindShow from '../img/Nav_FindShow.png';
 import navHome from '../img/Nav_Home.png';
+import sparklePic from '../img/sparkle.png'
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -329,7 +330,7 @@ export function Sidebar({
                 {/* Sparkle effect */}
                 {sparkle.show && sparkle.itemId === item.name && (
                   <img 
-                    src="/src/img/sparkle.png"
+                    src={sparklePic}
                     alt=""
                     className="sparkle"
                     style={{
@@ -372,7 +373,7 @@ export function Sidebar({
                 {/* Sparkle effect */}
                 {sparkle.show && sparkle.itemId === item.name && (
                   <img 
-                    src="/src/img/sparkle.png"
+                    src={sparklePic}
                     alt=""
                     className="sparkle"
                     style={{
@@ -417,7 +418,7 @@ export function Sidebar({
                     {/* Sparkle effect */}
                     {sparkle.show && sparkle.itemId === item.name && (
                       <img 
-                        src="/src/img/sparkle.png"
+                        src={sparklePic}
                         alt=""
                         className="sparkle"
                         style={{
