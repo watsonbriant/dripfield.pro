@@ -29,6 +29,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { UserMenu } from './components/UserMenu';
 import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
+import sparklePic from '/img/sparkle.png'
 
 import logo from './img/Logo_Text.png';
 
@@ -205,7 +206,7 @@ function App() {
             {/* Sparkle effect for logo - only on desktop */}
             {logoSparkle.show && !isMobile && (
               <img 
-                src="/src/img/sparkle.png"
+                src={sparklePic}
                 alt=""
                 className="sparkle absolute pointer-events-none"
                 style={{
