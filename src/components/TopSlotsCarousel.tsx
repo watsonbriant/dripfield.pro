@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react';
 interface SlotItem {
   left: string;
   right: string | number;
+  artwork?: string; // Added artwork property
 }
 
 interface SlotData {
@@ -99,34 +100,41 @@ const TopSlotsCarousel = ({
     return (
       <div className="bg-primary border border-black rounded-lg p-3">
         <h2 
-          className="text-lg font-mohr text-white inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4"
+          className="text-lg font-mohr text-white inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1.5"
           style={{ backgroundColor: headerBgColor }}
         >
           {`Top ${slot.title}`}
         </h2>
         <div className="overflow-y-auto max-h-64">
           <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">{slot.headerLeft || 'Song'}</th>
-                <th className="px-4 py-1 text-right text-s font-semibold text-black whitespace-nowrap">{slot.headerRight || 'Count'}</th>
-              </tr>
-            </thead>
             <tbody className="divide-y divide-white/5">
               {slot.data.map((item, itemIndex) => (
                 <tr
                   key={itemIndex}
                   className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-0.5 font-semibold">
-                    <span 
-                      className="text-black cursor-pointer hover:text-[#a9682e] hover:underline"
-                      onClick={() => handleSongClick(item.left)}
-                    >
-                      {item.left}
-                    </span>
+                  <td className="pl-4 text-black">
+                    <div className="flex items-center justify-between">
+                      <span 
+                        className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
+                        onClick={() => handleSongClick(item.left)}
+                      >
+                        {item.left}
+                      </span>
+                      {item.artwork && (
+                        <img
+                          src={item.artwork}
+                          alt={`${item.left} artwork`}
+                          className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                          onError={(e) => {
+                            // Hide the image if it fails to load
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      )}
+                    </div>
                   </td>
-                  <td className="px-4 py-0.5 text-right text-black font-semibold">
+                  <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                     {typeof item.right === 'number' ? `${item.right}` : item.right}
                   </td>
                 </tr>
@@ -143,7 +151,7 @@ const TopSlotsCarousel = ({
       {/* Mobile view - shown when isMobile is true or screen is smaller than md */}
       <div className={`${!isMobile ? "md:hidden" : ""}`}>
         <div className="bg-primary border border-black rounded-lg p-3">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-1.5">
             <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
               Top Slots
             </h2>
@@ -185,27 +193,34 @@ const TopSlotsCarousel = ({
           {/* Mobile content */}
           <div className="overflow-y-auto max-h-72">
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-canvas border-y border-white/10">
-                  <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">{currentSlide.headerLeft || 'Song'}</th>
-                  <th className="px-4 py-1 text-right text-s font-semibold text-black whitespace-nowrap">{currentSlide.headerRight || 'Count'}</th>
-                </tr>
-              </thead>
               <tbody className="divide-y divide-white/5">
                 {currentSlide.data.map((item, itemIndex) => (
                   <tr
                     key={itemIndex}
                     className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
                   >
-                    <td className="px-4 py-0.5 font-semibold">
-                      <span 
-                        className="text-black cursor-pointer hover:text-[#a9682e] hover:underline"
-                        onClick={() => handleSongClick(item.left)}
-                      >
-                        {item.left}
-                      </span>
+                    <td className="pl-4 text-black">
+                      <div className="flex items-center justify-between">
+                        <span 
+                          className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
+                          onClick={() => handleSongClick(item.left)}
+                        >
+                          {item.left}
+                        </span>
+                        {item.artwork && (
+                          <img
+                            src={item.artwork}
+                            alt={`${item.left} artwork`}
+                            className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                            onError={(e) => {
+                              // Hide the image if it fails to load
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
                     </td>
-                    <td className="px-4 py-0.5 text-right text-black font-semibold">
+                    <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
                       {typeof item.right === 'number' ? `${item.right}` : item.right}
                     </td>
                   </tr>

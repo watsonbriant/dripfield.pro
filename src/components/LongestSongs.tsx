@@ -112,7 +112,7 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
 
   return (
     <div className="bg-primary border border-black rounded-lg p-3">
-      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1.5">
         Longest Songs
       </h2>
       {loading ? (
@@ -126,13 +126,6 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
       ) : (
         <div className="overflow-y-auto max-h-64">
           <table className="w-full border-collapse min-w-max">
-            <thead>
-              <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Song</th>
-                <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Length</th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Date</th>
-              </tr>
-            </thead>
             <tbody className="divide-y divide-white/5">
               {longestSongs.map((song, index) => (
                 <tr

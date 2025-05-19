@@ -8,6 +8,7 @@ import TourSongSpread from './TourSongSpread';
 import TopSlotsCarousel from './TopSlotsCarousel';
 import LongestSongs from './LongestSongs';
 import TourSongsCombined from './TourSongsCombined';
+import NotPlayedInTour from './NotPlayedInTour';
 
 interface Show {
   show_iscanon: boolean;
@@ -40,6 +41,7 @@ interface Tour {
   tour: string;
   tour_canonid: number;
   tour_id: string;
+  tour_showfields?: boolean;
 }
 
 interface SongEntryWithId {
@@ -80,6 +82,7 @@ export function Tours() {
   const { user } = useAuth();
   const [currentTour, setCurrentTour] = React.useState<string>('2025 Summer');
   const [currentTourId, setCurrentTourId] = React.useState<string>('');
+  const [currentTourShowFields, setCurrentTourShowFields] = React.useState<boolean>(false);
   const [shows, setShows] = React.useState<Show[]>([]);
   const [tours, setTours] = React.useState<Tour[]>([]);
   const [attendedShowIds, setAttendedShowIds] = useState<string[]>([]);
@@ -326,7 +329,7 @@ export function Tours() {
       try {
         const { data, error } = await supabase
           .from('tours')
-          .select('tour, tour_canonid, tour_id')
+          .select('tour, tour_canonid, tour_id, tour_showfields')
           .order('tour_canonid', { ascending: true });
 
         if (error) {
@@ -339,6 +342,7 @@ export function Tours() {
           navigate(`/tours/${winter2025.tour_id}`, { replace: true });
           setCurrentTourId(winter2025.tour_id);
           setCurrentTour('2025 Summer');
+          setCurrentTourShowFields(winter2025.tour_showfields || false);
         }
 
         setTours(data || []);
@@ -390,6 +394,7 @@ export function Tours() {
       if (tourData) {
         setCurrentTour(tourData.tour);
         setCurrentTourId(tourData.tour_id);
+        setCurrentTourShowFields(tourData.tour_showfields || false);
       }
     }
   }, [tour, tours, previousTourId]);
@@ -664,21 +669,27 @@ export function Tours() {
             song,
             song_category,
             categories (
-              category_canonid
+              category_canonid,
+              category_artwork
             )
           `)
           .in('song', uniqueSongs);
 
         if (songsError) throw songsError;
 
-        // Create a map of songs to their category IDs
+        // Create maps of songs to their category IDs and artwork
         const songCategoryMap: Record<string, number> = {};
+        const songArtworkMap: Record<string, string> = {};
+
         songsData?.forEach(song => {
           songCategoryMap[song.song] = song.categories?.category_canonid || 999;
+          if (song.categories?.category_artwork) {
+            songArtworkMap[song.song] = song.categories.category_artwork;
+          }
         });
 
         // Process the entries data with the category information
-        const processedTopSlots = processTourDataWithCategories(entriesData || [], songCategoryMap);
+        const processedTopSlots = processTourDataWithCategories(entriesData || [], songCategoryMap, songArtworkMap);
         setTopSlots(processedTopSlots);
       } catch (error) {
         console.error('Error fetching placement data:', error);
@@ -688,7 +699,8 @@ export function Tours() {
     // Function to process tour data with category information
     const processTourDataWithCategories = (
       entries: Array<{ entry_placement: string; entry_song: string; entry_show?: string }>,
-      songCategoryMap: Record<string, number>
+      songCategoryMap: Record<string, number>,
+      songArtworkMap: Record<string, string>
     ) => {
       // Count songs by placement categories
       const showOpeners: Record<string, number> = {};
@@ -750,7 +762,8 @@ export function Tours() {
           .map(([song, count]) => ({
             song,
             count,
-            categoryCanonId: songCategoryMap[song] || 999
+            categoryCanonId: songCategoryMap[song] || 999,
+            artwork: songArtworkMap[song] || undefined  // Added artwork
           }))
           .sort((a, b) => {
             // First by count (descending)
@@ -767,7 +780,7 @@ export function Tours() {
             return a.song.localeCompare(b.song);
           })
           .slice(0, 8) // Get top 8
-          .map(({ song, count }) => ({ left: song, right: count }));
+          .map(({ song, count, artwork }) => ({ left: song, right: count, artwork }));
 
         // If no data, return empty data instead of placeholder
         if (sortedData.length === 0) {
@@ -1174,9 +1187,20 @@ export function Tours() {
 
       {shows.length > 0 && hasTourSetlistEntries && (
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Song Spread - full width on mobile, left column on desktop */}
-          <div>
+          {/* Left column - Song Spread and Not Played In Tour */}
+          <div className="flex flex-col gap-6">
+            {/* Song Spread */}
             <TourSongSpread shows={shows} />
+            
+            {/* Not Played In Tour - conditionally rendered based on tour_showfields */}
+            {currentTourShowFields && (
+              <NotPlayedInTour
+                tourId={currentTourId}
+                tourName={currentTour}
+                showIds={shows.map(show => show.show_id)}
+                songIdMap={songIdMap}
+              />
+            )}
           </div>
 
           {/* Right column on desktop contains TopSlotsCarousel and LongestSongs */}
