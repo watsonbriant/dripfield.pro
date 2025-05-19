@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import PerformanceChart from './PerformanceChart';
 import { SongSearch } from './SongSearch';
+import SongPlacementPill from './SongPlacementPill';
 
 interface SongData {
   song: string;
@@ -37,6 +38,13 @@ interface Performance {
 interface GroupCount {
   group: string;
   count: number;
+}
+
+interface PlacementStat {
+  placement: string;
+  count: number;
+  percentage: number;
+  order?: number; // Add placement order field
 }
 
 interface Stats {
@@ -104,8 +112,74 @@ export function Song() {
   const performancesPerPage = 50;
   const [previousSongId, setPreviousSongId] = useState<string | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [placementStats, setPlacementStats] = useState<PlacementStat[]>([]);
+
+  const fetchPlacementStats = async (songName: string) => {
+    try {
+      // First, get the placement order information
+      const { data: placementOrders, error: placementError } = await supabase
+        .from('placements')
+        .select('placements, placement_order');
+        
+      if (placementError) throw placementError;
+      
+      // Create a map of placement names to their orders
+      const placementOrderMap: Record<string, number> = {};
+      if (placementOrders) {
+        placementOrders.forEach(p => {
+          if (p.placement_order !== null) {
+            placementOrderMap[p.placements] = p.placement_order;
+          }
+        });
+      }
+
+      // Fetch all canon performances of this song
+      const { data: canonPerformances, error } = await supabase
+        .from('setlist_entries')
+        .select(`
+          entry_placement,
+          shows!inner (
+            show_canonid
+          )
+        `)
+        .eq('entry_song', songName)
+        .not('shows.show_canonid', 'is', null);
+      
+      if (error) throw error;
+      
+      if (!canonPerformances || canonPerformances.length === 0) {
+        setPlacementStats([]);
+        return;
+      }
+      
+      // Count occurrences of each placement
+      const placementCounts: Record<string, number> = {};
+      canonPerformances.forEach(perf => {
+        const placement = perf.entry_placement;
+        placementCounts[placement] = (placementCounts[placement] || 0) + 1;
+      });
+      
+      // Calculate percentages and create stats array
+      const totalPerformances = canonPerformances.length;
+      const stats = Object.entries(placementCounts)
+        .map(([placement, count]) => ({
+          placement,
+          count,
+          percentage: (count / totalPerformances) * 100,
+          order: placementOrderMap[placement] // Add the order from our map
+        }))
+        // Sort by count for the legend display (most common first)
+        .sort((a, b) => b.count - a.count);
+      
+      setPlacementStats(stats);
+    } catch (error) {
+      console.error('Error fetching placement stats:', error);
+      setPlacementStats([]);
+    }
+  };
 
   const calculateStats = async (performances: Performance[]): Promise<Stats> => {
+    // [existing code unchanged]
     const uniqueShowsMap = new Map<string, Set<string>>();
     const uniqueShowIds = new Set(performances.map(p => p.show_id));
     
@@ -262,6 +336,9 @@ export function Song() {
         // Calculate stats
         const newStats = await calculateStats(processedPerformances);
         setStats(newStats);
+        
+        // Fetch placement stats
+        await fetchPlacementStats(songData.song);
       } catch (error) {
         console.error('Error fetching song data:', error);
       } finally {
@@ -395,6 +472,15 @@ export function Song() {
             </div>
           )}
         </div>
+
+        {/* Song Placement Pill */}
+        {placementStats.length > 0 && (
+          <div className="overflow-x-auto">
+            <div className="bg-primary border border-black rounded-lg p-4">
+              <SongPlacementPill placementStats={placementStats} />
+            </div>
+          </div>
+        )}
 
         {/* Performance Timeline */}
         <div className="overflow-x-auto">
