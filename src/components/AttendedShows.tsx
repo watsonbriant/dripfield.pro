@@ -528,7 +528,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       {attendedShow.show?.show_length || ''}
                     </span>
                   </td>
-                  <td className="px-4 py-1 text-center whitespace-nowrap">
+                  <td className="px-4 text-center whitespace-nowrap">
                     {attendedShow.show?.show_rarity ? (
                       <span 
                         className="text-white font-medium px-2 py-0.5 rounded-md inline-block border border-black"
