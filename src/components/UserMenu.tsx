@@ -172,7 +172,7 @@ export const UserMenu: React.FC = () => {
         {/* Sparkle effect - only on desktop */}
         {sparkle.show && !isMobile && (
           <img 
-            src="/src/img/sparkle.png"
+            src={sparklePic}
             alt=""
             className="sparkle absolute pointer-events-none"
             style={{
