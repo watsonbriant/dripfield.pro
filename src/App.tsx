@@ -29,7 +29,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { UserMenu } from './components/UserMenu';
 import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
-import sparklePic from '/img/sparkle.png'
+import sparklePic from './img/sparkle.png'
 
 import logo from './img/Logo_Text.png';
 
