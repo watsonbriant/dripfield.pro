@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { User, ChevronDown } from 'lucide-react';
+import sparklePic from '../img/sparkle.png'
 
 export const UserMenu: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -139,7 +140,7 @@ export const UserMenu: React.FC = () => {
         Sign In
         {sparkle.show && !isMobile && (
           <img 
-            src="/src/img/sparkle.png"
+            src={sparklePic}
             alt=""
             className="sparkle absolute pointer-events-none"
             style={{
