@@ -224,7 +224,7 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                 )}
 
                 {/* Mobile stats display - shows below the pill on mobile */}
-                <div className="mobile-stats-container mt-4 bg-secondary text-black px-3 py-2 rounded shadow-md border border-black hidden">
+                <div className="mobile-stats-container mt-4 bg-canvas text-black px-3 py-2 rounded border border-black hidden">
                     <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
                         {statsForDisplay.map((stat, index) => (
                             <div key={index} className="flex items-center">
