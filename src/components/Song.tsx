@@ -384,129 +384,134 @@ export function Song() {
   }
 
   return (
-    <div className="max-w-[872px] mx-auto">
+    <div className={`${song.song_lyrics ? "max-w-[872px] xl:max-w-[1280px]" : "max-w-[872px]"} mx-auto`}>
       <div className="flex justify-between">
         <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-6">{song.song}</h2>
         <SongSearch />
       </div>
     
-      <div className="space-y-6 mb-8">
-        {/* Info Containers */}
-        <div className={`grid grid-cols-1 ${
-          // If no performances and no notes, full width
-          !performances.length && !song.song_coachnotes
-            ? 'md:grid-cols-1'
-            // If either no performances OR no notes, split in two
-            : (!performances.length || !song.song_coachnotes)
-            ? 'md:grid-cols-2'
-            // Otherwise, split in three
-            : 'md:grid-cols-3'
-        } gap-6`}>
-          {/* Song Info */}
-          <div className="h-full">
-            <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Category</h2>
-                  <div className="text-black text-sm font-semibold mb-1">{song.song_category}</div>
-                </div>
-                {song.song_originalartist && (
+      <div className={`${song.song_lyrics 
+        ? "grid grid-cols-1 gap-6 space-y-0 xl:grid-cols-[minmax(872px,1fr)_1fr]" 
+        : "space-y-6"} mb-8`}>
+        {/* Left column - main content */}
+        <div className="space-y-6">
+          {/* Info Containers */}
+          <div className={`grid grid-cols-1 ${
+            // If no performances and no notes, full width
+            !performances.length && !song.song_coachnotes
+              ? 'md:grid-cols-1'
+              // If either no performances OR no notes, split in two
+              : (!performances.length || !song.song_coachnotes)
+              ? 'md:grid-cols-2'
+              // Otherwise, split in three
+              : 'md:grid-cols-3'
+          } gap-6`}>
+            {/* Song Info */}
+            <div className="h-full">
+              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
+                <div className="space-y-4">
                   <div>
-                    <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Original Artist</h2>
-                    <div className="text-black text-sm font-semibold">{song.song_originalartist}</div>
+                    <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Category</h2>
+                    <div className="text-black text-sm font-semibold mb-1">{song.song_category}</div>
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-        
-          {/* Performance Stats */}
-          {performances.length > 0 && (
-            <div className="h-full">
-              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
-                {stats.hasRarity && (
-                  <>
-                    <div className="flex items-center mb-1">
-                      <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Song Rarity</h2>
-                      <span 
-                        className="text-white text-sm font-semibold px-2 py-0.5 mb-1 rounded-md inline-block ml-6"
-                        style={{ 
-                          backgroundColor: getRarityColor(stats.rarity) 
-                        }}
-                      >
-                        {stats.rarity}
-                      </span>
+                  {song.song_originalartist && (
+                    <div>
+                      <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Original Artist</h2>
+                      <div className="text-black text-sm font-semibold">{song.song_originalartist}</div>
                     </div>
-                    <div className="border-t border-black/20 mt-2 pt-2" />
-                  </>
-                )}
-                <div className={!stats.hasRarity ? "mt-0" : ""}>
-                  <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mt-1 mb-1">Performances by Group</h2>
-                  <div className="space-y-1">
-                    {stats.groupCounts.map(({ group, count }) => (
-                      <div 
-                        key={group} 
-                        className={`text-black text-sm flex justify-between font-semibold cursor-pointer ${
-                          selectedGroup === group ? 'bg-[#f9ae37]/40' : 'hover:bg-[#f9ae37]/20'
-                        }`}
-                        onClick={() => handleGroupClick(group)}
-                      >
-                        <span>{group}</span>
-                        <span>{count}</span>
-                      </div>
-                    ))}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
-          )}
-        
-          {/* Song Notes */}
-          {song.song_coachnotes && (
-            <div className="h-full">
-              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
-                <div className="text-black mb-1 font-semibold">Song Notes</div>
-                <div 
-                  className="text-black text-xs"
-                  dangerouslySetInnerHTML={{ __html: song.song_coachnotes }}
-                />
+          
+            {/* Performance Stats */}
+            {performances.length > 0 && (
+              <div className="h-full">
+                <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
+                  {stats.hasRarity && (
+                    <>
+                      <div className="flex items-center mb-1">
+                        <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Song Rarity</h2>
+                        <span 
+                          className="text-white text-sm font-semibold px-2 py-0.5 mb-1 rounded-md inline-block ml-6"
+                          style={{ 
+                            backgroundColor: getRarityColor(stats.rarity) 
+                          }}
+                        >
+                          {stats.rarity}
+                        </span>
+                      </div>
+                      <div className="border-t border-black/20 mt-2 pt-2" />
+                    </>
+                  )}
+                  <div className={!stats.hasRarity ? "mt-0" : ""}>
+                    <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mt-1 mb-1">Performances by Group</h2>
+                    <div className="space-y-1">
+                      {stats.groupCounts.map(({ group, count }) => (
+                        <div 
+                          key={group} 
+                          className={`text-black text-sm flex justify-between font-semibold cursor-pointer ${
+                            selectedGroup === group ? 'bg-[#f9ae37]/40' : 'hover:bg-[#f9ae37]/20'
+                          }`}
+                          onClick={() => handleGroupClick(group)}
+                        >
+                          <span>{group}</span>
+                          <span>{count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          
+            {/* Song Notes */}
+            {song.song_coachnotes && (
+              <div className="h-full">
+                <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
+                  <div className="text-black mb-1 font-semibold">Song Notes</div>
+                  <div 
+                    className="text-black text-xs"
+                    dangerouslySetInnerHTML={{ __html: song.song_coachnotes }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Song Placement Pill */}
+          {placementStats.length > 0 && (
+            <div className="overflow-x-auto">
+              <div className="bg-primary border border-black rounded-lg p-4">
+                <SongPlacementPill placementStats={placementStats} />
               </div>
             </div>
           )}
-        </div>
 
-        {/* Song Placement Pill */}
-        {placementStats.length > 0 && (
+          {/* Performance Timeline */}
           <div className="overflow-x-auto">
-            <div className="bg-primary border border-black rounded-lg p-4">
-              <SongPlacementPill placementStats={placementStats} />
-            </div>
+            {performances.length > 0 ? (
+              <PerformanceChart 
+                performances={performances} 
+                selectedGroup={selectedGroup}
+              />
+            ) : (
+              <div className="bg-primary border border-black rounded-lg p-4">
+                <p className="text-black text-center">
+                  <span className="font-semibold">{song.song}</span> hasn't been played live.
+                </p>
+              </div>
+            )}
           </div>
-        )}
-
-        {/* Performance Timeline */}
-        <div className="overflow-x-auto">
-          {performances.length > 0 ? (
-            <PerformanceChart 
-              performances={performances} 
-              selectedGroup={selectedGroup}
-            />
-          ) : (
-            <div className="bg-primary border border-black rounded-lg p-4">
-              <p className="text-black text-center">
-                <span className="font-semibold">{song.song}</span> hasn't been played live.
-              </p>
-            </div>
-          )}
         </div>
 
-        {/* Song Lyrics */}
+        {/* Right column - Lyrics (only shown if lyrics exist) */}
         {song.song_lyrics && (
-          <div className="overflow-x-auto">
+          <div className="h-fit xl:sticky xl:top-4">
             <div className="bg-primary rounded-lg p-3 border border-black w-full">
               <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">Lyrics</h2>
               <div 
-                className="text-black text-sm lyrics-container"
+                className="text-black text-sm lyrics-container max-h-[80vh] overflow-y-auto pr-2"
                 dangerouslySetInnerHTML={{ 
                   __html: song.song_lyrics.replace(
                     /\[(.*?)\]/g, 
