@@ -561,7 +561,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                     {attendedShow.show?.show_detail && attendedShow.show.show_detail}
                     {attendedShow.show?.show_detail && attendedShow.show?.show_alert && <>&nbsp;&nbsp;</>}
                     {attendedShow.show?.show_alert && 
-                      <span className="text-[#f9ae37]">
+                      <span className="text-[#CE1126]">
                         <strong>[{attendedShow.show.show_alert}]</strong>
                       </span>
                     }
