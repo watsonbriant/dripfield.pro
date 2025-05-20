@@ -508,12 +508,12 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                               }}
                             >
                               <div className="font-bold">
-                                <span className="mr-2">{entry.entry_song}</span>
+                                <span>{entry.entry_song}</span>
                                 {entry.entry_short && (
-                                  <span className="text-red-600 mr-2">[{entry.entry_short}]</span>
+                                  <span className="text-red-600 ml-2">[{entry.entry_short}]</span>
                                 )}
                                 {entry.entry_segue && (
-                                  <MoveRight className="text-red-600 inline  w-[1rem] h-[1rem]" />
+                                  <MoveRight className="text-red-600 inline ml-2 w-[1rem] h-[1rem]" />
                                 )}
                               </div>
                               {entry.times_played && (
