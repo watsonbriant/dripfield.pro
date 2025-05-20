@@ -10,6 +10,7 @@ interface SongData {
   song_category: string;
   song_originalartist: string | null;
   song_coachnotes: string | null;
+  song_lyrics: string | null;
   categories: {
     category_type: string;
   };
@@ -270,6 +271,7 @@ export function Song() {
             song_category,
             song_originalartist,
             song_coachnotes,
+            song_lyrics,
             categories (
               category_type
             )
@@ -497,6 +499,24 @@ export function Song() {
             </div>
           )}
         </div>
+
+        {/* Song Lyrics */}
+        {song.song_lyrics && (
+          <div className="overflow-x-auto">
+            <div className="bg-primary rounded-lg p-3 border border-black w-full">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">Lyrics</h2>
+              <div 
+                className="text-black text-sm lyrics-container"
+                dangerouslySetInnerHTML={{ 
+                  __html: song.song_lyrics.replace(
+                    /\[(.*?)\]/g, 
+                    '<span class="font-bold">[$1]</span>'
+                  ) 
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
