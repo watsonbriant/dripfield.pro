@@ -144,116 +144,122 @@ const GuestModal: React.FC<GuestModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#172330] border border-white/10 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center border-b border-white/10 p-4">
-          <h3 className="text-xl font-semibold text-white">
+    <>
+      <div 
+        className="fixed inset-0 bg-black/50 z-50"
+        onClick={onClose}
+      />
+      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-md md:w-full z-50 bg-primary rounded-lg border border-black shadow-xl flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-black/10">
+          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
             {isNewGuest ? 'Add New Guest' : 'Edit Guest'}
-          </h3>
+          </h2>
           <button 
             onClick={onClose}
-            className="text-white/60 hover:text-white/90"
+            className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-black" />
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          {error && (
-            <div className="p-3 bg-red-500/20 border border-red-500/40 rounded-md text-sm text-red-300">
-              {error}
+        <div className="flex-1 overflow-y-auto p-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-sm text-black">
+                {error}
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <label htmlFor="guest" className="block text-sm font-semibold text-black">
+                Guest Name <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="guest"
+                name="guest"
+                type="text"
+                value={formData.guest}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                required
+              />
             </div>
-          )}
-          
-          <div className="space-y-2">
-            <label htmlFor="guest" className="block text-sm font-semibold text-white">
-              Guest Name <span className="text-red-400">*</span>
-            </label>
-            <input
-              id="guest"
-              name="guest"
-              type="text"
-              value={formData.guest}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="guest_displayname" className="block text-sm font-semibold text-white">
-              Display Name
-            </label>
-            <input
-              id="guest_displayname"
-              name="guest_displayname"
-              type="text"
-              value={formData.guest_displayname || ''}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="guest_instrument" className="block text-sm font-semibold text-white">
-              Instrument
-            </label>
-            <input
-              id="guest_instrument"
-              name="guest_instrument"
-              type="text"
-              value={formData.guest_instrument || ''}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="guest_category" className="block text-sm font-semibold text-white">
-              Category <span className="text-red-400">*</span>
-            </label>
-            <select
-              id="guest_category"
-              name="guest_category"
-              value={formData.guest_category || ''}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-              required
-            >
-              <option value="">-- Select Category --</option>
-              {guestCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {isNewGuest && (
-            <div className="text-xs text-white/60 italic pt-2">
-              Note: Canon ID will be automatically assigned based on the selected category.
+            
+            <div className="space-y-2">
+              <label htmlFor="guest_displayname" className="block text-sm font-semibold text-black">
+                Display Name
+              </label>
+              <input
+                id="guest_displayname"
+                name="guest_displayname"
+                type="text"
+                value={formData.guest_displayname || ''}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+              />
             </div>
-          )}
-          
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-md bg-white/10 text-white hover:bg-white/20 transition-colors text-sm"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 rounded-md bg-tertiary text-white hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Saving...' : isNewGuest ? 'Add Guest' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
+            
+            <div className="space-y-2">
+              <label htmlFor="guest_instrument" className="block text-sm font-semibold text-black">
+                Instrument
+              </label>
+              <input
+                id="guest_instrument"
+                name="guest_instrument"
+                type="text"
+                value={formData.guest_instrument || ''}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="guest_category" className="block text-sm font-semibold text-black">
+                Category <span className="text-red-600">*</span>
+              </label>
+              <select
+                id="guest_category"
+                name="guest_category"
+                value={formData.guest_category || ''}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                required
+              >
+                <option value="">-- Select Category --</option>
+                {guestCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {isNewGuest && (
+              <div className="text-xs text-black italic pt-2">
+                Note: Canon ID will be automatically assigned based on the selected category.
+              </div>
+            )}
+            
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-lg border border-black bg-white text-black hover:bg-gray-200 transition-colors text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-4 py-2 rounded-lg border border-black bg-[#f9ae37] text-black hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Saving...' : isNewGuest ? 'Add Guest' : 'Save Changes'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

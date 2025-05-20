@@ -158,104 +158,110 @@ const SongModal: React.FC<SongModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#172330] border border-white/10 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl text-white font-semibold">
+    <>
+      <div 
+        className="fixed inset-0 bg-black/50 z-50"
+        onClick={onClose}
+      />
+      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-2xl md:w-full z-50 bg-primary rounded-lg border border-black shadow-xl flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-black/10">
+          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
             {isNewSong ? 'Add New Song' : 'Edit Song'}
-          </h3>
+          </h2>
           <div className="flex gap-2">
             <button
               onClick={handleSaveChanges}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-tertiary text-white hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-black bg-[#f9ae37] hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="w-4 h-4" />
-              Save
+              <Save className="w-4 h-4 text-black" />
+              <span className="text-black">Save</span>
             </button>
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-white/10 hover:bg-white/20 transition-colors"
+              className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="w-5 h-5 text-black" />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-white">Song Title</label>
-            <input
-              type="text"
-              name="song"
-              value={editedSong?.song || ''}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-              placeholder="Enter song title"
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-white">Category</label>
-            <select
-              name="song_category"
-              value={editedSong?.song_category || ''}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-            >
-              <option value="">-- Select Category --</option>
-              {categories.map((cat) => (
-                <option key={cat.category} value={cat.category}>
-                  {cat.category}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-white">Original Artist</label>
-            <select
-              name="song_originalartist"
-              value={editedSong?.song_originalartist || ''}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-            >
-              <option value="">-- Select Artist --</option>
-              {artists.map((artist) => (
-                <option key={artist.artist} value={artist.artist}>
-                  {artist.artist}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-white">Category Order</label>
-            <input
-              type="number"
-              name="song_categoryorder"
-              value={editedSong?.song_categoryorder === null ? '' : editedSong?.song_categoryorder}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-              placeholder="Enter order number"
-            />
-          </div>
-          
-          <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-white">Coach's Notes</label>
-            <textarea
-              name="song_coachnotes"
-              value={editedSong?.song_coachnotes || ''}
-              onChange={handleInputChange}
-              rows={4}
-              className="w-full px-3 py-2 rounded-md border border-tertiary bg-white/10 text-[#fce7ca] focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-              placeholder="Add notes here..."
-            />
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-black">Song Title</label>
+              <input
+                type="text"
+                name="song"
+                value={editedSong?.song || ''}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                placeholder="Enter song title"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-black">Category</label>
+              <select
+                name="song_category"
+                value={editedSong?.song_category || ''}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+              >
+                <option value="">-- Select Category --</option>
+                {categories.map((cat) => (
+                  <option key={cat.category} value={cat.category}>
+                    {cat.category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-black">Original Artist</label>
+              <select
+                name="song_originalartist"
+                value={editedSong?.song_originalartist || ''}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+              >
+                <option value="">-- Select Artist --</option>
+                {artists.map((artist) => (
+                  <option key={artist.artist} value={artist.artist}>
+                    {artist.artist}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-black">Category Order</label>
+              <input
+                type="number"
+                name="song_categoryorder"
+                value={editedSong?.song_categoryorder === null ? '' : editedSong?.song_categoryorder}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                placeholder="Enter order number"
+              />
+            </div>
+            
+            <div className="space-y-2 md:col-span-2">
+              <label className="block text-sm font-semibold text-black">Coach's Notes</label>
+              <textarea
+                name="song_coachnotes"
+                value={editedSong?.song_coachnotes || ''}
+                onChange={handleInputChange}
+                rows={4}
+                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                placeholder="Add notes here..."
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
