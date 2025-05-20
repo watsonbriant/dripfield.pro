@@ -1,22 +1,59 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { UserCheck, UserX, UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ShowAttendButtonProps {
   showId: string;
   className?: string;
+  onAttendanceChange?: (isAttending: boolean) => void;
 }
 
-const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ showId, className = '' }) => {
+// Simple modal component for non-logged-in users styled to match the app's aesthetic
+const LoginModal: React.FC<{ onClose: () => void, onLogin: () => void }> = ({ onClose, onLogin }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-primary border border-black rounded-lg p-4 max-w-sm mx-4 shadow-lg" onClick={e => e.stopPropagation()}>
+        <h3 className="text-xl font-mohr text-black mb-3">Login Required</h3>
+        <p className="mb-4 text-black text-sm">You must be logged in to add this show to your attended list.</p>
+        <div className="flex justify-end space-x-3">
+          <button 
+            onClick={onClose}
+            className="px-4 pt-1.5 pb-0.5 border border-black rounded-lg text-black hover:bg-red-500/50 transition-colors text-sm font-mohr bg-red-500"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={onLogin}
+            className="px-4 pt-1.5 pb-0.5 bg-[#f9ae37] border border-black rounded-lg text-black hover:bg-tertiary transition-colors text-sm font-mohr"
+          >
+            Log In
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ 
+  showId, 
+  className = '',
+  onAttendanceChange 
+}) => {
   const { user, addAttendedShow, removeAttendedShow, checkShowAttendance } = useAuth();
   const [isAttended, setIsAttended] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const navigate = useNavigate();
   
   // Use useCallback to memoize the function
   const checkAttendance = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
     
     try {
       setIsLoading(true);
@@ -35,6 +72,8 @@ const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ showId, 
   useEffect(() => {
     if (user && showId) {
       checkAttendance();
+    } else {
+      setIsLoading(false);
     }
   }, [user, showId, checkAttendance]);
 
@@ -43,7 +82,7 @@ const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ showId, 
     e.stopPropagation();
     
     if (!user) {
-      alert('Please log in to mark shows as attended');
+      setShowModal(true);
       return;
     }
     
@@ -53,9 +92,13 @@ const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ showId, 
       if (isAttended) {
         await removeAttendedShow(showId);
         setIsAttended(false);
+        // Notify parent component that user is no longer attending
+        if (onAttendanceChange) onAttendanceChange(false);
       } else {
         await addAttendedShow(showId);
         setIsAttended(true);
+        // Notify parent component that user is now attending
+        if (onAttendanceChange) onAttendanceChange(true);
       }
     } catch (error) {
       console.error('Error toggling attendance:', error);
@@ -63,6 +106,15 @@ const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ showId, 
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLogin = () => {
+    setShowModal(false);
+    navigate('/login');
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   const handleMouseEnter = useCallback(() => {
@@ -73,34 +125,44 @@ const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({ showId, 
     setIsHovering(false);
   }, []);
 
-  if (!user) {
-    return null; // Don't show button if user is not logged in
-  }
-
   return (
-    <button
-      onClick={handleToggleAttendance}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      disabled={isLoading}
-      title={error ? error : isAttended ? "Remove from attended shows" : "Mark as attended"}
-      className={`p-1 rounded-lg transition-all ${
-        error ? 'bg-red-800 text-white' :
-        isAttended
-          ? 'border border-black bg-green-600 hover:bg-red-600 text-white'
-          : 'text-black border-black border bg-[#f9ae37]  hover:bg-green-600 hover:text-white'
-      } ${className}`}
-    >
-      {isLoading ? (
-        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-      ) : error ? (
-        <UserX size={16} />
-      ) : isAttended ? (
-        isHovering ? <UserX size={16} /> : <UserCheck size={16} />
-      ) : (
-        <UserPlus size={16} />
+    <>
+      <button
+        onClick={handleToggleAttendance}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        disabled={isLoading}
+        title={
+          error ? error : 
+          !user ? "Log in to mark as attended" : 
+          isAttended ? "Remove from attended shows" : 
+          "Mark as attended"
+        }
+        className={`p-1 rounded-lg transition-all ${
+          error ? 'bg-red-800 text-white' :
+          !user ? 'text-black border-black border bg-[#f9ae37] hover:bg-[#f9ae37]/80' :
+          isAttended
+            ? 'border border-black bg-green-600 hover:bg-red-600 text-white'
+            : 'text-black border-black border bg-[#f9ae37] hover:bg-green-600 hover:text-white'
+        } ${className}`}
+      >
+        {isLoading ? (
+          <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+        ) : error ? (
+          <UserX size={16} />
+        ) : !user ? (
+          <UserPlus size={16} />
+        ) : isAttended ? (
+          isHovering ? <UserX size={16} /> : <UserCheck size={16} />
+        ) : (
+          <UserPlus size={16} />
+        )}
+      </button>
+
+      {showModal && (
+        <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
       )}
-    </button>
+    </>
   );
 });
 

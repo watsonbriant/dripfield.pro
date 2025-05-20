@@ -26,10 +26,18 @@ interface ShowInfoContentProps {
   };
   navigateToVenue?: () => void;
   showPosition: ShowPosition | null;
+  attendeeCount: number;
+  onAttendeeCountChange?: (newCount: number) => void; // New prop for updating attendee count
 }
 
 // Memoize this component to prevent re-renders from parent
-const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: ShowInfoContentProps) => {
+const ShowInfoContent = React.memo(({ 
+  show, 
+  navigateToVenue, 
+  showPosition, 
+  attendeeCount,
+  onAttendeeCountChange
+}: ShowInfoContentProps) => {
   const navigate = useNavigate();
   
   return (
@@ -42,13 +50,19 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
             'MM.dd.yy'
           )}
         </div>
-        <ShowAttendButton showId={show.show_id} />
       </div>
       <div className="mt-2 space-y-4">
         <div className="space-y-1">
           <p className="text-lg font-semibold text-black leading-5">{show.show_group}</p>
           {show.show_detail && (
             <p className="text-sm text-black">{show.show_detail}</p>
+          )}
+          {show.show_alert && (
+            <p className="text-sm">
+              <span className="font-bold text-[#E83356]">
+                [{show.show_alert}]
+              </span>
+            </p>
           )}
         </div>
         <hr className="border-black/10" />
@@ -124,13 +138,24 @@ const ShowInfoContent = React.memo(({ show, navigateToVenue, showPosition }: Sho
             </div>
           </>
         )}
-        {show.show_alert && (
-          <p className="text-sm text-center">
-            <span className="font-bold text-[#E83356]">
-              [{show.show_alert}]
-            </span>
+        {/* Attendance information with horizontal divider */}
+        <hr className="border-black/10" />
+        <div className="flex justify-center items-center space-x-4">
+          <ShowAttendButton 
+            showId={show.show_id} 
+            onAttendanceChange={(isAttending) => {
+              // If onAttendeeCountChange callback exists, call it with the updated count
+              if (onAttendeeCountChange) {
+                // If they're now attending, increment the count
+                // If they're no longer attending, decrement the count
+                onAttendeeCountChange(isAttending ? attendeeCount + 1 : attendeeCount - 1);
+              }
+            }}
+          />
+          <p className="text-sm text-black">
+            {attendeeCount} {attendeeCount === 1 ? 'attendee' : 'attendees'}
           </p>
-        )}
+        </div>
       </div>
     </div>
   );

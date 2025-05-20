@@ -5,6 +5,7 @@ import SongSpread from './SongSpread';
 import { ArrowLeft, ArrowRight, User, MoveRight } from 'lucide-react';
 import ReleaseContainer from './ReleaseContainer';
 import ShowInfoContent from './ShowInfoContent';
+import { supabase } from '../lib/supabase';
 
 interface Guest {
   guest_display_name: string;
@@ -147,6 +148,7 @@ const getRarityColor = (percentage: string | null): string => {
 export default function FullSetlistDisplay({ setlist, show, showCoachNotes, showDates = [], navigateToVenue, showId }: FullSetlistDisplayProps) {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [attendeeCount, setAttendeeCount] = useState(0);
   const [hoveredEntry, setHoveredEntry] = useState<string | null>(null);
   const [hoveredSong, setHoveredSong] = useState<string | null>(null);
   const [hoveredPersonnel, setHoveredPersonnel] = useState<string | null>(null);
@@ -158,6 +160,26 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
     nextShowId: string | null;
   } | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const fetchAttendeeCount = async () => {
+      if (!showId) return;
+      
+      const { count, error } = await supabase
+        .from('user_attended_shows')
+        .select('*', { count: 'exact', head: true })
+        .eq('show_id', show.show_id);
+      
+      if (error) {
+        console.error('Error fetching attendee count:', error);
+        return;
+      }
+      
+      setAttendeeCount(count || 0);
+    };
+    
+    fetchAttendeeCount();
+  }, [show.show_id, showId]);
 
   // Check if we're on a mobile device
   useEffect(() => {
@@ -333,7 +355,9 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
         <ShowInfoContent 
           show={show} 
           navigateToVenue={navigateToVenue} 
-          showPosition={showPosition} 
+          showPosition={showPosition}
+          attendeeCount={attendeeCount}
+          onAttendeeCountChange={setAttendeeCount}
         />
         {show.show_coachnotes && (
           <div className="bg-primary border border-black rounded-lg p-4">
@@ -743,7 +767,9 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
             <ShowInfoContent 
               show={show} 
               navigateToVenue={navigateToVenue} 
-              showPosition={showPosition} 
+              showPosition={showPosition}
+              attendeeCount={attendeeCount}
+              onAttendeeCountChange={setAttendeeCount}
             />
             {show.show_coachnotes && (
               <div className="bg-primary border border-black rounded-lg p-4">
