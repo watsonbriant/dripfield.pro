@@ -139,7 +139,7 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
   return (
     <div className="bg-primary border border-black rounded-lg p-3 mb-6">
       {shouldShowLength && (
-        <div className="mb-4">
+        <div>
           <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Show Length</h2>
           <p className="text-black text-sm">
             {totalLength || 'The length of this show is unknown.'}
@@ -148,7 +148,7 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
       )}
       
       {shouldShowRarity && (
-        <div>
+        <div className="mt-4">
           <div className="flex items-center">
             <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Show Rarity</h2>
             {rarityStats && (
