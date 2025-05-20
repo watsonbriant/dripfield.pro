@@ -322,7 +322,8 @@ export function Setlist() {
               guest_id,
               guests(
                 guest_displayname,
-                guest_canonid
+                guest_canonid,
+                guest_instrument
               )
             )
           `)
@@ -342,7 +343,8 @@ export function Setlist() {
           guests: entry.setlist_entry_guests?.map(guest => ({
             guest_id: guest.guest_id,
             guest_display_name: guest.guests.guest_displayname,
-            guest_canonid: guest.guests.guest_canonid
+            guest_canonid: guest.guests.guest_canonid,
+            guest_instrument: guest.guests.guest_instrument
           })) || []
         }));
         

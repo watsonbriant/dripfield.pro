@@ -10,6 +10,7 @@ interface Guest {
   guest_display_name: string;
   guest_id: string;
   guest_canonid: number;
+  guest_instrument: string; 
 }
 
 interface Show {
@@ -58,6 +59,7 @@ interface SetlistEntry {
     guest_display_name: string;
     guest_id: string;
     guest_canonid: number;
+    guest_instrument: string; 
   }[];
   song_category: string;
   category_canonid: number;
@@ -686,10 +688,37 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                               .map((g, gIndex) => (
                                 <React.Fragment key={g.guest_id}>
                                   <span 
-                                    className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold"
+                                    className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
                                     onClick={() => navigate(`/guest/${g.guest_id}`)}
+                                    onMouseEnter={(e) => {
+                                      if (!isMobile) {
+                                        setHoveredPersonnel(g.guest_id);
+                                        setMousePosition({ x: e.clientX, y: e.clientY });
+                                      }
+                                    }}
+                                    onMouseMove={(e) => {
+                                      if (!isMobile) {
+                                        setMousePosition({ x: e.clientX, y: e.clientY });
+                                      }
+                                    }}
+                                    onMouseLeave={() => {
+                                      if (!isMobile) {
+                                        setHoveredPersonnel(null);
+                                      }
+                                    }}
                                   >
                                     {g.guest_display_name}
+                                    {!isMobile && hoveredPersonnel === g.guest_id && (
+                                      <div 
+                                        className="fixed text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg z-[9999] whitespace-nowrap"
+                                        style={{
+                                          left: `${mousePosition.x + 10}px`,
+                                          top: `${mousePosition.y - 10}px`
+                                        }}
+                                      >
+                                        {g.guest_instrument}
+                                      </div>
+                                    )}
                                   </span>
                                   {gIndex < group.guests.length - 1 && <span>,&nbsp;</span>}
                                 </React.Fragment>
