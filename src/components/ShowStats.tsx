@@ -148,7 +148,7 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
       )}
       
       {shouldShowRarity && (
-        <div className="mt-4">
+        <div className={shouldShowLength ? "mt-4" : ""}>
           <div className="flex items-center">
             <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Show Rarity</h2>
             {rarityStats && (
