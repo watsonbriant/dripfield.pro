@@ -1321,7 +1321,7 @@ export function SongSelectionModal({
       const dataUrl = await domtoimage.toPng(shareableImageRef.current, {
         width: 450,
         height: shareableImageRef.current.offsetHeight,
-        bgcolor: '#172330', // Match the site's background color
+        bgcolor: '#f1d8b8', // Match the site's background color
         style: {
           margin: '0',
           padding: '0'
@@ -1611,12 +1611,12 @@ export function SongSelectionModal({
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="mt-3 ml-4">
-          <h1 className="text-xl font-bold text-white">Echo of a Show</h1>
-          <h2 className="text-xs font-semibold text-tertiary">A Setlist Game for Goose the Band</h2>
+          <h1 className="text-xl font-mohr text-black">Echo of a Show</h1>
+          <h2 className="text-xs font-semibold text-[#a9682e]">A Setlist Game for Goose the Band</h2>
         </div>
         {/* Logo */}
         <img 
-          src="/src/img/MoonCabin_Logo.jpg" 
+          src="/src/img/Logo_Text.png" 
           alt="Goose Logo" 
           className="w-48"
         />
@@ -1624,18 +1624,18 @@ export function SongSelectionModal({
       
       {/* Show Info */}
       <div className="mb-3 ml-4 pb-3 border-b border-white/10">
-        <h3 className="text-lg font-semibold text-white/90">
+        <h3 className="text-lg font-mohr text-black/90">
           {formatDate(show.show_date)} — {show.show_subvenue}
         </h3>
-        <p className="text-[#fce7ca]/70 text-sm">
+        <p className="text-[#a9682e]/70 text-sm">
           {show.show_venue_location}
         </p>
         {show.show_detail && (
-          <p className="text-tertiary text-xs mt-1">
+          <p className="text-[#a9682e] text-xs mt-1">
             {show.show_detail}
           </p>
         )}
-        <p className="text-[#fce7ca]/90 text-sm mt-2">
+        <p className="text-black/90 text-sm mt-2">
           Picks by: <span className="font-semibold">{username || 'My Picks'}</span>
         </p>
       </div>
@@ -1644,14 +1644,14 @@ export function SongSelectionModal({
       <div className="space-y-3 ml-4">
         {getUniqueSets().map(setId => (
           <div key={setId} className="mb-2">
-            <h4 className="text-base font-semibold text-white mb-1">
+            <h4 className="text-base font-mohr text-black mb-1">
               {getSetDisplayName(setId)}
             </h4>
             <div className="space-y-1">
               {getSongsForSet(setId).map((pick, index) => (
                 <div 
                   key={pick.id} 
-                  className="flex items-center rounded-md px-1 py-1 bg-[#0e151b]/70 text-[#fce7ca]/90"
+                  className="flex items-center rounded-md px-1 py-1 bg-[#0e151b]/20 text-[#fce7ca]/90"
                 >
                   <span 
                     className="text-white text-center text-xs rounded font-semibold w-6 h-5 flex items-center justify-center mr-2"
@@ -1659,7 +1659,7 @@ export function SongSelectionModal({
                   >
                     {index + 1}
                   </span>
-                  <span className="text-sm ml-2 font-medium">
+                  <span className="text-sm text-black ml-2 font-medium">
                     {pick.song}
                   </span>
                   
