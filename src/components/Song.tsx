@@ -511,7 +511,7 @@ export function Song() {
             <div className="bg-primary rounded-lg p-3 border border-black w-full">
               <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">Lyrics</h2>
               <div 
-                className="text-black text-sm lyrics-container max-h-[80vh] overflow-y-auto pr-2"
+                className="text-black text-sm lyrics-container pr-2"
                 dangerouslySetInnerHTML={{ 
                   __html: song.song_lyrics.replace(
                     /\[(.*?)\]/g, 
