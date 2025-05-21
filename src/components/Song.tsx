@@ -13,6 +13,7 @@ interface SongData {
   song_lyrics: string | null;
   categories: {
     category_type: string;
+    category_artwork?: string;
   };
 }
 
@@ -273,7 +274,8 @@ export function Song() {
             song_coachnotes,
             song_lyrics,
             categories (
-              category_type
+              category_type,
+              category_artwork
             )
           `)
           .eq('song_id', songId)
@@ -408,7 +410,14 @@ export function Song() {
           } gap-6`}>
             {/* Song Info */}
             <div className="h-full">
-              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
+              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full relative">
+                {song.categories?.category_artwork && (
+                  <img 
+                    src={song.categories.category_artwork} 
+                    alt={`${song.song_category} artwork`}
+                    className="absolute top-2 right-2 w-16 h-16 rounded-md object-cover border border-black"
+                  />
+                )}
                 <div className="space-y-4">
                   <div>
                     <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Category</h2>
