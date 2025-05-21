@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { SongSelectionModal } from './SongSelectionModal';
 import { SetlistGameRulesModal } from './SetlistGameRulesModal'; // Import the new component
 import { SetlistGameStandings } from './SetlistGameStandings';
+import { PastTours } from './PastTours';
 import { ChevronDown, X, HelpCircle, Trophy, ListMusic } from 'lucide-react'; // Add Trophy icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBluesky } from '@fortawesome/free-brands-svg-icons';
@@ -1009,6 +1010,7 @@ export function SetlistGame() {
             )}
           </div>
           <SetlistGameStandings activeLeague={activeLeague} user={user} />
+          <PastTours currentLeague={activeLeague} />
         </div>
       )}
 

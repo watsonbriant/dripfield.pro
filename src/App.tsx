@@ -17,6 +17,7 @@ import { Admin } from './components/Admin';
 import { Bugs } from './components/Bugs';
 import { Song } from './components/Song';
 import { SetlistGame } from './components/SetlistGame';
+import { TourDetailsPage } from './components/TourDetailsPage'; // Add this import
 import { Menu, X } from 'lucide-react';
 import { AuthProvider } from './context/AuthContext';
 import { Login } from './components/Login';
@@ -331,6 +332,7 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/setlistgame" element={<SetlistGame />} />
+              <Route path="/setlistgame/tour/:tourName" element={<TourDetailsPage />} />
               <Route path="/setlistgame/:showId" element={<SetlistGameShowPage />} />
             </Routes>
           </main>

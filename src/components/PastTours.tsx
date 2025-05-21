@@ -1,0 +1,289 @@
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { Trophy } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+interface TourStats {
+  tour: string;
+  playerCount: number;
+  showCount: number;
+  winners: Array<{
+    username: string;
+    score: number;
+  }>;
+  canonId?: number;
+}
+
+export function PastTours({ currentLeague }: { currentLeague: string }) {
+  const [loading, setLoading] = useState(true);
+  const [pastTours, setPastTours] = useState<TourStats[]>([]);
+  
+  useEffect(() => {
+    async function fetchPastTours() {
+      try {
+        setLoading(true);
+        
+        // Get a list of all tours from the tours table first
+        const { data: toursData, error: toursError } = await supabase
+          .from('tours')
+          .select('tour, tour_canonid')
+          .neq('tour', currentLeague);
+          
+        if (toursError) {
+          console.error('Error fetching tours:', toursError);
+          return;
+        }
+        
+        if (!toursData || toursData.length === 0) {
+          setLoading(false);
+          return;
+        }
+        
+        // Create a map to store tour stats
+        const tourMap = new Map<string, {
+          userIds: Set<string>,
+          showIds: Set<string>,
+          userScores: Map<string, number>
+        }>();
+        
+        // Initialize the map with all tours
+        toursData.forEach(tourData => {
+          tourMap.set(tourData.tour, {
+            userIds: new Set(),
+            showIds: new Set(),
+            userScores: new Map(),
+            canonId: tourData.tour_canonid
+          });
+        });
+        
+        // Get all shows for these tours
+        const { data: showsData, error: showsError } = await supabase
+          .from('shows')
+          .select('show_id, show_tour')
+          .in('show_tour', toursData.map(t => t.tour))
+          .eq('show_issetlistgame', true)
+          .eq('show_scored', true);
+          
+        if (showsError) {
+          console.error('Error fetching shows:', showsError);
+          return;
+        }
+        
+        if (!showsData || showsData.length === 0) {
+          setLoading(false);
+          return;
+        }
+        
+        // Get all submissions for these shows
+        const showIds = showsData.map(show => show.show_id);
+        const { data: submissionsData, error: submissionsError } = await supabase
+          .from('setlist_game_submissions')
+          .select('submission_id, user_id, show_id, score')
+          .in('show_id', showIds)
+          .not('score', 'is', null); // Changed from neq('score', null) to fix the type issue
+          
+        if (submissionsError) {
+          console.error('Error fetching submissions:', submissionsError);
+          return;
+        }
+        
+        if (!submissionsData || submissionsData.length === 0) {
+          setLoading(false);
+          return;
+        }
+        
+        // Create a map of show_id to tour
+        const showToTourMap = new Map();
+        showsData.forEach(show => {
+          showToTourMap.set(show.show_id, show.show_tour);
+        });
+        
+        // Process submissions into tour stats
+        submissionsData.forEach(submission => {
+          const tour = showToTourMap.get(submission.show_id);
+          if (!tour || tour === currentLeague) return;
+          
+          const tourData = tourMap.get(tour);
+          if (!tourData) return;
+          
+          tourData.userIds.add(submission.user_id);
+          tourData.showIds.add(submission.show_id);
+          
+          // Add to score total for this user
+          const currentScore = tourData.userScores.get(submission.user_id) || 0;
+          tourData.userScores.set(submission.user_id, currentScore + (submission.score || 0));
+        });
+        
+        // Get all usernames to display winners
+        const userIds = Array.from(new Set(
+          submissionsData.map(submission => submission.user_id)
+        ));
+        
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, username')
+          .in('id', userIds);
+          
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          return;
+        }
+        
+        const usernameMap = new Map();
+        if (profiles) {
+          profiles.forEach(profile => {
+            usernameMap.set(profile.id, profile.username);
+          });
+        }
+        
+        // Convert to array of TourStats
+        const tourStats: TourStats[] = [];
+        
+        tourMap.forEach((data, tour) => {
+          // Skip tours with no data
+          if (data.showIds.size === 0) return;
+          
+          // Find winners (users with max score)
+          let maxScore = 0;
+          let winners: Array<{username: string, score: number}> = [];
+          
+          data.userScores.forEach((score, userId) => {
+            const username = usernameMap.get(userId) || 'Unknown';
+            if (score > maxScore) {
+              maxScore = score;
+              winners = [{ username, score }];
+            } else if (score === maxScore) {
+              winners.push({ username, score });
+            }
+          });
+          
+          tourStats.push({
+            tour,
+            playerCount: data.userIds.size,
+            showCount: data.showIds.size,
+            winners,
+            canonId: data.canonId
+          });
+        });
+        
+        // Sort by tour_canonid
+        tourStats.sort((a, b) => {
+          if (a.canonId && b.canonId) {
+            return b.canonId - a.canonId; // Sort in descending order (most recent first)
+          }
+          
+          // Fallback to sorting by tour name if canonId is not available
+          return b.tour.localeCompare(a.tour);
+        });
+        
+        setPastTours(tourStats);
+      } catch (error) {
+        console.error('Error in fetchPastTours:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPastTours();
+  }, [currentLeague]);
+
+  if (loading) {
+    return (
+      <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+            <Trophy className="w-5 h-5 mr-2" />
+            <span>Past Tours</span>
+          </h2>
+        </div>
+        <div className="text-center py-6">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-black mt-4">Loading past tours...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (pastTours.length === 0) {
+    return (
+      <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+            <Trophy className="w-5 h-5 mr-2" />
+            <span>Past Tours</span>
+          </h2>
+        </div>
+        <div className="text-center py-6">
+          <p className="text-black">No past tours found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+      <div className="flex items-center gap-2 mb-4">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+          <Trophy className="w-5 h-5 mr-2" />
+          <span>Past Tours</span>
+        </h2>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse min-w-max">
+          <thead>
+            <tr className="bg-canvas border-y border-black/10">
+              <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap w-1/3">Tour</th>
+              <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-20">Players</th>
+              <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-20">Shows</th>
+              <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Winner(s)</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-black/5">
+            {pastTours.map((tour) => (
+              <tr 
+                key={tour.tour}
+                className="bg-canvas hover:bg-black/10 transition-colors text-xs"
+              >
+                <td className="px-4 py-0.5 text-black whitespace-nowrap font-semibold">
+                  <Link 
+                    to={`/setlistgame/tour/${tour.tour}`}
+                    className="hover:text-[#a9682e] transition-colors table-link"
+                  >
+                    {tour.tour}
+                  </Link>
+                </td>
+                <td className="px-4 py-0.5 text-center text-black/70 whitespace-nowrap">
+                  {tour.playerCount}
+                </td>
+                <td className="px-4 py-0.5 text-center text-black/70 whitespace-nowrap">
+                  {tour.showCount}
+                </td>
+                <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                  {tour.winners.length > 0 ? (
+                    <div className="flex items-center">
+                      <span className="text-[#a9682e] font-bold">
+                        {tour.winners.map((winner, idx) => (
+                          <span key={winner.username}>
+                            {winner.username} <span className="font-normal">({winner.score})</span>
+                            {idx < tour.winners.length - 1 ? ', ' : ''}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-black/50 italic">No scores</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
