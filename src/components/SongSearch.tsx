@@ -39,6 +39,7 @@ export function SongSearch({ className = '' }: SongSearchProps) {
         const { data, error } = await supabase
           .from('songs')
           .select('song, song_id')
+          .eq('song_placeholder', false)
           .order('song', { ascending: true });
     
         if (error) throw error;
