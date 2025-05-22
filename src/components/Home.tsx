@@ -110,6 +110,7 @@ export function Home() {
   const [loadingEncores, setLoadingEncores] = useState(true);
   const [notPlayedSongs, setNotPlayedSongs] = useState<NotPlayedSong[]>([]);
   const [loadingNotPlayed, setLoadingNotPlayed] = useState(true);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
   useEffect(() => {
     const testConnection = async () => {
@@ -492,36 +493,51 @@ export function Home() {
 
     async function fetchTopSongs() {
       try {
-        const currentYear = new Date().getFullYear();
-        const { data, error } = await supabase
-          .from('setlist_entries')
-          .select(`
-            entry_song,
-            songs!inner(
-              song_id,
-              song_category,
-              categories!inner(
-                category_canonid,
-                category_artwork
+        const allData = [];
+        let from = 0;
+        const batchSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('setlist_entries')
+            .select(`
+              entry_song,
+              songs!inner(
+                song_id,
+                song_category,
+                categories!inner(
+                  category_canonid,
+                  category_artwork
+                )
+              ),
+              entry_show,
+              shows!inner(
+                show_date,
+                show_group,
+                show_canonid
               )
-            ),
-            entry_show,
-            shows!inner(
-              show_date,
-              show_group
-            )
-          `)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null)
-          .gte('shows.show_date', `${currentYear}-01-01`)
-          .lte('shows.show_date', `${currentYear}-12-31`);
+            `)
+            .eq('shows.show_group', 'Goose')
+            .not('shows.show_canonid', 'is', null)
+            .gte('shows.show_date', `${selectedYear}-01-01`)
+            .lte('shows.show_date', `${selectedYear}-12-31`)
+            .range(from, from + batchSize - 1);
 
-        if (error) throw error;
+          if (error) throw error;
 
-        const songShowCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
+          allData.push(...(data || []));
+          
+          if (!data || data.length < batchSize) {
+            hasMore = false;
+          } else {
+            from += batchSize;
+          }
+        }
+
+        const songShowCounts = allData.reduce((acc: { [key: string]: any }, entry: any) => {
           const songId = entry.songs.song_id;
           const showId = entry.entry_show;
-          const uniqueKey = `${songId}-${showId}`;
 
           if (!acc[songId]) {
             acc[songId] = {
@@ -566,33 +582,49 @@ export function Home() {
 
     async function fetchShowOpeners() {
       try {
-        const currentYear = new Date().getFullYear();
-        const { data, error } = await supabase
-          .from('setlist_entries')
-          .select(`
-            entry_song,
-            songs!inner(
-              song_id,
-              song_category,
-              categories!inner(
-                category_canonid,
-category_artwork
+        const allData = [];
+        let from = 0;
+        const batchSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('setlist_entries')
+            .select(`
+              entry_song,
+              songs!inner(
+                song_id,
+                song_category,
+                categories!inner(
+                  category_canonid,
+                  category_artwork
+                )
+              ),
+              shows!inner(
+                show_date,
+                show_group,
+                show_canonid
               )
-            ),
-            shows!inner(
-              show_date,
-              show_group
-            )
-          `)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null)
-          .eq('entry_placement', 'Set 1 Opener')
-          .gte('shows.show_date', `${currentYear}-01-01`)
-          .lte('shows.show_date', `${currentYear}-12-31`);
+            `)
+            .eq('shows.show_group', 'Goose')
+            .not('shows.show_canonid', 'is', null)
+            .eq('entry_placement', 'Set 1 Opener')
+            .gte('shows.show_date', `${selectedYear}-01-01`)
+            .lte('shows.show_date', `${selectedYear}-12-31`)
+            .range(from, from + batchSize - 1);
 
-        if (error) throw error;
+          if (error) throw error;
 
-        const openerCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
+          allData.push(...(data || []));
+          
+          if (!data || data.length < batchSize) {
+            hasMore = false;
+          } else {
+            from += batchSize;
+          }
+        }
+
+        const openerCounts = allData.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
             acc[songName] = {
@@ -630,33 +662,49 @@ category_artwork
 
     async function fetchSetOpeners() {
       try {
-        const currentYear = new Date().getFullYear();
-        const { data, error } = await supabase
-          .from('setlist_entries')
-          .select(`
-            entry_song,
-            songs!inner(
-              song_id,
-              song_category,
-              categories!inner(
-                category_canonid,
-category_artwork
+        const allData = [];
+        let from = 0;
+        const batchSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('setlist_entries')
+            .select(`
+              entry_song,
+              songs!inner(
+                song_id,
+                song_category,
+                categories!inner(
+                  category_canonid,
+                  category_artwork
+                )
+              ),
+              shows!inner(
+                show_date,
+                show_group,
+                show_canonid
               )
-            ),
-            shows!inner(
-              show_date,
-              show_group
-            )
-          `)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null)
-          .in('entry_placement', ['Set 1 Opener', 'Set 2 Opener', 'Set 3 Opener', 'Set 4 Opener', 'Set 5 Opener'])
-          .gte('shows.show_date', `${currentYear}-01-01`)
-          .lte('shows.show_date', `${currentYear}-12-31`);
+            `)
+            .eq('shows.show_group', 'Goose')
+            .not('shows.show_canonid', 'is', null)
+            .in('entry_placement', ['Set 1 Opener', 'Set 2 Opener', 'Set 3 Opener', 'Set 4 Opener', 'Set 5 Opener'])
+            .gte('shows.show_date', `${selectedYear}-01-01`)
+            .lte('shows.show_date', `${selectedYear}-12-31`)
+            .range(from, from + batchSize - 1);
 
-        if (error) throw error;
+          if (error) throw error;
 
-        const openerCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
+          allData.push(...(data || []));
+          
+          if (!data || data.length < batchSize) {
+            hasMore = false;
+          } else {
+            from += batchSize;
+          }
+        }
+
+        const openerCounts = allData.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
             acc[songName] = {
@@ -694,33 +742,49 @@ category_artwork
 
     async function fetchSetClosers() {
       try {
-        const currentYear = new Date().getFullYear();
-        const { data, error } = await supabase
-          .from('setlist_entries')
-          .select(`
-            entry_song,
-            songs!inner(
-              song_id,
-              song_category,
-              categories!inner(
-                category_canonid,
-category_artwork
+        const allData = [];
+        let from = 0;
+        const batchSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('setlist_entries')
+            .select(`
+              entry_song,
+              songs!inner(
+                song_id,
+                song_category,
+                categories!inner(
+                  category_canonid,
+                  category_artwork
+                )
+              ),
+              shows!inner(
+                show_date,
+                show_group,
+                show_canonid
               )
-            ),
-            shows!inner(
-              show_date,
-              show_group
-            )
-          `)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null)
-          .in('entry_placement', ['Set 1 Closer', 'Set 2 Closer', 'Set 3 Closer', 'Set 4 Closer', 'Set 5 Closer'])
-          .gte('shows.show_date', `${currentYear}-01-01`)
-          .lte('shows.show_date', `${currentYear}-12-31`);
+            `)
+            .eq('shows.show_group', 'Goose')
+            .not('shows.show_canonid', 'is', null)
+            .in('entry_placement', ['Set 1 Closer', 'Set 2 Closer', 'Set 3 Closer', 'Set 4 Closer', 'Set 5 Closer'])
+            .gte('shows.show_date', `${selectedYear}-01-01`)
+            .lte('shows.show_date', `${selectedYear}-12-31`)
+            .range(from, from + batchSize - 1);
 
-        if (error) throw error;
+          if (error) throw error;
 
-        const closerCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
+          allData.push(...(data || []));
+          
+          if (!data || data.length < batchSize) {
+            hasMore = false;
+          } else {
+            from += batchSize;
+          }
+        }
+
+        const closerCounts = allData.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
             acc[songName] = {
@@ -758,33 +822,49 @@ category_artwork
 
     async function fetchEncores() {
       try {
-        const currentYear = new Date().getFullYear();
-        const { data, error } = await supabase
-          .from('setlist_entries')
-          .select(`
-            entry_song,
-            songs!inner(
-              song_id,
-              song_category,
-              categories!inner(
-                category_canonid,
-category_artwork
+        const allData = [];
+        let from = 0;
+        const batchSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('setlist_entries')
+            .select(`
+              entry_song,
+              songs!inner(
+                song_id,
+                song_category,
+                categories!inner(
+                  category_canonid,
+                  category_artwork
+                )
+              ),
+              shows!inner(
+                show_date,
+                show_group,
+                show_canonid
               )
-            ),
-            shows!inner(
-              show_date,
-              show_group
-            )
-          `)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null)
-          .in('entry_placement', ['Encore 1', 'Encore 2', 'Encore 3'])
-          .gte('shows.show_date', `${currentYear}-01-01`)
-          .lte('shows.show_date', `${currentYear}-12-31`);
+            `)
+            .eq('shows.show_group', 'Goose')
+            .not('shows.show_canonid', 'is', null)
+            .in('entry_placement', ['Encore 1', 'Encore 2', 'Encore 3'])
+            .gte('shows.show_date', `${selectedYear}-01-01`)
+            .lte('shows.show_date', `${selectedYear}-12-31`)
+            .range(from, from + batchSize - 1);
 
-        if (error) throw error;
+          if (error) throw error;
 
-        const encoreCounts = data.reduce((acc: { [key: string]: any }, entry: any) => {
+          allData.push(...(data || []));
+          
+          if (!data || data.length < batchSize) {
+            hasMore = false;
+          } else {
+            from += batchSize;
+          }
+        }
+
+        const encoreCounts = allData.reduce((acc: { [key: string]: any }, entry: any) => {
           const songName = entry.entry_song;
           if (!acc[songName]) {
             acc[songName] = {
@@ -820,104 +900,16 @@ category_artwork
       }
     }
 
-    // Add this new fetch function after the other fetch functions
     async function fetchNotPlayedSongs() {
       try {
-        const currentYear = new Date().getFullYear();
-
-        // First, get all songs played in 2025
-        const { data: playedIn2025Data, error: playedError } = await supabase
-          .from('setlist_entries')
-          .select(`
-            songs!inner(song_id),
-            shows!inner(
-              show_date,
-              show_group,
-              show_canonid
-            )
-          `)
-          .gte('shows.show_date', `${currentYear}-01-01`)
-          .lte('shows.show_date', `${currentYear}-12-31`)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null);
-
-        if (playedError) throw playedError;
-
-        // Create a Set of song IDs played in 2025
-        const songsPlayedIn2025 = new Set(
-          playedIn2025Data.map((entry: any) => entry.songs.song_id)
-        );
-
-        // Now get all songs from canonical Goose shows all-time
-        const { data: allTimeData, error: allTimeError } = await supabase
-          .from('setlist_entries')
-          .select(`
-            entry_song,
-            songs!inner(
-              song_id,
-              song_category,
-              categories!inner(
-                category_canonid,
-category_artwork
-              )
-            ),
-            entry_show,
-            shows!inner(
-              show_date,
-              show_group,
-              show_canonid
-            )
-          `)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null);
-
-        if (allTimeError) throw allTimeError;
-
-        // Count overall song frequency by unique shows
-        const songShowCounts = allTimeData.reduce((acc: { [key: string]: any }, entry: any) => {
-          const songId = entry.songs.song_id;
-          const showId = entry.entry_show;
-          const uniqueKey = `${songId}-${showId}`;
-
-          if (!acc[songId]) {
-            acc[songId] = {
-              song: entry.entry_song,
-              song_id: songId,
-              shows: new Set([showId]),
-              category_canonid: entry.songs.categories.category_canonid,
-              category_artwork: entry.songs.categories.category_artwork
-            };
-          } else {
-            acc[songId].shows.add(showId);
-          }
-          return acc;
-        }, {});
-
-        // Filter to only songs NOT played in 2025
-        const notPlayedSongs = Object.values(songShowCounts)
-          .filter((item: any) => !songsPlayedIn2025.has(item.song_id))
-          .map((item: any) => ({
-            song: item.song,
-            song_id: item.song_id,
-            play_count: item.shows.size,
-            category_canonid: item.category_canonid,
-            category_artwork: item.category_artwork
-          }))
-          .sort((a: any, b: any) => {
-            // Sort by play count (descending)
-            if (b.play_count !== a.play_count) {
-              return b.play_count - a.play_count;
-            }
-            // Then by category (ascending)
-            if (a.category_canonid !== b.category_canonid) {
-              return a.category_canonid - b.category_canonid;
-            }
-            // Then alphabetically
-            return a.song.localeCompare(b.song);
-          })
-          .slice(0, 8); // Get top 8
-
-        setNotPlayedSongs(notPlayedSongs);
+        const { data, error } = await supabase
+          .rpc('get_most_common_not_played_songs', { 
+            selected_year: selectedYear 
+          });
+    
+        if (error) throw error;
+    
+        setNotPlayedSongs(data || []);
       } catch (error) {
         console.error('Error fetching not played songs:', error);
       } finally {
@@ -935,7 +927,7 @@ category_artwork
     fetchSetClosers();
     fetchEncores();
     fetchNotPlayedSongs();
-  }, []);
+  }, [selectedYear]);
 
   // Helper function to navigate to venue page
   const navigateToVenue = (show: Show) => {
@@ -1357,13 +1349,32 @@ category_artwork
 
           {/* 2025 Stats Section */}
           <div className="bg-primary border border-black rounded-lg p-3">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">2025 Stats</h2>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">{selectedYear} Stats</h2>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
+              >
+                {Array.from({ length: 12 }, (_, i) => 2025 - i).map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+
 
             {/* Desktop view - 2 columns, hidden on mobile */}
             <div className="hidden md:grid md:grid-cols-2 gap-4">
               {/* Left column for desktop */}
               <div>
                 {/* Top Songs */}
+                {topSongs.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                   {loadingTopSongs ? (
@@ -1411,8 +1422,10 @@ category_artwork
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Top Show Openers */}
+                {showOpeners.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                   {loadingShowOpeners ? (
@@ -1460,8 +1473,10 @@ category_artwork
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Top Set Closers */}
+                {setClosers.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                   {loadingSetClosers ? (
@@ -1509,11 +1524,14 @@ category_artwork
                     </div>
                   )}
                 </div>
+                )}
               </div>
+              
 
               {/* Right column for desktop */}
               <div>
                 {/* Most Common Not Played */}
+                {notPlayedSongs.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                   {loadingNotPlayed ? (
@@ -1561,8 +1579,10 @@ category_artwork
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Top Set Openers */}
+                {setOpeners.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                   {loadingSetOpeners ? (
@@ -1610,8 +1630,10 @@ category_artwork
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Top Encores */}
+                {encores.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                   {loadingEncores ? (
@@ -1659,12 +1681,14 @@ category_artwork
                     </div>
                   )}
                 </div>
+                )}
               </div>
             </div>
 
             {/* Mobile view - single column in custom order, hidden on desktop */}
             <div className="md:hidden space-y-6">
               {/* 1. Top Songs */}
+              {topSongs.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                 {loadingTopSongs ? (
@@ -1712,8 +1736,10 @@ category_artwork
                   </div>
                 )}
               </div>
+              )}
 
               {/* 2. Most Common Not Played */}
+              {notPlayedSongs.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                 {loadingNotPlayed ? (
@@ -1761,8 +1787,10 @@ category_artwork
                   </div>
                 )}
               </div>
+              )}
 
               {/* 3. Top Show Openers */}
+              {showOpeners.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                 {loadingShowOpeners ? (
@@ -1810,8 +1838,10 @@ category_artwork
                   </div>
                 )}
               </div>
+              )}
 
               {/* 4. Top Set Openers */}
+              {setOpeners.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                 {loadingSetOpeners ? (
@@ -1859,8 +1889,10 @@ category_artwork
                   </div>
                 )}
               </div>
+              )}
 
               {/* 5. Top Set Closers */}
+              {setClosers.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                 {loadingSetClosers ? (
@@ -1908,8 +1940,10 @@ category_artwork
                   </div>
                 )}
               </div>
+              )}
 
               {/* 6. Top Encores */}
+              {encores.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                 {loadingEncores ? (
@@ -1957,6 +1991,7 @@ category_artwork
                   </div>
                 )}
               </div>
+              )}
             </div>
           </div>
         </div>
