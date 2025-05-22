@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Trophy } from 'lucide-react';
+import { ListStart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface TourStats {
@@ -192,7 +192,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
       <div className="bg-primary border border-black rounded-lg p-3 mt-6">
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
-            <Trophy className="w-5 h-5 mr-2" />
+            <ListStart className="w-5 h-5 mr-2" />
             <span>Past Tours</span>
           </h2>
         </div>
@@ -213,7 +213,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
       <div className="bg-primary border border-black rounded-lg p-3 mt-6">
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
-            <Trophy className="w-5 h-5 mr-2" />
+            <ListStart className="w-5 h-5 mr-2" />
             <span>Past Tours</span>
           </h2>
         </div>
@@ -228,7 +228,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
     <div className="bg-primary border border-black rounded-lg p-3 mt-6">
       <div className="flex items-center gap-2 mb-4">
         <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
-          <Trophy className="w-5 h-5 mr-2" />
+          <ListStart className="w-5 h-5 mr-2" />
           <span>Past Tours</span>
         </h2>
       </div>
