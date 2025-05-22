@@ -387,11 +387,11 @@ export function SetlistGame() {
 
       // Step 2: Get actual setlist data (for more detailed processing)
       const { data: actualSetlistData, error: actualSetlistError } = await supabase
-        .from('setlist_entries')
-        .select('entry_id, entry_song, entry_set, entry_setnum, entry_placement')
-        .eq('entry_show', selectedShowToScore)
-        .order('entry_set', { ascending: true })
-        .order('entry_setnum', { ascending: true });
+      .from('setlist_entries')
+      .select('entry_id, entry_song, entry_set, entry_setnum, entry_placement, entry_new')
+      .eq('entry_show', selectedShowToScore)
+      .order('entry_set', { ascending: true })
+      .order('entry_setnum', { ascending: true });
 
       if (actualSetlistError) {
         console.error('Error fetching actual setlist data:', actualSetlistError);
@@ -450,7 +450,14 @@ export function SetlistGame() {
 
         // Create a dictionary of songs in setlist for quick lookup
         const setlistSongs = {};
+        // Create a separate dictionary for new songs
+        const setlistNewSongs = {
+          "New Original Song": [],
+          "New Cover Song": []
+        };
+
         actualSetlistData.forEach(entry => {
+          // Add to regular songs dictionary
           if (!setlistSongs[entry.entry_song]) {
             setlistSongs[entry.entry_song] = [];
           }
@@ -459,6 +466,18 @@ export function SetlistGame() {
             setnum: entry.entry_setnum,
             placement: entry.entry_placement
           });
+          
+          // Also add to new songs dictionary if it's a new song
+          if (entry.entry_new === "New Original Song" || entry.entry_new === "New Cover Song") {
+            if (!setlistNewSongs[entry.entry_new]) {
+              setlistNewSongs[entry.entry_new] = [];
+            }
+            setlistNewSongs[entry.entry_new].push({
+              set: entry.entry_set,
+              setnum: entry.entry_setnum,
+              placement: entry.entry_placement
+            });
+          }
         });
 
         // Score each pick
@@ -467,16 +486,29 @@ export function SetlistGame() {
           let resultString = 'not_played';
           console.log(`\nScoring pick: ${pick.song} in Set ${pick.set}, Position ${pick.setnum}, Placement ${pick.placement || 'None'}`);
 
-          // Check if song was played (using our dictionary for faster lookup)
-          const songInstances = setlistSongs[pick.song] || [];
+          // Check if this is a New Original Song or New Cover Song pick
+          const isNewSongPick = pick.song === "New Original Song" || pick.song === "New Cover Song";
+          
+          // Get song instances based on pick type
+          let songInstances = [];
+          if (isNewSongPick) {
+            // For new song types, look in the new songs dictionary
+            songInstances = setlistNewSongs[pick.song] || [];
+            console.log(`Checking for ${pick.song} in entry_new, found ${songInstances.length} instances`);
+          } else {
+            // For regular songs, look in the regular songs dictionary
+            songInstances = setlistSongs[pick.song] || [];
+            console.log(`Checking for ${pick.song} in entry_song, found ${songInstances.length} instances`);
+          }
 
           if (songInstances.length > 0) {
-            console.log(`Song was played ${songInstances.length} times in the setlist`);
+            console.log(`${isNewSongPick ? "New song type" : "Song"} was ${isNewSongPick ? "found" : "played"} ${songInstances.length} times in the setlist`);
 
             // Start with basic song match (2 points)
             pickScore = 2;
             resultString = 'correct_song';
 
+            // The rest of the scoring logic remains the same...
             // Check for correct set match
             const correctSetMatch = songInstances.some(instance => pick.set === instance.set);
 
@@ -535,7 +567,7 @@ export function SetlistGame() {
               }
             }
           } else {
-            console.log(`Song was not played in the setlist`);
+            console.log(`${isNewSongPick ? "New song type" : "Song"} was not ${isNewSongPick ? "found" : "played"} in the setlist`);
           }
 
           // Add to total score
@@ -567,7 +599,9 @@ export function SetlistGame() {
           console.log(`User's first pick: ${firstPickData[0].song}, first song of show: ${actualFirstSong.entry_song}`);
 
           // Check if first pick matches actual first song
-          const isShowOpenerCorrect = firstPickData[0].song === actualFirstSong.entry_song;
+          const isShowOpenerCorrect = firstPickData[0].song === actualFirstSong.entry_song || 
+          (firstPickData[0].song === "New Original Song" && actualFirstSong.entry_new === "New Original Song") ||
+          (firstPickData[0].song === "New Cover Song" && actualFirstSong.entry_new === "New Cover Song");
 
           if (isShowOpenerCorrect) {
             console.log(`User correctly picked the show opener`);
@@ -607,7 +641,9 @@ export function SetlistGame() {
           console.log(`User's last pick: ${lastPickData[0].song}, last song of show: ${actualLastSong.entry_song}`);
 
           // Check if last pick matches actual last song
-          const isShowCloserCorrect = lastPickData[0].song === actualLastSong.entry_song;
+          const isShowCloserCorrect = lastPickData[0].song === actualLastSong.entry_song ||
+          (lastPickData[0].song === "New Original Song" && actualLastSong.entry_new === "New Original Song") ||
+          (lastPickData[0].song === "New Cover Song" && actualLastSong.entry_new === "New Cover Song");
 
           if (isShowCloserCorrect) {
             console.log(`User correctly picked the show closer`);

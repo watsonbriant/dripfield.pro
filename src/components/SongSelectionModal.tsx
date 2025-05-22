@@ -714,33 +714,68 @@ export function SongSelectionModal({
     }
   }, [isOpen]);
 
-  // Handle adding a song to the picks
-  const handleAddSong = () => {
-    if (!selectedSong) {
-      setError('Please select a song first');
-      return;
-    }
-    
-    // Check if the song is already selected in ANY set (not just current set)
-    if (songPicks.some(pick => pick.song === selectedSong && !pick.isBreak)) {
-      setError('This song is already selected for this show.');
-      return;
-    }
-    
-    setError(null);
-    
-    // Add new song with sequential numbering
-    const newPick: SongPick = {
-      id: generatePickId(),
-      song: selectedSong,
-      set: currentSet,
-      setnum: nextSetNum
+    // Handle adding a song to the picks
+    const handleAddSong = () => {
+      if (!selectedSong) {
+        setError('Please select a song first');
+        return;
+      }
+      
+      // Only check for duplicates if it's a regular song (not a New Original/Cover Song)
+      if (selectedSong !== "New Original Song" && selectedSong !== "New Cover Song") {
+        // Check if the song is already selected in ANY set (not just current set)
+        if (songPicks.some(pick => pick.song === selectedSong && !pick.isBreak)) {
+          setError('This song is already selected for this show.');
+          return;
+        }
+      }
+      
+      setError(null);
+      
+      // Add new song with sequential numbering
+      const newPick: SongPick = {
+        id: generatePickId(),
+        song: selectedSong,
+        set: currentSet,
+        setnum: nextSetNum
+      };
+      
+      setSongPicks([...songPicks, newPick]);
+      setNextSetNum(nextSetNum + 1);
+      setSelectedSong('');
     };
     
-    setSongPicks([...songPicks, newPick]);
-    setNextSetNum(nextSetNum + 1);
-    setSelectedSong('');
-  };
+    // Handle adding a new original song - remove the duplicate check
+    const handleAddNewOriginalSong = () => {
+      setError(null);
+      
+      // Add new original song with sequential numbering
+      const newPick: SongPick = {
+        id: generatePickId(),
+        song: "New Original Song",
+        set: currentSet,
+        setnum: nextSetNum
+      };
+      
+      setSongPicks([...songPicks, newPick]);
+      setNextSetNum(nextSetNum + 1);
+    };
+    
+    // Handle adding a new cover song - remove the duplicate check
+    const handleAddNewCoverSong = () => {
+      setError(null);
+      
+      // Add new cover song with sequential numbering
+      const newPick: SongPick = {
+        id: generatePickId(),
+        song: "New Cover Song",
+        set: currentSet,
+        setnum: nextSetNum
+      };
+      
+      setSongPicks([...songPicks, newPick]);
+      setNextSetNum(nextSetNum + 1);
+    };
 
   // Handle adding a set break
   const handleAddSetBreak = () => {
@@ -1812,23 +1847,45 @@ export function SongSelectionModal({
                     </button>
                   </div>
                   
-                  {/* Break controls */}
-                  <div className="flex gap-3">
-                    <button
-                      onClick={handleAddSetBreak}
-                      disabled={!canAddSetBreak()}
-                      className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
-                    >
-                      Add Set Break
-                    </button>
+                  {/* Break controls and special song buttons */}
+                  <div className="flex flex-wrap gap-3 justify-between">
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleAddSetBreak}
+                        disabled={!canAddSetBreak()}
+                        className="px-3 py-1 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
+                      >
+                        Add Set Break
+                      </button>
+                      
+                      <button
+                        onClick={handleAddEncoreBreak}
+                        disabled={!canAddEncoreBreak()}
+                        className="px-3 py-1 bg-red-400 hover:bg-red-400/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
+                      >
+                        Add Encore Break
+                      </button>
+                    </div>
                     
-                    <button
-                      onClick={handleAddEncoreBreak}
-                      disabled={!canAddEncoreBreak()}
-                      className="px-4 py-2 bg-red-400 hover:bg-red-400/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
-                    >
-                      Add Encore Break
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleAddNewOriginalSong}
+                        className="px-3 py-1 bg-green-400 hover:bg-green-400/80 text-black font-medium rounded-md transition-colors border border-black text-sm flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span className="md:inline hidden">New Original Song</span>
+                        <span className="md:hidden inline">New Original Song</span>
+                      </button>
+                      
+                      <button
+                        onClick={handleAddNewCoverSong}
+                        className="px-3 py-1 bg-blue-400 hover:bg-blue-400/80 text-black font-medium rounded-md transition-colors border border-black text-sm flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span className="md:inline hidden">New Cover Song</span>
+                        <span className="md:hidden inline">New Cover Song</span>
+                      </button>
+                    </div>
                   </div>
                   
                   {error && (
