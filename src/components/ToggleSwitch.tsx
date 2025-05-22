@@ -1,4 +1,5 @@
 import coachLogo from '../img/Coach.png';
+import { GiWhistle } from "react-icons/gi";
 
 interface ToggleSwitchProps {
   checked: boolean;
@@ -22,11 +23,7 @@ const ToggleSwitch = ({ checked, onChange }: ToggleSwitchProps) => {
           }`}
         />
       </button>
-      <img 
-        src={coachLogo} 
-        alt="Coach Notes" 
-        className="h-8 w-auto"
-      />
+      <GiWhistle className="h-8 w-auto" />
     </div>
   );
 };

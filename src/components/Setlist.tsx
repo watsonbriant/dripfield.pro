@@ -97,7 +97,7 @@ export function Setlist() {
   const dropdownListRef = React.useRef<HTMLDivElement>(null);
   const showDatesDropdownRef = React.useRef<HTMLDivElement>(null);
   const showDatesDropdownListRef = React.useRef<HTMLDivElement>(null);
-  const [showCoachNotes, setShowCoachNotes] = React.useState(true);
+  const [showCoachNotes, setShowCoachNotes] = React.useState(false);
 
   const hasCoachNotes = React.useMemo(() => {
     return setlist.some(entry => entry.entry_coachnotes);

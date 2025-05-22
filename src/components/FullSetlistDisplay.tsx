@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, User, MoveRight } from 'lucide-react';
 import ReleaseContainer from './ReleaseContainer';
 import ShowInfoContent from './ShowInfoContent';
 import { supabase } from '../lib/supabase';
+import { GiWhistle } from "react-icons/gi";
 
 interface Guest {
   guest_display_name: string;
@@ -160,6 +161,33 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
     nextShowId: string | null;
   } | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [individualToggles, setIndividualToggles] = useState<{[key: string]: boolean}>({});
+
+  // Add useEffect to reset individual toggles when global toggle changes
+  useEffect(() => {
+    setIndividualToggles({});
+  }, [showCoachNotes]);
+
+  // Add a function to handle individual whistle clicks
+  const toggleIndividualCoachNote = (entryId: string) => {
+    setIndividualToggles(prev => ({
+      ...prev,
+      [entryId]: !prev[entryId]
+    }));
+  };
+
+  // Update the logic to determine if coach notes should be shown for an entry
+  const shouldShowCoachNotesForEntry = (entryId: string, hasCoachNotes: boolean) => {
+    if (!hasCoachNotes) return false;
+    
+    // If this entry has an individual toggle state, use that
+    if (entryId in individualToggles) {
+      return individualToggles[entryId];
+    }
+    
+    // Otherwise fall back to the global toggle
+    return showCoachNotes;
+  };
 
   useEffect(() => {
     const fetchAttendeeCount = async () => {
@@ -501,47 +529,48 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                         </div>
                     
                         {/* Song title and notes column */}
-                        <div
-                          className="cursor-pointer w-full"
-                          onMouseEnter={(e) => {
-                            if (!isMobile) {
-                              setHoveredSong(entry.entry_id);
-                              setMousePosition({ x: e.clientX, y: e.clientY });
-                            }
-                          }}
-                          onMouseMove={(e) => {
-                            if (!isMobile) {
-                              setMousePosition({ x: e.clientX, y: e.clientY });
-                            }
-                          }}
-                          onMouseLeave={() => {
-                            if (!isMobile) {
-                              setHoveredSong(null);
-                            }
-                          }}
-                        >
-                          <div className="w-full break-words">
-                            <strong>
-                              <span 
-                                className="text-black mr-2 hover:text-[#a9682e] transition-colors cursor-pointer"
-                                onClick={() => navigate(`/song/${entry.song_id}`)}
-                              >
-                                {entry.entry_song}
-                              </span>
-                              {entry.entry_short && (
-                                <span className="text-red-600 mr-2 text-[0.75rem] leading-[1.25rem] font-semibold">[{entry.entry_short}]</span>
-                              )}
-                              {entry.entry_segue && (
-                                <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />
-                              )}
-                            </strong>
-                          </div>
-                          {entry.entry_coachnotes && showCoachNotes && (
-                            <div 
-                              className="text-black/70 text-xs mt-0.5 w-full break-words [&_a]:text-[#a9682e] [&_a]:font-semibold"
-                              dangerouslySetInnerHTML={{ __html: entry.entry_coachnotes }}
-                            />
-                          )}
+                        <div className="cursor-pointer w-full flex justify-between items-start">
+                          <div
+                            className="flex-grow"
+                            onMouseEnter={(e) => {
+                              if (!isMobile) {
+                                setHoveredSong(entry.entry_id);
+                                setMousePosition({ x: e.clientX, y: e.clientY });
+                              }
+                            }}
+                            onMouseMove={(e) => {
+                              if (!isMobile) {
+                                setMousePosition({ x: e.clientX, y: e.clientY });
+                              }
+                            }}
+                            onMouseLeave={() => {
+                              if (!isMobile) {
+                                setHoveredSong(null);
+                              }
+                            }}
+                          >
+                            <div className="w-full break-words">
+                              <strong>
+                                <span 
+                                  className="text-black mr-2 hover:text-[#a9682e] transition-colors cursor-pointer"
+                                  onClick={() => navigate(`/song/${entry.song_id}`)}
+                                >
+                                  {entry.entry_song}
+                                </span>
+                                {entry.entry_short && (
+                                  <span className="text-red-600 mr-2 text-[0.75rem] leading-[1.25rem] font-semibold">[{entry.entry_short}]</span>
+                                )}
+                                {entry.entry_segue && (
+                                  <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />
+                                )}
+                              </strong>
+                            </div>
+                            {entry.entry_coachnotes && shouldShowCoachNotesForEntry(entry.entry_id, true) && (
+                              <div 
+                                className="text-black/70 text-xs mt-0.5 w-full break-words [&_a]:text-[#a9682e] [&_a]:font-semibold"
+                                dangerouslySetInnerHTML={{ __html: entry.entry_coachnotes }}
+                              />
+                            )}
                           {!isMobile && hoveredSong === entry.entry_id && (
                             <div 
                               className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
@@ -577,6 +606,19 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                             </div>
                           )}
                         </div>
+
+                        {entry.entry_coachnotes && (
+                          <div className="ml-4 flex-shrink-0 mr-1">
+                            <GiWhistle 
+                              className={`h-5 w-5 cursor-pointer ${shouldShowCoachNotesForEntry(entry.entry_id, true) ? 'text-[#a9682e]' : 'text-black'} hover:text-[#f9ae37] transition-colors`} 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleIndividualCoachNote(entry.entry_id);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
                     
                         {/* Duration column */}
                         <div className="text-black/80 text-center">
