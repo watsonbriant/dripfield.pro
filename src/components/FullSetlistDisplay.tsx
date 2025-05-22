@@ -267,7 +267,11 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
     setGuestGroups(Object.values(groupsByGuests));
   }, [setlist]);
 
-  const seenSongs = new Set<string>();
+  // Define the entry_short values we want to skip numbering for
+  const skipNumberingShorts = ["aborted", "fake", "tease", "reprise"];
+
+  // Instead of tracking seen songs with a simple Set, we'll track songs with valid numbers
+  const songsWithNumbers = new Set<string>();
   let currentRunningNumber = 1;
   
   const getPlacementColor = (placement: string): string => {
@@ -402,9 +406,24 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                   </div>
 
                   {setlist.map((entry, index) => {
-                    const isDuplicate = seenSongs.has(entry.entry_song);
-                    seenSongs.add(entry.entry_song);
-                    const displayNumber = !isDuplicate ? currentRunningNumber++ : null;
+                    // Check if this entry has a short value that should skip numbering
+                    const shouldSkipNumbering = entry.entry_short && 
+                      skipNumberingShorts.includes(entry.entry_short.toLowerCase());
+                    
+                    // Has this song already received a number?
+                    const alreadyHasNumber = songsWithNumbers.has(entry.entry_song);
+                    
+                    // Only assign a number if:
+                    // 1. The song doesn't already have a number elsewhere in the setlist AND
+                    // 2. This specific entry doesn't have a short value we want to skip
+                    const displayNumber = (!alreadyHasNumber && !shouldSkipNumbering) ? 
+                      currentRunningNumber++ : null;
+                    
+                    // If we assigned a number, add this song to our tracking set
+                    if (displayNumber !== null) {
+                      songsWithNumbers.add(entry.entry_song);
+                    }
+                    
                     const nextEntry = index < setlist.length - 1 ? setlist[index + 1] : null;
                     const prevEntry = index > 0 ? setlist[index - 1] : null;
                   
