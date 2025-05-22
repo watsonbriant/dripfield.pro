@@ -610,7 +610,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                         {entry.entry_coachnotes && (
                           <div className="ml-4 flex-shrink-0 mr-1">
                             <GiWhistle 
-                              className={`h-5 w-5 cursor-pointer ${shouldShowCoachNotesForEntry(entry.entry_id, true) ? 'text-[#a9682e]' : 'text-black'} hover:text-[#f9ae37] transition-colors`} 
+                              className={`h-5 w-5 cursor-pointer ${shouldShowCoachNotesForEntry(entry.entry_id, true) ? 'text-[#a9682e]' : 'text-black'} hover:text-tertiary transition-colors`} 
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toggleIndividualCoachNote(entry.entry_id);
