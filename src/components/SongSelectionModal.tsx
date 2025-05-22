@@ -722,7 +722,7 @@ export function SongSelectionModal({
       }
       
       // Only check for duplicates if it's a regular song (not a New Original/Cover Song)
-      if (selectedSong !== "New Original Song" && selectedSong !== "New Cover Song") {
+      if (selectedSong !== "[New Original Song]" && selectedSong !== "[New Cover Song]") {
         // Check if the song is already selected in ANY set (not just current set)
         if (songPicks.some(pick => pick.song === selectedSong && !pick.isBreak)) {
           setError('This song is already selected for this show.');
@@ -752,7 +752,7 @@ export function SongSelectionModal({
       // Add new original song with sequential numbering
       const newPick: SongPick = {
         id: generatePickId(),
-        song: "New Original Song",
+        song: "[New Original Song]",
         set: currentSet,
         setnum: nextSetNum
       };
@@ -768,7 +768,7 @@ export function SongSelectionModal({
       // Add new cover song with sequential numbering
       const newPick: SongPick = {
         id: generatePickId(),
-        song: "New Cover Song",
+        song: "[New Cover Song]",
         set: currentSet,
         setnum: nextSetNum
       };
