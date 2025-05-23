@@ -111,6 +111,7 @@ export function Home() {
   const [notPlayedSongs, setNotPlayedSongs] = useState<NotPlayedSong[]>([]);
   const [loadingNotPlayed, setLoadingNotPlayed] = useState(true);
   const [selectedYear, setSelectedYear] = useState<number | string>(new Date().getFullYear());
+  const isAnyStatLoading = loadingTopSongs || loadingShowOpeners || loadingSetOpeners || loadingSetClosers || loadingEncores || loadingNotPlayed;
 
   useEffect(() => {
     const testConnection = async () => {
@@ -125,6 +126,15 @@ export function Home() {
   }, []);
 
   useEffect(() => {
+    // Reset all loading states when year changes
+    setLoadingTopSongs(true);
+    setLoadingShowOpeners(true);
+    setLoadingSetOpeners(true);
+    setLoadingSetClosers(true);
+    setLoadingEncores(true);
+    if (selectedYear !== 'all-time') {
+      setLoadingNotPlayed(true);
+    }
     // For the fetchRecentShows function
     async function fetchRecentShows() {
       try {
@@ -1385,7 +1395,7 @@ export function Home() {
           </div>
 
           {/* Stats Section */}
-          <div className="bg-primary border border-black rounded-lg p-3">
+          <div className="bg-primary border border-black rounded-lg p-3 relative">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
                 {selectedYear === 'all-time' ? 'All-Time' : selectedYear} Stats
@@ -1408,20 +1418,15 @@ export function Home() {
               </select>
             </div>
 
-
-            {/* Desktop view - 2 columns, hidden on mobile */}
-            <div className="hidden md:grid md:grid-cols-2 gap-4">
-              {/* Left column for desktop */}
-              <div>
-                {/* Top Songs */}
-                {topSongs.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
-                  {loadingTopSongs ? (
-                    <div className="text-center py-6">
-                      <p className="text-[#fce7ca]/70">Loading stats...</p>
-                    </div>
-                  ) : (
+            <div className={`${isAnyStatLoading ? 'opacity-20' : ''} transition-opacity duration-300`}>
+              {/* Desktop view - 2 columns, hidden on mobile */}
+              <div className="hidden md:grid md:grid-cols-2 gap-4">
+                {/* Left column for desktop */}
+                <div>
+                  {/* Top Songs */}
+                  {topSongs.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1460,19 +1465,13 @@ export function Home() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
                   )}
-                </div>
-                )}
 
-                {/* Top Show Openers */}
-                {showOpeners.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
-                  {loadingShowOpeners ? (
-                    <div className="text-center py-6">
-                      <p className="text-[#fce7ca]/70">Loading stats...</p>
-                    </div>
-                  ) : (
+                  {/* Top Show Openers */}
+                  {showOpeners.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1511,19 +1510,13 @@ export function Home() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
                   )}
-                </div>
-                )}
 
-                {/* Top Set Closers */}
-                {setClosers.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
-                  {loadingSetClosers ? (
-                    <div className="text-center py-6">
-                      <p className="text-[#fce7ca]/70">Loading stats...</p>
-                    </div>
-                  ) : (
+                  {/* Top Set Closers */}
+                  {setClosers.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1562,23 +1555,17 @@ export function Home() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
                   )}
                 </div>
-                )}
-              </div>
-              
+                
 
-              {/* Right column for desktop */}
-              <div>
-                {/* Most Common Not Played */}
-                {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
-                  {loadingNotPlayed ? (
-                    <div className="text-center py-6">
-                      <p className="text-[#fce7ca]/70">Loading stats...</p>
-                    </div>
-                  ) : (
+                {/* Right column for desktop */}
+                <div>
+                  {/* Most Common Not Played */}
+                  {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1617,19 +1604,13 @@ export function Home() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
                   )}
-                </div>
-                )}
 
-                {/* Top Set Openers */}
-                {setOpeners.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
-                  {loadingSetOpeners ? (
-                    <div className="text-center py-6">
-                      <p className="text-[#fce7ca]/70">Loading stats...</p>
-                    </div>
-                  ) : (
+                  {/* Top Set Openers */}
+                  {setOpeners.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1668,19 +1649,13 @@ export function Home() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
                   )}
-                </div>
-                )}
 
-                {/* Top Encores */}
-                {encores.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
-                  {loadingEncores ? (
-                    <div className="text-center py-6">
-                      <p className="text-[#fce7ca]/70">Loading stats...</p>
-                    </div>
-                  ) : (
+                  {/* Top Encores */}
+                  {encores.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1719,23 +1694,17 @@ export function Home() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
                   )}
                 </div>
-                )}
               </div>
-            </div>
 
-            {/* Mobile view - single column in custom order, hidden on desktop */}
-            <div className="md:hidden space-y-6">
-              {/* 1. Top Songs */}
-              {topSongs.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
-                {loadingTopSongs ? (
-                  <div className="text-center py-6">
-                    <p className="text-[#fce7ca]/70">Loading stats...</p>
-                  </div>
-                ) : (
+              {/* Mobile view - single column in custom order, hidden on desktop */}
+              <div className="md:hidden space-y-6">
+                {/* 1. Top Songs */}
+                {topSongs.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1774,19 +1743,13 @@ export function Home() {
                       </tbody>
                     </table>
                   </div>
+                </div>
                 )}
-              </div>
-              )}
 
-              {/* 2. Most Common Not Played */}
-              {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
-                {loadingNotPlayed ? (
-                  <div className="text-center py-6">
-                    <p className="text-[#fce7ca]/70">Loading stats...</p>
-                  </div>
-                ) : (
+                {/* 2. Most Common Not Played */}
+                {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1825,19 +1788,13 @@ export function Home() {
                       </tbody>
                     </table>
                   </div>
+                </div>
                 )}
-              </div>
-              )}
 
-              {/* 3. Top Show Openers */}
-              {showOpeners.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
-                {loadingShowOpeners ? (
-                  <div className="text-center py-6">
-                    <p className="text-[#fce7ca]/70">Loading stats...</p>
-                  </div>
-                ) : (
+                {/* 3. Top Show Openers */}
+                {showOpeners.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1876,19 +1833,13 @@ export function Home() {
                       </tbody>
                     </table>
                   </div>
+                </div>
                 )}
-              </div>
-              )}
 
-              {/* 4. Top Set Openers */}
-              {setOpeners.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
-                {loadingSetOpeners ? (
-                  <div className="text-center py-6">
-                    <p className="text-[#fce7ca]/70">Loading stats...</p>
-                  </div>
-                ) : (
+                {/* 4. Top Set Openers */}
+                {setOpeners.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1927,19 +1878,13 @@ export function Home() {
                       </tbody>
                     </table>
                   </div>
+                </div>
                 )}
-              </div>
-              )}
 
-              {/* 5. Top Set Closers */}
-              {setClosers.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
-                {loadingSetClosers ? (
-                  <div className="text-center py-6">
-                    <p className="text-[#fce7ca]/70">Loading stats...</p>
-                  </div>
-                ) : (
+                {/* 5. Top Set Closers */}
+                {setClosers.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1978,19 +1923,13 @@ export function Home() {
                       </tbody>
                     </table>
                   </div>
+                </div>
                 )}
-              </div>
-              )}
 
-              {/* 6. Top Encores */}
-              {encores.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
-                {loadingEncores ? (
-                  <div className="text-center py-6">
-                    <p className="text-[#fce7ca]/70">Loading stats...</p>
-                  </div>
-                ) : (
+                {/* 6. Top Encores */}
+                {encores.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -2029,9 +1968,9 @@ export function Home() {
                       </tbody>
                     </table>
                   </div>
+                </div>
                 )}
               </div>
-              )}
             </div>
           </div>
         </div>
