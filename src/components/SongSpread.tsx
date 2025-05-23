@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 // Update the interface to match the structure we actually have
 interface SetlistEntry {
   entry_song: string;
+  entry_short?: string;  // Added this field
   song_category?: string;
   category_canonid?: number;
   song_originalartist?: string;
@@ -28,12 +29,44 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [categoryArtwork, setCategoryArtwork] = useState<Record<string, string>>({});
   
+  // Create a set of songs that should be excluded
+  const excludedTerms = ['fake', 'tease', 'reprise'];
+  const songsToExclude = new Set<string>();
+
+  // Group entries by song name
+  const songEntries = setlist.reduce((acc, entry) => {
+    if (!acc[entry.entry_song]) {
+      acc[entry.entry_song] = [];
+    }
+    acc[entry.entry_song].push(entry);
+    return acc;
+  }, {} as Record<string, SetlistEntry[]>);
+
+  // Determine which songs should be excluded
+  Object.entries(songEntries).forEach(([songName, entries]) => {
+    const allEntriesHaveExcludedTerms = entries.every(entry => 
+      entry.entry_short && 
+      excludedTerms.some(term => 
+        entry.entry_short.toLowerCase().includes(term.toLowerCase())
+      )
+    );
+    
+    if (allEntriesHaveExcludedTerms) {
+      songsToExclude.add(songName);
+    }
+  });
+  
   // Fetch artwork for categories directly from the database
   useEffect(() => {
     const fetchCategoryArtwork = async () => {
       try {
-        // Extract unique category names from the setlist
-        const categories = [...new Set(setlist.map(entry => entry.songs?.song_category).filter(Boolean))];
+        // Extract unique category names from the setlist (excluding filtered songs)
+        const categories = [...new Set(
+          setlist
+            .filter(entry => !songsToExclude.has(entry.entry_song))
+            .map(entry => entry.songs?.song_category)
+            .filter(Boolean)
+        )];
         
         console.log('Fetching artwork for categories:', categories);
         
@@ -68,10 +101,15 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     };
     
     fetchCategoryArtwork();
-  }, [setlist]);
+  }, [setlist, songsToExclude]);
 
   // Count unique songs per category and collect songs for each category
   const categoryData = setlist.reduce((acc, entry) => {
+    // Skip excluded songs
+    if (songsToExclude.has(entry.entry_song)) {
+      return acc;
+    }
+    
     const category = entry.songs?.song_category || 'undefined';
     
     const songKey = `${entry.entry_song}-${category}`;
@@ -122,6 +160,11 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
 
   // Create a map of categories to their canonids
   const categoryCanonIds = setlist.reduce((acc, entry) => {
+    // Skip excluded songs
+    if (songsToExclude.has(entry.entry_song)) {
+      return acc;
+    }
+    
     // Determine the correct category
     const category = entry.songs?.song_category || 'undefined';
     

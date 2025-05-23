@@ -296,7 +296,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
   }, [setlist]);
 
   // Define the entry_short values we want to skip numbering for
-  const skipNumberingShorts = ["aborted", "fake", "tease", "reprise"];
+  const skipNumberingShorts = ["fake", "tease", "reprise"];
 
   // Instead of tracking seen songs with a simple Set, we'll track songs with valid numbers
   const songsWithNumbers = new Set<string>();
