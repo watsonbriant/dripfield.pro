@@ -21,19 +21,31 @@ interface SetlistDisplayProps {
 
 const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) => {
   // Keep track of which songs we've seen
-  const seenSongs = new Set<string>();
+  const skipNumberingShorts = ["fake", "tease", "reprise"];
+  // Instead of tracking seen songs with a simple Set, we'll track songs with valid numbers
+  const songsWithNumbers = new Set<string>();
   let currentRunningNumber = 1;
   
   return (
     <div className="space-y-1">
       {setlist.map((entry, index) => {
-        // Check if this is a duplicate song
-        const isDuplicate = seenSongs.has(entry.entry_song);
-        // Add the song to our seen set
-        seenSongs.add(entry.entry_song);
-        
-        // Increment running number only if not a duplicate
-        const displayNumber = !isDuplicate ? currentRunningNumber++ : null;
+        // Check if this entry has a short value that should skip numbering
+        const shouldSkipNumbering = entry.entry_short && 
+        skipNumberingShorts.includes(entry.entry_short.toLowerCase());
+
+        // Has this song already received a number?
+        const alreadyHasNumber = songsWithNumbers.has(entry.entry_song);
+
+        // Only assign a number if:
+        // 1. The song doesn't already have a number elsewhere in the setlist AND
+        // 2. This specific entry doesn't have a short value we want to skip
+        const displayNumber = (!alreadyHasNumber && !shouldSkipNumbering) ? 
+        currentRunningNumber++ : null;
+
+        // If we assigned a number, add this song to our tracking set
+        if (displayNumber !== null) {
+        songsWithNumbers.add(entry.entry_song);
+        }
         // Check if this entry has a different set than the previous entry
         const prevEntry = index > 0 ? setlist[index - 1] : null;
         const isNewSet = prevEntry && prevEntry.entry_set !== entry.entry_set;
