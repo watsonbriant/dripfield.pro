@@ -110,7 +110,7 @@ export function Home() {
   const [loadingEncores, setLoadingEncores] = useState(true);
   const [notPlayedSongs, setNotPlayedSongs] = useState<NotPlayedSong[]>([]);
   const [loadingNotPlayed, setLoadingNotPlayed] = useState(true);
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState<number | string>(new Date().getFullYear());
 
   useEffect(() => {
     const testConnection = async () => {
@@ -499,7 +499,7 @@ export function Home() {
         let hasMore = true;
 
         while (hasMore) {
-          const { data, error } = await supabase
+          let query = supabase
             .from('setlist_entries')
             .select(`
               entry_song,
@@ -519,10 +519,16 @@ export function Home() {
               )
             `)
             .eq('shows.show_group', 'Goose')
-            .not('shows.show_canonid', 'is', null)
-            .gte('shows.show_date', `${selectedYear}-01-01`)
-            .lte('shows.show_date', `${selectedYear}-12-31`)
-            .range(from, from + batchSize - 1);
+            .not('shows.show_canonid', 'is', null);
+          
+          // Only apply date filters if not "all-time"
+          if (selectedYear !== 'all-time') {
+            query = query
+              .gte('shows.show_date', `${selectedYear}-01-01`)
+              .lte('shows.show_date', `${selectedYear}-12-31`);
+          }
+          
+          const { data, error } = await query.range(from, from + batchSize - 1);
 
           if (error) throw error;
 
@@ -588,7 +594,7 @@ export function Home() {
         let hasMore = true;
 
         while (hasMore) {
-          const { data, error } = await supabase
+          let query = supabase
             .from('setlist_entries')
             .select(`
               entry_song,
@@ -608,10 +614,16 @@ export function Home() {
             `)
             .eq('shows.show_group', 'Goose')
             .not('shows.show_canonid', 'is', null)
-            .eq('entry_placement', 'Set 1 Opener')
-            .gte('shows.show_date', `${selectedYear}-01-01`)
-            .lte('shows.show_date', `${selectedYear}-12-31`)
-            .range(from, from + batchSize - 1);
+            .eq('entry_placement', 'Set 1 Opener');
+          
+          // Only apply date filters if not "all-time"
+          if (selectedYear !== 'all-time') {
+            query = query
+              .gte('shows.show_date', `${selectedYear}-01-01`)
+              .lte('shows.show_date', `${selectedYear}-12-31`);
+          }
+          
+          const { data, error } = await query.range(from, from + batchSize - 1);
 
           if (error) throw error;
 
@@ -668,7 +680,7 @@ export function Home() {
         let hasMore = true;
 
         while (hasMore) {
-          const { data, error } = await supabase
+          let query = supabase
             .from('setlist_entries')
             .select(`
               entry_song,
@@ -688,10 +700,16 @@ export function Home() {
             `)
             .eq('shows.show_group', 'Goose')
             .not('shows.show_canonid', 'is', null)
-            .in('entry_placement', ['Set 1 Opener', 'Set 2 Opener', 'Set 3 Opener', 'Set 4 Opener', 'Set 5 Opener'])
-            .gte('shows.show_date', `${selectedYear}-01-01`)
-            .lte('shows.show_date', `${selectedYear}-12-31`)
-            .range(from, from + batchSize - 1);
+            .in('entry_placement', ['Set 1 Opener', 'Set 2 Opener', 'Set 3 Opener', 'Set 4 Opener', 'Set 5 Opener']);
+          
+          // Only apply date filters if not "all-time"
+          if (selectedYear !== 'all-time') {
+            query = query
+              .gte('shows.show_date', `${selectedYear}-01-01`)
+              .lte('shows.show_date', `${selectedYear}-12-31`);
+          }
+          
+          const { data, error } = await query.range(from, from + batchSize - 1);
 
           if (error) throw error;
 
@@ -748,7 +766,7 @@ export function Home() {
         let hasMore = true;
 
         while (hasMore) {
-          const { data, error } = await supabase
+          let query = supabase
             .from('setlist_entries')
             .select(`
               entry_song,
@@ -768,10 +786,16 @@ export function Home() {
             `)
             .eq('shows.show_group', 'Goose')
             .not('shows.show_canonid', 'is', null)
-            .in('entry_placement', ['Set 1 Closer', 'Set 2 Closer', 'Set 3 Closer', 'Set 4 Closer', 'Set 5 Closer'])
-            .gte('shows.show_date', `${selectedYear}-01-01`)
-            .lte('shows.show_date', `${selectedYear}-12-31`)
-            .range(from, from + batchSize - 1);
+            .in('entry_placement', ['Set 1 Closer', 'Set 2 Closer', 'Set 3 Closer', 'Set 4 Closer', 'Set 5 Closer']);
+          
+          // Only apply date filters if not "all-time"
+          if (selectedYear !== 'all-time') {
+            query = query
+              .gte('shows.show_date', `${selectedYear}-01-01`)
+              .lte('shows.show_date', `${selectedYear}-12-31`);
+          }
+          
+          const { data, error } = await query.range(from, from + batchSize - 1);
 
           if (error) throw error;
 
@@ -828,7 +852,7 @@ export function Home() {
         let hasMore = true;
 
         while (hasMore) {
-          const { data, error } = await supabase
+          let query = supabase
             .from('setlist_entries')
             .select(`
               entry_song,
@@ -848,10 +872,16 @@ export function Home() {
             `)
             .eq('shows.show_group', 'Goose')
             .not('shows.show_canonid', 'is', null)
-            .in('entry_placement', ['Encore 1', 'Encore 2', 'Encore 3'])
-            .gte('shows.show_date', `${selectedYear}-01-01`)
-            .lte('shows.show_date', `${selectedYear}-12-31`)
-            .range(from, from + batchSize - 1);
+            .in('entry_placement', ['Encore 1', 'Encore 2', 'Encore 3']);
+          
+          // Only apply date filters if not "all-time"
+          if (selectedYear !== 'all-time') {
+            query = query
+              .gte('shows.show_date', `${selectedYear}-01-01`)
+              .lte('shows.show_date', `${selectedYear}-12-31`);
+          }
+          
+          const { data, error } = await query.range(from, from + batchSize - 1);
 
           if (error) throw error;
 
@@ -901,6 +931,13 @@ export function Home() {
     }
 
     async function fetchNotPlayedSongs() {
+      // Skip this function entirely for all-time
+      if (selectedYear === 'all-time') {
+        setNotPlayedSongs([]);
+        setLoadingNotPlayed(false);
+        return;
+      }
+      
       try {
         const { data, error } = await supabase
           .rpc('get_most_common_not_played_songs', { 
@@ -1347,13 +1384,15 @@ export function Home() {
             />
           </div>
 
-          {/* 2025 Stats Section */}
+          {/* Stats Section */}
           <div className="bg-primary border border-black rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">{selectedYear} Stats</h2>
+              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
+                {selectedYear === 'all-time' ? 'All-Time' : selectedYear} Stats
+              </h2>
               <select
                 value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                onChange={(e) => setSelectedYear(e.target.value === 'all-time' ? 'all-time' : Number(e.target.value))}
                 className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
@@ -1362,6 +1401,7 @@ export function Home() {
                   backgroundSize: '1.5em 1.5em'
                 }}
               >
+                <option value="all-time">All-Time</option>
                 {Array.from({ length: 12 }, (_, i) => 2025 - i).map(year => (
                   <option key={year} value={year}>{year}</option>
                 ))}
@@ -1531,7 +1571,7 @@ export function Home() {
               {/* Right column for desktop */}
               <div>
                 {/* Most Common Not Played */}
-                {notPlayedSongs.length > 0 && (
+                {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                   {loadingNotPlayed ? (
@@ -1739,7 +1779,7 @@ export function Home() {
               )}
 
               {/* 2. Most Common Not Played */}
-              {notPlayedSongs.length > 0 && (
+              {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                 {loadingNotPlayed ? (
