@@ -999,7 +999,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
         case 'longestPerformances':
           return 'bg-[#f9ae37]'; // Burgundy
         case 'notSeenSongs':
-          return 'bg-[#f9ae37]'; // Red
+          return 'bg-[#CE1126]'; // Red
         case 'showOpeners':
           return 'bg-[#006400]'; // Dark green
         case 'setOpeners':
@@ -1037,7 +1037,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
     }) => (
       <div className="bg-primary border border-black rounded-lg p-3 w-full h-full">
         <h3 className={`text-lg font-bold ${getStatBgColor(type)} ${
-          type === 'showOpeners' || type === 'setOpeners' || type === 'setClosers' || type === 'encoreSongs' 
+          type === 'showOpeners' || type === 'setOpeners' || type === 'setClosers' || type === 'encoreSongs' || type === 'notSeenSongs'
             ? 'text-white' 
             : 'text-black'
         } inline-block px-3 pt-0.5 pb-0.5 rounded-full border border-black mb-2`}>

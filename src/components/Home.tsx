@@ -1426,7 +1426,7 @@ export function Home() {
                   {/* Top Songs */}
                   {topSongs.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1471,7 +1471,7 @@ export function Home() {
                   {/* Top Show Openers */}
                   {showOpeners.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1516,7 +1516,7 @@ export function Home() {
                   {/* Top Set Closers */}
                   {setClosers.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1565,7 +1565,7 @@ export function Home() {
                   {/* Most Common Not Played */}
                   {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1610,7 +1610,7 @@ export function Home() {
                   {/* Top Set Openers */}
                   {setOpeners.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1655,7 +1655,7 @@ export function Home() {
                   {/* Top Encores */}
                   {encores.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1704,7 +1704,7 @@ export function Home() {
                 {/* 1. Top Songs */}
                 {topSongs.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1749,7 +1749,7 @@ export function Home() {
                 {/* 2. Most Common Not Played */}
                 {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1794,7 +1794,7 @@ export function Home() {
                 {/* 3. Top Show Openers */}
                 {showOpeners.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1839,7 +1839,7 @@ export function Home() {
                 {/* 4. Top Set Openers */}
                 {setOpeners.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1884,7 +1884,7 @@ export function Home() {
                 {/* 5. Top Set Closers */}
                 {setClosers.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1929,7 +1929,7 @@ export function Home() {
                 {/* 6. Top Encores */}
                 {encores.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
