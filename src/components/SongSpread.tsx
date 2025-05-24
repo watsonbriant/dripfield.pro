@@ -74,8 +74,6 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
             .filter(Boolean)
         )];
         
-        console.log('Fetching artwork for categories:', categories);
-        
         if (categories.length > 0) {
           // Fetch artwork for these categories from the categories table
           const { data, error } = await supabase
@@ -88,8 +86,6 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
             return;
           }
           
-          console.log('Category artwork data from database:', data);
-          
           // Create a mapping of category names to artwork URLs
           const artworkMap = data.reduce((map, item) => {
             if (item.category && item.category_artwork) {
@@ -97,8 +93,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
             }
             return map;
           }, {} as Record<string, string>);
-          
-          console.log('Final category artwork map:', artworkMap);
+
           setCategoryArtwork(artworkMap);
         }
       } catch (error) {
@@ -251,7 +246,6 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
                       console.error(`Failed to load image for ${category}. URL was:`, artwork);
                       e.currentTarget.style.display = 'none';
                     }}
-                    onLoad={() => console.log(`Successfully loaded artwork for ${category}`)}
                     className="h-4 w-4 ml-0.5 object-cover rounded-sm"
                   />
                 )}

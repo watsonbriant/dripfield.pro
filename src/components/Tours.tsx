@@ -827,7 +827,7 @@ export function Tours() {
 
   const renderSongList = (songs: SongEntryWithId[] | null) => {
     if (!songs || songs.length === 0) return null;
-
+  
     return (
       <div
         className="w-full text-left"
@@ -842,7 +842,7 @@ export function Tours() {
         {songs.map((song, index) => (
           <React.Fragment key={`${song.song}-${index}`}>
             {index > 0 && (
-              <MoveRight className="text-red-500 inline w-[1rem] h-[1rem] mx-1" />
+              <MoveRight className="text-red-500 inline w-[1rem] h-[1rem] mr-1" />
             )}
             <a
               onClick={() => {
@@ -851,7 +851,9 @@ export function Tours() {
                   navigate(`/song/${songId}`);
                 }
               }}
-              className="font-semibold hover:text-[#a9682e] transition-colors text-black table-link cursor-pointer inline"
+              className={`font-semibold hover:text-[#a9682e] transition-colors text-black table-link cursor-pointer inline ${
+                index < songs.length - 1 ? 'mr-1' : ''
+              }`}
             >
               {song.song}
             </a>
