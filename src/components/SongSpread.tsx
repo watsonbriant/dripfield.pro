@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 
 // Update the interface to match the structure we actually have
@@ -31,30 +31,36 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
   
   // Create a set of songs that should be excluded
   const excludedTerms = ['fake', 'tease', 'reprise'];
-  const songsToExclude = new Set<string>();
-
-  // Group entries by song name
-  const songEntries = setlist.reduce((acc, entry) => {
-    if (!acc[entry.entry_song]) {
-      acc[entry.entry_song] = [];
-    }
-    acc[entry.entry_song].push(entry);
-    return acc;
-  }, {} as Record<string, SetlistEntry[]>);
-
-  // Determine which songs should be excluded
-  Object.entries(songEntries).forEach(([songName, entries]) => {
-    const allEntriesHaveExcludedTerms = entries.every(entry => 
-      entry.entry_short && 
-      excludedTerms.some(term => 
-        entry.entry_short.toLowerCase().includes(term.toLowerCase())
-      )
-    );
+  
+  // Use useMemo to calculate songsToExclude only when setlist changes
+  const songsToExclude = useMemo(() => {
+    const excluded = new Set<string>();
     
-    if (allEntriesHaveExcludedTerms) {
-      songsToExclude.add(songName);
-    }
-  });
+    // Group entries by song name
+    const songEntries = setlist.reduce((acc, entry) => {
+      if (!acc[entry.entry_song]) {
+        acc[entry.entry_song] = [];
+      }
+      acc[entry.entry_song].push(entry);
+      return acc;
+    }, {} as Record<string, SetlistEntry[]>);
+
+    // Determine which songs should be excluded
+    Object.entries(songEntries).forEach(([songName, entries]) => {
+      const allEntriesHaveExcludedTerms = entries.every(entry => 
+        entry.entry_short && 
+        excludedTerms.some(term => 
+          entry.entry_short.toLowerCase().includes(term.toLowerCase())
+        )
+      );
+      
+      if (allEntriesHaveExcludedTerms) {
+        excluded.add(songName);
+      }
+    });
+    
+    return excluded;
+  }, [setlist]);
   
   // Fetch artwork for categories directly from the database
   useEffect(() => {
@@ -101,7 +107,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     };
     
     fetchCategoryArtwork();
-  }, [setlist, songsToExclude]);
+  }, [setlist]); // Removed songsToExclude from dependencies
 
   // Count unique songs per category and collect songs for each category
   const categoryData = setlist.reduce((acc, entry) => {
