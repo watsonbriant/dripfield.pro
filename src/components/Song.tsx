@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import PerformanceChart from './PerformanceChart';
 import { SongSearch } from './SongSearch';
 import SongPlacementPill from './SongPlacementPill';
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface SongData {
   song: string;
@@ -181,7 +182,6 @@ export function Song() {
   };
 
   const calculateStats = async (performances: Performance[]): Promise<Stats> => {
-    // [existing code unchanged]
     const uniqueShowsMap = new Map<string, Set<string>>();
     const uniqueShowIds = new Set(performances.map(p => p.show_id));
     
@@ -221,16 +221,22 @@ export function Song() {
     // Get the minimum canon ID from shows where this song was played
     const minCanonId = Math.min(...showsWithCanonIds.map(s => s.show_canonid));
   
-    // Get the maximum canon ID from all shows up to today
-    const { data: maxCanonIdData, error: maxError } = await supabase
+    // Get the most recent show with canon ID using the same logic as Home component
+    const now = new Date();
+    const alaskaDate = formatInTimeZone(now, 'America/Anchorage', 'yyyy-MM-dd');
+    
+    const { data: mostRecentShow, error: maxError } = await supabase
       .from('shows')
-      .select('show_canonid')
+      .select('show_canonid, show_date')
       .not('show_canonid', 'is', null)
-      .lte('show_date', new Date().toISOString())
-      .order('show_canonid', { ascending: false })
-      .limit(1);
+      .lte('show_date', alaskaDate)
+      .order('show_date', { ascending: false })  // Most recent date first
+      .order('show_canonid', { ascending: false })  // Highest canon ID first
+      .order('show_group', { ascending: true })  // Group alphabetically
+      .limit(1)
+      .single();
   
-    if (maxError || !maxCanonIdData || maxCanonIdData.length === 0) {
+    if (maxError || !mostRecentShow) {
       return { 
         groupCounts, 
         rarity: '',
@@ -239,7 +245,7 @@ export function Song() {
       };
     }
   
-    const maxCanonId = maxCanonIdData[0].show_canonid;
+    const maxCanonId = mostRecentShow.show_canonid;
     const showRange = maxCanonId - minCanonId + 1;
     const uniqueShowCount = showsWithCanonIds.length;
     const rarityPercentage = (uniqueShowCount / showRange) * 100;
