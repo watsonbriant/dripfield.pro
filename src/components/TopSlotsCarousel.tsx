@@ -19,13 +19,15 @@ interface TopSlotsCarouselProps {
   isMobile?: boolean;
   songIdMap?: { [songName: string]: string };
   onSongClick?: (songId: string) => void;
+  isLoading?: boolean; // Added loading prop
 }
 
 const TopSlotsCarousel = ({ 
   slots, 
   isMobile = false, 
   songIdMap = {}, 
-  onSongClick 
+  onSongClick,
+  isLoading = false // Added with default value
 }: TopSlotsCarouselProps) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -105,42 +107,44 @@ const TopSlotsCarousel = ({
         >
           {`Top ${slot.title}`}
         </h2>
-        <div className="overflow-y-auto max-h-64">
-          <table className="w-full border-collapse">
-            <tbody className="divide-y divide-white/5">
-              {slot.data.map((item, itemIndex) => (
-                <tr
-                  key={itemIndex}
-                  className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
-                >
-                  <td className="pl-4 text-black">
-                    <div className="flex items-center justify-between">
-                      <span 
-                        className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
-                        onClick={() => handleSongClick(item.left)}
-                      >
-                        {item.left}
-                      </span>
-                      {item.artwork && (
-                        <img
-                          src={item.artwork}
-                          alt={`${item.left} artwork`}
-                          className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
-                          onError={(e) => {
-                            // Hide the image if it fails to load
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      )}
-                    </div>
-                  </td>
-                  <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
-                    {typeof item.right === 'number' ? `${item.right}` : item.right}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className={`${isLoading ? 'opacity-20' : ''} transition-opacity duration-300`}>
+          <div className="overflow-y-auto max-h-64">
+            <table className="w-full border-collapse">
+              <tbody className="divide-y divide-white/5">
+                {slot.data.map((item, itemIndex) => (
+                  <tr
+                    key={itemIndex}
+                    className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
+                  >
+                    <td className="pl-4 text-black">
+                      <div className="flex items-center justify-between">
+                        <span 
+                          className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
+                          onClick={() => handleSongClick(item.left)}
+                        >
+                          {item.left}
+                        </span>
+                        {item.artwork && (
+                          <img
+                            src={item.artwork}
+                            alt={`${item.left} artwork`}
+                            className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                            onError={(e) => {
+                              // Hide the image if it fails to load
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
+                    </td>
+                    <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                      {typeof item.right === 'number' ? `${item.right}` : item.right}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );
@@ -191,42 +195,44 @@ const TopSlotsCarousel = ({
           </div>
           
           {/* Mobile content */}
-          <div className="overflow-y-auto max-h-72">
-            <table className="w-full border-collapse">
-              <tbody className="divide-y divide-white/5">
-                {currentSlide.data.map((item, itemIndex) => (
-                  <tr
-                    key={itemIndex}
-                    className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
-                  >
-                    <td className="pl-4 text-black">
-                      <div className="flex items-center justify-between">
-                        <span 
-                          className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
-                          onClick={() => handleSongClick(item.left)}
-                        >
-                          {item.left}
-                        </span>
-                        {item.artwork && (
-                          <img
-                            src={item.artwork}
-                            alt={`${item.left} artwork`}
-                            className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
-                            onError={(e) => {
-                              // Hide the image if it fails to load
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
-                      {typeof item.right === 'number' ? `${item.right}` : item.right}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className={`${isLoading ? 'opacity-20' : ''} transition-opacity duration-300`}>
+            <div className="overflow-y-auto max-h-72">
+              <table className="w-full border-collapse">
+                <tbody className="divide-y divide-white/5">
+                  {currentSlide.data.map((item, itemIndex) => (
+                    <tr
+                      key={itemIndex}
+                      className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
+                    >
+                      <td className="pl-4 text-black">
+                        <div className="flex items-center justify-between">
+                          <span 
+                            className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
+                            onClick={() => handleSongClick(item.left)}
+                          >
+                            {item.left}
+                          </span>
+                          {item.artwork && (
+                            <img
+                              src={item.artwork}
+                              alt={`${item.left} artwork`}
+                              className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                              onError={(e) => {
+                                // Hide the image if it fails to load
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                        {typeof item.right === 'number' ? `${item.right}` : item.right}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

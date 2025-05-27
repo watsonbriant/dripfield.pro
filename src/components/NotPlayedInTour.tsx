@@ -31,11 +31,13 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
       }
 
       try {
-        // Get the first show date of the tour to filter for songs played before this tour
+        // Get the first show date of the tour (only canonical shows)
         const { data: tourFirstShowData, error: firstShowError } = await supabase
           .from('shows')
           .select('show_date')
           .eq('show_tour', tourName)
+          .eq('show_group', 'Goose')
+          .not('show_canonid', 'is', null)
           .order('show_date', { ascending: true })
           .limit(1)
           .single();
@@ -49,7 +51,7 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
 
         const firstShowDate = tourFirstShowData.show_date;
 
-        // First, get all songs played in this tour
+        // First, get all unique songs played in this tour
         const { data: playedInTourData, error: playedError } = await supabase
           .from('setlist_entries')
           .select(`
@@ -65,36 +67,52 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
         );
 
         // Now get all songs from canonical Goose shows before this tour
-        const { data: allTimeData, error: allTimeError } = await supabase
-          .from('setlist_entries')
-          .select(`
-            entry_song,
-            songs!inner(
-              song_id,
-              song_category,
-              categories!inner(
-                category_canonid,
-                category_artwork
+        // We'll do this in batches like the Home component does
+        const allData = [];
+        let from = 0;
+        const batchSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('setlist_entries')
+            .select(`
+              entry_song,
+              songs!inner(
+                song_id,
+                song_category,
+                categories!inner(
+                  category_canonid,
+                  category_artwork
+                )
+              ),
+              entry_show,
+              shows!inner(
+                show_date,
+                show_group,
+                show_canonid
               )
-            ),
-            entry_show,
-            shows!inner(
-              show_date,
-              show_group,
-              show_canonid
-            )
-          `)
-          .eq('shows.show_group', 'Goose')
-          .not('shows.show_canonid', 'is', null)
-          .lt('shows.show_date', firstShowDate);
+            `)
+            .eq('shows.show_group', 'Goose')
+            .not('shows.show_canonid', 'is', null)
+            .lt('shows.show_date', firstShowDate)
+            .range(from, from + batchSize - 1);
 
-        if (allTimeError) throw allTimeError;
+          if (error) throw error;
 
-        // Count overall song frequency by unique shows
-        const songShowCounts = allTimeData.reduce((acc: { [key: string]: any }, entry: any) => {
+          allData.push(...(data || []));
+          
+          if (!data || data.length < batchSize) {
+            hasMore = false;
+          } else {
+            from += batchSize;
+          }
+        }
+
+        // Count song frequency by unique shows (same logic as Home component)
+        const songShowCounts = allData.reduce((acc: { [key: string]: any }, entry: any) => {
           const songId = entry.songs.song_id;
           const showId = entry.entry_show;
-          const uniqueKey = `${songId}-${showId}`;
 
           if (!acc[songId]) {
             acc[songId] = {
@@ -110,8 +128,8 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
           return acc;
         }, {});
 
-        // Filter to only songs NOT played in this tour
-        const notPlayedSongs = Object.values(songShowCounts)
+        // Filter to only songs NOT played in this tour and convert to array
+        const processedSongs = Object.values(songShowCounts)
           .filter((item: any) => !songsPlayedInTour.has(item.song_id))
           .map((item: any) => ({
             song: item.song,
@@ -134,7 +152,7 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
           })
           .slice(0, 8); // Get top 8
 
-        setNotPlayedSongs(notPlayedSongs);
+        setNotPlayedSongs(processedSongs);
       } catch (error) {
         console.error('Error fetching not played songs:', error);
       } finally {
@@ -151,58 +169,51 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
         Most Common Not Played
       </h2>
       
-      {loading ? (
-        <div className="text-center py-4">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+      <div className={`${loading ? 'opacity-20' : ''} transition-opacity duration-300`}>
+        {notPlayedSongs.length === 0 ? (
+          <div className="text-center py-4">
+            <p className="text-black/70 text-xs">No historical songs to display.</p>
           </div>
-          <p className="text-black mt-2">Loading songs...</p>
-        </div>
-      ) : notPlayedSongs.length === 0 ? (
-        <div className="text-center py-4">
-          <p className="text-black/70 text-xs">No historical songs to display.</p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <tbody className="divide-y divide-white/5">
-              {notPlayedSongs.map((song, index) => (
-                <tr
-                  key={song.song_id}
-                  className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors`}
-                >
-                  <td className="pl-4 text-black text-xs">
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => navigate(`/song/${song.song_id}`)}
-                        className="font-semibold hover:underline cursor-pointer text-left"
-                      >
-                        {song.song}
-                      </button>
-                      {song.category_artwork && (
-                        <img
-                          src={song.category_artwork}
-                          alt={`${song.song} artwork`}
-                          className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
-                          onError={(e) => {
-                            // Hide the image if it fails to load
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      )}
-                    </div>
-                  </td>
-                  <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black text-xs">
-                    {song.play_count}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <tbody className="divide-y divide-white/5">
+                {notPlayedSongs.map((song, index) => (
+                  <tr
+                    key={song.song_id}
+                    className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors`}
+                  >
+                    <td className="pl-4 text-black text-xs">
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => navigate(`/song/${song.song_id}`)}
+                          className="font-semibold hover:underline cursor-pointer text-left"
+                        >
+                          {song.song}
+                        </button>
+                        {song.category_artwork && (
+                          <img
+                            src={song.category_artwork}
+                            alt={`${song.song} artwork`}
+                            className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                            onError={(e) => {
+                              // Hide the image if it fails to load
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
+                    </td>
+                    <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black text-xs">
+                      {song.play_count}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
