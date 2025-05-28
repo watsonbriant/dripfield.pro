@@ -381,7 +381,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
                   key={player.userId} 
                   className={`
                     ${user && player.userId === user.id 
-                      ? 'bg-[#f9ae37]/30' 
+                      ? 'bg-[#f9ae37]/80' 
                       : index % 2 === 0 
                         ? 'bg-primary' 
                         : 'bg-canvas'
