@@ -66,8 +66,8 @@ export function Years() {
 
   const tourColors = [
     '#3498DB', '#E74C3C', '#2ECC71', '#F39C12', 
-    '#9B59B6', '#FF6B81', '#F1C40F', '#FFFFFF',
-    '#34495E'
+    '#9B59B6', '#FF6B81', '#F1C40F', '#34495E',
+    '#FFFFFF', '#000000'
   ];
 
   interface ShowResponse {
