@@ -274,6 +274,7 @@ export function Setlist() {
           .single();
 
         if (showError) throw showError;
+        
         setShow({
           ...showData,
           tour_showfields: showData.tours.tour_showfields,

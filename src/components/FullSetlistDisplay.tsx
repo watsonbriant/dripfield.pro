@@ -5,6 +5,7 @@ import SongSpread from './SongSpread';
 import { ArrowLeft, ArrowRight, User, MoveRight } from 'lucide-react';
 import ReleaseContainer from './ReleaseContainer';
 import ShowInfoContent from './ShowInfoContent';
+import ShowChanges from './ShowChanges';
 import { supabase } from '../lib/supabase';
 import { GiWhistle } from "react-icons/gi";
 
@@ -225,8 +226,7 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  useEffect(() => {
-  }, [show]);
+  useEffect(() => {}, [show, setlist]);
 
   // Update the dependency array to include show.show_tour
   useEffect(() => {
@@ -754,63 +754,142 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
             
             {/* Stats and Guest Legend section */}
             {setlist.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
-                <SongSpread setlist={setlist} />
-                
-                {guestGroups.length > 0 && (
-                  <div className="bg-primary border border-black rounded-lg p-4 h-fit relative">
-                    <User className="w-5 h-5 text-black absolute top-4 right-4" />
-                    <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
-                      {guestGroups.map((group, index) => (
-                        <React.Fragment key={index}>
-                          <div 
-                            className="w-5 h-5 rounded"
-                            style={{ backgroundColor: group.color }}
-                          />
-                          <div className="text-black text-sm flex items-center flex-wrap">
-                            {group.guests
-                              .sort((a, b) => a.guest_canonid - b.guest_canonid)
-                              .map((g, gIndex) => (
-                                <React.Fragment key={g.guest_id}>
-                                  <span 
-                                    className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
-                                    onClick={() => navigate(`/guest/${g.guest_id}`)}
-                                    onMouseEnter={(e) => {
-                                      if (!isMobile) {
-                                        setHoveredPersonnel(g.guest_id);
-                                        setMousePosition({ x: e.clientX, y: e.clientY });
-                                      }
-                                    }}
-                                    onMouseMove={(e) => {
-                                      if (!isMobile) {
-                                        setMousePosition({ x: e.clientX, y: e.clientY });
-                                      }
-                                    }}
-                                    onMouseLeave={() => {
-                                      if (!isMobile) {
-                                        setHoveredPersonnel(null);
-                                      }
-                                    }}
-                                  >
-                                    {g.guest_display_name}
-                                    {!isMobile && hoveredPersonnel === g.guest_id && (
-                                      <div 
-                                        className="fixed text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg z-[9999] whitespace-nowrap"
-                                        style={{
-                                          left: `${mousePosition.x + 10}px`,
-                                          top: `${mousePosition.y - 10}px`
-                                        }}
-                                      >
-                                        {g.guest_instrument}
-                                      </div>
-                                    )}
-                                  </span>
-                                  {gIndex < group.guests.length - 1 && <span>,&nbsp;</span>}
-                                </React.Fragment>
-                              ))}
-                          </div>
-                        </React.Fragment>
-                      ))}
+              <div className="space-y-6">
+                {/* Desktop layout with grid */}
+                <div className="hidden md:grid grid-cols-2 gap-6 items-start">
+                  <SongSpread setlist={setlist} />
+                  
+                  {guestGroups.length > 0 && (
+                    <div className="bg-primary border border-black rounded-lg p-4 h-fit relative">
+                      <User className="w-5 h-5 text-black absolute top-4 right-4" />
+                      <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
+                        {guestGroups.map((group, index) => (
+                          <React.Fragment key={index}>
+                            <div 
+                              className="w-5 h-5 rounded"
+                              style={{ backgroundColor: group.color }}
+                            />
+                            <div className="text-black text-sm flex items-center flex-wrap">
+                              {group.guests
+                                .sort((a, b) => a.guest_canonid - b.guest_canonid)
+                                .map((g, gIndex) => (
+                                  <React.Fragment key={g.guest_id}>
+                                    <span 
+                                      className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
+                                      onClick={() => navigate(`/guest/${g.guest_id}`)}
+                                      onMouseEnter={(e) => {
+                                        if (!isMobile) {
+                                          setHoveredPersonnel(g.guest_id);
+                                          setMousePosition({ x: e.clientX, y: e.clientY });
+                                        }
+                                      }}
+                                      onMouseMove={(e) => {
+                                        if (!isMobile) {
+                                          setMousePosition({ x: e.clientX, y: e.clientY });
+                                        }
+                                      }}
+                                      onMouseLeave={() => {
+                                        if (!isMobile) {
+                                          setHoveredPersonnel(null);
+                                        }
+                                      }}
+                                    >
+                                      {g.guest_display_name}
+                                      {!isMobile && hoveredPersonnel === g.guest_id && (
+                                        <div 
+                                          className="fixed text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg z-[9999] whitespace-nowrap"
+                                          style={{
+                                            left: `${mousePosition.x + 10}px`,
+                                            top: `${mousePosition.y - 10}px`
+                                          }}
+                                        >
+                                          {g.guest_instrument}
+                                        </div>
+                                      )}
+                                    </span>
+                                    {gIndex < group.guests.length - 1 && <span>,&nbsp;</span>}
+                                  </React.Fragment>
+                                ))}
+                            </div>
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile layout - stacked */}
+                <div className="md:hidden space-y-6">
+                  <SongSpread setlist={setlist} />
+                  
+                  {/* Changes component */}
+                  {showId && <ShowChanges showId={showId} />}
+                  
+                  {guestGroups.length > 0 && (
+                    <div className="bg-primary border border-black rounded-lg p-4 h-fit relative">
+                      <User className="w-5 h-5 text-black absolute top-4 right-4" />
+                      <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
+                        {guestGroups.map((group, index) => (
+                          <React.Fragment key={index}>
+                            <div 
+                              className="w-5 h-5 rounded"
+                              style={{ backgroundColor: group.color }}
+                            />
+                            <div className="text-black text-sm flex items-center flex-wrap">
+                              {group.guests
+                                .sort((a, b) => a.guest_canonid - b.guest_canonid)
+                                .map((g, gIndex) => (
+                                  <React.Fragment key={g.guest_id}>
+                                    <span 
+                                      className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
+                                      onClick={() => navigate(`/guest/${g.guest_id}`)}
+                                      onMouseEnter={(e) => {
+                                        if (!isMobile) {
+                                          setHoveredPersonnel(g.guest_id);
+                                          setMousePosition({ x: e.clientX, y: e.clientY });
+                                        }
+                                      }}
+                                      onMouseMove={(e) => {
+                                        if (!isMobile) {
+                                          setMousePosition({ x: e.clientX, y: e.clientY });
+                                        }
+                                      }}
+                                      onMouseLeave={() => {
+                                        if (!isMobile) {
+                                          setHoveredPersonnel(null);
+                                        }
+                                      }}
+                                    >
+                                      {g.guest_display_name}
+                                      {!isMobile && hoveredPersonnel === g.guest_id && (
+                                        <div 
+                                          className="fixed text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg z-[9999] whitespace-nowrap"
+                                          style={{
+                                            left: `${mousePosition.x + 10}px`,
+                                            top: `${mousePosition.y - 10}px`
+                                          }}
+                                        >
+                                          {g.guest_instrument}
+                                        </div>
+                                      )}
+                                    </span>
+                                    {gIndex < group.guests.length - 1 && <span>,&nbsp;</span>}
+                                  </React.Fragment>
+                                ))}
+                            </div>
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Changes component - desktop only, appears after the grid */}
+                {showId && (
+                  <div className="hidden md:block">
+                    <div className="grid grid-cols-2 gap-6">
+                      <ShowChanges showId={showId} />
+                      <div></div> {/* Empty column to maintain grid alignment */}
                     </div>
                   </div>
                 )}
