@@ -759,11 +759,12 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                 <div className="hidden md:grid grid-cols-2 gap-6 items-start">
                   <SongSpread setlist={setlist} />
                   
-                  {guestGroups.length > 0 && (
-                    <div className="bg-primary border border-black rounded-lg p-4 h-fit relative">
-                      <User className="w-5 h-5 text-black absolute top-4 right-4" />
-                      <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
-                        {guestGroups.map((group, index) => (
+                  <div className="space-y-6">
+                    {guestGroups.length > 0 && (
+                      <div className="bg-primary border border-black rounded-lg p-4 h-fit relative">
+                        <User className="w-5 h-5 text-black absolute top-4 right-4" />
+                        <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
+                          {guestGroups.map((group, index) => (
                           <React.Fragment key={index}>
                             <div 
                               className="w-5 h-5 rounded"
@@ -813,9 +814,13 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                             </div>
                           </React.Fragment>
                         ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                    
+                    {/* Changes component - now inside the right column */}
+                    {showId && <ShowChanges showId={showId} />}
+                  </div>
                 </div>
 
                 {/* Mobile layout - stacked */}
@@ -883,16 +888,6 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                     </div>
                   )}
                 </div>
-
-                {/* Changes component - desktop only, appears after the grid */}
-                {showId && (
-                  <div className="hidden md:block">
-                    <div className="grid grid-cols-2 gap-6">
-                      <ShowChanges showId={showId} />
-                      <div></div> {/* Empty column to maintain grid alignment */}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 
