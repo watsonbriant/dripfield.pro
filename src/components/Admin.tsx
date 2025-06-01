@@ -4,6 +4,7 @@ import { AdminSong } from './AdminSong';
 import { AdminSetlist } from './AdminSetlist'; 
 import { ChevronDown } from 'lucide-react';
 import { AdminGuest } from './AdminGuest';
+import { AdminShow } from './AdminShow';
 
 export function Admin() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -24,7 +25,7 @@ export function Admin() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   
   // Memoize tabs array to prevent re-creation on each render
-  const tabs = useMemo(() => ['Setlist', 'Artist', 'Song', 'Guest'], []);
+  const tabs = useMemo(() => ['Setlist', 'Artist', 'Song', 'Guest', 'Show'], []);
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {
@@ -174,6 +175,12 @@ export function Admin() {
         return (
           <div className="bg-primary border border-black rounded-lg p-3">
             <AdminGuest />
+          </div>
+        );
+      case 'Show':
+        return (
+          <div className="bg-primary border border-black rounded-lg p-3">
+            <AdminShow />
           </div>
         );
       default:
