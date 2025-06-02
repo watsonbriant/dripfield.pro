@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { MoveVertical, RefreshCw, Plus, ArrowDownUp, Minus, FileMusic, X } from 'lucide-react';
+import { MoveVertical, RefreshCw, Plus, ArrowDownUp, Minus, FileMusic, X, SquareCheckBig } from 'lucide-react';
 import SetlistDisplay from './SetlistDisplay';
 import { useNavigate } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -55,6 +55,8 @@ const getChangeIcon = (changeType: string) => {
             return { icon: <ArrowDownUp {...iconProps} />, bgColor: 'bg-yellow-600' };
         case 'cut':
             return { icon: <Minus {...iconProps} />, bgColor: 'bg-red-600' };
+        case 'pick':
+            return { icon: <SquareCheckBig {...iconProps} />, bgColor: 'bg-green-600' };
         default:
             return { icon: null, bgColor: 'bg-gray-600' };
     }
