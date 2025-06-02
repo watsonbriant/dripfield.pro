@@ -86,7 +86,9 @@ interface FullSetlistDisplayProps {
   showCoachNotes: boolean;
   showDates?: ShowDate[]; 
   navigateToVenue?: () => void;
-  showId?: string; // Add this prop
+  showId?: string;
+  openChangesModal?: boolean;
+  setOpenChangesModal?: (open: boolean) => void;
 }
 
 const getGridClass = (showCanonId: number | null): string => {
@@ -147,7 +149,16 @@ const getRarityColor = (percentage: string | null): string => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-export default function FullSetlistDisplay({ setlist, show, showCoachNotes, showDates = [], navigateToVenue, showId }: FullSetlistDisplayProps) {
+export default function FullSetlistDisplay({ 
+  setlist, 
+  show, 
+  showCoachNotes, 
+  showDates = [], 
+  navigateToVenue, 
+  showId,
+  openChangesModal,
+  setOpenChangesModal
+}: FullSetlistDisplayProps) {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [attendeeCount, setAttendeeCount] = useState(0);
@@ -819,7 +830,11 @@ export default function FullSetlistDisplay({ setlist, show, showCoachNotes, show
                     )}
                     
                     {/* Changes component - now inside the right column */}
-                    {showId && <ShowChanges showId={showId} />}
+                    {showId && <ShowChanges 
+                      showId={showId} 
+                      openModal={openChangesModal} 
+                      setOpenModal={setOpenChangesModal} 
+                    />}
                   </div>
                 </div>
 

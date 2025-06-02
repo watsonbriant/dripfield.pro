@@ -37,6 +37,8 @@ interface ShowData {
 interface ShowChangesProps {
     showId: string;
     className?: string;
+    openModal?: boolean;
+    setOpenModal?: (open: boolean) => void;
 }
 
 const getChangeIcon = (changeType: string) => {
@@ -58,7 +60,7 @@ const getChangeIcon = (changeType: string) => {
     }
 };
 
-export default function ShowChanges({ showId, className = '' }: ShowChangesProps) {
+export default function ShowChanges({ showId, className = '', openModal, setOpenModal }: ShowChangesProps) {
     const navigate = useNavigate();
     const [changes, setChanges] = useState<ShowChange[]>([]);
     const [setlistUrl, setSetlistUrl] = useState<string | null>(null);
@@ -67,6 +69,29 @@ export default function ShowChanges({ showId, className = '' }: ShowChangesProps
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showData, setShowData] = useState<ShowData | null>(null);
     const [setlist, setSetlist] = useState<SetlistEntry[]>([]);
+
+    // Use effect to sync with external control
+    useEffect(() => {
+        if (openModal !== undefined) {
+            setIsModalOpen(openModal);
+        }
+    }, [openModal]);
+
+    // Update the modal close handler
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        if (setOpenModal) {
+            setOpenModal(false);
+        }
+    };
+
+    // Update the modal open handler
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+        if (setOpenModal) {
+            setOpenModal(true);
+        }
+    };
 
     useEffect(() => {
         async function fetchShowData() {
@@ -182,15 +207,7 @@ export default function ShowChanges({ showId, className = '' }: ShowChangesProps
                     </h2>
                     {setlistUrl && (
                         <button
-                            onClick={() => {
-                                console.log('Button clicked - isModalOpen will be:', true);
-                                console.log('Current setlistUrl:', setlistUrl);
-                                console.log('Current isModalOpen before setState:', isModalOpen);
-                                setIsModalOpen(prev => {
-                                    console.log('setState callback - prev:', prev, 'new:', true);
-                                    return true;
-                                });
-                            }}
+                            onClick={handleOpenModal}
                             className="bg-secondary hover:bg-[#f9ae37] border border-black rounded-lg p-1.5 transition-colors"
                         >
                             <FileMusic
@@ -229,7 +246,7 @@ export default function ShowChanges({ showId, className = '' }: ShowChangesProps
             </div>
 
             {/* Modal for setlist image - Now outside the main div and will always be available */}
-            {isModalOpen && setlistUrl && (
+            {isModalOpen && setlistUrl && showData && (
                 <>
                     {console.log('Modal is rendering - isModalOpen:', isModalOpen, 'setlistUrl:', setlistUrl)}
                     <div
@@ -243,7 +260,7 @@ export default function ShowChanges({ showId, className = '' }: ShowChangesProps
                             minHeight: '100vh',
                             minHeight: '100dvh' // Dynamic viewport height for better mobile support
                         }}
-                        onClick={() => setIsModalOpen(false)}
+                        onClick={handleCloseModal}
                     >
                         <div
                             className="relative bg-primary rounded-lg overflow-hidden border-2 border-black my-8 max-h-[90vh] overflow-y-auto"
@@ -316,7 +333,7 @@ export default function ShowChanges({ showId, className = '' }: ShowChangesProps
 
                             {/* Close button */}
                             <button
-                                onClick={() => setIsModalOpen(false)}
+                                onClick={handleCloseModal}
                                 className="absolute top-2 right-2 bg-[#f9ae37] hover:bg-tertiary border border-black rounded-full p-2 transition-colors"
                             >
                                 <X className="w-5 h-5 text-black" />

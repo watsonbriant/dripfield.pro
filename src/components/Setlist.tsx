@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronDown, Search, MapPin } from 'lucide-react';
 import { Modal } from './Modal';
 import { supabase } from '../lib/supabase';
@@ -98,6 +98,18 @@ export function Setlist() {
   const showDatesDropdownRef = React.useRef<HTMLDivElement>(null);
   const showDatesDropdownListRef = React.useRef<HTMLDivElement>(null);
   const [showCoachNotes, setShowCoachNotes] = React.useState(false);
+
+  const location = useLocation();
+  const [openChangesModal, setOpenChangesModal] = React.useState(false);
+
+  // Check if we should open the changes modal from navigation state
+  React.useEffect(() => {
+    if (location.state?.openChangesModal) {
+      setOpenChangesModal(true);
+      // Clear the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const hasCoachNotes = React.useMemo(() => {
     return setlist.some(entry => entry.entry_coachnotes);
@@ -525,9 +537,11 @@ export function Setlist() {
         setlist={setlist} 
         show={show} 
         showCoachNotes={showCoachNotes}
-        showDates={showDates}  // Pass the showDates array
-        navigateToVenue={navigateToVenue} // Pass the venue navigation function
+        showDates={showDates}
+        navigateToVenue={navigateToVenue}
         showId={showId}
+        openChangesModal={openChangesModal}
+        setOpenChangesModal={setOpenChangesModal}
       />
     </div>
   );

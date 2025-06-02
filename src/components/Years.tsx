@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 
@@ -63,6 +63,7 @@ export function Years() {
   const [sortColumn, setSortColumn] = useState<string>('show_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [previousYearId, setPreviousYearId] = useState<string | null>(null);
+  const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
 
   const tourColors = [
     '#3498DB', '#E74C3C', '#2ECC71', '#F39C12', 
@@ -161,6 +162,31 @@ export function Years() {
   const clearGroupFilters = () => {
     setSelectedGroups([]);
   };
+
+  // Add this after the existing useEffect hooks
+  useEffect(() => {
+    async function fetchShowsWithSetlists() {
+      if (!currentYear) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('show_setlists')
+          .select('show_id')
+          .in('show_id', shows.map(s => s.show_id));
+        
+        if (error) throw error;
+        
+        const setlistSet = new Set(data?.map(item => item.show_id) || []);
+        setShowsWithSetlists(setlistSet);
+      } catch (error) {
+        console.error('Error fetching shows with setlists:', error);
+      }
+    }
+    
+    if (shows.length > 0) {
+      fetchShowsWithSetlists();
+    }
+  }, [shows, currentYear]);
 
   // Apply group filtering to shows
   useEffect(() => {
@@ -541,6 +567,11 @@ export function Years() {
                           <Check size={16} className="text-black" strokeWidth={4} />
                         </th>
                       )}
+                      <th className="w-8 px-1 py-1 text-center align-middle text-s font-semibold text-black">
+                        <div className="flex justify-center items-center">
+                          <FileMusic size={16} className="text-black" strokeWidth={2} />
+                        </div>
+                      </th>
                       <th 
                         className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_group')}
@@ -639,6 +670,21 @@ export function Years() {
                             )}
                           </td>
                         )}
+                        <td className="w-8 text-center align-middle">
+                          {showsWithSetlists.has(show.show_id) && (
+                            <div className="flex justify-center items-center h-full">
+                              <button
+                                onClick={() => {
+                                  // Navigate with a state parameter to open the modal
+                                  navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
+                                }}
+                                className="hover:text-[#a9682e] hover:bg-[#f9ae37] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                              >
+                                <FileMusic size={14.5} className="text-black" strokeWidth={2} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
                         <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_group}</td>
                         <td className="px-4 py-0.5 text-black whitespace-nowrap">
                           <button

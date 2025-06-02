@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight, FileMusic } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 import TourSongSpread from './TourSongSpread';
@@ -100,6 +100,7 @@ export function Tours() {
   const [hasTourSetlistEntries, setHasTourSetlistEntries] = React.useState(false);
   const [uniqueSongCount, setUniqueSongCount] = React.useState<number>(0);
   const [previousTourId, setPreviousTourId] = React.useState<string | null>(null);
+  const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
 
   const getRarityColor = (percentage: string | null): string => {
     // If percentage is null or not a valid percentage string, return transparent
@@ -173,6 +174,31 @@ export function Tours() {
   const [showsLoaded, setShowsLoaded] = React.useState(false);
   const [slotsLoaded, setSlotsLoaded] = React.useState(false);
   const [songIdsLoaded, setSongIdsLoaded] = React.useState(false);
+
+  // Fetch shows with setlists
+  useEffect(() => {
+    async function fetchShowsWithSetlists() {
+      if (!currentTour || shows.length === 0) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('show_setlists')
+          .select('show_id')
+          .in('show_id', shows.map(s => s.show_id));
+        
+        if (error) throw error;
+        
+        const setlistSet = new Set(data?.map(item => item.show_id) || []);
+        setShowsWithSetlists(setlistSet);
+      } catch (error) {
+        console.error('Error fetching shows with setlists:', error);
+      }
+    }
+    
+    if (shows.length > 0) {
+      fetchShowsWithSetlists();
+    }
+  }, [shows, currentTour]);
 
   // Fetch attended shows for current user
   useEffect(() => {
@@ -1010,6 +1036,7 @@ export function Tours() {
                     {[
                       { key: 'show_date', label: 'Date' },
                       ...(user ? [{ key: 'attended', label: <Check size={16} className="text-black" strokeWidth={4} /> }] : []),
+                      { key: 'setlist', label: <FileMusic size={16} className="text-black" strokeWidth={2} /> },
                       { key: 'show_group', label: 'Group' },
                       { key: 'show_length', label: 'Length' },
                       { key: 'show_rarity', label: 'Rarity' },
@@ -1019,14 +1046,14 @@ export function Tours() {
                     ].map(({ key, label }) => (
                       <th
                         key={key}
-                        onClick={() => key !== 'attended' ? handleSort(key) : null}
+                        onClick={() => key !== 'attended' && key !== 'setlist' ? handleSort(key) : null}
                         className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'text-center' : 'text-left'} 
                           text-s font-semibold text-black whitespace-nowrap 
-                          ${key !== 'attended' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
+                          ${key !== 'attended' && key !== 'setlist' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
                       >
-                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'justify-center' : ''} gap-1`}>
+                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'setlist' ? 'justify-center' : ''} gap-1`}>
                           {label}
-                          {key !== 'attended' && getSortIcon(key)}
+                          {key !== 'attended' && key !== 'setlist' && getSortIcon(key)}
                         </div>
                       </th>
                     ))}
@@ -1064,6 +1091,21 @@ export function Tours() {
                           )}
                         </td>
                       )}
+                      <td className="w-8 text-center align-middle">
+                        {showsWithSetlists.has(show.show_id) && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => {
+                                // Navigate with a state parameter to open the modal
+                                navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
+                              }}
+                              className="hover:text-[#a9682e] hover:bg-[#f9ae37] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                            >
+                              <FileMusic size={14.5} className="text-black" strokeWidth={2} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
                       <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_group}</td>
                       <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">
                         {show.show_length || ''}
