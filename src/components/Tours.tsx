@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight, FileMusic } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight, FileMusic, Users } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 import TourSongSpread from './TourSongSpread';
@@ -101,6 +101,7 @@ export function Tours() {
   const [uniqueSongCount, setUniqueSongCount] = React.useState<number>(0);
   const [previousTourId, setPreviousTourId] = React.useState<string | null>(null);
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
+  const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
 
   const getRarityColor = (percentage: string | null): string => {
     // If percentage is null or not a valid percentage string, return transparent
@@ -174,6 +175,39 @@ export function Tours() {
   const [showsLoaded, setShowsLoaded] = React.useState(false);
   const [slotsLoaded, setSlotsLoaded] = React.useState(false);
   const [songIdsLoaded, setSongIdsLoaded] = React.useState(false);
+
+  // Fetch attendee counts for all shows
+  useEffect(() => {
+    const fetchAttendeeCounts = async () => {
+      if (shows.length === 0) return;
+      
+      try {
+        // Get counts for all shows in one query
+        const { data, error } = await supabase
+          .from('user_attended_shows')
+          .select('show_id')
+          .in('show_id', shows.map(s => s.show_id));
+        
+        if (error) throw error;
+        
+        // Count attendees per show
+        const counts: Record<string, number> = {};
+        shows.forEach(show => {
+          counts[show.show_id] = 0;
+        });
+        
+        data?.forEach(record => {
+          counts[record.show_id] = (counts[record.show_id] || 0) + 1;
+        });
+        
+        setAttendeeCounts(counts);
+      } catch (error) {
+        console.error('Error fetching attendee counts:', error);
+      }
+    };
+    
+    fetchAttendeeCounts();
+  }, [shows]);
 
   // Fetch shows with setlists
   useEffect(() => {
@@ -1042,18 +1076,19 @@ export function Tours() {
                       { key: 'show_rarity', label: 'Rarity' },
                       { key: 'show_subvenue', label: 'Venue' },
                       { key: 'show_venue_location', label: 'Location' },
+                      { key: 'users', label: <Users size={16} className="text-black" strokeWidth={2} /> },
                       { key: 'show_detail', label: 'Detail' }
                     ].map(({ key, label }) => (
                       <th
                         key={key}
-                        onClick={() => key !== 'attended' && key !== 'setlist' ? handleSort(key) : null}
+                        onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'users' ? handleSort(key) : null}
                         className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'text-center' : 'text-left'} 
                           text-s font-semibold text-black whitespace-nowrap 
-                          ${key !== 'attended' && key !== 'setlist' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
+                          ${key !== 'attended' && key !== 'setlist' && key !== 'users' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
                       >
-                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'setlist' ? 'justify-center' : ''} gap-1`}>
+                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'setlist' || key === 'users' ? 'justify-center' : ''} gap-1`}>
                           {label}
-                          {key !== 'attended' && key !== 'setlist' && getSortIcon(key)}
+                          {key !== 'attended' && key !== 'setlist' && key !== 'users' && getSortIcon(key)}
                         </div>
                       </th>
                     ))}
@@ -1134,6 +1169,11 @@ export function Tours() {
                       </td>
                       <td className="px-4 py-0.5 text-black whitespace-nowrap">
                         {show.show_venue_location}
+                      </td>
+                      <td className="w-8 text-center text-black">
+                        {attendeeCounts[show.show_id] > 0 && (
+                          <span className="text-xs font-semibold">{attendeeCounts[show.show_id]}</span>
+                        )}
                       </td>
                       <td className="px-4 py-0.5 text-black whitespace-nowrap">
                         {show.show_detail && show.show_detail}

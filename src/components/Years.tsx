@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic, Users } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 
@@ -64,6 +64,7 @@ export function Years() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [previousYearId, setPreviousYearId] = useState<string | null>(null);
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
+  const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
 
   const tourColors = [
     '#3498DB', '#E74C3C', '#2ECC71', '#F39C12', 
@@ -162,6 +163,39 @@ export function Years() {
   const clearGroupFilters = () => {
     setSelectedGroups([]);
   };
+
+  // Fetch attendee counts for all shows
+  useEffect(() => {
+    const fetchAttendeeCounts = async () => {
+      if (filteredShows.length === 0) return;
+      
+      try {
+        // Get counts for all shows in one query
+        const { data, error } = await supabase
+          .from('user_attended_shows')
+          .select('show_id')
+          .in('show_id', filteredShows.map(s => s.show_id));
+        
+        if (error) throw error;
+        
+        // Count attendees per show
+        const counts: Record<string, number> = {};
+        filteredShows.forEach(show => {
+          counts[show.show_id] = 0;
+        });
+        
+        data?.forEach(record => {
+          counts[record.show_id] = (counts[record.show_id] || 0) + 1;
+        });
+        
+        setAttendeeCounts(counts);
+      } catch (error) {
+        console.error('Error fetching attendee counts:', error);
+      }
+    };
+    
+    fetchAttendeeCounts();
+  }, [filteredShows]);
 
   // Add this after the existing useEffect hooks
   useEffect(() => {
@@ -599,6 +633,11 @@ export function Years() {
                           {getSortIcon('show_venue_location')}
                         </div>
                       </th>
+                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-black">
+                        <div className="flex justify-center items-center">
+                          <Users size={16} className="text-black" strokeWidth={2} />
+                        </div>
+                      </th>
                       <th 
                         className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_detail')}
@@ -695,6 +734,11 @@ export function Years() {
                           </button>
                         </td>
                         <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_venue_location}</td>
+                        <td className="w-8 text-center text-black">
+                          {attendeeCounts[show.show_id] > 0 && (
+                            <span className="text-xs font-semibold">{attendeeCounts[show.show_id]}</span>
+                          )}
+                        </td>
                         <td className="px-4 py-0.5 text-black whitespace-nowrap">
                           {show.show_detail && show.show_detail}
                           {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
