@@ -561,12 +561,12 @@ export function TourDetailsPage() {
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.averageScore !== undefined ? show.averageScore : '-'}
+                                                            {show.averageScore !== undefined ? show.averageScore.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className={`text-xs ${show.averageOverUnder > 0 ? 'text-red-600' : show.averageOverUnder < 0 ? 'text-green-600' : 'text-black/70'}`}>
-                                                            {show.averageOverUnder !== undefined ? (show.averageOverUnder > 0 ? '+' : '') + show.averageOverUnder : '-'}
+                                                            {show.averageOverUnder !== undefined ? (show.averageOverUnder.toFixed(2) > 0 ? '+' : '') + show.averageOverUnder.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
@@ -576,7 +576,7 @@ export function TourDetailsPage() {
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.averageCorrectSongs !== undefined ? show.averageCorrectSongs : '-'}
+                                                            {show.averageCorrectSongs !== undefined ? show.averageCorrectSongs.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
@@ -586,7 +586,7 @@ export function TourDetailsPage() {
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.averageCorrectSets !== undefined ? show.averageCorrectSets : '-'}
+                                                            {show.averageCorrectSets !== undefined ? show.averageCorrectSets.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
