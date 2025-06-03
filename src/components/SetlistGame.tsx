@@ -841,15 +841,15 @@ export function SetlistGame() {
           {!user && (
             <div className="bg-primary border border-black rounded-lg p-3">
               <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">How To Play</h2>
-              <div className="mt-4 p-3 bg-[#f9ae37]/20 rounded border border-[#f9ae37]/40">
+              <div className="p-3 bg-[#f9ae37]/20 rounded border border-[#f9ae37]/40">
                 <p className="text-black font-medium text-sm">
-                  You need to be logged in to participate in the Setlist Game.{' '}
+                  You need to be logged in to participate in Echo of a Show.{' '}
                   <Link to="/login" className="text-[#a9682e] hover:underline">
                     Log in
                   </Link>
                   {' '}or{' '}
                   <Link to="/signup" className="text-[#a9682e] hover:underline">
-                    Sign up
+                    sign up
                   </Link>
                   {' '}to start playing!
                 </p>
