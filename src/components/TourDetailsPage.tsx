@@ -39,10 +39,17 @@ interface PlayerStats {
     avgPointsPerShow: number;
 }
 
+interface TourInfo {
+    tour: string;
+    tour_id: string;
+    tour_canonid?: number;
+}
+
 export function TourDetailsPage() {
-    const { tourName } = useParams<{ tourName: string }>();
+    const { tourId } = useParams<{ tourId: string }>();
     const [loading, setLoading] = useState(true);
     const [gameShows, setGameShows] = useState<GameShow[]>([]);
+    const [tourInfo, setTourInfo] = useState<TourInfo | null>(null);
     const [tourStats, setTourStats] = useState({
         totalShows: 0,
         totalPlayers: 0,
@@ -51,9 +58,35 @@ export function TourDetailsPage() {
     const [standings, setStandings] = useState<PlayerStats[]>([]);
     const { user } = useAuth();
 
+    // Fetch tour info first
+    useEffect(() => {
+        async function fetchTourInfo() {
+            if (!tourId) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('tours')
+                    .select('tour, tour_id, tour_canonid')
+                    .eq('tour_id', tourId)
+                    .single();
+
+                if (error) {
+                    console.error('Error fetching tour info:', error);
+                    return;
+                }
+
+                setTourInfo(data);
+            } catch (error) {
+                console.error('Error in tour info fetch:', error);
+            }
+        }
+
+        fetchTourInfo();
+    }, [tourId]);
+
     // Fetch all tour shows
     const fetchTourShows = useCallback(async () => {
-        if (!tourName) return;
+        if (!tourInfo) return;
 
         try {
             setLoading(true);
@@ -62,7 +95,7 @@ export function TourDetailsPage() {
             const { data, error } = await supabase
                 .from('shows')
                 .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_scored, show_detail, show_canonid, show_subvenue_venue')
-                .eq('show_tour', tourName)
+                .eq('show_tour', tourInfo.tour)
                 .eq('show_issetlistgame', true)
                 .order('show_canonid', { ascending: true });
 
@@ -129,7 +162,7 @@ export function TourDetailsPage() {
                             show.totalCorrectSongs = correctSongs;
                             
                             // Calculate average correct songs per user
-                            const submissionPicks = {};
+                            const submissionPicks: Record<string, any> = {};
                             picks.forEach(pick => {
                                 if (!submissionPicks[pick.submission_id]) {
                                     submissionPicks[pick.submission_id] = {
@@ -164,14 +197,14 @@ export function TourDetailsPage() {
                             show.totalCorrectSets = correctSets;
                             
                             // Count users who picked opener and closer correctly
-                            show.usersPickedOpener = Object.values(submissionPicks).filter(p => p.pickedOpener).length;
-                            show.usersPickedCloser = Object.values(submissionPicks).filter(p => p.pickedCloser).length;
+                            show.usersPickedOpener = Object.values(submissionPicks).filter((p: any) => p.pickedOpener).length;
+                            show.usersPickedCloser = Object.values(submissionPicks).filter((p: any) => p.pickedCloser).length;
                             
                             // Calculate averages per user
                             const submissionValues = Object.values(submissionPicks);
                             if (submissionValues.length > 0) {
-                                const totalCorrectSongs = submissionValues.reduce((sum, val) => sum + val.correctSongs, 0);
-                                const totalCorrectSets = submissionValues.reduce((sum, val) => sum + val.correctSets, 0);
+                                const totalCorrectSongs = submissionValues.reduce((sum, val: any) => sum + val.correctSongs, 0);
+                                const totalCorrectSets = submissionValues.reduce((sum, val: any) => sum + val.correctSets, 0);
                                 
                                 show.averageCorrectSongs = Number((totalCorrectSongs / submissionValues.length).toFixed(2));
                                 show.averageCorrectSets = Number((totalCorrectSets / submissionValues.length).toFixed(2));
@@ -195,18 +228,18 @@ export function TourDetailsPage() {
         } finally {
             setLoading(false);
         }
-    }, [tourName]);
+    }, [tourInfo]);
 
     // Fetch tour statistics and standings
     const fetchTourStats = useCallback(async () => {
-        if (!tourName) return;
+        if (!tourInfo) return;
 
         try {
             // Get all scored shows for this tour
             const { data: showData, error: showError } = await supabase
                 .from('shows')
                 .select('show_id')
-                .eq('show_tour', tourName)
+                .eq('show_tour', tourInfo.tour)
                 .eq('show_scored', true)
                 .eq('show_issetlistgame', true);
 
@@ -399,13 +432,15 @@ export function TourDetailsPage() {
         } catch (error) {
             console.error('Error fetching tour stats:', error);
         }
-    }, [tourName]);
+    }, [tourInfo]);
 
     // Initial data fetching
     useEffect(() => {
-        fetchTourShows();
-        fetchTourStats();
-    }, [fetchTourShows, fetchTourStats]);
+        if (tourInfo) {
+            fetchTourShows();
+            fetchTourStats();
+        }
+    }, [tourInfo, fetchTourShows, fetchTourStats]);
 
     // Format date for display (MM.DD.YY)
     const formatDate = (dateString: string) => {
@@ -428,7 +463,7 @@ export function TourDetailsPage() {
                 </Link>
                 <ChevronRight className="w-4 h-4 mx-2" />
                 <span className="text-black">
-                    {tourName || 'Tour Details'}
+                    {tourInfo?.tour || 'Tour Details'}
                 </span>
             </div>
 
@@ -447,7 +482,7 @@ export function TourDetailsPage() {
                     <div className="bg-primary border border-black rounded-lg p-4">
                         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                             <div>
-                                <h1 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">{tourName}</h1>
+                                <h1 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">{tourInfo?.tour}</h1>
                                 <div className="mt-2 flex gap-3">
                                     <div className="flex items-center">
                                         <span className="text-black/70 text-sm">Shows:</span>
@@ -481,7 +516,7 @@ export function TourDetailsPage() {
                         </div>
                     </div>
 
-                    {/* Tour Shows Table */}
+                    {/* Tour Shows Table - rest of the component remains the same */}
                     <div className="bg-primary border border-black rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-4">
                             <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
@@ -498,18 +533,18 @@ export function TourDetailsPage() {
                             <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
                                 <table className="w-full border-collapse min-w-max table-fixed">
                                     <colgroup>
-                                        <col className="w-28" /> {/* Date column */}
-                                        <col className="w-44" /> {/* Location column */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Players */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* High Score */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Avg Score */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Avg +/- */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Total Songs */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Avg Songs */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Total Sets */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Avg Sets */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Opener Picks */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Closer Picks */}
+                                        <col className="w-28" />
+                                        <col className="w-44" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
                                     </colgroup>
                                     <thead>
                                         <tr className="bg-canvas border-y border-black/10">
@@ -556,47 +591,47 @@ export function TourDetailsPage() {
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black font-semibold text-xs">
-                                                            {show.highScore !== undefined ? show.highScore : '-'}
+                                                            {show.show_scored && show.highScore !== undefined ? show.highScore : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.averageScore !== undefined ? show.averageScore.toFixed(2) : '-'}
+                                                            {show.show_scored && show.averageScore !== undefined ? show.averageScore.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className={`text-xs ${show.averageOverUnder > 0 ? 'text-red-600' : show.averageOverUnder < 0 ? 'text-green-600' : 'text-black/70'}`}>
-                                                            {show.averageOverUnder !== undefined ? (show.averageOverUnder.toFixed(2) > 0 ? '+' : '') + show.averageOverUnder.toFixed(2) : '-'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
-                                                            {show.totalCorrectSongs !== undefined ? show.totalCorrectSongs : '-'}
+                                                        <span className={`text-xs ${show.show_scored && show.averageOverUnder && show.averageOverUnder > 0 ? 'text-red-600' : show.show_scored && show.averageOverUnder && show.averageOverUnder < 0 ? 'text-green-600' : 'text-black/70'}`}>
+                                                            {show.show_scored && show.averageOverUnder !== undefined ? (show.averageOverUnder > 0 ? '+' : '') + show.averageOverUnder.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.averageCorrectSongs !== undefined ? show.averageCorrectSongs.toFixed(2) : '-'}
+                                                            {show.show_scored && show.totalCorrectSongs !== undefined ? show.totalCorrectSongs : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.totalCorrectSets !== undefined ? show.totalCorrectSets : '-'}
+                                                            {show.show_scored && show.averageCorrectSongs !== undefined ? show.averageCorrectSongs.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.averageCorrectSets !== undefined ? show.averageCorrectSets.toFixed(2) : '-'}
+                                                            {show.show_scored && show.totalCorrectSets !== undefined ? show.totalCorrectSets : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.usersPickedOpener !== undefined ? show.usersPickedOpener : '-'}
+                                                            {show.show_scored && show.averageCorrectSets !== undefined ? show.averageCorrectSets.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
                                                         <span className="text-black/70 text-xs">
-                                                            {show.usersPickedCloser !== undefined ? show.usersPickedCloser : '-'}
+                                                            {show.show_scored && show.usersPickedOpener !== undefined ? show.usersPickedOpener : '-'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-0.5 py-0.5 text-center">
+                                                        <span className="text-black/70 text-xs">
+                                                            {show.show_scored && show.usersPickedCloser !== undefined ? show.usersPickedCloser : '-'}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -625,15 +660,15 @@ export function TourDetailsPage() {
                             <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
                                 <table className="w-full border-collapse min-w-max table-fixed">
                                     <colgroup>
-                                        <col className="w-12" /> {/* Rank column - narrow */}
-                                        <col className="w-44" /> {/* User column - flexible but with minimum width */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Total Points */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Shows Played */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Points Per Show */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Songs Correctly Picked */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Sets Correctly Picked */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Show Openers Picked */}
-                                        <col className="w-[65px] min-w-[65px]" /> {/* Show Closers Picked */}
+                                        <col className="w-12" />
+                                        <col className="w-44" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
+                                        <col className="w-[65px] min-w-[65px]" />
                                     </colgroup>
                                     <thead>
                                         <tr className="bg-canvas border-y border-black/10">

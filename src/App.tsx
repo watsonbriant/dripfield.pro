@@ -332,7 +332,7 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/setlistgame" element={<SetlistGame />} />
-              <Route path="/setlistgame/tour/:tourName" element={<TourDetailsPage />} />
+              <Route path="/setlistgame/tour/:tourId" element={<TourDetailsPage />} />
               <Route path="/setlistgame/:showId" element={<SetlistGameShowPage />} />
             </Routes>
           </main>

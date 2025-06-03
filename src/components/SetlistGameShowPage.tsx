@@ -14,12 +14,16 @@ interface GameShow {
   show_venue_location: string;
   show_time: string;
   show_tour: string;
+  show_canonid: string;
   show_subvenue_venue: string;
+  show_detail?: string | null;
   show_scored?: boolean;
   timeRemaining?: string;
   isSelectionClosed?: boolean;
   submission_id?: string;
-  show_detail?: string | null;
+  score?: number;
+  playerCount?: number;
+  tours?: { tour_id: string }; // Add this line
 }
 
 interface PlayerStats {
@@ -106,7 +110,18 @@ export function SetlistGameShowPage() {
 
         const { data, error } = await supabase
           .from('shows')
-          .select('show_id, show_date, show_subvenue, show_venue_location, show_time, show_tour, show_subvenue_venue, show_scored, show_detail')
+          .select(`
+            show_id, 
+            show_date, 
+            show_subvenue, 
+            show_venue_location, 
+            show_time, 
+            show_tour, 
+            show_subvenue_venue, 
+            show_scored, 
+            show_detail,
+            tours!shows_show_tour_fkey(tour_id)
+          `)
           .eq('show_id', showId)
           .single();
 
@@ -896,6 +911,14 @@ export function SetlistGameShowPage() {
             Echo of a Show
           </div>
         </Link>
+        {show && show.show_tour && show.tours?.tour_id && (
+          <>
+            <ChevronRight className="w-4 h-4 mx-2" />
+            <Link to={`/setlistgame/tour/${show.tours.tour_id}`} className="hover:text-[#a9682e] transition-colors">
+              {show.show_tour}
+            </Link>
+          </>
+        )}
         <ChevronRight className="w-4 h-4 mx-2" />
         <span className="text-black">
           {show ? `${formatDate(show.show_date)} – ${show.show_venue_location}` : 'Loading...'}

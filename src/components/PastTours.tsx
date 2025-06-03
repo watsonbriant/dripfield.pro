@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 interface TourStats {
   tour: string;
+  tour_id: string;  // Add this line
   playerCount: number;
   showCount: number;
   winners: Array<{
@@ -26,7 +27,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
         // Get a list of all tours from the tours table first
         const { data: toursData, error: toursError } = await supabase
           .from('tours')
-          .select('tour, tour_canonid')
+          .select('tour, tour_id, tour_canonid')
           .neq('tour', currentLeague);
           
         if (toursError) {
@@ -43,7 +44,9 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
         const tourMap = new Map<string, {
           userIds: Set<string>,
           showIds: Set<string>,
-          userScores: Map<string, number>
+          userScores: Map<string, number>,
+          canonId?: number;
+          tourId: string;  // Add this line
         }>();
         
         // Initialize the map with all tours
@@ -52,7 +55,8 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
             userIds: new Set(),
             showIds: new Set(),
             userScores: new Map(),
-            canonId: tourData.tour_canonid
+            canonId: tourData.tour_canonid,
+            tourId: tourData.tour_id  // Add this line
           });
         });
         
@@ -159,6 +163,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
           
           tourStats.push({
             tour,
+            tour_id: data.tourId,  // Add this line
             playerCount: data.userIds.size,
             showCount: data.showIds.size,
             winners,
@@ -250,12 +255,12 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
                 className="bg-canvas hover:bg-black/10 transition-colors text-xs"
               >
                 <td className="px-4 py-0.5 text-black whitespace-nowrap font-semibold">
-                  <Link 
-                    to={`/setlistgame/tour/${tour.tour}`}
-                    className="hover:text-[#a9682e] transition-colors table-link"
-                  >
-                    {tour.tour}
-                  </Link>
+                <Link 
+                  to={`/setlistgame/tour/${tour.tour_id}`}
+                  className="hover:text-[#a9682e] transition-colors table-link"
+                >
+                  {tour.tour}
+                </Link>
                 </td>
                 <td className="px-4 py-0.5 text-center text-black/70 whitespace-nowrap">
                   {tour.playerCount}
