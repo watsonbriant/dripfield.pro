@@ -87,8 +87,19 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   const [selectedGuestIds, setSelectedGuestIds] = useState<string[]>([]);
   const [isGuestSectionExpanded, setIsGuestSectionExpanded] = useState(false);
 
-
   const [selectedNewSongOption, setSelectedNewSongOption] = useState<string>("N/A");
+
+  // Add the updateStatistics function
+  const updateStatistics = async () => {
+    try {
+      const { error } = await supabase.rpc('update_all_setlist_entries');
+      if (error) {
+        console.error('Error updating statistics:', error);
+      }
+    } catch (error) {
+      console.error('Error calling update function:', error);
+    }
+  };
 
   // Load dropdown options on component mount
   useEffect(() => {
@@ -443,6 +454,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             await saveGuestAssociations(savedEntryId);
           }
         }
+        
+        // Update statistics after successful insert
+        updateStatistics();
       } else {
         // Update existing entry
         
@@ -469,6 +483,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         
         // Save guest associations
         await saveGuestAssociations(entryToSave.entry_id);
+        
+        // Update statistics after successful update
+        updateStatistics();
       }
       
       setIsEditing(false);
@@ -526,6 +543,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                               console.error('Error deleting setlist entry:', error);
                               alert(`Error deleting entry: ${error.message}`);
                             } else {
+                              // Update statistics after successful deletion
+                              updateStatistics();
                               onSave(); // Trigger refetch of entries
                               onClose(); // Close modal after successful deletion
                             }
