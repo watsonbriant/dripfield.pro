@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatInTimeZone } from 'date-fns-tz';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Link, Pencil } from 'lucide-react';
 import ShowAttendButton from './ShowAttendButton';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface ShowPosition {
   current: number;
@@ -39,6 +41,61 @@ const ShowInfoContent = React.memo(({
   onAttendeeCountChange
 }: ShowInfoContentProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  // Check if user is admin
+  useEffect(() => {
+    async function checkAdminStatus() {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single();
+        
+        if (error) {
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
+          return;
+        }
+        
+        setIsAdmin(data?.is_admin || false);
+      } catch (error) {
+        console.error('Error in admin check:', error);
+        setIsAdmin(false);
+      }
+    }
+    
+    checkAdminStatus();
+  }, [user]);
+
+  // Handle copying show ID to clipboard
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(show.show_id);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  // Handle navigation to admin with this show selected
+  const handleEditShow = () => {
+    // Store the show ID in localStorage so AdminSetlist can pick it up
+    localStorage.setItem('adminSelectedShowId', show.show_id);
+    // Set the active tab to Setlist
+    localStorage.setItem('adminActiveTab', 'Setlist');
+    // Navigate to admin
+    navigate('/admin');
+  };
   
   return (
     <div className="bg-primary border border-black rounded-lg p-4">
@@ -50,6 +107,29 @@ const ShowInfoContent = React.memo(({
             'MM.dd.yy'
           )}
         </div>
+        {/* Admin buttons */}
+        {isAdmin && (
+          <div className="flex gap-2">
+            <button
+              onClick={handleCopyLink}
+              className={`p-1.5 rounded border transition-all duration-200 ${
+                linkCopied 
+                  ? 'bg-green-500 text-white border-green-600' 
+                  : 'bg-[#f9ae37] text-black border-black hover:bg-white'
+              }`}
+              title="Copy Show ID"
+            >
+              <Link size={16} />
+            </button>
+            <button
+              onClick={handleEditShow}
+              className="p-1.5 rounded bg-[#f9ae37] text-black border border-black hover:bg-white transition-colors"
+              title="Edit Show"
+            >
+              <Pencil size={16} />
+            </button>
+          </div>
+        )}
       </div>
       <div className="mt-2 space-y-4">
         <div className="space-y-1">
