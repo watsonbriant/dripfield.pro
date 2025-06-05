@@ -786,9 +786,10 @@ export default function FullSetlistDisplay({
                                 .sort((a, b) => a.guest_canonid - b.guest_canonid)
                                 .map((g, gIndex) => (
                                   <React.Fragment key={g.guest_id}>
-                                    <span 
-                                      className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
-                                      onClick={() => navigate(`/guest/${g.guest_id}`)}
+                                    <span className="inline-block whitespace-nowrap">
+                                      <span 
+                                        className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
+                                        onClick={() => navigate(`/guest/${g.guest_id}`)}
                                       onMouseEnter={(e) => {
                                         if (!isMobile) {
                                           setHoveredPersonnel(g.guest_id);
@@ -820,9 +821,10 @@ export default function FullSetlistDisplay({
                                       )}
                                     </span>
                                     {gIndex < group.guests.length - 1 && <span>,&nbsp;</span>}
-                                  </React.Fragment>
-                                ))}
-                            </div>
+                                  </span>
+                                </React.Fragment>
+                              ))}
+                          </div>
                           </React.Fragment>
                         ))}
                         </div>
@@ -860,9 +862,10 @@ export default function FullSetlistDisplay({
                                 .sort((a, b) => a.guest_canonid - b.guest_canonid)
                                 .map((g, gIndex) => (
                                   <React.Fragment key={g.guest_id}>
-                                    <span 
-                                      className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
-                                      onClick={() => navigate(`/guest/${g.guest_id}`)}
+                                    <span className="inline-block whitespace-nowrap">
+                                      <span 
+                                        className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold relative"
+                                        onClick={() => navigate(`/guest/${g.guest_id}`)}
                                       onMouseEnter={(e) => {
                                         if (!isMobile) {
                                           setHoveredPersonnel(g.guest_id);
@@ -894,9 +897,10 @@ export default function FullSetlistDisplay({
                                       )}
                                     </span>
                                     {gIndex < group.guests.length - 1 && <span>,&nbsp;</span>}
-                                  </React.Fragment>
-                                ))}
-                            </div>
+                                  </span>
+                                </React.Fragment>
+                              ))}
+                          </div>
                           </React.Fragment>
                         ))}
                       </div>
