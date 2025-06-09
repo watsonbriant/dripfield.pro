@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Search, Save, Edit, Plus } from 'lucide-react';
+import { ChevronDown, Search, Save, Edit, Plus, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ShowModal from './ShowModal';
 
@@ -19,6 +19,7 @@ interface ShowData {
     show_alert: string | null;
     show_coachnotes: string | null;
     show_time: string | null;
+    show_callbacks: string | null;
 }
 
 interface GroupData {
@@ -39,6 +40,11 @@ interface YearData {
     year: string;
 }
 
+interface SongData {
+    song: string;
+    song_id: string;
+}
+
 export const AdminShow: React.FC = () => {
     const [allShows, setAllShows] = useState<ShowData[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -57,11 +63,29 @@ export const AdminShow: React.FC = () => {
     const [tours, setTours] = useState<TourData[]>([]);
     const [subvenues, setSubvenues] = useState<SubvenueData[]>([]);
     const [years, setYears] = useState<YearData[]>([]);
+    const [songs, setSongs] = useState<SongData[]>([]);
+    
+    // Song dropdown state
+    const [songSearchTerm, setSongSearchTerm] = useState('');
+    const [isSongDropdownOpen, setIsSongDropdownOpen] = useState(false);
+    const songDropdownRef = useRef<HTMLDivElement>(null);
+    const callbacksTextareaRef = useRef<HTMLTextAreaElement>(null);
+    
+    // Show dropdown state for callbacks
+    const [showSearchTerm, setShowSearchTerm] = useState('');
+    const [isShowDropdownOpen, setIsShowDropdownOpen] = useState(false);
+    const showDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsDropdownOpen(false);
+            }
+            if (songDropdownRef.current && !songDropdownRef.current.contains(event.target as Node)) {
+                setIsSongDropdownOpen(false);
+            }
+            if (showDropdownRef.current && !showDropdownRef.current.contains(event.target as Node)) {
+                setIsShowDropdownOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -125,6 +149,14 @@ export const AdminShow: React.FC = () => {
                 .order('year', { ascending: true });
             if (yearsError) throw yearsError;
             setYears(yearsData || []);
+
+            // Fetch songs
+            const { data: songsData, error: songsError } = await supabase
+                .from('songs')
+                .select('song, song_id')
+                .order('song', { ascending: true });
+            if (songsError) throw songsError;
+            setSongs(songsData || []);
         } catch (error) {
             console.error('Error fetching reference data:', error);
         }
@@ -166,6 +198,26 @@ export const AdminShow: React.FC = () => {
         });
     }, [allShows, searchTerm]);
 
+    const filteredSongs = React.useMemo(() => {
+        return songs.filter(song => 
+            song.song.toLowerCase().includes(songSearchTerm.toLowerCase())
+        );
+    }, [songs, songSearchTerm]);
+
+    const filteredShowsForDropdown = React.useMemo(() => {
+        return allShows.filter(show => {
+            const searchLower = showSearchTerm.toLowerCase();
+            const dateStr = formatDate(show.show_date);
+            return (
+                dateStr.includes(searchLower) ||
+                show.show_canonid?.toString().includes(searchLower) ||
+                show.show_group.toLowerCase().includes(searchLower) ||
+                show.show_venue_location?.toLowerCase().includes(searchLower) ||
+                show.show_subvenue.toLowerCase().includes(searchLower)
+            );
+        });
+    }, [allShows, showSearchTerm]);
+
     const handleShowSelect = (show: ShowData) => {
         setSelectedShow(show);
         setEditedShow(show);
@@ -192,6 +244,118 @@ export const AdminShow: React.FC = () => {
                 [name]: type === 'checkbox' ? checked : (value === '' ? null : value),
             });
         }
+    };
+
+    const insertSongLink = (song: SongData) => {
+        if (!callbacksTextareaRef.current || !editedShow) return;
+        
+        const textarea = callbacksTextareaRef.current;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const currentValue = editedShow.show_callbacks || '';
+        
+        const linkText = `<a href="https://dripfield.pro/song/${song.song_id}">${song.song}</a>`;
+        const newValue = currentValue.slice(0, start) + linkText + currentValue.slice(end);
+        
+        setEditedShow({
+            ...editedShow,
+            show_callbacks: newValue
+        });
+        
+        // Reset dropdown state
+        setIsSongDropdownOpen(false);
+        setSongSearchTerm('');
+        
+        // Refocus textarea and position cursor after inserted link
+        setTimeout(() => {
+            if (callbacksTextareaRef.current) {
+                callbacksTextareaRef.current.focus();
+                const newPosition = start + linkText.length;
+                callbacksTextareaRef.current.setSelectionRange(newPosition, newPosition);
+            }
+        }, 0);
+    };
+
+    const insertLineBreak = () => {
+        if (!callbacksTextareaRef.current || !editedShow) return;
+        
+        const textarea = callbacksTextareaRef.current;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const currentValue = editedShow.show_callbacks || '';
+        
+        const breakText = '<br />';
+        const newValue = currentValue.slice(0, start) + breakText + '\n' + currentValue.slice(end);
+        
+        setEditedShow({
+            ...editedShow,
+            show_callbacks: newValue
+        });
+        
+        // Refocus textarea and position cursor after the line break
+        setTimeout(() => {
+            if (callbacksTextareaRef.current) {
+                callbacksTextareaRef.current.focus();
+                const newPosition = start + breakText.length + 1; // +1 for the newline
+                callbacksTextareaRef.current.setSelectionRange(newPosition, newPosition);
+            }
+        }, 0);
+    };
+
+    const insertArrow = () => {
+        if (!callbacksTextareaRef.current || !editedShow) return;
+        
+        const textarea = callbacksTextareaRef.current;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const currentValue = editedShow.show_callbacks || '';
+        
+        const arrowText = '→';
+        const newValue = currentValue.slice(0, start) + arrowText + currentValue.slice(end);
+        
+        setEditedShow({
+            ...editedShow,
+            show_callbacks: newValue
+        });
+        
+        // Refocus textarea and position cursor after the arrow
+        setTimeout(() => {
+            if (callbacksTextareaRef.current) {
+                callbacksTextareaRef.current.focus();
+                const newPosition = start + arrowText.length;
+                callbacksTextareaRef.current.setSelectionRange(newPosition, newPosition);
+            }
+        }, 0);
+    };
+
+    const insertShowLink = (show: ShowData) => {
+        if (!callbacksTextareaRef.current || !editedShow) return;
+        
+        const textarea = callbacksTextareaRef.current;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const currentValue = editedShow.show_callbacks || '';
+        
+        const linkText = `<a href="https://dripfield.pro/setlist/${show.show_id}">${formatDate(show.show_date)}</a>`;
+        const newValue = currentValue.slice(0, start) + linkText + currentValue.slice(end);
+        
+        setEditedShow({
+            ...editedShow,
+            show_callbacks: newValue
+        });
+        
+        // Reset dropdown state
+        setIsShowDropdownOpen(false);
+        setShowSearchTerm('');
+        
+        // Refocus textarea and position cursor after inserted link
+        setTimeout(() => {
+            if (callbacksTextareaRef.current) {
+                callbacksTextareaRef.current.focus();
+                const newPosition = start + linkText.length;
+                callbacksTextareaRef.current.setSelectionRange(newPosition, newPosition);
+            }
+        }, 0);
     };
 
     const toggleEdit = () => {
@@ -221,7 +385,8 @@ export const AdminShow: React.FC = () => {
                     show_detail: editedShow.show_detail,
                     show_alert: editedShow.show_alert,
                     show_coachnotes: editedShow.show_coachnotes,
-                    show_time: editedShow.show_time
+                    show_time: editedShow.show_time,
+                    show_callbacks: editedShow.show_callbacks
                 })
                 .eq('show_id', editedShow.show_id);
 
@@ -543,6 +708,149 @@ export const AdminShow: React.FC = () => {
                                 className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
                             />
                         </div>
+
+                        {/* Callbacks field - shows rendered HTML when not editing, raw code when editing */}
+                        {(selectedShow?.show_callbacks || isEditing) && (
+                            <div className="space-y-2 md:col-span-2">
+                                <div className="flex items-center justify-between">
+                                    <label className="block text-sm font-semibold text-black">Callbacks</label>
+                                    
+                                    {/* Button group - only show when editing */}
+                                    {isEditing && (
+                                        <div className="flex items-center gap-2">
+                                            {/* Arrow button */}
+                                            <button
+                                                type="button"
+                                                onClick={insertArrow}
+                                                className="flex items-center gap-1 bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                title="Insert arrow"
+                                            >
+                                                →
+                                            </button>
+                                            
+                                            {/* Break tag button */}
+                                            <button
+                                                type="button"
+                                                onClick={insertLineBreak}
+                                                className="bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                title="Insert <br /> tag"
+                                            >
+                                                BR
+                                            </button>
+                                            
+                                            {/* Show dropdown */}
+                                            <div className="relative" ref={showDropdownRef}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsShowDropdownOpen(!isShowDropdownOpen)}
+                                                    className="flex items-center gap-1 bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                >
+                                                    Insert Show
+                                                    <ChevronDown className="w-3 h-3" />
+                                                </button>
+                                                
+                                                {isShowDropdownOpen && (
+                                                    <div className="absolute right-0 mt-1 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-96 max-h-64 overflow-y-auto">
+                                                        <div className="p-2">
+                                                            <div className="relative">
+                                                                <input
+                                                                    type="text"
+                                                                    value={showSearchTerm}
+                                                                    onChange={(e) => setShowSearchTerm(e.target.value)}
+                                                                    placeholder="Search shows..."
+                                                                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                                                                />
+                                                                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="max-h-48 overflow-y-auto divide-y divide-black/10">
+                                                            {filteredShowsForDropdown.map((show) => (
+                                                                <button
+                                                                    key={show.show_id}
+                                                                    type="button"
+                                                                    onClick={() => insertShowLink(show)}
+                                                                    className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
+                                                                >
+                                                                    {getShowDisplayText(show)}
+                                                                </button>
+                                                            ))}
+                                                            {filteredShowsForDropdown.length === 0 && (
+                                                                <div className="px-4 py-2 text-sm text-black/60 italic">
+                                                                    No shows found
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Song dropdown */}
+                                            <div className="relative" ref={songDropdownRef}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsSongDropdownOpen(!isSongDropdownOpen)}
+                                                    className="flex items-center gap-1 bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                >
+                                                    Insert Song
+                                                    <ChevronDown className="w-3 h-3" />
+                                                </button>
+                                                
+                                                {isSongDropdownOpen && (
+                                                    <div className="absolute right-0 mt-1 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-64 max-h-64 overflow-y-auto">
+                                                        <div className="p-2">
+                                                            <div className="relative">
+                                                                <input
+                                                                    type="text"
+                                                                    value={songSearchTerm}
+                                                                    onChange={(e) => setSongSearchTerm(e.target.value)}
+                                                                    placeholder="Search songs..."
+                                                                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                                                                />
+                                                                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="max-h-48 overflow-y-auto divide-y divide-black/10">
+                                                            {filteredSongs.map((song) => (
+                                                                <button
+                                                                    key={song.song_id}
+                                                                    type="button"
+                                                                    onClick={() => insertSongLink(song)}
+                                                                    className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
+                                                                >
+                                                                    {song.song}
+                                                                </button>
+                                                            ))}
+                                                            {filteredSongs.length === 0 && (
+                                                                <div className="px-4 py-2 text-sm text-black/60 italic">
+                                                                    No songs found
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {isEditing ? (
+                                    <textarea
+                                        ref={callbacksTextareaRef}
+                                        name="show_callbacks"
+                                        value={editedShow?.show_callbacks || ''}
+                                        onChange={handleInputChange}
+                                        rows={4}
+                                        className="w-full px-3 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm font-mono"
+                                        placeholder="Enter callbacks HTML..."
+                                    />
+                                ) : (
+                                    <div 
+                                        className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black text-sm min-h-[100px] [&_a]:font-semibold [&_a]:text-blue-600 [&_a]:underline"
+                                        dangerouslySetInnerHTML={{ __html: selectedShow.show_callbacks }}
+                                    />
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
