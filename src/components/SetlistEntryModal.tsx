@@ -141,14 +141,31 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         if (placementsError) throw placementsError;
         setPlacements(placementsData || []);
 
-        // Fetch songs
-        const { data: songsData, error: songsError } = await supabase
-          .from('songs')
-          .select('song, song_id')
-          .order('song');
-        
-        if (songsError) throw songsError;
-        setSongs(songsData || []);
+        // Fetch all songs with pagination
+        let allSongs: SongOptions[] = [];
+        let page = 0;
+        let hasMore = true;
+        const pageSize = 1000;
+
+        while (hasMore) {
+          const { data: songsData, error: songsError } = await supabase
+            .from('songs')
+            .select('song, song_id')
+            .order('song')
+            .range(page * pageSize, (page + 1) * pageSize - 1);
+          
+          if (songsError) throw songsError;
+          
+          if (songsData && songsData.length > 0) {
+            allSongs = [...allSongs, ...songsData];
+            page++;
+            hasMore = songsData.length === pageSize;
+          } else {
+            hasMore = false;
+          }
+        }
+
+        setSongs(allSongs);
 
         // Fetch song shorts
         const { data: shortsData, error: shortsError } = await supabase
