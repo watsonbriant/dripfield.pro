@@ -672,34 +672,65 @@ export function SongSelectionModal({
     }
   }, [songPicks]);
 
-  // Fetch songs from "Goose" or "Cover Songs" categories
+  // Fetch songs from "Goose" or "Cover Songs" categories with pagination
   useEffect(() => {
     async function fetchSongs() {
       try {
         setLoading(true);
         
-        const { data, error } = await supabase
-          .from('songs')
-          .select(`
-            song, 
-            song_id,
-            song_category,
-            categories!inner(
-              category,
-              category_type
-            )
-          `)
-          .in('categories.category_type', ['Goose', 'Cover Songs'])
-          .order('song');
+        // Paginate through all songs
+        let allSongs: any[] = [];
+        let page = 0;
+        let hasMore = true;
+        const pageSize = 1000;
         
-        if (error) throw error;
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('songs')
+            .select(`
+              song, 
+              song_id,
+              song_category,
+              categories!inner(
+                category,
+                category_type
+              )
+            `)
+            .in('categories.category_type', ['Goose', 'Cover Songs'])
+            .order('song')
+            .range(page * pageSize, (page + 1) * pageSize - 1);
+          
+          if (error) throw error;
+          
+          if (data && data.length > 0) {
+            allSongs = [...allSongs, ...data];
+            page++;
+            hasMore = data.length === pageSize;
+          } else {
+            hasMore = false;
+          }
+        }
         
-        const songsData = data?.map(item => ({
-          song: item.song,
-          song_id: item.song_id,
-          category_type: item.categories?.category_type
-        })) || [];
+        // Group songs by category type
+        const gooseSongs: Song[] = [];
+        const coverSongs: Song[] = [];
         
+        allSongs.forEach(item => {
+          const songData = {
+            song: item.song,
+            song_id: item.song_id,
+            category_type: item.categories?.category_type
+          };
+          
+          if (item.categories?.category_type === 'Goose') {
+            gooseSongs.push(songData);
+          } else if (item.categories?.category_type === 'Cover Songs') {
+            coverSongs.push(songData);
+          }
+        });
+        
+        // Combine arrays with Goose songs first
+        const songsData = [...gooseSongs, ...coverSongs];
         setSongs(songsData);
       } catch (error) {
         console.error('Error fetching songs:', error);
@@ -1827,13 +1858,28 @@ export function SongSelectionModal({
                       className="w-full px-2 py-2 bg-white border border-black rounded-md text-black font-semibold focus:outline-none focus:ring-2 focus:ring-[#f9ae37] appearance-none"
                     >
                       <option value="">Select a song...</option>
-                      {songs
-                        .filter(song => !song.song.includes("[New") && !song.song_placeholder)
-                        .map((song) => (
-                          <option key={song.song_id} value={song.song}>
-                            {song.song}
-                          </option>
-                        ))}
+                      
+                      {/* Goose Songs Section */}
+                      <optgroup label="Goose Songs">
+                        {songs
+                          .filter(song => song.category_type === 'Goose' && !song.song.includes("[New") && !song.song_placeholder)
+                          .map((song) => (
+                            <option key={song.song_id} value={song.song}>
+                              {song.song}
+                            </option>
+                          ))}
+                      </optgroup>
+                      
+                      {/* Cover Songs Section */}
+                      <optgroup label="Cover Songs">
+                        {songs
+                          .filter(song => song.category_type === 'Cover Songs' && !song.song.includes("[New") && !song.song_placeholder)
+                          .map((song) => (
+                            <option key={song.song_id} value={song.song}>
+                              {song.song}
+                            </option>
+                          ))}
+                      </optgroup>
                     </select>
                     </div>
                     <button
