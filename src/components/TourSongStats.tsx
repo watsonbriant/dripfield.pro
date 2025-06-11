@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 interface Show {
   setlist_entries?: Array<{
     entry_song: string;
+    entry_length?: string | null;
+    entry_short?: string | null;
     songs?: {
       song_id?: string;
       song_category?: string;
@@ -21,6 +23,8 @@ interface SongStats {
   count: number;
   category: string;
   categoryCanonId: number;
+  longest: string | null;  // Add this
+  shortest: string | null;
 }
 
 interface Props {
@@ -41,51 +45,128 @@ const TourSongStats: React.FC<Props> = ({
   className = ""
 }) => {
   const navigate = useNavigate();
-  const [sortColumn, setSortColumn] = React.useState<'song' | 'count' | 'category' | null>(null);
+  const [sortColumn, setSortColumn] = React.useState<'song' | 'count' | 'category' | 'longest' | 'shortest' | null>(null);
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
 
-  const calculateSongStats = (): SongStats[] => {
-    const songMap = new Map<string, { song_id: string; count: number; category: string; categoryCanonId: number }>();
+  // Parse PostgreSQL interval format to seconds
+  const parseDuration = (interval: string | undefined | null): number | null => {
+    if (!interval) return null;
+    
+    // Handle PostgreSQL interval format (e.g., "00:05:23" or "01:23:45")
+    const match = interval.match(/^(?:(\d+):)?(\d+):(\d+)$/);
+    if (match) {
+      const hours = parseInt(match[1] || '0', 10);
+      const minutes = parseInt(match[2], 10);
+      const seconds = parseInt(match[3], 10);
+      return hours * 3600 + minutes * 60 + seconds;
+    }
+    
+    return null;
+  };
 
+  // Format seconds to MM:SS or H:MM:SS
+  const formatDuration = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Convert formatted duration back to seconds for sorting
+  const durationToSeconds = (duration: string | null): number => {
+    if (!duration) return 0;
+    
+    const parts = duration.split(':').map(p => parseInt(p, 10));
+    if (parts.length === 3) {
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    } else if (parts.length === 2) {
+      return parts[0] * 60 + parts[1];
+    }
+    return 0;
+  };
+
+  const calculateSongStats = (): SongStats[] => {
+    const songMap = new Map<string, { 
+      song_id: string; 
+      count: number; 
+      category: string; 
+      categoryCanonId: number;
+      durations: number[]; // Store all durations in seconds
+    }>();
+  
     shows.forEach(show => {
       const uniqueSongsInShow = new Set<string>();
       
       show.setlist_entries?.forEach(entry => {
-        if (!uniqueSongsInShow.has(entry.entry_song)) {
+        // Get the current stats regardless of whether we've seen this song in this show
+        const currentStats = songMap.get(entry.entry_song) || { 
+          song_id: '',
+          count: 0, 
+          category: '',
+          categoryCanonId: 0,
+          durations: []
+        };
+        
+        // Only increment count once per show
+        const shouldIncrementCount = !uniqueSongsInShow.has(entry.entry_song);
+        if (shouldIncrementCount) {
           uniqueSongsInShow.add(entry.entry_song);
-          
-          const currentStats = songMap.get(entry.entry_song) || { 
-            song_id: '',
-            count: 0, 
-            category: '',
-            categoryCanonId: 0 
-          };
-          
-          // Get category_canonid from the correct path based on your data structure
-          const categoryCanonId = entry.songs?.categories?.category_canonid || 
-                                entry.songs?.category_canonid || 
-                                0;
-                                
-          // Check if we have the song ID in the songIdMap or from the entry directly
-          const songId = entry.songs?.song_id || songIdMap[entry.entry_song] || currentStats.song_id;
-          
-          songMap.set(entry.entry_song, {
-            song_id: songId,
-            count: currentStats.count + 1,
-            category: entry.songs?.song_category || currentStats.category,
-            categoryCanonId: categoryCanonId
-          });
         }
+        
+        const categoryCanonId = entry.songs?.categories?.category_canonid || 
+                              entry.songs?.category_canonid || 
+                              0;
+                              
+        const songId = entry.songs?.song_id || songIdMap[entry.entry_song] || currentStats.song_id;
+        
+        // Always parse duration if available (not just for first occurrence)
+        // But exclude aborted, fake, and tease entries
+        const excludedShorts = ['aborted', 'fake', 'tease'];
+        const newDurations = [...currentStats.durations];
+
+        if (!excludedShorts.includes(entry.entry_short?.toLowerCase() || '')) {
+          const durationInSeconds = parseDuration(entry.entry_length);
+          if (durationInSeconds !== null) {
+            newDurations.push(durationInSeconds);
+          }
+        }
+        
+        songMap.set(entry.entry_song, {
+          song_id: songId,
+          count: shouldIncrementCount ? currentStats.count + 1 : currentStats.count,
+          category: entry.songs?.song_category || currentStats.category,
+          categoryCanonId: categoryCanonId,
+          durations: newDurations
+        });
       });
     });
-
-    return Array.from(songMap.entries()).map(([song, stats]) => ({
-      song,
-      song_id: stats.song_id,
-      count: stats.count,
-      category: stats.category,
-      categoryCanonId: stats.categoryCanonId
-    }));
+  
+    return Array.from(songMap.entries()).map(([song, stats]) => {
+      const durations = stats.durations;
+      let longest = null;
+      let shortest = null;
+      
+      if (durations.length > 0) {
+        const maxDuration = Math.max(...durations);
+        const minDuration = Math.min(...durations);
+        longest = formatDuration(maxDuration);
+        shortest = formatDuration(minDuration);
+      }
+      
+      return {
+        song,
+        song_id: stats.song_id,
+        count: stats.count,
+        category: stats.category,
+        categoryCanonId: stats.categoryCanonId,
+        longest,
+        shortest
+      };
+    });
   };
 
   const sortedSongStats = React.useMemo(() => {
@@ -116,6 +197,16 @@ const TourSongStats: React.FC<Props> = ({
         } else if (sortColumn === 'category') {
           const comparison = a.categoryCanonId - b.categoryCanonId;
           return sortDirection === 'asc' ? comparison : -comparison;
+        } else if (sortColumn === 'longest') {
+          const aSeconds = durationToSeconds(a.longest);
+          const bSeconds = durationToSeconds(b.longest);
+          const comparison = bSeconds - aSeconds;
+          return sortDirection === 'asc' ? -comparison : comparison;
+        } else if (sortColumn === 'shortest') {
+          const aSeconds = durationToSeconds(a.shortest);
+          const bSeconds = durationToSeconds(b.shortest);
+          const comparison = bSeconds - aSeconds;
+          return sortDirection === 'asc' ? -comparison : comparison;
         } else {
           const comparison = b.count - a.count;
           return sortDirection === 'asc' ? -comparison : comparison;
@@ -133,7 +224,7 @@ const TourSongStats: React.FC<Props> = ({
     }
   }, [shows, songIdMap, onSongCountChange]);
 
-  const handleSort = (column: 'song' | 'count' | 'category') => {
+  const handleSort = (column: 'song' | 'count' | 'category' | 'longest' | 'shortest') => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -142,7 +233,7 @@ const TourSongStats: React.FC<Props> = ({
     }
   };
 
-  const getSortIcon = (column: 'song' | 'count' | 'category') => {
+  const getSortIcon = (column: 'song' | 'count' | 'category' | 'longest' | 'shortest') => {
     if (sortColumn !== column) {
       return null;
     }
@@ -185,6 +276,24 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
+                className="px-4 py-1 text-center text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                onClick={() => handleSort('longest')}
+              >
+                <div className="flex items-center justify-center gap-1">
+                  Longest
+                  {getSortIcon('longest')}
+                </div>
+              </th>
+              <th 
+                className="px-4 py-1 text-center text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                onClick={() => handleSort('shortest')}
+              >
+                <div className="flex items-center justify-center gap-1">
+                  Shortest
+                  {getSortIcon('shortest')}
+                </div>
+              </th>
+              <th 
                 className="px-4 py-1 text-left text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('category')}
               >
@@ -211,6 +320,12 @@ const TourSongStats: React.FC<Props> = ({
                   <span className="font-semibold hover:text-[#a9682e] transition-colors table-link">
                     {stat.song}
                   </span>
+                </td>
+                <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">
+                  {stat.longest || ''}
+                </td>
+                <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">
+                  {stat.shortest || ''}
                 </td>
                 <td 
                   className="px-4 py-0.5 text-black whitespace-nowrap"
