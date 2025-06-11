@@ -8,6 +8,8 @@ export function Submit() {
     details: '',
     confirmationCode: ''
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -34,6 +36,20 @@ export function Submit() {
     // Clear confirmation error when user types in confirmation code field
     if (name === 'confirmationCode') {
       setConfirmationError(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (50MB limit)
+      if (file.size > 50 * 1024 * 1024) {
+        setFileError('File size must be less than 50MB');
+        setSelectedFile(null);
+        return;
+      }
+      setFileError('');
+      setSelectedFile(file);
     }
   };
 
@@ -72,7 +88,27 @@ export function Submit() {
     }
 
     try {
-      // Insert data into bugs table
+      let fileUrl = null;
+      
+      // Upload file if one is selected
+      if (selectedFile) {
+        const fileExt = selectedFile.name.split('.').pop();
+        const fileName = `${new Date().toISOString()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+        const filePath = `submissions/${new Date().getFullYear()}/${new Date().getMonth() + 1}/${fileName}`;
+        
+        const { error: uploadError, data } = await supabase.storage
+          .from('files') // Your bucket name
+          .upload(filePath, selectedFile);
+        
+        if (uploadError) {
+          throw uploadError;
+        }
+        
+        // Since your bucket is public, we can construct the URL directly
+        fileUrl = `${supabase.storage.from('files').getPublicUrl(filePath).data.publicUrl}`;
+      }
+      
+      // Insert data into bugs table with file URL
       const { error } = await supabase
         .from('bugs')
         .insert([
@@ -81,7 +117,8 @@ export function Submit() {
             bug_contactemail: formData.contactEmail,
             bug_detail: formData.details,
             bug_completion: false,
-            bug_submissiondate: new Date().toISOString()
+            bug_submissiondate: new Date().toISOString(),
+            bug_file_url: fileUrl
           }
         ]);
 
@@ -96,6 +133,7 @@ export function Submit() {
         details: '',
         confirmationCode: ''
       });
+      setSelectedFile(null);
       setSubmitSuccess(true);
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -118,7 +156,10 @@ export function Submit() {
             <p className="font-medium">Thank you for your submission!</p>
             <p className="text-sm mt-1">We have received your information and will review it soon.</p>
             <button
-              onClick={() => setSubmitSuccess(false)}
+              onClick={() => {
+                setSubmitSuccess(false);
+                setSelectedFile(null);
+              }}
               className="mt-3 px-4 py-2 bg-[#f9ae37] hover:bg-[#e29d26] text-black font-medium rounded-md transition-colors border border-black"
             >
               Submit Another
@@ -183,6 +224,28 @@ export function Submit() {
                 className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
                 placeholder="Please provide as much detail as possible about your submission..."
               />
+            </div>
+
+            <div>
+              <label htmlFor="file" className="block text-sm font-semibold text-black mb-1">
+                Attach File (Optional)
+              </label>
+              <input
+                type="file"
+                id="file"
+                onChange={handleFileChange}
+                accept="*/*"
+                className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black text-sm file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f9ae37] file:text-black hover:file:bg-[#e29d26]"
+              />
+              {selectedFile && (
+                <p className="mt-1 text-sm text-black/70">
+                  Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
+              {fileError && (
+                <p className="mt-1 text-sm text-red-600">{fileError}</p>
+              )}
+              <p className="mt-1 text-xs text-black/60">Maximum file size: 50MB. All file types allowed.</p>
             </div>
 
             <div>
