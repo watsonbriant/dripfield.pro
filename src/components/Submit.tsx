@@ -245,7 +245,7 @@ export function Submit() {
               {fileError && (
                 <p className="mt-1 text-sm text-red-600">{fileError}</p>
               )}
-              <p className="mt-1 text-xs text-black/60">Maximum file size: 50MB. All file types allowed.</p>
+              <p className="mt-1 text-xs text-black/60">Maximum file size: 50MB.</p>
             </div>
 
             <div>
