@@ -174,6 +174,25 @@ export default function FullSetlistDisplay({
   } | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [individualToggles, setIndividualToggles] = useState<{[key: string]: boolean}>({});
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [copiedEntries, setCopiedEntries] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single();
+        
+        setIsAdmin(roleData?.is_admin || false);
+      }
+    };
+    
+    checkAdminStatus();
+  }, []);
 
   // Add useEffect to reset individual toggles when global toggle changes
   useEffect(() => {
@@ -391,6 +410,26 @@ export default function FullSetlistDisplay({
   const uniquePlacements = new Set(setlist.map(entry => entry.entry_placement));
   const hasSinglePlacementType = uniquePlacements.size === 1;
 
+  const handleNumberClick = async (entryId: string) => {
+    if (!isAdmin) return;
+    
+    try {
+      await navigator.clipboard.writeText(entryId);
+      setCopiedEntries(prev => new Set(prev).add(entryId));
+      
+      // Remove from copied set after 2 seconds
+      setTimeout(() => {
+        setCopiedEntries(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(entryId);
+          return newSet;
+        });
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <div className="w-full space-y-0">
       {/* Mobile view content */}
@@ -506,10 +545,13 @@ export default function FullSetlistDisplay({
                       >
                         {/* Number column */}
                         <div
-                          className={`w-8 ${getPlacementColor(entry.entry_placement) !== 'transparent' ? 'text-white' : 'text-black'} text-center rounded cursor-pointer relative`}
+                          className={`w-8 ${getPlacementColor(entry.entry_placement) !== 'transparent' ? 'text-white' : 'text-black'} text-center rounded ${isAdmin ? 'cursor-pointer' : ''} relative`}
                           style={{
-                            backgroundColor: getPlacementColor(entry.entry_placement)
+                            backgroundColor: copiedEntries.has(entry.entry_id) 
+                              ? '#22c55e' 
+                              : getPlacementColor(entry.entry_placement)
                           }}
+                          onClick={() => handleNumberClick(entry.entry_id)}
                           onMouseEnter={(e) => {
                             if (!isMobile) {
                               setHoveredEntry(entry.entry_id);
@@ -527,8 +569,13 @@ export default function FullSetlistDisplay({
                             }
                           }}
                         >
-                          <strong>{displayNumber || '\u00A0'}</strong>
-                          {!isMobile && hoveredEntry === entry.entry_id && (
+                          <strong>
+                            {copiedEntries.has(entry.entry_id) 
+                              ? '✓' 
+                              : (displayNumber || '\u00A0')
+                            }
+                          </strong>
+                          {!isMobile && hoveredEntry === entry.entry_id && !copiedEntries.has(entry.entry_id) && (
                             <div className="fixed text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
