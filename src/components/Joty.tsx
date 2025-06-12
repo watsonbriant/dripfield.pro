@@ -21,27 +21,28 @@ interface MatchupProps {
   team2: Team;
   roundName: string;
   matchNumber: number;
+  regionColor: string;
 }
 
-const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber }) => {
+const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber, regionColor }) => {
   return (
-    <div className="mb-2">
-      <div className="bg-canvas border border-black rounded-lg overflow-hidden">
+    <div>
+      <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
         <div 
-          className={`pl-0.5 pr-1 py-0.5 border-b border-black hover:bg-primary transition-colors ${
+          className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
             team1.percentage > team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
           }`}
         >
           <div className="flex justify-between items-center text-xs">
             <div className="flex items-center gap-1.5">
-              <span className="bg-[#f9ae37] text-black px-1 py-0.5 rounded w-6 font-semibold text-center">
+              <span className={`${regionColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
                 {team1.seed}
               </span>
               <span className="text-black">{team1.name}</span>
             </div>
             <div className="flex items-center gap-2">
               {team1.date && (
-                <span className="bg-gray-200 text-black px-1.5 py-0.5 rounded text-[10px] font-medium">
+                <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
                   {team1.date}
                 </span>
               )}
@@ -56,14 +57,14 @@ const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber 
         >
           <div className="flex justify-between items-center text-xs">
             <div className="flex items-center gap-1.5">
-              <span className="bg-[#f9ae37] text-black px-1 py-0.5 rounded w-6 font-semibold text-center">
+              <span className={`${regionColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
                 {team2.seed}
               </span>
               <span className="text-black">{team2.name}</span>
             </div>
             <div className="flex items-center gap-2">
               {team2.date && (
-                <span className="bg-gray-200 text-black px-1.5 py-0.5 rounded text-[10px] font-medium">
+                <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
                   {team2.date}
                 </span>
               )}
@@ -131,7 +132,7 @@ export function Joty() {
         if (regionsData && regionsData.length === 4 && matchesData) {
           // Process regions
           const sortedRegions = regionsData.sort((a, b) => a.joty_region_prioritylevel - b.joty_region_prioritylevel);
-          const regionColors = ["bg-[#f9ae37]", "bg-[#f9ae37]", "bg-[#f9ae37]", "bg-[#f9ae37]"];
+          const regionColors = ["bg-[#006400]", "bg-[#019B7A]", "bg-[#E17401]", "bg-[#7C2128]"];
           
           const processedRegions = sortedRegions.map((region, index) => ({
             name: region.joty_region_displayname || region.joty_region_name || `Region ${index + 1}`,
@@ -229,28 +230,36 @@ export function Joty() {
     <div className="max-w-[1600px] mx-auto p-4">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-mohr text-black mb-2">GOOSE JAM OF THE YEAR 2020</h1>
-        <div className="inline-block bg-[#f9ae37] text-black px-6 py-2 rounded-full border-2 border-black">
-          <span className="font-bold">64 Jams • Single Elimination • Tournament Results</span>
-        </div>
+        <h2 className="text-3xl font-mohr inline-block px-3 pt-1.5 bg-[#f9ae37] rounded-full border border-black">
+          Jam of the Year
+        </h2>
       </div>
 
       {/* Bracket Container */}
       <div className="bg-primary border border-black rounded-lg p-2 overflow-x-auto">
-        <div className="flex gap-8 min-w-[1400px]">
+        <div className="flex gap-4 min-w-[1400px]">
           {/* Left Side - All Regions stacked */}
           <div className="flex-1">
             <div className="space-y-6">
               {/* All regions sorted by priority level */}
               {[topLeftRegion, bottomLeftRegion, topRightRegion, bottomRightRegion].map((region) => (
                 <div key={region.priorityLevel}>
-                  <h2 className={`text-lg font-mohr ${region.color} ${region.priorityLevel > 1 ? 'text-black' : 'text-black'} inline-block px-2 pt-0.5 rounded-full border border-black mb-2`}>
+                  <h2 className={`text-lg font-mohr ${region.color} ${region.priorityLevel > 1 ? 'text-white' : 'text-white'} inline-block px-2 pt-0.5 rounded-full border border-black mb-2`}>
                     {region.name} Region
                   </h2>
+                  
+                  {/* Round headers row */}
+                  <div className="grid grid-cols-4 gap-2 mb-2">
+                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Round of 64</h3>
+                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Round of 32</h3>
+                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Sweet 16</h3>
+                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Elite 8</h3>
+                  </div>
+                  
+                  {/* Matches grid */}
                   <div className="grid grid-cols-4 gap-2">
                     {/* Round of 64 */}
-                    <div className="space-y-1">
-                      <h3 className="text-center text-xs font-bold text-black mb-2">Round of 64</h3>
+                    <div className="space-y-1 min-w-[270px]">
                       {(() => {
                         const startGame = (region.priorityLevel - 1) * 8 + 1;
                         const games = Array.from({length: 8}, (_, i) => startGame + i);
@@ -264,19 +273,20 @@ export function Joty() {
                               team2={match.team2}
                               roundName="Round of 64"
                               matchNumber={gameNum}
+                              regionColor={region.color}
                             />
                           );
                         });
                       })()}
                     </div>
+                    
                     {/* Round of 32 */}
-                    <div className="space-y-1 pt-8">
-                      <h3 className="text-center text-xs font-bold text-black mb-2">Round of 32</h3>
+                    <div className="space-y-[55px] min-w-[270px] flex flex-col justify-center h-full">
                       {(() => {
                         const startGame = 33 + (region.priorityLevel - 1) * 4;
                         const games = Array.from({length: 4}, (_, i) => startGame + i);
                         return games.map((gameNum, idx) => (
-                          <div key={gameNum} className="mb-8">
+                          <div key={gameNum}>
                             {(() => {
                               const match = getMatch(gameNum);
                               if (!match) return null;
@@ -286,6 +296,7 @@ export function Joty() {
                                   team2={match.team2}
                                   roundName="Round of 32"
                                   matchNumber={gameNum}
+                                  regionColor={region.color}
                                 />
                               );
                             })()}
@@ -293,14 +304,14 @@ export function Joty() {
                         ));
                       })()}
                     </div>
+                    
                     {/* Sweet 16 */}
-                    <div className="space-y-1 pt-16">
-                      <h3 className="text-center text-xs font-bold text-black mb-2">Sweet 16</h3>
+                    <div className="space-y-[159px] min-w-[270px] flex flex-col justify-center h-full">
                       {(() => {
                         const startGame = 49 + (region.priorityLevel - 1) * 2;
                         const games = Array.from({length: 2}, (_, i) => startGame + i);
                         return games.map((gameNum, idx) => (
-                          <div key={gameNum} className="mb-16">
+                          <div key={gameNum}>
                             {(() => {
                               const match = getMatch(gameNum);
                               if (!match) return null;
@@ -310,6 +321,7 @@ export function Joty() {
                                   team2={match.team2}
                                   roundName="Sweet 16"
                                   matchNumber={gameNum}
+                                  regionColor={region.color}
                                 />
                               );
                             })()}
@@ -317,9 +329,9 @@ export function Joty() {
                         ));
                       })()}
                     </div>
+                    
                     {/* Elite 8 */}
-                    <div className="space-y-1 pt-24">
-                      <h3 className="text-center text-xs font-bold text-black mb-2">Elite 8</h3>
+                    <div className="space-y-1 min-w-[270px] flex flex-col justify-center h-full">
                       {(() => {
                         const gameNum = 57 + (region.priorityLevel - 1);
                         const match = getMatch(gameNum);
@@ -330,6 +342,7 @@ export function Joty() {
                             team2={match.team2}
                             roundName="Elite 8"
                             matchNumber={gameNum}
+                            regionColor={region.color}
                           />
                         );
                       })()}
@@ -340,95 +353,225 @@ export function Joty() {
             </div>
           </div>
 
-          {/* Right Side - Final Four */}
-          <div className="flex flex-col items-end justify-center px-4">
-            <h2 className="text-2xl font-mohr bg-[#006400] text-white px-6 py-2 rounded-full border-2 border-black mb-8">
-              FINAL FOUR
-            </h2>
-            <div className="space-y-8">
-              <div className="flex gap-8">
+          {/* Final Four Column */}
+          <div className="min-w-[300px]">
+            <div className='bg-canvas p-2 rounded-lg border border-black/10'>
+              <div className="text-center mb-4">
+                <h2 className="text-xl font-mohr inline-block px-2 pt-0.5 bg-[#f9ae37] rounded-full border border-black">
+                  Final Four
+                </h2>
+              </div>
+              <div className="space-y-2">
+                {/* Semifinal 1 */}
                 <div>
-                  <h3 className="text-center text-xs font-bold text-black mb-2 text-center">Semifinal 1</h3>
                   {(() => {
                     const match = getMatch(61);
                     if (!match) return null;
+                    
+                    // For match 61: top seed from region 1 (green), bottom seed from region 2 (teal)
                     return (
-                      <Matchup
-                        team1={match.team1}
-                        team2={match.team2}
-                        roundName="Final Four"
-                        matchNumber={61}
-                      />
+                      <div>
+                        <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
+                          <div 
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            }`}
+                          >
+                            <div className="flex justify-between items-center text-xs">
+                              <div className="flex items-center gap-1.5">
+                                <span className="bg-[#006400] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                  {match.team1.seed}
+                                </span>
+                                <span className="text-black">{match.team1.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {match.team1.date && (
+                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                    {match.team1.date}
+                                  </span>
+                                )}
+                                <span className="text-black font-semibold">{match.team1.percentage}%</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div 
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            }`}
+                          >
+                            <div className="flex justify-between items-center text-xs">
+                              <div className="flex items-center gap-1.5">
+                                <span className="bg-[#019B7A] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                  {match.team2.seed}
+                                </span>
+                                <span className="text-black">{match.team2.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {match.team2.date && (
+                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                    {match.team2.date}
+                                  </span>
+                                )}
+                                <span className="text-black font-semibold">{match.team2.percentage}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })()}
                 </div>
+                
+                {/* Semifinal 2 */}
                 <div>
-                  <h3 className="text-center text-xs font-bold text-black mb-2 text-center">Semifinal 2</h3>
                   {(() => {
                     const match = getMatch(62);
                     if (!match) return null;
+                    
+                    // For match 62: top seed from region 3 (orange), bottom seed from region 4 (dark red)
                     return (
-                      <Matchup
-                        team1={match.team1}
-                        team2={match.team2}
-                        roundName="Final Four"
-                        matchNumber={62}
-                      />
+                      <div>
+                        <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
+                          <div 
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            }`}
+                          >
+                            <div className="flex justify-between items-center text-xs">
+                              <div className="flex items-center gap-1.5">
+                                <span className="bg-[#E17401] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                  {match.team1.seed}
+                                </span>
+                                <span className="text-black">{match.team1.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {match.team1.date && (
+                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                    {match.team1.date}
+                                  </span>
+                                )}
+                                <span className="text-black font-semibold">{match.team1.percentage}%</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div 
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            }`}
+                          >
+                            <div className="flex justify-between items-center text-xs">
+                              <div className="flex items-center gap-1.5">
+                                <span className="bg-[#7C2128] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                  {match.team2.seed}
+                                </span>
+                                <span className="text-black">{match.team2.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {match.team2.date && (
+                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                    {match.team2.date}
+                                  </span>
+                                )}
+                                <span className="text-black font-semibold">{match.team2.percentage}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+                
+                {/* Championship */}
+                <div>
+                  <div className="text-center mb-4">
+                    <h2 className="text-xl font-mohr inline-block px-2 mt-6 pt-0.5 bg-[#f9ae37] rounded-full border border-black">
+                      Championship
+                    </h2>
+                  </div>
+                  {(() => {
+                    const match = getMatch(63);
+                    const match61 = getMatch(61);
+                    const match62 = getMatch(62);
+                    if (!match || !match61 || !match62) return null;
+                    
+                    // Determine colors based on semifinal winners
+                    const topSeedColor = match61.team1.percentage > match61.team2.percentage ? 'bg-[#006400]' : 'bg-[#019B7A]';
+                    const bottomSeedColor = match62.team1.percentage > match62.team2.percentage ? 'bg-[#E17401]' : 'bg-[#7C2128]';
+                    
+                    return (
+                      <div>
+                        <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
+                          <div 
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            }`}
+                          >
+                            <div className="flex justify-between items-center text-xs">
+                              <div className="flex items-center gap-1.5">
+                                <span className={`${topSeedColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
+                                  {match.team1.seed}
+                                </span>
+                                <span className="text-black">{match.team1.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {match.team1.date && (
+                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                    {match.team1.date}
+                                  </span>
+                                )}
+                                <span className="text-black font-semibold">{match.team1.percentage}%</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div 
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            }`}
+                          >
+                            <div className="flex justify-between items-center text-xs">
+                              <div className="flex items-center gap-1.5">
+                                <span className={`${bottomSeedColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
+                                  {match.team2.seed}
+                                </span>
+                                <span className="text-black">{match.team2.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {match.team2.date && (
+                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                    {match.team2.date}
+                                  </span>
+                                )}
+                                <span className="text-black font-semibold">{match.team2.percentage}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+                
+                {/* Champion Box */}
+                <div className="pt-8 text-center">
+                  {(() => {
+                    const championship = getMatch(63);
+                    if (!championship) return null;
+                    const champion = championship.team1.percentage > championship.team2.percentage 
+                      ? championship.team1 
+                      : championship.team2;
+                    
+                    return (
+                      <div className="inline-block bg-secondary border border-black rounded-lg px-4 py-3">
+                        <p className="text-sm font-bold text-black mb-1">2020 Jam of the Year</p>
+                        <p className="text-2xl font-mohr text-black">{champion.name}</p>
+                      </div>
                     );
                   })()}
                 </div>
               </div>
-              
-              <div>
-                <h3 className="text-center text-xs font-bold text-black mb-2 text-center">Championship</h3>
-                {(() => {
-                  const match = getMatch(63);
-                  if (!match) return null;
-                  return (
-                    <Matchup
-                      team1={match.team1}
-                      team2={match.team2}
-                      roundName="Championship"
-                      matchNumber={63}
-                    />
-                  );
-                })()}
-              </div>
-              
-              <div className="mt-8 text-center">
-                {(() => {
-                  const championship = getMatch(63);
-                  if (!championship) return null;
-                  const champion = championship.team1.percentage > championship.team2.percentage 
-                    ? championship.team1 
-                    : championship.team2;
-                  
-                  return (
-                    <div className="inline-block bg-[#f9ae37] border-2 border-black rounded-lg px-6 py-4">
-                      <p className="text-sm font-bold text-black mb-1">2020 Champion</p>
-                      <p className="text-2xl font-mohr text-black">{champion.name}</p>
-                      <p className="text-sm font-semibold text-black mt-1">{champion.percentage}% of votes</p>
-                    </div>
-                  );
-                })()}
-              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="mt-6 flex justify-center gap-8">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-tertiary border border-black rounded"></div>
-          <span className="text-sm text-black">Seed Number</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-primary border border-black rounded"></div>
-          <span className="text-sm text-black">Matchup</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-sm text-black">Bold = Higher Vote Percentage</span>
         </div>
       </div>
     </div>
