@@ -30,7 +30,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { UserMenu } from './components/UserMenu';
 import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
-import sparklePic from './img/sparkle.png'
+import { Joty } from './components/Joty';
+import sparklePic from './img/sparkle.png';
 
 import logo from './img/Logo_Text.png';
 
@@ -303,6 +304,7 @@ function App() {
               <Route path="/song/:songId" element={<Song />} />
               <Route path="/user/:userId" element={<PublicProfile />} />
               <Route path="/discography" element={<Discography />} />
+              <Route path="/joty" element={<Joty />} />
               <Route path="/submit" element={<Submit />} />
               
               {/* Authentication routes */}

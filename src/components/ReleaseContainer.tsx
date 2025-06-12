@@ -29,8 +29,8 @@ const getServiceIcon = (serviceName: string | null) => {
       return <FaYoutube className="inline-block mr-1" size="1.25rem" />;
     case 'bandcamp':
       return <SiBandcamp className="inline-block mr-1" size="1.25rem" />;
-    case 'nugs.net':
-      return <img src={NugsIcon} alt="Nugs.net" className="inline-block mr-1 h-5 w-auto" />;
+    case 'nugs':
+      return <img src={NugsIcon} alt="nugs" className="inline-block mr-1 h-5 w-auto" />;
     case 'spotify':
       return <FaSpotify className="inline-block mr-1" size="1.25rem" />;
     default:

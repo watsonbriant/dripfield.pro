@@ -164,13 +164,6 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                     console.error('Supabase error (setlist entries):', setlistError2);
                 }
 
-                // Debug logs
-                console.log('Debug - setlistData:', setlistData);
-                console.log('Debug - setlistUrl:', setlistData?.setlist_url);
-                console.log('Debug - setlistRecordExists:', hasSetlistRecord);
-                console.log('Debug - changesData:', changesData);
-                console.log('Debug - showDetails:', showDetails);
-
                 setChanges(changesData || []);
                 setSetlistUrl(setlistData?.setlist_url || null);
                 setSetlistRecordExists(hasSetlistRecord);
@@ -187,7 +180,6 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
     }, [showId]);
 
     useEffect(() => {
-        console.log('isModalOpen state changed to:', isModalOpen);
     }, [isModalOpen]);
 
     // Don't render anything while loading
@@ -250,7 +242,6 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
             {/* Modal for setlist image - Now outside the main div and will always be available */}
             {isModalOpen && setlistUrl && showData && (
                 <>
-                    {console.log('Modal is rendering - isModalOpen:', isModalOpen, 'setlistUrl:', setlistUrl)}
                     <div
                         className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto min-h-screen"
                         style={{ 
