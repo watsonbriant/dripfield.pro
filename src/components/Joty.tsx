@@ -85,13 +85,13 @@ export function Joty() {
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log('Fetching regions and matches for JOTY 2020...');
+        console.log('Fetching regions and matches for JOTY 2021...');
         
-        // Fetch regions for 2020 with priority levels 1-4
+        // Fetch regions for 2021 with priority levels 1-4
         const { data: regionsData, error: regionsError } = await supabase
           .from('joty_regions')
           .select('*')
-          .eq('joty_region_year', 2020)
+          .eq('joty_region_year', 2021)
           .in('joty_region_prioritylevel', [1, 2, 3, 4])
           .order('joty_region_prioritylevel', { ascending: true });
 
@@ -102,7 +102,7 @@ export function Joty() {
 
         console.log('Raw regions data from database:', regionsData);
 
-        // Fetch matches for 2020
+        // Fetch matches for 2021
         const { data: matchesData, error: matchesError } = await supabase
           .from('joty_matchups')
           .select(`
@@ -118,7 +118,7 @@ export function Joty() {
               shows!inner(show_date)
             )
           `)
-          .eq('joty_year', 2020)
+          .eq('joty_year', 2021)
           .order('joty_game', { ascending: true });
 
         if (matchesError) {
@@ -210,7 +210,7 @@ export function Joty() {
   if (regions.length !== 4) {
     return (
       <div className="max-w-[1600px] mx-auto p-4 text-center">
-        <div className="text-black">Unable to load tournament data. Please ensure 4 regions exist for 2020.</div>
+        <div className="text-black">Unable to load tournament data. Please ensure 4 regions exist for 2021.</div>
       </div>
     );
   }
@@ -563,7 +563,7 @@ export function Joty() {
                     
                     return (
                       <div className="inline-block bg-secondary border border-black rounded-lg px-4 py-3">
-                        <p className="text-sm font-bold text-black mb-1">2020 Jam of the Year</p>
+                        <p className="text-sm font-bold text-black mb-1">2021 Jam of the Year</p>
                         <p className="text-2xl font-mohr text-black">{champion.name}</p>
                       </div>
                     );

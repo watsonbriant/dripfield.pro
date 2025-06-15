@@ -1023,12 +1023,6 @@ export function Home() {
             ) : (
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-canvas border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
-                    </tr>
-                  </thead>
                   <tbody className="divide-y divide-white/5">
                     {recentShows.map((show, index) => (
                       <tr
@@ -1186,12 +1180,6 @@ export function Home() {
             ) : (
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-canvas border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
-                    </tr>
-                  </thead>
                   <tbody className="divide-y divide-white/5">
                     {upcomingShows.map((show, index) => (
                       <tr
@@ -1291,12 +1279,6 @@ export function Home() {
             ) : (
               <div className="overflow-x-auto relative">
                 <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-canvas border-y border-white/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Date</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black">Location</th>
-                    </tr>
-                  </thead>
                   <tbody className="divide-y divide-white/5">
                     {historicalShows.map((show, index) => (
                       <tr
