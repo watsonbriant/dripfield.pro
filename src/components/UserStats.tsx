@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { Copy } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 
 interface TopSong {
   song: string;
@@ -961,106 +961,119 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
     }
   }
   
-    // Format the time interval to display as MM:SS or HH:MM:SS
-    const formatTimeInterval = (interval: string) => {
-      const parts = interval.split(':');
-      if (parts.length === 3) {
-        // Convert from HH:MM:SS format
-        const hours = parseInt(parts[0]);
-        const minutes = parseInt(parts[1]);
-        const seconds = parseInt(parts[2]);
-        
-        if (hours > 0) {
-          return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        } else {
-          return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-      }
-      return interval;
-    };
-  
-    // Get personalized loading message
-    const getLoadingMessage = () => {
-      if (isOwnProfile) {
-        return "Loading your stats...";
+  // Format the time interval to display as MM:SS or HH:MM:SS
+  const formatTimeInterval = (interval: string) => {
+    const parts = interval.split(':');
+    if (parts.length === 3) {
+      // Convert from HH:MM:SS format
+      const hours = parseInt(parts[0]);
+      const minutes = parseInt(parts[1]);
+      const seconds = parseInt(parts[2]);
+      
+      if (hours > 0) {
+        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
       } else {
-        return `Loading ${username ? username + "'s" : "their"} stats...`;
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
       }
-    };
-  
-    // Get personalized titles for the different stat sections
-    const getPersonalizedTitle = (baseTitle: string) => {
-      return baseTitle;
-    };
-    
-    // Get color background for each stat type
-    const getStatBgColor = (type: string): string => {
-      switch(type) {
-        case 'topSongs':
-          return 'bg-[#f9ae37]'; // Use existing tertiary color
-        case 'longestPerformances':
-          return 'bg-[#f9ae37]'; // Burgundy
-        case 'notSeenSongs':
-          return 'bg-[#CE1126]'; // Red
-        case 'showOpeners':
-          return 'bg-[#006400]'; // Dark green
-        case 'setOpeners':
-          return 'bg-[#019B7A]'; // Teal
-        case 'setClosers':
-          return 'bg-[#E17401]'; // Orange
-        case 'encoreSongs':
-          return 'bg-[#7C2128]'; // Burgundy
-        default:
-          return 'bg-[#f9ae37]'; // Default yellow
-      }
-    };
+    }
+    return interval;
+  };
 
-    const copyToClipboard = (data: any[], songNameKey: string, countKey: string, showLength: boolean = false, title: string = '', type: string = '') => {
-      const dataText = data
-        .map(item => {
-          const value = showLength ? formatTimeInterval(item.length) : item[countKey];
-          
-          // Special handling for longest performances
-          if (type === 'longestPerformances') {
-            return `${value} - ${item[songNameKey]} [${item.show_date} - ${item.venue_location || 'Unknown Venue'}]`;
-          }
-          
-          return `${value} - ${item[songNameKey]}`;
-        })
-        .join('\n');
+  // Get personalized loading message
+  const getLoadingMessage = () => {
+    if (isOwnProfile) {
+      return "Loading your stats...";
+    } else {
+      return `Loading ${username ? username + "'s" : "their"} stats...`;
+    }
+  };
+
+  // Get personalized titles for the different stat sections
+  const getPersonalizedTitle = (baseTitle: string) => {
+    return baseTitle;
+  };
+  
+  // Get color background for each stat type
+  const getStatBgColor = (type: string): string => {
+    switch(type) {
+      case 'topSongs':
+        return 'bg-[#f9ae37]'; // Use existing tertiary color
+      case 'longestPerformances':
+        return 'bg-[#f9ae37]'; // Burgundy
+      case 'notSeenSongs':
+        return 'bg-[#CE1126]'; // Red
+      case 'showOpeners':
+        return 'bg-[#006400]'; // Dark green
+      case 'setOpeners':
+        return 'bg-[#019B7A]'; // Teal
+      case 'setClosers':
+        return 'bg-[#E17401]'; // Orange
+      case 'encoreSongs':
+        return 'bg-[#7C2128]'; // Burgundy
+      default:
+        return 'bg-[#f9ae37]'; // Default yellow
+    }
+  };
+
+  const copyToClipboard = (data: any[], songNameKey: string, countKey: string, showLength: boolean = false, title: string = '', type: string = '') => {
+    const dataText = data
+      .map(item => {
+        const value = showLength ? formatTimeInterval(item.length) : item[countKey];
+        
+        // Special handling for longest performances
+        if (type === 'longestPerformances') {
+          return `${value} - ${item[songNameKey]} [${item.show_date} - ${item.venue_location || 'Unknown Venue'}]`;
+        }
+        
+        return `${value} - ${item[songNameKey]}`;
+      })
+      .join('\n');
+    
+    // Include the title at the top of the copied text
+    const text = title ? `${title}\n\n${dataText}` : dataText;
+    
+    navigator.clipboard.writeText(text).then(() => {
+      // Optional: You could add a toast notification here
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  };
+  
+  // Create a stat box component for reuse
+  const StatBox = ({ 
+    title, 
+    data, 
+    loading, 
+    countKey = 'play_count',
+    showDate = false,
+    showLength = false,
+    songNameKey = 'song',
+    songIdKey = 'song_id',
+    type
+  }: { 
+    title: string;
+    data: any[];
+    loading: boolean;
+    countKey?: string;
+    showDate?: boolean;
+    showLength?: boolean;
+    songNameKey?: string;
+    songIdKey?: string;
+    type: string;
+  }) => {
+    const [isCopied, setIsCopied] = useState(false);
+    
+    const handleCopy = () => {
+      copyToClipboard(data, songNameKey, countKey, showLength, title, type);
+      setIsCopied(true);
       
-      // Include the title at the top of the copied text
-      const text = title ? `${title}\n\n${dataText}` : dataText;
-      
-      navigator.clipboard.writeText(text).then(() => {
-        // Optional: You could add a toast notification here
-      }).catch(err => {
-        console.error('Failed to copy text: ', err);
-      });
+      // Reset after 2 seconds
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
     };
     
-    // Create a stat box component for reuse
-    const StatBox = ({ 
-      title, 
-      data, 
-      loading, 
-      countKey = 'play_count',
-      showDate = false,
-      showLength = false,
-      songNameKey = 'song',
-      songIdKey = 'song_id',
-      type
-    }: { 
-      title: string;
-      data: any[];
-      loading: boolean;
-      countKey?: string;
-      showDate?: boolean;
-      showLength?: boolean;
-      songNameKey?: string;
-      songIdKey?: string;
-      type: string;
-    }) => (
+    return (
       <div className="bg-primary border border-black rounded-lg p-3 w-full h-full relative">
         <div className="flex justify-between items-start">
           <h3 className={`text-lg font-bold ${getStatBgColor(type)} ${
@@ -1072,11 +1085,17 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           </h3>
           {!loading && data.length > 0 && showCopyButton && (
             <button
-              onClick={() => copyToClipboard(data, songNameKey, countKey, showLength, title, type)}
-              className="bg-secondary hover:bg-[#f9ae37] border border-black rounded-lg p-1.5 transition-colors"
+              onClick={handleCopy}
+              className={`${
+                isCopied ? 'bg-green-600' : 'bg-secondary hover:bg-[#f9ae37]'
+              } border border-black rounded-lg p-1.5 transition-colors`}
               title="Copy to clipboard"
             >
-              <Copy className="w-4 h-4 text-black" />
+              {isCopied ? (
+                <Check className="w-4 h-4 text-white" />
+              ) : (
+                <Copy className="w-4 h-4 text-black" />
+              )}
             </button>
           )}
         </div>
@@ -1122,152 +1141,153 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
         )}
       </div>
     );
-    
-    // Create stats data array in the desired order
-    const statData: StatData[] = [
-      {
-        type: 'topSongs',
-        title: 'Most Seen Songs',
-        data: topSongs,
-        loading: loadingTop
-      },
-      {
-        type: 'longestPerformances',
-        title: 'Longest Song Performances',
-        data: longestPerformances,
-        loading: loadingLongest,
-        countKey: 'length_seconds',
-        showDate: true,
-        showLength: true
-      },
-      {
-        type: 'notSeenSongs',
-        title: 'Most Common Not Seen',
-        data: notSeenSongs,
-        loading: loadingNotSeen
-      },
-      {
-        type: 'showOpeners',
-        title: 'Most Seen Show Openers',
-        data: showOpeners,
-        loading: loadingShowOpeners,
-        countKey: 'times_played',
-        songNameKey: 'song_name'
-      },
-      {
-        type: 'setOpeners',
-        title: 'Most Seen Set Openers',
-        data: setOpeners,
-        loading: loadingSetOpeners,
-        countKey: 'times_played',
-        songNameKey: 'song_name'
-      },
-      {
-        type: 'setClosers',
-        title: 'Most Seen Set Closers',
-        data: setClosers,
-        loading: loadingSetClosers,
-        countKey: 'times_played',
-        songNameKey: 'song_name'
-      },
-      {
-        type: 'encoreSongs',
-        title: 'Most Seen in the Encore',
-        data: encoreSongs,
-        loading: loadingEncores,
-        countKey: 'times_played',
-        songNameKey: 'song_name'
-      }
-    ];
-    
-    // Create columns based on the current column count
-    const createStatColumns = (stats: StatData[], numColumns: number = 3) => {
-      if (numColumns === 1) {
-        // For single column, return all stats in one column
-        return [stats];
-      }
-      
-      const columns: StatData[][] = Array(numColumns).fill([]).map(() => []);
-      const itemsPerColumn = Math.ceil(stats.length / numColumns);
-      
-      // Distribute items across columns
-      stats.forEach((stat, index) => {
-        const columnIndex = Math.floor(index / itemsPerColumn);
-        columns[columnIndex] = [...columns[columnIndex], stat];
-      });
-      
-      return columns;
-    };
-    
-    // Generate columns based on current column count
-    const statColumns = createStatColumns(statData, columnCount);
-    
-    if (loading) {
-      return (
-        <div className="bg-primary border border-black rounded-lg p-3">
-          <div className="flex flex-col justify-center items-center h-56">
-            <CircularProgress value={loadingProgress} />
-            <p className="text-black mt-4">{getLoadingMessage()}</p>
-          </div>
-        </div>
-      );
+  }; // <-- THIS WAS THE MISSING CLOSING BRACE
+  
+  // Create stats data array in the desired order
+  const statData: StatData[] = [
+    {
+      type: 'topSongs',
+      title: 'Most Seen Songs',
+      data: topSongs,
+      loading: loadingTop
+    },
+    {
+      type: 'longestPerformances',
+      title: 'Longest Song Performances',
+      data: longestPerformances,
+      loading: loadingLongest,
+      countKey: 'length_seconds',
+      showDate: true,
+      showLength: true
+    },
+    {
+      type: 'notSeenSongs',
+      title: 'Most Common Not Seen',
+      data: notSeenSongs,
+      loading: loadingNotSeen
+    },
+    {
+      type: 'showOpeners',
+      title: 'Most Seen Show Openers',
+      data: showOpeners,
+      loading: loadingShowOpeners,
+      countKey: 'times_played',
+      songNameKey: 'song_name'
+    },
+    {
+      type: 'setOpeners',
+      title: 'Most Seen Set Openers',
+      data: setOpeners,
+      loading: loadingSetOpeners,
+      countKey: 'times_played',
+      songNameKey: 'song_name'
+    },
+    {
+      type: 'setClosers',
+      title: 'Most Seen Set Closers',
+      data: setClosers,
+      loading: loadingSetClosers,
+      countKey: 'times_played',
+      songNameKey: 'song_name'
+    },
+    {
+      type: 'encoreSongs',
+      title: 'Most Seen in the Encore',
+      data: encoreSongs,
+      loading: loadingEncores,
+      countKey: 'times_played',
+      songNameKey: 'song_name'
+    }
+  ];
+  
+  // Create columns based on the current column count
+  const createStatColumns = (stats: StatData[], numColumns: number = 3) => {
+    if (numColumns === 1) {
+      // For single column, return all stats in one column
+      return [stats];
     }
     
-    // If no user ID found, show an appropriate message
-    if (!effectiveUserId) {
-      return (
-        <div className="bg-primary border border-black rounded-lg p-3">
-          <div className="text-center py-6">
-            <p className="text-black">No user data available.</p>
-          </div>
-        </div>
-      );
-    }
+    const columns: StatData[][] = Array(numColumns).fill([]).map(() => []);
+    const itemsPerColumn = Math.ceil(stats.length / numColumns);
     
-    // Check if we have any data to display
-    const hasNoData = topSongs.length === 0 && 
-      longestPerformances.length === 0 &&
-      showOpeners.length === 0 &&
-      setOpeners.length === 0 &&
-      setClosers.length === 0 &&
-      encoreSongs.length === 0 &&
-      notSeenSongs.length === 0;
+    // Distribute items across columns
+    stats.forEach((stat, index) => {
+      const columnIndex = Math.floor(index / itemsPerColumn);
+      columns[columnIndex] = [...columns[columnIndex], stat];
+    });
     
-    if (hasNoData) {
-      return (
-        <div className="bg-primary border border-black rounded-lg p-3">
-          <div className="text-center py-6">
-            <p className="text-black">
-              {isOwnProfile 
-                ? "No stats available. Start adding shows you've attended!" 
-                : `${username ? username : "This user"} hasn't added any attended shows yet.`}
-            </p>
-          </div>
-        </div>
-      );
-    }
-    
+    return columns;
+  };
+  
+  // Generate columns based on current column count
+  const statColumns = createStatColumns(statData, columnCount);
+  
+  if (loading) {
     return (
-      <div className="mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-auto grid-flow-row">
-          {statData.map((stat, index) => (
-            <div key={`stat-${index}`} className="w-full h-auto">
-              <StatBox
-                title={stat.title}
-                data={stat.data}
-                loading={stat.loading}
-                countKey={stat.countKey}
-                showDate={stat.showDate}
-                showLength={stat.showLength}
-                songNameKey={stat.songNameKey}
-                songIdKey={stat.songIdKey}
-                type={stat.type}
-              />
-            </div>
-          ))}
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <div className="flex flex-col justify-center items-center h-56">
+          <CircularProgress value={loadingProgress} />
+          <p className="text-black mt-4">{getLoadingMessage()}</p>
         </div>
       </div>
     );
   }
   
+  // If no user ID found, show an appropriate message
+  if (!effectiveUserId) {
+    return (
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <div className="text-center py-6">
+          <p className="text-black">No user data available.</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Check if we have any data to display
+  const hasNoData = topSongs.length === 0 && 
+    longestPerformances.length === 0 &&
+    showOpeners.length === 0 &&
+    setOpeners.length === 0 &&
+    setClosers.length === 0 &&
+    encoreSongs.length === 0 &&
+    notSeenSongs.length === 0;
+  
+  if (hasNoData) {
+    return (
+      <div className="bg-primary border border-black rounded-lg p-3">
+        <div className="text-center py-6">
+          <p className="text-black">
+            {isOwnProfile 
+              ? "No stats available. Start adding shows you've attended!" 
+              : `${username ? username : "This user"} hasn't added any attended shows yet.`}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-auto grid-flow-row">
+        {statData.map((stat, index) => (
+          <div key={`stat-${index}`} className="w-full h-auto">
+            <StatBox
+              title={stat.title}
+              data={stat.data}
+              loading={stat.loading}
+              countKey={stat.countKey}
+              showDate={stat.showDate}
+              showLength={stat.showLength}
+              songNameKey={stat.songNameKey}
+              songIdKey={stat.songIdKey}
+              type={stat.type}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default UserStats;
