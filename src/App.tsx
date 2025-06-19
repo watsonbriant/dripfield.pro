@@ -304,7 +304,7 @@ function App() {
               <Route path="/song/:songId" element={<Song />} />
               <Route path="/user/:userId" element={<PublicProfile />} />
               <Route path="/discography" element={<Discography />} />
-              <Route path="/joty" element={<Joty />} />
+              <Route path="/joty/:year?" element={<Joty />} />
               <Route path="/submit" element={<Submit />} />
               
               {/* Authentication routes */}

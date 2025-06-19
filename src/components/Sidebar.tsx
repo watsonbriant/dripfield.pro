@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, MapPin, Music, Users, Building2, Disc, X, ShieldCheck, Search, Bug, FileWarning, ListMusic } from 'lucide-react';
+import { Home, Calendar, MapPin, Music, Users, Building2, Disc, X, ShieldCheck, Search, Bug, FileWarning, ListMusic, Trophy } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Import custom navigation icons
@@ -17,6 +17,7 @@ import navBug from '../img/Nav_Bug.png';
 import navFindShow from '../img/Nav_FindShow.png';
 import navHome from '../img/Nav_Home.png';
 import sparklePic from '../img/sparkle.png'
+import navJoty from '../img/Nav_Joty.png';
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -208,6 +209,12 @@ export function Sidebar({
       desktopIcon: <img src={navEcho} alt="Echo of a Show" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
       path: '/setlistgame'
     },
+    // { 
+    //   name: 'Jam of the Year', 
+    //   icon: <Trophy className="w-5 h-5" />,
+    //   desktopIcon: <img src={navJoty} alt="JOTY" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+    //   path: '/joty'
+    // },
     { 
       name: 'Submit', 
       icon: <FileWarning className="w-5 h-5" />, 

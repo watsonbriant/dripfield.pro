@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { Copy } from 'lucide-react';
 
 interface TopSong {
   song: string;
@@ -86,9 +87,10 @@ const CircularProgress = ({ value }: { value: number }) => {
 
 interface UserStatsProps {
   userId?: string;
+  showCopyButton?: boolean;
 }
 
-const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
+const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState<boolean>(true);
@@ -1012,6 +1014,30 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
           return 'bg-[#f9ae37]'; // Default yellow
       }
     };
+
+    const copyToClipboard = (data: any[], songNameKey: string, countKey: string, showLength: boolean = false, title: string = '', type: string = '') => {
+      const dataText = data
+        .map(item => {
+          const value = showLength ? formatTimeInterval(item.length) : item[countKey];
+          
+          // Special handling for longest performances
+          if (type === 'longestPerformances') {
+            return `${value} - ${item[songNameKey]} [${item.show_date} - ${item.venue_location || 'Unknown Venue'}]`;
+          }
+          
+          return `${value} - ${item[songNameKey]}`;
+        })
+        .join('\n');
+      
+      // Include the title at the top of the copied text
+      const text = title ? `${title}\n\n${dataText}` : dataText;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        // Optional: You could add a toast notification here
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    };
     
     // Create a stat box component for reuse
     const StatBox = ({ 
@@ -1035,14 +1061,25 @@ const UserStats: React.FC<UserStatsProps> = ({ userId }) => {
       songIdKey?: string;
       type: string;
     }) => (
-      <div className="bg-primary border border-black rounded-lg p-3 w-full h-full">
-        <h3 className={`text-lg font-bold ${getStatBgColor(type)} ${
-          type === 'showOpeners' || type === 'setOpeners' || type === 'setClosers' || type === 'encoreSongs' || type === 'notSeenSongs'
-            ? 'text-white' 
-            : 'text-black'
-        } inline-block px-3 pt-0.5 pb-0.5 rounded-full border border-black mb-2`}>
-          {getPersonalizedTitle(title)}
-        </h3>
+      <div className="bg-primary border border-black rounded-lg p-3 w-full h-full relative">
+        <div className="flex justify-between items-start">
+          <h3 className={`text-lg font-bold ${getStatBgColor(type)} ${
+            type === 'showOpeners' || type === 'setOpeners' || type === 'setClosers' || type === 'encoreSongs' || type === 'notSeenSongs'
+              ? 'text-white' 
+              : 'text-black'
+          } inline-block px-3 pt-0.5 pb-0.5 rounded-full border border-black mb-2`}>
+            {getPersonalizedTitle(title)}
+          </h3>
+          {!loading && data.length > 0 && showCopyButton && (
+            <button
+              onClick={() => copyToClipboard(data, songNameKey, countKey, showLength, title, type)}
+              className="bg-secondary hover:bg-[#f9ae37] border border-black rounded-lg p-1.5 transition-colors"
+              title="Copy to clipboard"
+            >
+              <Copy className="w-4 h-4 text-black" />
+            </button>
+          )}
+        </div>
         {loading ? (
           <div className="flex justify-center items-center h-40">
             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-black"></div>

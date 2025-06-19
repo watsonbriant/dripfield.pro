@@ -175,7 +175,7 @@ export const PublicProfile: React.FC = () => {
             <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Profile Overview</h3>
             <div className="grid grid-cols-1 gap-6">
               <OverviewChart userId={userId} />
-              <UserStats userId={userId} />
+              <UserStats userId={userId} showCopyButton={false} />
             </div>
           </div>
         );
