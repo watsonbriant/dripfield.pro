@@ -457,7 +457,7 @@ export default function SongTourPerformancesModal({
                 onClose();
               }
             }}
-            className="w-[125px] bg-[#f9ae37] hover:bg-secondary text-black font-bold py-1 px-3 rounded-lg border border-black transition-colors"
+            className="bg-[#f9ae37] hover:bg-secondary text-black font-bold py-1 px-3 rounded-lg border border-black transition-colors"
           >
             Song History
           </button>
