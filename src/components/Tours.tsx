@@ -9,6 +9,7 @@ import TopSlotsCarousel from './TopSlotsCarousel';
 import LongestSongs from './LongestSongs';
 import TourSongsCombined from './TourSongsCombined';
 import NotPlayedInTour from './NotPlayedInTour';
+import SongTourPerformancesModal from './SongTourPerformancesModal';
 
 interface Show {
   show_iscanon: boolean;
@@ -102,6 +103,13 @@ export function Tours() {
   const [previousTourId, setPreviousTourId] = React.useState<string | null>(null);
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
+  const [modalSongData, setModalSongData] = useState<{
+    isOpen: boolean;
+    songName: string;
+  }>({
+    isOpen: false,
+    songName: ''
+  });
 
   const getRarityColor = (percentage: string | null): string => {
     // If percentage is null or not a valid percentage string, return transparent
@@ -906,10 +914,10 @@ export function Tours() {
             )}
             <a
               onClick={() => {
-                const songId = songIdMap[song.song];
-                if (songId) {
-                  navigate(`/song/${songId}`);
-                }
+                setModalSongData({
+                  isOpen: true,
+                  songName: song.song
+                });
               }}
               className={`font-semibold hover:text-[#a9682e] transition-colors text-black table-link cursor-pointer inline ${
                 index < songs.length - 1 ? 'mr-1' : ''
@@ -1318,6 +1326,15 @@ export function Tours() {
           />
         </div>
       )}
+
+      {/* Song Tour Performances Modal */}
+      <SongTourPerformancesModal
+        isOpen={modalSongData.isOpen}
+        onClose={() => setModalSongData({ isOpen: false, songName: '' })}
+        songName={modalSongData.songName}
+        tourId={currentTourId}
+        currentShowId=""
+      />
     </div>
   );
 }

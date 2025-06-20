@@ -109,7 +109,7 @@ export function SongSearch({ className = '' }: SongSearchProps) {
       <div className="hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
+          className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr whitespace-nowrap min-w-[157px]"
         >
           {selectedSong || 'Search Songs'}
           <ChevronDown className="w-4 h-4" />

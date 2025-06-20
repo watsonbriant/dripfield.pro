@@ -8,6 +8,7 @@ import ShowInfoContent from './ShowInfoContent';
 import ShowChanges from './ShowChanges';
 import { supabase } from '../lib/supabase';
 import { GiWhistle } from "react-icons/gi";
+import SongTourPerformancesModal from './SongTourPerformancesModal';
 
 interface Guest {
   guest_display_name: string;
@@ -15,7 +16,7 @@ interface Guest {
   guest_canonid: number;
   guest_instrument: string; 
 }
-
+ 
 interface Show {
   show_id: string;
   show_date: string;
@@ -176,6 +177,13 @@ export default function FullSetlistDisplay({
   const [individualToggles, setIndividualToggles] = useState<{[key: string]: boolean}>({});
   const [isAdmin, setIsAdmin] = useState(false);
   const [copiedEntries, setCopiedEntries] = useState<Set<string>>(new Set());
+  const [modalSongData, setModalSongData] = useState<{
+    isOpen: boolean;
+    songName: string;
+  }>({
+    isOpen: false,
+    songName: ''
+  });
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -611,7 +619,12 @@ export default function FullSetlistDisplay({
                               <strong>
                                 <span 
                                   className="text-black mr-2 hover:text-[#a9682e] transition-colors cursor-pointer"
-                                  onClick={() => navigate(`/song/${entry.song_id}`)}
+                                  onClick={() => {
+                                    setModalSongData({
+                                      isOpen: true,
+                                      songName: entry.entry_song
+                                    });
+                                  }}
                                 >
                                   {entry.entry_song}
                                 </span>
@@ -990,6 +1003,15 @@ export default function FullSetlistDisplay({
           </div>
         </div>
       </div>
+      
+      {/* Song Tour Performances Modal */}
+      <SongTourPerformancesModal
+        isOpen={modalSongData.isOpen}
+        onClose={() => setModalSongData({ isOpen: false, songName: '' })}
+        songName={modalSongData.songName}
+        tourId={show.tour_id || ''}
+        currentShowId={show.show_id}
+      />
     </div>
   );
 }
