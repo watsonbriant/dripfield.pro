@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
+import SongTourPerformancesModal from './SongTourPerformancesModal';
 
 interface SlotItem {
   left: string;
@@ -19,7 +20,8 @@ interface TopSlotsCarouselProps {
   isMobile?: boolean;
   songIdMap?: { [songName: string]: string };
   onSongClick?: (songId: string) => void;
-  isLoading?: boolean; // Added loading prop
+  isLoading?: boolean;
+  tourId?: string; // Added tourId prop
 }
 
 const TopSlotsCarousel = ({ 
@@ -27,15 +29,24 @@ const TopSlotsCarousel = ({
   isMobile = false, 
   songIdMap = {}, 
   onSongClick,
-  isLoading = false // Added with default value
+  isLoading = false,
+  tourId = ''
 }: TopSlotsCarouselProps) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [modalSongData, setModalSongData] = useState<{
+    isOpen: boolean;
+    songName: string;
+  }>({
+    isOpen: false,
+    songName: ''
+  });
 
   const handleSongClick = (songName: string) => {
-    if (onSongClick && songIdMap && songIdMap[songName]) {
-      onSongClick(songIdMap[songName]);
-    }
+    setModalSongData({
+      isOpen: true,
+      songName: songName
+    });
   };
   
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -245,6 +256,14 @@ const TopSlotsCarousel = ({
           </div>
         ))}
       </div>
+      {/* Song Tour Performances Modal */}
+      <SongTourPerformancesModal
+        isOpen={modalSongData.isOpen}
+        onClose={() => setModalSongData({ isOpen: false, songName: '' })}
+        songName={modalSongData.songName}
+        tourId={tourId}
+        currentShowId=""
+      />
     </>
   );
 };

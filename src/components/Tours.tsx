@@ -1304,6 +1304,7 @@ export function Tours() {
                 isMobile={windowWidth < 1280}
                 songIdMap={songIdMap}
                 onSongClick={(songId) => navigate(`/song/${songId}`)}
+                tourId={currentTourId}
               />
             )}
 
@@ -1311,6 +1312,7 @@ export function Tours() {
             <LongestSongs
               showIds={shows.map(show => show.show_id)}
               songIdMap={songIdMap}
+              tourId={currentTourId}
             />
           </div>
         </div>
@@ -1323,6 +1325,7 @@ export function Tours() {
             songIdMap={songIdMap}
             onSongCountChange={setUniqueSongCount}
             uniqueSongCount={uniqueSongCount}
+            tourId={currentTourId}
           />
         </div>
       )}

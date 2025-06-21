@@ -24,6 +24,7 @@ interface TourSongsCombinedProps {
   uniqueSongCount?: number;
   onSongCountChange?: (count: number) => void;
   className?: string;
+  tourId?: string; // Add tourId prop
 }
 
 export type MatrixSortMode = 'alphabetical' | 'chronological' | 'playcount';
@@ -32,7 +33,8 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
   shows, 
   songIdMap,
   uniqueSongCount,
-  onSongCountChange 
+  onSongCountChange,
+  tourId = ""
 }) => {
   const [viewMode, setViewMode] = useState<'list' | 'matrix'>('list');
   const [matrixSortMode, setMatrixSortMode] = useState<MatrixSortMode>('alphabetical');
@@ -162,6 +164,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
           onSongCountChange={onSongCountChange}
           uniqueSongCount={uniqueSongCount} 
           hideTitle={true}
+          tourId={tourId}
         />
       ) : (
         <TourSongMatrix 
@@ -169,6 +172,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
           songIdMap={songIdMap} 
           hideTitle={true} 
           sortMode={matrixSortMode}
+          tourId={tourId}
         />
       )}
       

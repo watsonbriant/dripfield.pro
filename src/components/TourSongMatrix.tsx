@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { MatrixSortMode } from './TourSongsCombined';
+import SongTourPerformancesModal from './SongTourPerformancesModal';
 
 interface SongSpreadProps {
   shows: Array<any>;
@@ -9,6 +10,7 @@ interface SongSpreadProps {
   hideTitle?: boolean;
   className?: string;
   sortMode?: MatrixSortMode;
+  tourId?: string; // Add tourId prop
 }
 
 interface SongData {
@@ -31,9 +33,17 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
   songIdMap = {}, 
   hideTitle = false,
   className = "",
-  sortMode = "alphabetical"
+  sortMode = "alphabetical",
+  tourId = ""
 }) => {
   const navigate = useNavigate();
+  const [modalSongData, setModalSongData] = useState<{
+    isOpen: boolean;
+    songName: string;
+  }>({
+    isOpen: false,
+    songName: ''
+  });
   const [songMatrix, setSongMatrix] = useState<{
     songs: string[];
     showDates: string[];
@@ -417,7 +427,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
                   >
                     <button 
                       onClick={() => navigate(`/setlist/${showId}`)}
-                      className="hover:text-[#a9682e] hover:underline transition-colors"
+                      className="hover:text-[#a9682e] transition-colors"
                     >
                       {date}
                     </button>
@@ -439,12 +449,12 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
                     style={{ borderColor: 'rgb(217, 195, 165)' }}>
                     <button 
                       onClick={() => {
-                        const songId = songIdMap[song];
-                        if (songId) {
-                          navigate(`/song/${songId}`);
-                        }
+                        setModalSongData({
+                          isOpen: true,
+                          songName: song
+                        });
                       }}
-                      className="hover:text-[#a9682e] hover:underline transition-colors cursor-pointer"
+                      className="hover:text-[#a9682e] transition-colors cursor-pointer"
                     >
                       {song}
                     </button>
@@ -474,6 +484,15 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
           </tbody>
         </table>
       </div>
+      
+      {/* Song Tour Performances Modal */}
+      <SongTourPerformancesModal
+        isOpen={modalSongData.isOpen}
+        onClose={() => setModalSongData({ isOpen: false, songName: '' })}
+        songName={modalSongData.songName}
+        tourId={tourId}
+        currentShowId=""
+      />
     </div>
   );
 };

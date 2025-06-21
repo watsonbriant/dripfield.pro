@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import SongTourPerformancesModal from './SongTourPerformancesModal';
 
 interface Show {
   setlist_entries?: Array<{
@@ -34,6 +35,7 @@ interface Props {
   uniqueSongCount?: number;
   hideTitle?: boolean;
   className?: string; // Add this
+  tourId?: string; // Add tourId prop
 }
 
 const TourSongStats: React.FC<Props> = ({ 
@@ -42,11 +44,19 @@ const TourSongStats: React.FC<Props> = ({
   onSongCountChange, 
   uniqueSongCount, 
   hideTitle = false,
-  className = ""
+  className = "",
+  tourId = ""
 }) => {
   const navigate = useNavigate();
   const [sortColumn, setSortColumn] = React.useState<'song' | 'count' | 'category' | 'longest' | 'shortest' | null>(null);
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
+  const [modalSongData, setModalSongData] = useState<{
+    isOpen: boolean;
+    songName: string;
+  }>({
+    isOpen: false,
+    songName: ''
+  });
 
   // Parse PostgreSQL interval format to seconds
   const parseDuration = (interval: string | undefined | null): number | null => {
@@ -242,8 +252,11 @@ const TourSongStats: React.FC<Props> = ({
       <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
   };
 
-  const handleRowClick = (song_id: string) => {
-    navigate(`/song/${song_id}`);
+  const handleRowClick = (songName: string) => {
+    setModalSongData({
+      isOpen: true,
+      songName: songName
+    });
   };
 
   return (
@@ -315,7 +328,7 @@ const TourSongStats: React.FC<Props> = ({
                 <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">{stat.count}</td>
                 <td 
                   className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer"
-                  onClick={() => handleRowClick(stat.song_id)}
+                  onClick={() => handleRowClick(stat.song)}
                 >
                   <span className="font-semibold hover:text-[#a9682e] transition-colors table-link">
                     {stat.song}
@@ -337,6 +350,15 @@ const TourSongStats: React.FC<Props> = ({
           </tbody>
         </table>
       </div>
+      
+      {/* Song Tour Performances Modal */}
+      <SongTourPerformancesModal
+        isOpen={modalSongData.isOpen}
+        onClose={() => setModalSongData({ isOpen: false, songName: '' })}
+        songName={modalSongData.songName}
+        tourId={tourId}
+        currentShowId=""
+      />
     </div>
   );
 };

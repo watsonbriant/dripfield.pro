@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import SongTourPerformancesModal from './SongTourPerformancesModal';
 
 interface LongestSongsProps {
   showIds: string[];
   songIdMap: { [songName: string]: string };
+  tourId?: string;
 }
 
 interface LongestSong {
@@ -16,10 +18,17 @@ interface LongestSong {
   venue_location?: string;
 }
 
-const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
+const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId = '' }) => {
   const navigate = useNavigate();
   const [longestSongs, setLongestSongs] = useState<LongestSong[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modalSongData, setModalSongData] = useState<{
+    isOpen: boolean;
+    songName: string;
+  }>({
+    isOpen: false,
+    songName: ''
+  });
 
   useEffect(() => {
     const fetchLongestSongs = async () => {
@@ -98,10 +107,11 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
       .join('.');
   };
 
-  const handleSongClick = (songId: string) => {
-    if (songId) {
-      navigate(`/song/${songId}`);
-    }
+  const handleSongClick = (songName: string) => {
+    setModalSongData({
+      isOpen: true,
+      songName: songName
+    });
   };
 
   const handleShowClick = (showId: string) => {
@@ -136,8 +146,8 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
                 >
                   <td className="px-4 py-0.5 font-semibold">
                     <span
-                      className="text-black cursor-pointer hover:text-[#a9682e] hover:underline"
-                      onClick={() => handleSongClick(song.song_id || '')}
+                      className="text-black cursor-pointer hover:text-[#a9682e]"
+                      onClick={() => handleSongClick(song.entry_song)}
                     >
                       {song.entry_song}
                     </span>
@@ -150,7 +160,7 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
                       <>
                         <span
                           onClick={() => handleShowClick(song.show_id || '')}
-                          className="font-semibold cursor-pointer hover:text-[#a9682e] hover:underline"
+                          className="font-semibold cursor-pointer hover:text-[#a9682e]"
                         >
                           {formatDate(song.show_date)}
                         </span>
@@ -164,6 +174,15 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap }) => {
           </table>
         </div>
       )}
+      
+    {/* Song Tour Performances Modal */}
+    <SongTourPerformancesModal
+        isOpen={modalSongData.isOpen}
+        onClose={() => setModalSongData({ isOpen: false, songName: '' })}
+        songName={modalSongData.songName}
+        tourId={tourId}
+        currentShowId=""
+      />
     </div>
   );
 };
