@@ -219,6 +219,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
           const { data, error } = await supabase
             .from('songs')
             .select('*')
+            .or('song_placeholder.is.null,song_placeholder.eq.false')
             .order('song', { ascending: true })
             .range(page * pageSize, (page + 1) * pageSize - 1);
           
