@@ -32,6 +32,7 @@ import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 import { Joty } from './components/Joty';
 import sparklePic from './img/sparkle.png';
+import bgPic from './img/bg.jpg';
 
 import logo from './img/Logo_Text.png';
 
@@ -191,7 +192,10 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col md:h-screen bg-canvas">
+    <div 
+      className="flex flex-col md:h-screen bg-fixed bg-cover bg-center" 
+      style={{ backgroundImage: `url(${bgPic})` }}
+    >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
         <header className="z-20 bg-primary border-b border-black/15 px-6 py-1 md:sticky md:top-0">
