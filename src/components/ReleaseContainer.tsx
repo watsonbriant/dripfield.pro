@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MoveRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NugsIcon from '../../public/src/img/nugs.png';
 import { FaYoutube } from "react-icons/fa6";
@@ -36,6 +36,29 @@ const getServiceIcon = (serviceName: string | null) => {
     default:
       return null;
   }
+};
+
+// Helper function to render display name with arrow replacement
+const renderDisplayName = (displayName: string | null, release: string) => {
+  const text = displayName || release || 'Untitled Release';
+  
+  if (text.includes('→')) {
+    const parts = text.split('→');
+    return (
+      <>
+        {parts.map((part, index) => (
+          <React.Fragment key={index}>
+            {part.trim()}
+            {index < parts.length - 1 && (
+              <MoveRight className="inline-block mx-1" size={16} />
+            )}
+          </React.Fragment>
+        ))}
+      </>
+    );
+  }
+  
+  return text;
 };
 
 const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
@@ -165,7 +188,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
             )}
             <div className="text-center">
               <h3 className="text-base font-semibold text-black leading-5">
-                {releases[currentReleaseIndex]?.release_displayname || releases[currentReleaseIndex]?.release || 'Untitled Release'}
+                {renderDisplayName(releases[currentReleaseIndex]?.release_displayname, releases[currentReleaseIndex]?.release)}
               </h3>
               {releases[currentReleaseIndex]?.release_link && (
                 <a 
