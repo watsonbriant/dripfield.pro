@@ -343,9 +343,7 @@ export default function SongTourPerformancesModal({
                         return (
                           <tr 
                             key={`${perf.show_id}-${index}`}
-                            className={`${
-                              index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                            } hover:bg-black/10 transition-colors text-xs`}
+                            className="bg-primary hover:bg-black/10 transition-colors text-xs"
                           >
                             <td className="px-3 py-1 text-black whitespace-nowrap text-center relative">
                               <span className="font-semibold">
