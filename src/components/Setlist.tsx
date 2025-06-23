@@ -338,6 +338,9 @@ export function Setlist() {
                 guest_canonid,
                 guest_instrument
               )
+            ),
+            joty_results (
+              round_achieved
             )
           `)
           .eq('entry_show', showId)
@@ -349,10 +352,11 @@ export function Setlist() {
         // Transform the data to include guests in the expected format
         const processedSetlist = setlistData?.map(entry => ({
           ...entry,
-          song_id: entry.songs?.song_id, // This line needs to be added
+          song_id: entry.songs?.song_id,
           song_category: entry.songs?.song_category,
           song_originalartist: entry.songs?.song_originalartist,
           category_canonid: entry.songs?.categories?.category_canonid,
+          joty_round: entry.joty_results?.round_achieved || null, // Add this line
           guests: entry.setlist_entry_guests?.map(guest => ({
             guest_id: guest.guest_id,
             guest_display_name: guest.guests.guest_displayname,

@@ -9,6 +9,7 @@ import ShowChanges from './ShowChanges';
 import { supabase } from '../lib/supabase';
 import { GiWhistle } from "react-icons/gi";
 import SongTourPerformancesModal from './SongTourPerformancesModal';
+import JOTYBadge from './JOTYBadge';
 
 interface Guest {
   guest_display_name: string;
@@ -67,6 +68,7 @@ interface SetlistEntry {
   }[];
   song_category: string;
   category_canonid: number;
+  joty_round?: string | null;
 }
 
 interface GuestGroup {
@@ -615,81 +617,90 @@ export default function FullSetlistDisplay({
                               }
                             }}
                           >
-                            <div className="w-full break-words">
-                              <strong>
-                                <span 
-                                  className="text-black mr-2 hover:text-[#a9682e] transition-colors cursor-pointer"
-                                  onClick={() => {
-                                    setModalSongData({
-                                      isOpen: true,
-                                      songName: entry.entry_song
-                                    });
-                                  }}
-                                >
-                                  {entry.entry_song}
-                                </span>
-                                {entry.entry_short && (
-                                  <span className="text-red-600 mr-2 text-[0.75rem] leading-[1.25rem] font-semibold">[{entry.entry_short}]</span>
+                            <div className="w-full break-words flex items-center gap-2">
+                              <div className="flex-grow">
+                                <strong>
+                                  <span 
+                                    className="text-black mr-2 hover:text-[#a9682e] transition-colors cursor-pointer"
+                                    onClick={() => {
+                                      setModalSongData({
+                                        isOpen: true,
+                                        songName: entry.entry_song
+                                      });
+                                    }}
+                                  >
+                                    {entry.entry_song}
+                                  </span>
+                                  {entry.entry_short && (
+                                    <span className="text-red-600 mr-2 text-[0.75rem] leading-[1.25rem] font-semibold">[{entry.entry_short}]</span>
+                                  )}
+                                  {entry.entry_segue && (
+                                    <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />
+                                  )}
+                                </strong>
+                              </div>
+                              
+                              {/* Whistle and JOTY badge container */}
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                {entry.entry_coachnotes && (
+                                  <GiWhistle 
+                                    className={`h-5 w-5 cursor-pointer ${shouldShowCoachNotesForEntry(entry.entry_id, true) ? 'text-[#a9682e]' : 'text-black'} hover:text-tertiary transition-colors`} 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleIndividualCoachNote(entry.entry_id);
+                                    }}
+                                  />
                                 )}
-                                {entry.entry_segue && (
-                                  <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />
+                                {entry.joty_round && (
+                                  <JOTYBadge round={entry.joty_round} compact={true} />
                                 )}
-                              </strong>
+                              </div>
                             </div>
+                            
                             {entry.entry_coachnotes && shouldShowCoachNotesForEntry(entry.entry_id, true) && (
                               <div 
                                 className="text-black/70 text-xs mt-0.5 w-full break-words [&_a]:text-[#a9682e] [&_a]:font-semibold"
                                 dangerouslySetInnerHTML={{ __html: entry.entry_coachnotes }}
                               />
                             )}
-                          {!isMobile && hoveredSong === entry.entry_id && (
-                            <div 
-                              className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
-                              style={{
-                                left: `${mousePosition.x + 10}px`,
-                                top: `${mousePosition.y - 10}px`
-                              }}
-                            >
-                              <div className="font-bold">
-                                <span>{entry.entry_song}</span>
-                                {entry.entry_short && (
-                                  <span className="text-red-600 ml-2">[{entry.entry_short}]</span>
+                            
+                            {/* Hover tooltip remains the same */}
+                            {!isMobile && hoveredSong === entry.entry_id && (
+                              <div 
+                                className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                                style={{
+                                  left: `${mousePosition.x + 10}px`,
+                                  top: `${mousePosition.y - 10}px`
+                                }}
+                              >
+                                <div className="font-bold">
+                                  <span>{entry.entry_song}</span>
+                                  {entry.entry_short && (
+                                    <span className="text-red-600 ml-2">[{entry.entry_short}]</span>
+                                  )}
+                                  {entry.entry_segue && (
+                                    <MoveRight className="text-red-600 inline ml-2 w-[1rem] h-[1rem]" />
+                                  )}
+                                </div>
+                                {entry.times_played && (
+                                  <div>
+                                    <span dangerouslySetInnerHTML={createMarkup(entry.times_played)} />
+                                  </div>
                                 )}
-                                {entry.entry_segue && (
-                                  <MoveRight className="text-red-600 inline ml-2 w-[1rem] h-[1rem]" />
+                                {entry.shows_since_debut && (
+                                  <div>
+                                    <span dangerouslySetInnerHTML={createMarkup(entry.shows_since_debut)} />
+                                  </div>
+                                )}
+                                {entry.song_rarity_percentage && (
+                                  <div>
+                                    <span dangerouslySetInnerHTML={createMarkup(entry.song_rarity_percentage)} />
+                                  </div>
                                 )}
                               </div>
-                              {entry.times_played && (
-                                <div>
-                                  <span dangerouslySetInnerHTML={createMarkup(entry.times_played)} />
-                                </div>
-                              )}
-                              {entry.shows_since_debut && (
-                                <div>
-                                  <span dangerouslySetInnerHTML={createMarkup(entry.shows_since_debut)} />
-                                </div>
-                              )}
-                              {entry.song_rarity_percentage && (
-                                <div>
-                                  <span dangerouslySetInnerHTML={createMarkup(entry.song_rarity_percentage)} />
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {entry.entry_coachnotes && (
-                          <div className="ml-4 flex-shrink-0 mr-1">
-                            <GiWhistle 
-                              className={`h-5 w-5 cursor-pointer ${shouldShowCoachNotesForEntry(entry.entry_id, true) ? 'text-[#a9682e]' : 'text-black'} hover:text-tertiary transition-colors`} 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleIndividualCoachNote(entry.entry_id);
-                              }}
-                            />
+                            )}
                           </div>
-                        )}
-                      </div>
+                        </div>
                     
                         {/* Duration column */}
                         <div className="text-black/80 text-center">
