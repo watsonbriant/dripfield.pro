@@ -9,6 +9,8 @@ interface Team {
   date?: string;
   venue?: string;
   entryShort?: string | null; 
+  subvenue?: string | null;  // Add this line
+  fullDate?: string;  // Add this line
 }
 
 interface JotyMatchupModalProps {
@@ -73,15 +75,22 @@ export default function JotyMatchupModal({
                 </div>
                 <span className="text-2xl font-bold text-black">{team1.percentage}%</span>
             </div>
-            {team1.date && (
-              <div className="text-sm text-black space-y-1">
-                <p><span className="font-semibold">Date:</span> {team1.date}</p>
-                <p><span className="font-semibold">Venue:</span> {team1.venue}</p>
-              </div>
+            {team1.fullDate && (
+                <div className="text-sm text-black">
+                <p className="font-semibold">{team1.fullDate}</p>
+                {team1.subvenue ? (
+                    <>
+                    <p className="font-semibold mt-1">{team1.subvenue}</p>
+                    <p className="font-normal">{team1.venue}</p>
+                    </>
+                ) : (
+                    <p className="font-normal">{team1.venue}</p>
+                )}
+                </div>
             )}
-          </div>
+            </div>
 
-          {/* Team 2 */}
+            {/* Team 2 */}
             <div className={`bg-canvas border border-black/50 rounded-lg p-4 ${team2.percentage > team1.percentage ? 'ring-2 ring-[#f9ae37]' : ''}`}>
             <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-3">
@@ -97,13 +106,20 @@ export default function JotyMatchupModal({
                 </div>
                 <span className="text-2xl font-bold text-black">{team2.percentage}%</span>
             </div>
-            {team2.date && (
-              <div className="text-sm text-black space-y-1">
-                <p><span className="font-semibold">Date:</span> {team2.date}</p>
-                <p><span className="font-semibold">Venue:</span> {team2.venue}</p>
-              </div>
+            {team2.fullDate && (
+                <div className="text-sm text-black">
+                <p className="font-semibold">{team2.fullDate}</p>
+                {team2.subvenue ? (
+                    <>
+                    <p className="font-semibold mt-1">{team2.subvenue}</p>
+                    <p className="font-normal">{team2.venue}</p>
+                    </>
+                ) : (
+                    <p className="font-normal">{team2.venue}</p>
+                )}
+                </div>
             )}
-          </div>
+            </div>
         </div>
       </div>
     </>

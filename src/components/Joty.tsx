@@ -13,6 +13,8 @@ interface Team {
   date?: string;
   venue?: string; 
   entryShort?: string | null; 
+  subvenue?: string | null;  // Add this line
+  fullDate?: string;  // Add this line
 }
 
 interface Match {
@@ -163,7 +165,8 @@ export function Joty() {
             entry_short,
             shows!inner(
               show_date,
-              show_venue_location
+              show_venue_location,
+              show_subvenue
             )
           ),
           entry2:setlist_entries!joty_matchups_joty_entry2_fkey(
@@ -172,7 +175,8 @@ export function Joty() {
             entry_short,
             shows!inner(
               show_date,
-              show_venue_location
+              show_venue_location,
+              show_subvenue
             )
           )
         `)
@@ -207,6 +211,14 @@ export function Joty() {
               const [year, month, day] = dateString.split('-');
               return `${month}.${day}`;
             };
+            
+            // Helper function to format date as MM.DD.YYYY
+            const formatFullDate = (entry: any) => {
+              if (!entry?.shows?.show_date) return undefined;
+              const dateString = entry.shows.show_date;
+              const [year, month, day] = dateString.split('-');
+              return `${month}.${day}.${year.slice(-2)}`;
+            };
           
             return {
               game: match.joty_game,
@@ -217,7 +229,9 @@ export function Joty() {
                 entryId: match.joty_entry1,
                 date: formatDate(match.entry1),
                 venue: match.entry1?.shows?.show_venue_location || '',
-                entryShort: match.entry1?.entry_short || null  // Add this line
+                entryShort: match.entry1?.entry_short || null,
+                subvenue: match.entry1?.shows?.show_subvenue || null,  // Add this line
+                fullDate: formatFullDate(match.entry1)  // Add this line
               },
               team2: {
                 seed: match.joty_entry2_rank || 16,
@@ -226,7 +240,9 @@ export function Joty() {
                 entryId: match.joty_entry2,
                 date: formatDate(match.entry2),
                 venue: match.entry2?.shows?.show_venue_location || '',
-                entryShort: match.entry2?.entry_short || null  // Add this line
+                entryShort: match.entry2?.entry_short || null,
+                subvenue: match.entry2?.shows?.show_subvenue || null,  // Add this line
+                fullDate: formatFullDate(match.entry2)  // Add this line
               }
             };
           });
@@ -349,10 +365,10 @@ export function Joty() {
             {/* Logos */}
             <div className="flex items-center justify-center gap-3 mt-4 mb-4">
               <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
-                <img src={aatLogo} alt="Always Almost There" className="h-10 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" />
+                <img src={aatLogo} alt="Always Almost There" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" />
               </a>
               <a href="https://www.nugs.net/" target="_blank">
-                <img src={nugsLogo} alt="nugs" className="h-10 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" />
+                <img src={nugsLogo} alt="nugs" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" />
               </a>
             </div>
           </div>
