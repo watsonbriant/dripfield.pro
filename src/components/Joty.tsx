@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import aatLogo from '../img/AAT.jpg';
 import nugsLogo from '../img/NugsColor.png';
+import JotyMatchupModal from './JotyMatchupModal';
 
 interface Team {
   seed: number;
@@ -11,6 +12,7 @@ interface Team {
   entryId?: string;
   date?: string;
   venue?: string; 
+  entryShort?: string | null; 
 }
 
 interface Match {
@@ -25,16 +27,22 @@ interface MatchupProps {
   roundName: string;
   matchNumber: number;
   regionColor: string;
+  onMatchupClick: (team1: Team, team2: Team, regionColor: string) => void;
 }
 
-const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber, regionColor }) => {
+const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber, regionColor, onMatchupClick }) => {
+  const handleTeamClick = () => {
+    onMatchupClick(team1, team2, regionColor);
+  };
+
   return (
     <div>
       <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
         <div 
-          className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+          className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
             team1.percentage > team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
           }`}
+          onClick={handleTeamClick}
         >
           <div className="flex justify-between items-center text-xs">
             <div className="flex items-center gap-1.5">
@@ -54,9 +62,10 @@ const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber,
           </div>
         </div>
         <div 
-          className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+          className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
             team2.percentage > team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
           }`}
+          onClick={handleTeamClick}
         >
           <div className="flex justify-between items-center text-xs">
             <div className="flex items-center gap-1.5">
@@ -87,6 +96,15 @@ export function Joty() {
   const [regions, setRegions] = useState<{ name: string; color: string; priorityLevel: number }[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedMatchup, setSelectedMatchup] = useState<{
+    team1: Team;
+    team2: Team;
+    regionColor: string;
+    team1Color?: string;
+    team2Color?: string;
+  } | null>(null);
 
   // Available years
   const availableYears = [2024, 2023, 2022, 2021, 2020];
@@ -142,6 +160,7 @@ export function Joty() {
           entry1:setlist_entries!joty_matchups_joty_entry1_fkey(
             entry_id,
             entry_song,
+            entry_short,
             shows!inner(
               show_date,
               show_venue_location
@@ -150,6 +169,7 @@ export function Joty() {
           entry2:setlist_entries!joty_matchups_joty_entry2_fkey(
             entry_id,
             entry_song,
+            entry_short,
             shows!inner(
               show_date,
               show_venue_location
@@ -196,7 +216,8 @@ export function Joty() {
                 percentage: match.joty_entry1_percentage || 0,
                 entryId: match.joty_entry1,
                 date: formatDate(match.entry1),
-                venue: match.entry1?.shows?.show_venue_location || ''
+                venue: match.entry1?.shows?.show_venue_location || '',
+                entryShort: match.entry1?.entry_short || null  // Add this line
               },
               team2: {
                 seed: match.joty_entry2_rank || 16,
@@ -204,7 +225,8 @@ export function Joty() {
                 percentage: match.joty_entry2_percentage || 0,
                 entryId: match.joty_entry2,
                 date: formatDate(match.entry2),
-                venue: match.entry2?.shows?.show_venue_location || ''
+                venue: match.entry2?.shows?.show_venue_location || '',
+                entryShort: match.entry2?.entry_short || null  // Add this line
               }
             };
           });
@@ -247,6 +269,11 @@ export function Joty() {
   const topRightRegion = regions.find(r => r.priorityLevel === 3) || regions[2];
   const bottomRightRegion = regions.find(r => r.priorityLevel === 4) || regions[3];
 
+  const handleMatchupClick = (team1: Team, team2: Team, regionColor: string, team1Color?: string, team2Color?: string) => {
+    setSelectedMatchup({ team1, team2, regionColor, team1Color, team2Color });
+    setModalOpen(true);
+  };
+
   return (
     <div className="max-w-[1600px] mx-auto p-4">
       {/* Header with Year Selector */}
@@ -281,9 +308,9 @@ export function Joty() {
             {/* Logos */}
             <div className="flex items-center gap-2">
               <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
-                <img src={aatLogo} alt="Always Almost There" className="h-8 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" />
+                <img src={aatLogo} alt="Always Almost There" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" />
               </a>
-              <a href="https://www.nugs.net/" target="blank"><img src={nugsLogo} alt="nugs" className="h-8 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" /></a>
+              <a href="https://www.nugs.net/" target="blank"><img src={nugsLogo} alt="nugs" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" /></a>
             </div>
             
             {/* Credits */}
@@ -376,6 +403,7 @@ export function Joty() {
                               roundName="Round of 64"
                               matchNumber={gameNum}
                               regionColor={region?.color || 'bg-gray-500'}
+                              onMatchupClick={handleMatchupClick}
                             />
                           );
                         });
@@ -399,6 +427,7 @@ export function Joty() {
                                   roundName="Round of 32"
                                   matchNumber={gameNum}
                                   regionColor={region?.color || 'bg-gray-500'}
+                                  onMatchupClick={handleMatchupClick}
                                 />
                               );
                             })()}
@@ -424,6 +453,7 @@ export function Joty() {
                                   roundName="Sweet 16"
                                   matchNumber={gameNum}
                                   regionColor={region?.color || 'bg-gray-500'}
+                                  onMatchupClick={handleMatchupClick}
                                 />
                               );
                             })()}
@@ -445,6 +475,7 @@ export function Joty() {
                             roundName="Elite 8"
                             matchNumber={gameNum}
                             regionColor={region?.color || 'bg-gray-500'}
+                            onMatchupClick={handleMatchupClick}
                           />
                         );
                       })()}
@@ -475,9 +506,10 @@ export function Joty() {
                       <div>
                         <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
                               match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
                             }`}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#006400]', 'bg-[#019B7A]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
@@ -497,9 +529,10 @@ export function Joty() {
                             </div>
                           </div>
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
                               match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
                             }`}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#006400]', 'bg-[#019B7A]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
@@ -535,9 +568,10 @@ export function Joty() {
                       <div>
                         <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
                               match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
                             }`}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#E17401]', 'bg-[#7C2128]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
@@ -557,9 +591,10 @@ export function Joty() {
                             </div>
                           </div>
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
                               match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
                             }`}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#E17401]', 'bg-[#7C2128]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
@@ -605,9 +640,10 @@ export function Joty() {
                       <div>
                         <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
                               match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
                             }`}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', topSeedColor, bottomSeedColor)}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
@@ -627,9 +663,10 @@ export function Joty() {
                             </div>
                           </div>
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors ${
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
                               match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
                             }`}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', topSeedColor, bottomSeedColor)}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
@@ -681,6 +718,21 @@ export function Joty() {
           </div>
         </div>
       </div>
+
+      {selectedMatchup && (
+        <JotyMatchupModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedMatchup(null);
+          }}
+          team1={selectedMatchup.team1}
+          team2={selectedMatchup.team2}
+          regionColor={selectedMatchup.regionColor}
+          team1Color={selectedMatchup.team1Color}
+          team2Color={selectedMatchup.team2Color}
+        />
+      )}
     </div>
   );
 }
