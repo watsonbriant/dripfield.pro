@@ -107,11 +107,25 @@ const TourSongStats: React.FC<Props> = ({
       categoryCanonId: number;
       durations: number[]; // Store all durations in seconds
     }>();
+    
+    const skipShorts = ["fake", "tease", "reprise", "aborted"];
   
     shows.forEach(show => {
+      // First pass: identify songs with at least one valid performance in this show
+      const songsWithValidPerformance = new Set<string>();
+      show.setlist_entries?.forEach(entry => {
+        if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+          songsWithValidPerformance.add(entry.entry_song);
+        }
+      });
+      
       const uniqueSongsInShow = new Set<string>();
       
       show.setlist_entries?.forEach(entry => {
+        // Skip this song entirely if it doesn't have any valid performances in this show
+        if (!songsWithValidPerformance.has(entry.entry_song)) {
+          return;
+        }
         // Get the current stats regardless of whether we've seen this song in this show
         const currentStats = songMap.get(entry.entry_song) || { 
           song_id: '',
@@ -135,7 +149,7 @@ const TourSongStats: React.FC<Props> = ({
         
         // Always parse duration if available (not just for first occurrence)
         // But exclude aborted, fake, and tease entries
-        const excludedShorts = ['aborted', 'fake', 'tease'];
+        const excludedShorts = ['aborted', 'fake', 'tease', 'reprise'];
         const newDurations = [...currentStats.durations];
 
         if (!excludedShorts.includes(entry.entry_short?.toLowerCase() || '')) {

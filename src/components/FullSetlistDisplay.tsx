@@ -105,14 +105,14 @@ const createMarkup = (htmlContent: string) => {
 };
 
 const calculateRarity = (timesPlayed: number | null, showsSinceDebut: number | null): string => {
-  if (!timesPlayed || !showsSinceDebut || showsSinceDebut === 0) return '-';
+  if (!timesPlayed || !showsSinceDebut || showsSinceDebut === 0) return '';
   const percentage = (timesPlayed / showsSinceDebut) * 100;
   return Math.round(percentage) + '%';
 };
 
 const getRarityColor = (percentage: string | null): string => {
   // If percentage is null or not a valid percentage string, return transparent
-  if (!percentage || percentage === '-') return 'transparent';
+  if (!percentage || percentage === '-' || percentage === '') return 'transparent';
   
   // Convert percentage string to number
   const numericPercentage = parseFloat(percentage.replace('%', ''));
@@ -309,34 +309,35 @@ export default function FullSetlistDisplay({
   }, [show, showDates, show?.show_id, show?.show_tour]); // Keep the same dependency array
 
   useEffect(() => {
-    const groupsByGuests = setlist.reduce((acc: { [key: string]: GuestGroup }, entry) => {
-      if (!entry.guests || entry.guests.length === 0) return acc;
+    const groupsArray: GuestGroup[] = [];
+    const seenGuestKeys = new Set<string>();
+    
+    setlist.forEach(entry => {
+      if (!entry.guests || entry.guests.length === 0) return;
       
       const sortedGuests = [...entry.guests].sort((a, b) => a.guest_canonid - b.guest_canonid);
+      const guestKey = sortedGuests.map(g => g.guest_canonid).join(',');
       
-      const guestKey = sortedGuests
-        .map(g => g.guest_canonid)
-        .join(',');
-      
-      if (!acc[guestKey]) {
+      if (!seenGuestKeys.has(guestKey)) {
+        seenGuestKeys.add(guestKey);
+        
         const colors = ['#3498DB', '#E74C3C', '#2ECC71', '#F39C12', '#9B59B6', '#FF6B81', '#F1C40F', '#34495E', '#FFFFFF'];
-        const existingColors = Object.values(acc).map(g => g.color);
+        const existingColors = groupsArray.map(g => g.color);
         const availableColors = colors.filter(color => !existingColors.includes(color));
-        const color = availableColors[0] || colors[Object.keys(acc).length % colors.length];
-  
-        acc[guestKey] = {
+        const color = availableColors[0] || colors[groupsArray.length % colors.length];
+        
+        groupsArray.push({
           color,
           guests: sortedGuests
-        };
+        });
       }
-      return acc;
-    }, {});
-  
-    setGuestGroups(Object.values(groupsByGuests));
+    });
+    
+    setGuestGroups(groupsArray);
   }, [setlist]);
 
   // Define the entry_short values we want to skip numbering for
-  const skipNumberingShorts = ["fake", "tease", "reprise"];
+  const skipNumberingShorts = ["fake", "tease", "reprise", "aborted"];
 
   // Instead of tracking seen songs with a simple Set, we'll track songs with valid numbers
   const songsWithNumbers = new Set<string>();

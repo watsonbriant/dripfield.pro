@@ -87,6 +87,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
             entry_placement,
             entry_set,
             entry_setnum,
+            entry_short,
             songs(
               song_id,
               song_category,
@@ -196,12 +197,33 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
         // Process entries to build the matrix data
         const chronologicalSongOrder: string[] = [];
         const processedShows = new Set();
-        
+        const skipShorts = ["fake", "tease", "reprise", "aborted"];
+
+        // First, determine which songs have valid performances in each show
+        const validSongsByShow = new Map<string, Set<string>>();
+        shows.forEach(show => {
+          validSongsByShow.set(show.show_id, new Set<string>());
+        });
+
+        sortedEntries.forEach(entry => {
+          const showId = entry.entry_show;
+          const song = entry.entry_song;
+          
+          if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+            validSongsByShow.get(showId)?.add(song);
+          }
+        });
+
         sortedEntries.forEach(entry => {
           const song = entry.entry_song;
           const showId = entry.entry_show;
           const placement = entry.entry_placement;
           const showIndex = showIndexMap.get(showId);
+          
+          // Skip this entry if the song doesn't have any valid performances in this show
+          if (!validSongsByShow.get(showId)?.has(song)) {
+            return;
+          }
           
           // Update the chronological order of songs as they first appear
           if (!chronologicalSongOrder.includes(song)) {

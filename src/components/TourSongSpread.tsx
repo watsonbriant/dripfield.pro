@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 interface SetlistEntry {
   entry_song: string;
+  entry_short: string | null;
   songs: {
     song_category: string;
     song_originalartist: string | null;
@@ -27,10 +28,25 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
 
   // Count songs per category and collect songs for each category
   const categoryData = shows.reduce((acc, show) => {
+    const skipShorts = ["fake", "tease", "reprise", "aborted"];
+    
+    // First pass: identify songs with at least one valid performance in this show
+    const songsWithValidPerformance = new Set<string>();
+    show.setlist_entries?.forEach(entry => {
+      if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+        songsWithValidPerformance.add(entry.entry_song);
+      }
+    });
+    
     // Track unique songs for this show
     const showSongKeys = new Set<string>();
     
     show.setlist_entries?.forEach(entry => {
+      // Skip this entry if the song doesn't have any valid performances in this show
+      if (!songsWithValidPerformance.has(entry.entry_song)) {
+        return;
+      }
+      
       const songKey = `${entry.entry_song}-${entry.songs.song_category}`;
       const category = entry.songs.song_category || 'undefined';
       

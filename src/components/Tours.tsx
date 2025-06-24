@@ -501,6 +501,7 @@ export function Tours() {
             setlist_entries (
               entry_length,
               entry_song,
+              entry_short,
               times_played_num,
               shows_since_debut_num,
               songs (
@@ -586,10 +587,20 @@ export function Tours() {
           // Calculate show rarity
           let show_rarity = null;
           if (show.show_canonid && show.setlist_entries?.length) {
+            const skipShorts = ["fake", "tease", "reprise", "aborted"];
             const uniqueSongs = new Map();
-
+            
+            // First pass: identify songs with at least one valid performance
+            const songsWithValidPerformance = new Set<string>();
             show.setlist_entries.forEach(entry => {
-              if (!uniqueSongs.has(entry.entry_song)) {
+              if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+                songsWithValidPerformance.add(entry.entry_song);
+              }
+            });
+            
+            // Second pass: add songs to the map only if they have a valid performance
+            show.setlist_entries.forEach(entry => {
+              if (songsWithValidPerformance.has(entry.entry_song) && !uniqueSongs.has(entry.entry_song)) {
                 uniqueSongs.set(entry.entry_song, {
                   times_played_num: entry.times_played_num,
                   shows_since_debut_num: entry.shows_since_debut_num

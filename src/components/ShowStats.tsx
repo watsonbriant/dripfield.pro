@@ -99,17 +99,27 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
   const rarityStats = React.useMemo(() => {
     if (!show_canonid || !setlist.length) return null;
     try {
+      const skipShorts = ["fake", "tease", "reprise", "aborted"];
       const uniqueSongs = new Map();
       
+      // First pass: identify songs with at least one valid performance
+      const songsWithValidPerformance = new Set<string>();
       setlist.forEach(entry => {
-        if (!uniqueSongs.has(entry.entry_song)) {
+        if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+          songsWithValidPerformance.add(entry.entry_song);
+        }
+      });
+      
+      // Second pass: add songs to the map only if they have a valid performance
+      setlist.forEach(entry => {
+        if (songsWithValidPerformance.has(entry.entry_song) && !uniqueSongs.has(entry.entry_song)) {
           uniqueSongs.set(entry.entry_song, {
             times_played_num: entry.times_played_num,
             shows_since_debut_num: entry.shows_since_debut_num
           });
         }
       });
-
+  
       const totalPlays = Array.from(uniqueSongs.values()).reduce((sum, entry) => 
         sum + (entry.times_played_num ? parseInt(entry.times_played_num, 10) : 0), 0);
       

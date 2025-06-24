@@ -124,6 +124,9 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   // Is this the current user's profile or someone else's?
   const isOwnProfile = !userId || (user && user.id === userId);
 
+  // Define skipShorts at the component level to reuse
+  const skipShorts = ["fake", "tease", "reprise", "aborted"];
+
   // Fetch username if viewing someone else's profile
   useEffect(() => {
     if (!isOwnProfile && userId) {
@@ -287,6 +290,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             .from('setlist_entries')
             .select(`
               entry_song,
+              entry_short,
               songs!inner(
                 song_id,
                 song_category,
@@ -322,28 +326,51 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
         completedChunks++;
       }
       
-      // Count songs by unique show to avoid counting multiple plays in the same show
-      const songShowCounts = allEntries.reduce((acc: { [key: string]: any }, entry: any) => {
-        const songName = entry.entry_song;
-        const songId = entry.songs.song_id;
-        const showId = entry.entry_show;
-        const uniqueKey = `${songId}-${showId}`;
-        
-        if (!acc[songId]) {
-          acc[songId] = {
-            song: songName,
-            song_id: songId,
-            shows: new Set([showId]),
-            category_canonid: entry.songs.categories.category_canonid
-          };
-        } else {
-          acc[songId].shows.add(showId);
-        }
-        
-        return acc;
-      }, {});
+      // Group entries by show to identify valid songs
+      const showSongGroups = new Map<string, any[]>();
       
-      const processedSongs = Object.values(songShowCounts)
+      allEntries.forEach(entry => {
+        const showId = entry.entry_show;
+        if (!showSongGroups.has(showId)) {
+          showSongGroups.set(showId, []);
+        }
+        showSongGroups.get(showId).push(entry);
+      });
+      
+      // Process each show to find valid songs
+      const songShowCounts = new Map<string, any>();
+      
+      showSongGroups.forEach((showEntries, showId) => {
+        // Find songs with valid performances in this show
+        const validSongs = new Set<string>();
+        showEntries.forEach(entry => {
+          if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+            validSongs.add(entry.entry_song);
+          }
+        });
+        
+        // Count only the valid songs for this show
+        const countedSongsInShow = new Set<string>();
+        showEntries.forEach(entry => {
+          if (validSongs.has(entry.entry_song) && !countedSongsInShow.has(entry.entry_song)) {
+            countedSongsInShow.add(entry.entry_song);
+            const songId = entry.songs.song_id;
+            
+            if (!songShowCounts.has(songId)) {
+              songShowCounts.set(songId, {
+                song: entry.entry_song,
+                song_id: songId,
+                shows: new Set([showId]),
+                category_canonid: entry.songs.categories.category_canonid
+              });
+            } else {
+              songShowCounts.get(songId).shows.add(showId);
+            }
+          }
+        });
+      });
+      
+      const processedSongs = Array.from(songShowCounts.values())
         .map((item: any) => ({
           song: item.song,
           song_id: item.song_id,
@@ -385,6 +412,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             .from('setlist_entries')
             .select(`
               entry_song,
+              entry_short,
               songs!inner(song_id),
               entry_length,
               entry_show,
@@ -418,43 +446,45 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
         }
       }
       
-      // Process data to extract length in seconds
-      const processedPerformances = allEntries.map((entry: any) => {
-        // Parse interval string (e.g., "00:15:23") into seconds
-        const lengthParts = entry.entry_length.split(':');
-        let totalSeconds = 0;
-        
-        if (lengthParts.length === 3) {
-          // HH:MM:SS format
-          totalSeconds = (parseInt(lengthParts[0]) * 3600) + 
-                         (parseInt(lengthParts[1]) * 60) + 
-                         parseInt(lengthParts[2]);
-        } else if (lengthParts.length === 2) {
-          // MM:SS format
-          totalSeconds = (parseInt(lengthParts[0]) * 60) + 
-                         parseInt(lengthParts[1]);
-        }
-        
-        // Format date as MM.DD.YY
-        const showDate = entry.shows.show_date;
-        const formattedDate = showDate
-          .split('-')
-          .slice(1)
-          .concat(showDate.substring(2, 4))
-          .join('.');
+      // Filter out entries with excluded entry_short values
+      const processedPerformances = allEntries
+        .filter(entry => !entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase()))
+        .map((entry: any) => {
+          // Parse interval string (e.g., "00:15:23") into seconds
+          const lengthParts = entry.entry_length.split(':');
+          let totalSeconds = 0;
           
-        return {
-          song: entry.entry_song,
-          song_id: entry.songs.song_id,
-          show_date: formattedDate,
-          show_id: entry.entry_show,
-          venue_location: entry.shows.show_venue_location,
-          length: entry.entry_length,
-          length_seconds: totalSeconds
-        };
-      })
-      .sort((a: any, b: any) => b.length_seconds - a.length_seconds)
-      .slice(0, 8);
+          if (lengthParts.length === 3) {
+            // HH:MM:SS format
+            totalSeconds = (parseInt(lengthParts[0]) * 3600) + 
+                           (parseInt(lengthParts[1]) * 60) + 
+                           parseInt(lengthParts[2]);
+          } else if (lengthParts.length === 2) {
+            // MM:SS format
+            totalSeconds = (parseInt(lengthParts[0]) * 60) + 
+                           parseInt(lengthParts[1]);
+          }
+          
+          // Format date as MM.DD.YY
+          const showDate = entry.shows.show_date;
+          const formattedDate = showDate
+            .split('-')
+            .slice(1)
+            .concat(showDate.substring(2, 4))
+            .join('.');
+            
+          return {
+            song: entry.entry_song,
+            song_id: entry.songs.song_id,
+            show_date: formattedDate,
+            show_id: entry.entry_show,
+            venue_location: entry.shows.show_venue_location,
+            length: entry.entry_length,
+            length_seconds: totalSeconds
+          };
+        })
+        .sort((a: any, b: any) => b.length_seconds - a.length_seconds)
+        .slice(0, 8);
       
       setLongestPerformances(processedPerformances);
       setLoadingLongest(false);
@@ -809,7 +839,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
       setLoadingProgress(startProgress);
       
       // First, get all songs the user has seen
-      let userSeenSongs = new Set<string>();
+      let userSeenSongsMap = new Map<string, any[]>(); // Map of showId to entries
       let page = 0;
       let hasMore = true;
       const pageSize = 1000;
@@ -833,7 +863,9 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             .from('setlist_entries')
             .select(`
               entry_song,
-              songs!inner(song_id)
+              entry_short,
+              songs!inner(song_id),
+              entry_show
             `)
             .in('entry_show', currentChunk)
             .range(page * pageSize, (page + 1) * pageSize - 1);
@@ -841,9 +873,13 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           if (error) throw error;
           
           if (data && data.length > 0) {
-            // Add each song_id to the set of seen songs
+            // Group entries by show
             data.forEach(entry => {
-              userSeenSongs.add(entry.songs.song_id);
+              const showId = entry.entry_show;
+              if (!userSeenSongsMap.has(showId)) {
+                userSeenSongsMap.set(showId, []);
+              }
+              userSeenSongsMap.get(showId).push(entry);
             });
             
             page++;
@@ -863,10 +899,30 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
         }
       }
       
+      // Process the user's seen songs to apply the exclusion rules
+      const userSeenSongs = new Set<string>();
+      
+      userSeenSongsMap.forEach((showEntries, showId) => {
+        // Find songs with valid performances in this show
+        const validSongs = new Set<string>();
+        showEntries.forEach(entry => {
+          if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+            validSongs.add(entry.entry_song);
+          }
+        });
+        
+        // Add only valid songs to the user's seen songs set
+        showEntries.forEach(entry => {
+          if (validSongs.has(entry.entry_song)) {
+            userSeenSongs.add(entry.songs.song_id);
+          }
+        });
+      });
+      
       setLoadingProgress(startProgress + 10);
       
       // Now get the most played songs overall (only from canonical shows)
-      let allSongCounts: { [key: string]: any } = {};
+      let allEntriesMap = new Map<string, any[]>(); // Map of showId to entries
       page = 0;
       hasMore = true;
       
@@ -876,6 +932,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           .from('setlist_entries')
           .select(`
             entry_song,
+            entry_short,
             songs!inner(
               song_id,
               song_category,
@@ -894,23 +951,13 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
         if (error) throw error;
         
         if (data && data.length > 0) {
-          // Group by song and unique shows to count properly
+          // Group entries by show
           data.forEach(entry => {
-            const songId = entry.songs.song_id;
             const showId = entry.entry_show;
-            const songName = entry.entry_song;
-            const categoryCanonId = entry.songs.categories.category_canonid;
-            
-            if (!allSongCounts[songId]) {
-              allSongCounts[songId] = {
-                song: songName,
-                song_id: songId,
-                shows: new Set([showId]),
-                category_canonid: categoryCanonId
-              };
-            } else {
-              allSongCounts[songId].shows.add(showId);
+            if (!allEntriesMap.has(showId)) {
+              allEntriesMap.set(showId, []);
             }
+            allEntriesMap.get(showId).push(entry);
           });
           
           page++;
@@ -927,6 +974,42 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           hasMore = false;
         }
       }
+      
+      // Process all songs to apply exclusion rules and count
+      let allSongCounts: { [key: string]: any } = {};
+      
+      allEntriesMap.forEach((showEntries, showId) => {
+        // Find songs with valid performances in this show
+        const validSongs = new Set<string>();
+        showEntries.forEach(entry => {
+          if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+            validSongs.add(entry.entry_song);
+          }
+        });
+        
+        // Count only valid songs
+        const countedSongsInShow = new Set<string>();
+        showEntries.forEach(entry => {
+          const songId = entry.songs.song_id;
+          const songName = entry.entry_song;
+          const categoryCanonId = entry.songs.categories.category_canonid;
+          
+          if (validSongs.has(songName) && !countedSongsInShow.has(songId)) {
+            countedSongsInShow.add(songId);
+            
+            if (!allSongCounts[songId]) {
+              allSongCounts[songId] = {
+                song: songName,
+                song_id: songId,
+                shows: new Set([showId]),
+                category_canonid: categoryCanonId
+              };
+            } else {
+              allSongCounts[songId].shows.add(showId);
+            }
+          }
+        });
+      });
       
       // Filter to only songs the user hasn't seen
       const notSeenSongs = Object.values(allSongCounts)
@@ -949,7 +1032,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           // Then alphabetically
           return a.song.localeCompare(b.song);
         })
-        .slice(0, 8); // Get top 10
+        .slice(0, 8); // Get top 8
       
       setNotSeenSongs(notSeenSongs);
       setLoadingNotSeen(false);
@@ -1141,7 +1224,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
         )}
       </div>
     );
-  }; // <-- THIS WAS THE MISSING CLOSING BRACE
+  };
   
   // Create stats data array in the desired order
   const statData: StatData[] = [

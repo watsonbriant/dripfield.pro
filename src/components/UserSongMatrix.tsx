@@ -305,6 +305,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                 entry_placement,
                 entry_set,
                 entry_setnum,
+                entry_short,
                 shows(show_date),
                 songs:entry_song(
                   song,
@@ -421,9 +422,40 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
         });
         
         setLoadingProgress(92);
-        
-        // Process entries to build the matrix data
+
+        const skipShorts = ["fake", "tease", "reprise", "aborted"];
+
+        // Group entries by show to identify valid songs
+        const showEntriesMap = new Map<string, any[]>();
         sortedEntries.forEach(entry => {
+          const showId = entry.entry_show;
+          if (!showEntriesMap.has(showId)) {
+            showEntriesMap.set(showId, []);
+          }
+          showEntriesMap.get(showId).push(entry);
+        });
+
+        // Process each show to find valid songs
+        const validEntries: any[] = [];
+        showEntriesMap.forEach((showEntries, showId) => {
+          // Find songs with valid performances in this show
+          const validSongs = new Set<string>();
+          showEntries.forEach(entry => {
+            if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+              validSongs.add(entry.entry_song);
+            }
+          });
+          
+          // Only include entries for songs that have valid performances
+          showEntries.forEach(entry => {
+            if (validSongs.has(entry.entry_song)) {
+              validEntries.push(entry);
+            }
+          });
+        });
+
+        // Process entries to build the matrix data (replace sortedEntries with validEntries)
+        validEntries.forEach(entry => {
           const song = entry.entry_song;
           const showId = entry.entry_show;
           const placement = entry.entry_placement;

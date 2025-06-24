@@ -286,17 +286,16 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
           
           // Get entries for all attended shows with pagination and chunking
           let allEntriesData = [];
-          
+
           for (let i = 0; i < showIdChunks.length; i++) {
             const currentChunk = showIdChunks[i];
             page = 0;
             hasMore = true;
             
             while (hasMore) {
-              
               const { data, error } = await supabase
                 .from('setlist_entries')
-                .select('entry_song, entry_show')
+                .select('entry_song, entry_show, entry_short')  // Add entry_short
                 .in('entry_show', currentChunk)
                 .range(page * pageSize, (page + 1) * pageSize - 1);
               
@@ -305,20 +304,45 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
               if (data && data.length > 0) {
                 allEntriesData = [...allEntriesData, ...data];
                 page++;
-                
-                // Update progress based on pagination and chunks (65-75%)
-                const progressPerChunk = 10 / showIdChunks.length;
-                const chunkProgress = (i / showIdChunks.length) * 10;
-                const pageProgress = (page * progressPerChunk) / Math.ceil(currentChunk.length / pageSize);
-                setLoadingProgress(Math.min(75, 65 + chunkProgress + pageProgress));
-                
-                // If we got fewer records than the page size, we're done with this chunk
+                // ... progress calculation code ...
                 hasMore = data.length === pageSize;
               } else {
                 hasMore = false;
               }
             }
           }
+
+          // Define skipShorts
+          const skipShorts = ["fake", "tease", "reprise", "aborted"];
+
+          // Group entries by show to identify valid songs
+          const showEntriesMap = new Map<string, any[]>();
+          allEntriesData.forEach(entry => {
+            const showId = entry.entry_show;
+            if (!showEntriesMap.has(showId)) {
+              showEntriesMap.set(showId, []);
+            }
+            showEntriesMap.get(showId).push(entry);
+          });
+
+          // Process each show to find valid songs
+          const validEntries: any[] = [];
+          showEntriesMap.forEach((showEntries, showId) => {
+            // Find songs with valid performances in this show
+            const validSongs = new Set<string>();
+            showEntries.forEach(entry => {
+              if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
+                validSongs.add(entry.entry_song);
+              }
+            });
+            
+            // Only include entries for songs that have valid performances
+            showEntries.forEach(entry => {
+              if (validSongs.has(entry.entry_song)) {
+                validEntries.push(entry);
+              }
+            });
+          });
           
           // Get shows data to know when each song was seen with pagination and chunking
           let allShowsData = [];
@@ -363,7 +387,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
           });
           
           // First get song IDs from song names
-          const songNames = [...new Set(allEntriesData.map(entry => entry.entry_song))];
+          const songNames = [...new Set(validEntries.map(entry => entry.entry_song))];
           
           // Split songNames into chunks for batch processing
           const songNameChunks = [];
@@ -417,7 +441,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
           
           // Count unique shows for each song and track last seen date
           const songCounts: Record<string, {count: number, dates: string[], showsSet: Set<string>}> = {};
-          allEntriesData.forEach(entry => {
+          validEntries.forEach(entry => {
             const songId = songNameToId[entry.entry_song];
             if (songId) {
               if (!songCounts[songId]) {
