@@ -4,20 +4,7 @@ import { Home, Calendar, MapPin, Music, Users, Building2, Disc, X, ShieldCheck, 
 import { supabase } from '../lib/supabase';
 
 // Import custom navigation icons
-import navYears from '../img/Nav_Years.png';
-import navTours from '../img/Nav_Tours.png';
-import navSongs from '../img/Nav_Songs.png';
-import navGuests from '../img/Nav_Guests.png';
-import navVenues from '../img/Nav_Venues.png';
-import navDiscography from '../img/Nav_Discography.png';
-import navEcho from '../img/Nav_Echo.png';
-import navSubmit from '../img/Nav_Submit.png';
-import navAdmin from '../img/Nav_Admin.png';
-import navBug from '../img/Nav_Bug.png';
-import navFindShow from '../img/Nav_FindShow.png';
-import navHome from '../img/Nav_Home.png';
 import sparklePic from '../img/sparkle.png'
-import navJoty from '../img/Nav_Joty.png';
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -163,76 +150,136 @@ export function Sidebar({
     { 
       name: 'Home', 
       icon: <Home className="w-5 h-5" />, 
-      desktopIcon: <img src={navHome} alt="Years" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Home className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Home</span>
+        </div>
+      ),
       path: '/',
       mobileOnly: true 
     },
     { 
       name: 'Years', 
       icon: <Calendar className="w-5 h-5" />, 
-      desktopIcon: <img src={navYears} alt="Years" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Calendar className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Years</span>
+        </div>
+      ),
       path: '/years' 
     },
     { 
       name: 'Tours', 
       icon: <MapPin className="w-5 h-5" />, 
-      desktopIcon: <img src={navTours} alt="Tours" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <MapPin className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Tours</span>
+        </div>
+      ),
       path: '/tours' 
     },
     { 
       name: 'Songs', 
       icon: <Music className="w-5 h-5" />, 
-      desktopIcon: <img src={navSongs} alt="Songs" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Music className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Songs</span>
+        </div>
+      ),
       path: '/songs' 
     },
     { 
       name: 'Guests', 
       icon: <Users className="w-5 h-5" />, 
-      desktopIcon: <img src={navGuests} alt="Guests" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Users className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Guests</span>
+        </div>
+      ),
       path: '/guests' 
     },
     { 
       name: 'Venues', 
       icon: <Building2 className="w-5 h-5" />, 
-      desktopIcon: <img src={navVenues} alt="Venues" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Building2 className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Venues</span>
+        </div>
+      ),
       path: '/venues' 
     },
     { 
       name: 'Discography', 
       icon: <Disc className="w-5 h-5" />, 
-      desktopIcon: <img src={navDiscography} alt="Discography" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Disc className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Discography</span>
+        </div>
+      ),
       path: '/discography' 
     },
     { 
       name: 'Echo of a Show', 
       icon: <ListMusic className="w-5 h-5" />, 
-      desktopIcon: <img src={navEcho} alt="Echo of a Show" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <ListMusic className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Echo of a Show</span>
+        </div>
+      ),
       path: '/setlistgame'
     },
     { 
       name: 'Jam of the Year', 
       icon: <Trophy className="w-5 h-5" />,
-      desktopIcon: <img src={navJoty} alt="JOTY" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Trophy className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Jam of the Year</span>
+        </div>
+      ),
       path: '/joty'
     },
     { 
       name: 'Submit', 
       icon: <FileWarning className="w-5 h-5" />, 
-      desktopIcon: <img src={navSubmit} alt="Submit" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <FileWarning className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Submit</span>
+        </div>
+      ),
       path: '/submit' 
     },
     // Admin-only items
     { 
       name: 'Admin Panel', 
       icon: <ShieldCheck className="w-5 h-5" />, 
-      desktopIcon: <img src={navAdmin} alt="Admin Panel" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <ShieldCheck className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Admin Panel</span>
+        </div>
+      ),
       path: '/admin', 
       adminOnly: true 
     },
     { 
       name: 'Bug Tracker', 
       icon: <Bug className="w-5 h-5" />, 
-      desktopIcon: <img src={navBug} alt="Bug Tracker" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Bug className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Bug Tracker</span>
+        </div>
+      ),
       path: '/bugs', 
       adminOnly: true,
       badge: bugCount
@@ -240,7 +287,12 @@ export function Sidebar({
     { 
       name: 'Find a Show', 
       icon: <Search className="w-5 h-5" />, 
-      desktopIcon: <img src={navFindShow} alt="Find a Show" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      desktopIcon: (
+        <div className="flex items-center gap-1 px-2 py-1 bg-[#f9ae37] rounded-full border border-black transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+          <Search className="w-4 h-4 flex-shrink-0" />
+          <span className="font-mohr text-base leading-none mt-0.5 tracking-tight">Find a Show</span>
+        </div>
+      ),
       path: '#', 
       action: openShowModal,
       adminOnly: true
