@@ -209,12 +209,12 @@ export function Sidebar({
       desktopIcon: <img src={navEcho} alt="Echo of a Show" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
       path: '/setlistgame'
     },
-    // { 
-    //   name: 'Jam of the Year', 
-    //   icon: <Trophy className="w-5 h-5" />,
-    //   desktopIcon: <img src={navJoty} alt="JOTY" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
-    //   path: '/joty'
-    // },
+    { 
+      name: 'Jam of the Year', 
+      icon: <Trophy className="w-5 h-5" />,
+      desktopIcon: <img src={navJoty} alt="JOTY" className="h-7 w-auto transition-all duration-300 hover:drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]" />,
+      path: '/joty'
+    },
     { 
       name: 'Submit', 
       icon: <FileWarning className="w-5 h-5" />, 

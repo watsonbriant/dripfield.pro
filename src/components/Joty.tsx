@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { formatInTimeZone } from 'date-fns-tz';
+import aatLogo from '../img/AAT.jpg';
+import nugsLogo from '../img/NugsColor.png';
 
 interface Team {
   seed: number;
@@ -249,28 +250,90 @@ export function Joty() {
   return (
     <div className="max-w-[1600px] mx-auto p-4">
       {/* Header with Year Selector */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-mohr inline-block px-3 pt-1.5 bg-[#f9ae37] rounded-full border border-black">
-          Jam of the Year
-        </h2>
+      <div className="mb-8">
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-mohr inline-block px-3 pt-1.5 bg-[#f9ae37] rounded-full border border-black">
+              Jam of the Year
+            </h2>
+            
+            {/* Year Dropdown */}
+            <select
+              value={selectedYear}
+              onChange={(e) => handleYearChange(parseInt(e.target.value))}
+              className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.5rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '1.5em 1.5em'
+              }}
+            >
+              {availableYears.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Credits with logos */}
+          <div className="flex items-center gap-3">
+            {/* Logos */}
+            <div className="flex items-center gap-2">
+              <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
+                <img src={aatLogo} alt="Always Almost There" className="h-8 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" />
+              </a>
+              <a href="https://www.nugs.net/" target="blank"><img src={nugsLogo} alt="nugs" className="h-8 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" /></a>
+            </div>
+            
+            {/* Credits */}
+            <div className="bg-tertiary border border-black rounded-lg px-3 py-1.5 max-w-[315px]">
+              <p className="text-xs font-semibold text-white">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
+            </div>
+          </div>
+        </div>
         
-        {/* Year Dropdown */}
-        <div className="mt-4">
-          <select
-            value={selectedYear}
-            onChange={(e) => handleYearChange(parseInt(e.target.value))}
-            className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-              backgroundPosition: 'right 0.5rem center',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: '1.5em 1.5em'
-            }}
-          >
-            {availableYears.map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+        {/* Mobile Layout */}
+        <div className="lg:hidden">
+          <div className="text-center mb-4">
+            <h2 className="text-3xl font-mohr inline-block px-3 pt-1.5 bg-[#f9ae37] rounded-full border border-black">
+              Jam of the Year
+            </h2>
+            
+            {/* Year Dropdown */}
+            <div className="mt-4">
+              <select
+                value={selectedYear}
+                onChange={(e) => handleYearChange(parseInt(e.target.value))}
+                className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
+              >
+                {availableYears.map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Logos */}
+            <div className="flex items-center justify-center gap-3 mt-4 mb-4">
+              <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
+                <img src={aatLogo} alt="Always Almost There" className="h-10 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" />
+              </a>
+              <a href="https://www.nugs.net/" target="_blank">
+                <img src={nugsLogo} alt="nugs" className="h-10 w-auto rounded hover:shadow-[0_0_0_2px_#f9ae37]" />
+              </a>
+            </div>
+          </div>
+          
+          {/* Credits */}
+          <div className="bg-tertiary border border-black rounded-lg px-3 py-1.5 mb-4 mx-auto max-w-[315px]">
+            <p className="text-xs font-semibold text-white text-center">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
+          </div>
         </div>
       </div>
 
