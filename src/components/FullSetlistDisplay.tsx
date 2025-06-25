@@ -644,13 +644,45 @@ export default function FullSetlistDisplay({
                               {/* Whistle and JOTY badge container */}
                               <div className="flex items-center gap-1 flex-shrink-0">
                                 {entry.entry_coachnotes && (
-                                  <GiWhistle 
-                                    className={`h-5 w-5 cursor-pointer ${shouldShowCoachNotesForEntry(entry.entry_id, true) ? 'text-[#a9682e]' : 'text-black'} hover:text-tertiary transition-colors`} 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      toggleIndividualCoachNote(entry.entry_id);
-                                    }}
-                                  />
+                                  <div className="relative">
+                                    <GiWhistle 
+                                      className={`h-5 w-5 cursor-pointer ${shouldShowCoachNotesForEntry(entry.entry_id, true) ? 'text-[#a9682e]' : 'text-black'} hover:text-tertiary transition-colors`} 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleIndividualCoachNote(entry.entry_id);
+                                      }}
+                                      onMouseEnter={(e) => {
+                                        e.stopPropagation(); // Add this
+                                        if (!isMobile) {
+                                          setHoveredEntry(entry.entry_id + '_whistle');
+                                          setHoveredSong(null); // Add this to clear any song hover
+                                          setMousePosition({ x: e.clientX, y: e.clientY });
+                                        }
+                                      }}
+                                      onMouseMove={(e) => {
+                                        e.stopPropagation(); // Add this
+                                        if (!isMobile) {
+                                          setMousePosition({ x: e.clientX, y: e.clientY });
+                                        }
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.stopPropagation(); // Add this
+                                        if (!isMobile) {
+                                          setHoveredEntry(null);
+                                        }
+                                      }}
+                                    />
+                                    {!isMobile && hoveredEntry === entry.entry_id + '_whistle' && (
+                                      <div 
+                                        className="fixed text-xs bg-secondary font-medium text-black px-3 py-1 rounded border border-black shadow-lg z-[9999] text-left max-w-[250px] whitespace-normal break-words [&_a]:text-[#a9682e] [&_a]:font-semibold"
+                                        style={{
+                                          left: `${mousePosition.x + 10}px`,
+                                          top: `${mousePosition.y - 10}px`
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: entry.entry_coachnotes }}
+                                      />
+                                    )}
+                                  </div>
                                 )}
                                 {entry.joty_round && (
                                   <JOTYBadge round={entry.joty_round} compact={true} />
@@ -668,7 +700,7 @@ export default function FullSetlistDisplay({
                             {/* Hover tooltip remains the same */}
                             {!isMobile && hoveredSong === entry.entry_id && (
                               <div 
-                                className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                                className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999] text-left"
                                 style={{
                                   left: `${mousePosition.x + 10}px`,
                                   top: `${mousePosition.y - 10}px`
@@ -768,12 +800,64 @@ export default function FullSetlistDisplay({
                         {/* Rarity column */}
                         {show.show_canonid !== null && (
                           <div 
-                            className="text-white text-center font-medium rounded-md px-1"
+                            className="text-white text-center font-medium rounded-md px-1 cursor-pointer"
                             style={{ 
                               backgroundColor: getRarityColor(calculateRarity(entry.times_played_num, entry.shows_since_debut_num)) 
                             }}
+                            onMouseEnter={(e) => {
+                              if (!isMobile) {
+                                setHoveredSong(entry.entry_id + '_rarity');
+                                setMousePosition({ x: e.clientX, y: e.clientY });
+                              }
+                            }}
+                            onMouseMove={(e) => {
+                              if (!isMobile) {
+                                setMousePosition({ x: e.clientX, y: e.clientY });
+                              }
+                            }}
+                            onMouseLeave={() => {
+                              if (!isMobile) {
+                                setHoveredSong(null);
+                              }
+                            }}
                           >
                             {calculateRarity(entry.times_played_num, entry.shows_since_debut_num)}
+                            
+                            {/* Add the same tooltip here */}
+                            {!isMobile && hoveredSong === entry.entry_id + '_rarity' && (
+                              <div 
+                                className="fixed text-xs bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999] text-left"
+                                style={{
+                                  left: `${mousePosition.x + 10}px`,
+                                  top: `${mousePosition.y - 10}px`
+                                }}
+                              >
+                                <div className="font-bold">
+                                  <span>{entry.entry_song}</span>
+                                  {entry.entry_short && (
+                                    <span className="text-red-600 ml-2">[{entry.entry_short}]</span>
+                                  )}
+                                  {entry.entry_segue && (
+                                    <MoveRight className="text-red-600 inline ml-2 w-[1rem] h-[1rem]" />
+                                  )}
+                                </div>
+                                {entry.times_played && (
+                                  <div>
+                                    <span dangerouslySetInnerHTML={createMarkup(entry.times_played)} />
+                                  </div>
+                                )}
+                                {entry.shows_since_debut && (
+                                  <div>
+                                    <span dangerouslySetInnerHTML={createMarkup(entry.shows_since_debut)} />
+                                  </div>
+                                )}
+                                {entry.song_rarity_percentage && (
+                                  <div>
+                                    <span dangerouslySetInnerHTML={createMarkup(entry.song_rarity_percentage)} />
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                         
