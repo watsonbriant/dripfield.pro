@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
 import { ArrowUp, ArrowDown, ArrowUpDown, MoveRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const tooltipStyles = `
   .hang {
@@ -59,6 +61,7 @@ const placementColors: Record<string, string> = {
 
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selectedGroup }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const currentYear = new Date().getFullYear();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredPerformance, setHoveredPerformance] = useState<{
@@ -70,13 +73,52 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
   const [sortColumn, setSortColumn] = useState<string>('show_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [viewMode, setViewMode] = useState<'timeline' | 'table'>('timeline');
+  const [showOnlyAttended, setShowOnlyAttended] = useState(false);
+  const [attendedShowIds, setAttendedShowIds] = useState<Set<string>>(new Set());
+  const [loadingAttended, setLoadingAttended] = useState(false);
   
   const years = Array.from(
     { length: currentYear - 2012 + 1 },
     (_, i) => 2012 + i
   );
 
-  const performancesByYear = performances.reduce((acc, perf) => {
+  // Fetch attended shows when user is logged in
+  useEffect(() => {
+    async function fetchAttendedShows() {
+      if (!user) {
+        setAttendedShowIds(new Set());
+        return;
+      }
+
+      setLoadingAttended(true);
+      try {
+        const { data, error } = await supabase
+          .from('user_attended_shows')
+          .select('show_id')
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        if (data) {
+          const showIds = new Set(data.map(record => record.show_id));
+          setAttendedShowIds(showIds);
+        }
+      } catch (error) {
+        console.error('Error fetching attended shows:', error);
+      } finally {
+        setLoadingAttended(false);
+      }
+    }
+
+    fetchAttendedShows();
+  }, [user]);
+
+  // Filter performances based on attended shows
+  const filteredPerformances = showOnlyAttended && user
+    ? performances.filter(perf => attendedShowIds.has(perf.show_id))
+    : performances;
+
+  const performancesByYear = filteredPerformances.reduce((acc, perf) => {
     if (!perf.show_date) return acc;
     
     const [year, month, day] = perf.show_date.split('-');
@@ -229,7 +271,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
 
   const renderTableView = () => {
     // Apply default sorting if no column is selected
-    let sortedPerformances = [...performances];
+    let sortedPerformances = [...filteredPerformances];
     
     // Sort by the selected column
     sortedPerformances.sort((a, b) => {
@@ -484,7 +526,64 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
       <style>{tooltipStyles}</style>
       <div className="bg-primary border border-black rounded-lg p-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Performances</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Performances</h2>
+            
+            {/* Add My Shows pill */}
+            {user && (
+              <button
+                onClick={() => setShowOnlyAttended(!showOnlyAttended)}
+                className={`flex items-center gap-2 px-3 py-1 rounded-full border border-black text-sm font-semibold transition-colors ${
+                  showOnlyAttended 
+                    ? 'bg-secondary text-black hover:bg-secondary/50' 
+                    : 'bg-secondary text-black hover:bg-secondary/50'
+                } ${loadingAttended ? 'opacity-50 cursor-wait' : ''}`}
+                disabled={loadingAttended}
+              >
+                <div className="relative w-4 h-4">
+                  <input
+                    type="checkbox"
+                    checked={showOnlyAttended}
+                    onChange={() => {}}
+                    className="sr-only"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <div className={`w-4 h-4 rounded border border-black transition-all duration-200 flex items-center justify-center ${
+                    showOnlyAttended ? 'bg-green-600' : 'bg-red-600'
+                  }`}>
+                    {showOnlyAttended ? (
+                      // Checkmark when active
+                      <svg 
+                        className="w-3 h-3 text-black" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    ) : (
+                      // X when inactive
+                      <svg 
+                        className="w-3 h-3 text-black" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <span>My Shows</span>
+              </button>
+            )}
+          </div>
           
           {/* Add selectedGroup indicator if present */}
           {selectedGroup && (

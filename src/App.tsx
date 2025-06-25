@@ -233,7 +233,7 @@ function App() {
                 showAllOnSameLine={true} // New prop to control layout
               />
             </div>
-            <div className="ml-4">
+            <div className="ml-4 flex items-center flex-shrink-0">
               <UserMenu />
             </div>
           </div>
@@ -286,7 +286,7 @@ function App() {
                 />
                 {/* No sparkle effect on mobile */}
               </button>
-              <div className="absolute right-0">
+              <div className="absolute right-0 flex items-center">
                 <UserMenu />
               </div>
             </div>

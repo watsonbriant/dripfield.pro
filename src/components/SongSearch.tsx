@@ -36,16 +36,53 @@ export function SongSearch({ className = '' }: SongSearchProps) {
   React.useEffect(() => {
     async function fetchAllSongs() {
       try {
-        const { data, error } = await supabase
+        // First get the total count
+        const { count, error: countError } = await supabase
           .from('songs')
-          .select('song, song_id')
-          .eq('song_placeholder', false)
-          .order('song', { ascending: true });
-    
-        if (error) throw error;
-        setAllSongs(data.map(s => ({ song: s.song, song_id: s.song_id })));
+          .select('*', { count: 'exact', head: true })
+          .eq('song_placeholder', false);
+        
+        if (countError) {
+          console.error('Error fetching count:', countError);
+          throw countError;
+        }
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allData: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('songs')
+            .select('song, song_id')
+            .eq('song_placeholder', false)
+            .order('song', { ascending: true })
+            .range(start, end);
+          
+          if (error) {
+            console.error(`Error fetching batch ${i + 1}:`, error);
+            throw error;
+          }
+          
+          if (data) {
+            allData = [...allData, ...data];
+          }
+        }
+        
+        if (allData.length > 0) {
+          const mappedSongs = allData.map(s => ({ song: s.song, song_id: s.song_id }));
+          setAllSongs(mappedSongs);
+        } else {
+          console.warn('❌ No data returned from query');
+          setAllSongs([]);
+        }
       } catch (error) {
-        console.error('Error fetching songs:', error);
+        console.error('❌ Error in fetchAllSongs:', error);
+        setAllSongs([]);
       }
     }
 
@@ -53,9 +90,11 @@ export function SongSearch({ className = '' }: SongSearchProps) {
   }, []);
 
   const filteredSongs = React.useMemo(() => {
-    return allSongs.filter(song =>
+    const filtered = allSongs.filter(song =>
       song.song.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    
+    return filtered;
   }, [allSongs, searchTerm]);
 
   return (
