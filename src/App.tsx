@@ -284,7 +284,6 @@ function App() {
                   alt="Dripfield.pro Logo" 
                   className="h-8 w-auto"
                 />
-                {/* No sparkle effect on mobile */}
               </button>
               <div className="absolute right-0 flex items-center">
                 <UserMenu />

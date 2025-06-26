@@ -119,7 +119,7 @@ export const UserMenu: React.FC = () => {
             e.preventDefault();
             window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
           }}
-          className={`relative px-3 pt-1 pb-0.5 text-sm font-mohr text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2`}
+          className={`relative px-3 pt-1 pb-0.5 text-sm font-mohr text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2 hidden md:block`}
         >
           Donate
         </Link>
@@ -173,7 +173,7 @@ export const UserMenu: React.FC = () => {
           e.preventDefault();
           window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
         }}
-        className={`relative px-3 pt-1 pb-0.5 text-sm font-mohr text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2`}
+        className={`relative px-3 pt-1 pb-0.5 text-sm font-mohr text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2 hidden md:block`}
       >
         Donate
       </Link>
