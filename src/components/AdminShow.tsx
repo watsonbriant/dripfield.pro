@@ -55,8 +55,11 @@ export const AdminShow: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isShowModalOpen, setIsShowModalOpen] = useState(false);
     const [isNewShow, setIsNewShow] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [loadingProgress, setLoadingProgress] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const mountedRef = useRef(false);
+    const showDataLoadedRef = useRef(false);
 
     // Reference data for dropdowns
     const [groups, setGroups] = useState<GroupData[]>([]);
@@ -101,18 +104,91 @@ export const AdminShow: React.FC = () => {
         }
     }, []);
 
+    // Load the selected show from localStorage after shows are loaded
+    useEffect(() => {
+        if (allShows.length > 0 && !showDataLoadedRef.current) {
+            showDataLoadedRef.current = true;
+            
+            try {
+                const storedShowId = localStorage.getItem('adminSelectedShowId');
+                
+                if (storedShowId) {
+                    const storedShow = allShows.find(show => show.show_id === storedShowId);
+                    
+                    if (storedShow) {
+                        setSelectedShow(storedShow);
+                        setEditedShow(storedShow);
+                    }
+                }
+            } catch (error) {
+                console.error('Error restoring selected show from localStorage:', error);
+            }
+        }
+    }, [allShows]);
+
+    // Handle visibility change to reload data when returning to this tab
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                // Refresh the shows list when returning to the tab
+                fetchAllShows();
+            }
+        };
+        
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, []);
+
     async function fetchAllShows() {
         try {
-            const { data, error } = await supabase
-                .from('shows')
-                .select('*')
-                .order('show_date', { ascending: false })
-                .order('show_canonid', { ascending: false });
-
-            if (error) throw error;
-            setAllShows(data || []);
+            setLoading(true);
+            setLoadingProgress(5);
+            
+            // Use pagination to fetch all shows
+            let allShowsData: ShowData[] = [];
+            let page = 0;
+            let hasMore = true;
+            const pageSize = 1000; // Adjust based on your database size
+            
+            while (hasMore) {
+                const { data, error } = await supabase
+                    .from('shows')
+                    .select('*')
+                    .order('show_date', { ascending: false })
+                    .order('show_canonid', { ascending: false, nullsLast: true })
+                    .range(page * pageSize, (page + 1) * pageSize - 1);
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    allShowsData = [...allShowsData, ...data];
+                    page++;
+                    
+                    // Update progress (5-95%)
+                    setLoadingProgress(Math.min(95, 5 + (page * 15)));
+                    
+                    // If we got fewer records than the page size, we're done
+                    hasMore = data.length === pageSize;
+                } else {
+                    hasMore = false;
+                }
+            }
+            
+            setAllShows(allShowsData || []);
+            
+            setLoadingProgress(100);
+            // Small delay to ensure smooth transition
+            setTimeout(() => {
+                setLoading(false);
+                setLoadingProgress(0);
+            }, 300);
         } catch (error) {
             console.error('Error fetching shows:', error);
+            setLoadingProgress(100);
+            setTimeout(() => {
+                setLoading(false);
+                setLoadingProgress(0);
+            }, 300);
         }
     }
 
@@ -224,6 +300,13 @@ export const AdminShow: React.FC = () => {
         setIsDropdownOpen(false);
         setSearchTerm('');
         setIsEditing(false);
+        
+        // Save the selected show ID to localStorage
+        try {
+            localStorage.setItem('adminSelectedShowId', show.show_id);
+        } catch (error) {
+            console.error('Error saving selected show to localStorage:', error);
+        }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -458,19 +541,28 @@ export const AdminShow: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
-                                    {filteredShows.map((show) => (
-                                        <button
-                                            key={show.show_id}
-                                            onClick={() => handleShowSelect(show)}
-                                            className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
-                                        >
-                                            {getShowDisplayText(show)}
-                                        </button>
-                                    ))}
-                                    {filteredShows.length === 0 && (
-                                        <div className="px-4 py-2 text-sm text-black/60 italic">
-                                            No shows found
+                                    {loading && loadingProgress < 100 ? (
+                                        <div className="flex flex-col justify-center items-center p-4 h-16">
+                                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
+                                            <p className="text-xs text-black/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
                                         </div>
+                                    ) : (
+                                        <>
+                                            {filteredShows.map((show) => (
+                                                <button
+                                                    key={show.show_id}
+                                                    onClick={() => handleShowSelect(show)}
+                                                    className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
+                                                >
+                                                    {getShowDisplayText(show)}
+                                                </button>
+                                            ))}
+                                            {filteredShows.length === 0 && !loading && (
+                                                <div className="px-4 py-2 text-sm text-black/60 italic">
+                                                    No shows found
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>
