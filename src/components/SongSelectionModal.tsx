@@ -2156,7 +2156,7 @@ export function SongSelectionModal({
                             )}
                           </div>
                           
-                          <div className="space-y-1 p-2">
+                          <div className="space-y-1 p-2 bg-canvas">
                           {getSongsForSet(setId).map((pick, index) => (
                             <div 
                               key={pick.id} 
