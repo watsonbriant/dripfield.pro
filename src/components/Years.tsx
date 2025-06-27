@@ -170,13 +170,37 @@ export function Years() {
       if (filteredShows.length === 0) return;
       
       try {
-        // Get counts for all shows in one query
-        const { data, error } = await supabase
-          .from('user_attended_shows')
-          .select('show_id')
-          .in('show_id', filteredShows.map(s => s.show_id));
+        const showIds = filteredShows.map(s => s.show_id);
         
-        if (error) throw error;
+        // First get the total count
+        const { count, error: countError } = await supabase
+          .from('user_attended_shows')
+          .select('*', { count: 'exact', head: true })
+          .in('show_id', showIds);
+        
+        if (countError) throw countError;
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allData: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('user_attended_shows')
+            .select('show_id')
+            .in('show_id', showIds)
+            .range(start, end);
+          
+          if (error) throw error;
+          
+          if (data) {
+            allData = [...allData, ...data];
+          }
+        }
         
         // Count attendees per show
         const counts: Record<string, number> = {};
@@ -184,18 +208,28 @@ export function Years() {
           counts[show.show_id] = 0;
         });
         
-        data?.forEach(record => {
+        allData.forEach(record => {
           counts[record.show_id] = (counts[record.show_id] || 0) + 1;
         });
         
+        // Log detailed breakdown
+        filteredShows.forEach(show => {
+          const count = counts[show.show_id];
+        });
+        
+        // Log summary statistics
+        const showsWithAttendees = Object.values(counts).filter(count => count > 0).length;
+        const totalAttendees = Object.values(counts).reduce((sum, count) => sum + count, 0);
+        const avgAttendeesPerShow = showsWithAttendees > 0 ? (totalAttendees / showsWithAttendees).toFixed(1) : 0;
+        
         setAttendeeCounts(counts);
       } catch (error) {
-        console.error('Error fetching attendee counts:', error);
+        console.error('❌ Error fetching attendee counts:', error);
       }
     };
     
     fetchAttendeeCounts();
-  }, [filteredShows]);
+  }, [filteredShows, currentYear, selectedGroups, shows.length]);
 
   // Add this after the existing useEffect hooks
   useEffect(() => {

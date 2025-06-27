@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Search, Save, Edit, Plus, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ShowModal from './ShowModal';
+import { ShowReleaseModal } from './ShowReleaseModal';
 
 interface ShowData {
     show_id: string;
@@ -45,6 +46,15 @@ interface SongData {
     song_id: string;
 }
 
+interface ReleaseShow {
+  release_id: string;
+  release_order: number;
+  releases: {
+    release_displayname: string;
+    release_service: string | null;
+  };
+}
+
 export const AdminShow: React.FC = () => {
     const [allShows, setAllShows] = useState<ShowData[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -79,6 +89,38 @@ export const AdminShow: React.FC = () => {
     const [isShowDropdownOpen, setIsShowDropdownOpen] = useState(false);
     const showDropdownRef = useRef<HTMLDivElement>(null);
 
+    const [showReleases, setShowReleases] = useState<ReleaseShow[]>([]);
+    const [loadingReleases, setLoadingReleases] = useState(false);
+
+    const [isReleaseModalOpen, setIsReleaseModalOpen] = useState(false);
+    const [releaseModalMode, setReleaseModalMode] = useState<'add' | 'edit'>('add');
+    const [selectedReleaseForEdit, setSelectedReleaseForEdit] = useState<{
+        releaseId: string;
+        order: number;
+    } | null>(null);
+
+    const handleAddRelease = () => {
+        setReleaseModalMode('add');
+        setSelectedReleaseForEdit(null);
+        setIsReleaseModalOpen(true);
+    };
+
+        const handleEditRelease = (releaseId: string, order: number) => {
+        setReleaseModalMode('edit');
+        setSelectedReleaseForEdit({ releaseId, order });
+        setIsReleaseModalOpen(true);
+    };
+
+        const handleReleaseModalClose = () => {
+        setIsReleaseModalOpen(false);
+        setSelectedReleaseForEdit(null);
+    };
+
+        const handleReleaseModalSave = () => {
+        fetchShowReleases(selectedShow!.show_id);
+        handleReleaseModalClose();
+    };
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -110,18 +152,20 @@ export const AdminShow: React.FC = () => {
             showDataLoadedRef.current = true;
             
             try {
-                const storedShowId = localStorage.getItem('adminSelectedShowId');
+            const storedShowId = localStorage.getItem('adminSelectedShowId');
+            
+            if (storedShowId) {
+                const storedShow = allShows.find(show => show.show_id === storedShowId);
                 
-                if (storedShowId) {
-                    const storedShow = allShows.find(show => show.show_id === storedShowId);
-                    
-                    if (storedShow) {
-                        setSelectedShow(storedShow);
-                        setEditedShow(storedShow);
-                    }
+                if (storedShow) {
+                setSelectedShow(storedShow);
+                setEditedShow(storedShow);
+                // Fetch releases for the stored show
+                fetchShowReleases(storedShowId);
                 }
+            }
             } catch (error) {
-                console.error('Error restoring selected show from localStorage:', error);
+            console.error('Error restoring selected show from localStorage:', error);
             }
         }
     }, [allShows]);
@@ -238,6 +282,32 @@ export const AdminShow: React.FC = () => {
         }
     }
 
+    async function fetchShowReleases(showId: string) {
+        try {
+            setLoadingReleases(true);
+            const { data, error } = await supabase
+            .from('releases_shows')
+            .select(`
+                release_id,
+                release_order,
+                releases (
+                release_displayname,
+                release_service
+                )
+            `)
+            .eq('show_id', showId)
+            .order('release_order', { ascending: true });
+
+            if (error) throw error;
+            setShowReleases(data || []);
+        } catch (error) {
+            console.error('Error fetching show releases:', error);
+            setShowReleases([]);
+        } finally {
+            setLoadingReleases(false);
+        }
+    }
+
     const formatDate = (dateString: string) => {
         // Parse the date as UTC and adjust for timezone
         const date = new Date(dateString + 'T00:00:00Z');
@@ -300,6 +370,9 @@ export const AdminShow: React.FC = () => {
         setIsDropdownOpen(false);
         setSearchTerm('');
         setIsEditing(false);
+        
+        // Fetch releases for this show
+        fetchShowReleases(show.show_id);
         
         // Save the selected show ID to localStorage
         try {
@@ -944,6 +1017,66 @@ export const AdminShow: React.FC = () => {
                             </div>
                         )}
                     </div>
+
+                    {/* Releases table */}
+                    {selectedShow && (
+                    <div className="mt-6 space-y-2">
+                        <div className="flex justify-between items-center">
+                        <h4 className="text-base text-black font-semibold">Releases</h4>
+                        <button
+                            onClick={handleAddRelease}
+                            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white border border-black rounded-lg text-sm hover:bg-green-600/80 transition-colors"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Add Release
+                        </button>
+                        </div>
+                        
+                        {loadingReleases ? (
+                        <div className="flex justify-center items-center p-4">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
+                            <p className="text-sm text-black/70 ml-2">Loading releases...</p>
+                        </div>
+                        ) : showReleases.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-canvas border-y border-black/10">
+                                <th className="px-4 py-1 text-left text-sm font-semibold text-black">Display Name</th>
+                                <th className="px-4 py-1 text-left text-sm font-semibold text-black">Service</th>
+                                <th className="px-4 py-1 text-center text-sm font-semibold text-black">Order</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-black/5">
+                                {showReleases.map((releaseShow, index) => (
+                                <tr 
+                                    key={releaseShow.release_id}
+                                    onClick={() => handleEditRelease(releaseShow.release_id, releaseShow.release_order)}
+                                    className={`${
+                                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                    } hover:bg-black/10 transition-colors cursor-pointer`}
+                                >
+                                    <td className="px-4 py-1 text-sm text-black">
+                                    {releaseShow.releases.release_displayname}
+                                    </td>
+                                    <td className="px-4 py-1 text-sm text-black">
+                                    {releaseShow.releases.release_service || '-'}
+                                    </td>
+                                    <td className="px-4 py-1 text-sm text-black text-center">
+                                    {releaseShow.release_order}
+                                    </td>
+                                </tr>
+                                ))}
+                            </tbody>
+                            </table>
+                        </div>
+                        ) : (
+                        <div className="text-sm text-black/60 italic p-4 bg-canvas rounded-md border border-black/10">
+                            No releases associated with this show
+                        </div>
+                        )}
+                    </div>
+                    )}
                 </div>
             )}
 
@@ -959,6 +1092,19 @@ export const AdminShow: React.FC = () => {
                 subvenues={subvenues}
                 years={years}
             />
+
+            {/* Show Release Modal */}
+            {selectedShow && (
+            <ShowReleaseModal
+                isOpen={isReleaseModalOpen}
+                onClose={handleReleaseModalClose}
+                onSave={handleReleaseModalSave}
+                showId={selectedShow.show_id}
+                mode={releaseModalMode}
+                existingReleaseId={selectedReleaseForEdit?.releaseId}
+                existingOrder={selectedReleaseForEdit?.order}
+            />
+            )}
         </div>
     );
 };

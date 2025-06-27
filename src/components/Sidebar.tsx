@@ -438,7 +438,7 @@ export function Sidebar({
         
         {/* Second line with Echo of a Show and subsequent items */}
         <div className="border-white/10"></div>
-        <ul className="flex flex-wrap items-center justify-center mt-1">
+        <ul className="flex flex-wrap items-center justify-center mt-1.5">
           {adminLineItems.map((item) => (
             <li key={item.name} className="relative">
               <button
