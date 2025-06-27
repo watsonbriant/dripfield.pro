@@ -1,5 +1,3 @@
-console.log('Admin.tsx file executing');
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { AdminArtist } from './AdminArtist';
 import { AdminSong } from './AdminSong';
@@ -11,8 +9,6 @@ import { AdminChanges } from './AdminChanges';
 import { AdminReleases } from './AdminReleases';
 
 export function Admin() {
-  console.log('Admin component rendering');
-  
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<{
     type: 'success' | 'error' | null;
@@ -22,22 +18,8 @@ export function Admin() {
   // Initialize activeTab from localStorage or default to 'Setlist'
   const [activeTab, setActiveTab] = useState(() => {
     const stored = localStorage.getItem('adminActiveTab') || 'Setlist';
-    console.log('Admin: Initial activeTab from localStorage:', stored);
     return stored;
   });
-
-  // Add mount/unmount tracker
-  useEffect(() => {
-    console.log('Admin component MOUNTED');
-    return () => {
-      console.log('Admin component UNMOUNTED');
-    };
-  }, []);
-  
-  // Log when activeTab changes
-  useEffect(() => {
-    console.log('Admin: activeTab changed to:', activeTab);
-  }, [activeTab]);
   
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -146,14 +128,12 @@ export function Admin() {
 
   // Create a tab switching handler that updates localStorage
   const handleTabChange = (tab: string) => {
-    console.log('Admin: handleTabChange called with:', tab);
     setActiveTab(tab);
     localStorage.setItem('adminActiveTab', tab);
   };
 
   // Use a memoized function to render tab content to prevent unnecessary re-renders
   const renderTabContent = useMemo(() => {
-    console.log('Admin: renderTabContent recalculating for tab:', activeTab);
     switch (activeTab) {
       case 'Setlist':
         return (

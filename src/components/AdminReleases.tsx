@@ -13,8 +13,6 @@ interface Release {
 }
 
 export function AdminReleases() {
-  console.log('AdminReleases component rendering');
-  
   const [releases, setReleases] = useState<Release[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -22,17 +20,8 @@ export function AdminReleases() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddMode, setIsAddMode] = useState(false);
 
-  // Add mount/unmount tracker
-  useEffect(() => {
-    console.log('AdminReleases component MOUNTED');
-    return () => {
-      console.log('AdminReleases component UNMOUNTED');
-    };
-  }, []);
-
   // Function to fetch releases
   const fetchReleases = useCallback(async () => {
-    console.log('AdminReleases: fetchReleases called');
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -53,7 +42,6 @@ export function AdminReleases() {
 
   // Fetch releases on component mount
   useEffect(() => {
-    console.log('AdminReleases: useEffect running, calling fetchReleases');
     fetchReleases();
   }, [fetchReleases]);
 

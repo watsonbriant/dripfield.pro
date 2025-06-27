@@ -94,8 +94,6 @@ function App() {
     previousUserIdRef.current = currentUserId;
     
     async function checkAdminStatus() {
-      console.log('App: checkAdminStatus effect running, user:', currentUserId);
-      
       if (!user) {
         if (previousIsAdminRef.current !== false) {
           previousIsAdminRef.current = false;
