@@ -80,11 +80,27 @@ function App() {
     };
   }, []);
 
-  // Check if user is admin
+  // In App.tsx, modify the checkAdminStatus effect:
+  const previousUserIdRef = useRef<string | undefined>();
+  const previousIsAdminRef = useRef<boolean | undefined>();
+
   useEffect(() => {
+    // Only run if user ID actually changed
+    const currentUserId = user?.id;
+    if (previousUserIdRef.current === currentUserId) {
+      return; // Skip if user ID hasn't changed
+    }
+    
+    previousUserIdRef.current = currentUserId;
+    
     async function checkAdminStatus() {
+      console.log('App: checkAdminStatus effect running, user:', currentUserId);
+      
       if (!user) {
-        setIsAdmin(false);
+        if (previousIsAdminRef.current !== false) {
+          previousIsAdminRef.current = false;
+          setIsAdmin(false);
+        }
         return;
       }
       
@@ -97,14 +113,24 @@ function App() {
         
         if (error) {
           console.error('Error checking admin status:', error);
-          setIsAdmin(false);
+          if (previousIsAdminRef.current !== false) {
+            previousIsAdminRef.current = false;
+            setIsAdmin(false);
+          }
           return;
         }
         
-        setIsAdmin(data?.is_admin || false);
+        const newIsAdmin = data?.is_admin || false;
+        if (previousIsAdminRef.current !== newIsAdmin) {
+          previousIsAdminRef.current = newIsAdmin;
+          setIsAdmin(newIsAdmin);
+        }
       } catch (error) {
         console.error('Error in admin check:', error);
-        setIsAdmin(false);
+        if (previousIsAdminRef.current !== false) {
+          previousIsAdminRef.current = false;
+          setIsAdmin(false);
+        }
       }
     }
     

@@ -48,7 +48,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }, [user, adminOnly]);
 
   // Show loading spinner while checking auth status or admin status
-  if (loading || (adminOnly && isCheckingAdmin)) {
+  // BUT not if we already have a user (prevents unmounting on auth refresh)
+  if ((loading && !user) || (adminOnly && isCheckingAdmin)) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tertiary"></div>
@@ -62,7 +63,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // If adminOnly and user is not admin, show forbidden message
-  if (adminOnly && !isAdmin) {
+  // IMPORTANT: Check for isAdmin === false, not !isAdmin
+  // This prevents showing access denied when isAdmin is null (not checked yet)
+  if (adminOnly && isAdmin === false) {
     return (
       <div className="max-w-[1280px] mx-auto">
         <div className="mt-8 max-w-md mx-auto bg-[#172330] border border-white/10 rounded-lg p-6 text-center">
