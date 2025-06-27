@@ -170,7 +170,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                 className="h-full bg-[#f9ae37] rounded border border-black relative flex items-center"
                 style={{ 
                   width: `${(count / maxCount) * 100}%`,
-                  minWidth: '42px'
+                  minWidth: '48px'
                 }}
               >
                 {artwork && (
