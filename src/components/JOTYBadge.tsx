@@ -3,13 +3,14 @@ import React from 'react';
 interface JOTYBadgeProps {
   round: string;
   compact?: boolean;
+  onClick?: () => void;
 }
 
-export default function JOTYBadge({ round, compact = false }: JOTYBadgeProps) {
+export default function JOTYBadge({ round, compact = false, onClick }: JOTYBadgeProps) {
   const getBadgeStyles = () => {
     const baseStyles = `inline-flex items-center justify-center font-bold text-xs rounded-full ${
       compact ? 'w-9 h-5 text-[10px]' : 'w-12 h-7 text-[11px]'
-    } shadow-sm`;
+    } shadow-sm ${onClick ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`;
 
     switch (round) {
       case 'JOTY':
@@ -32,7 +33,13 @@ export default function JOTYBadge({ round, compact = false }: JOTYBadgeProps) {
   };
 
   return (
-    <span className={getBadgeStyles()}>
+    <span 
+      className={getBadgeStyles()}
+      onClick={onClick ? (e) => {
+        e.stopPropagation();
+        onClick();
+      } : undefined}
+    >
       {round}
     </span>
   );

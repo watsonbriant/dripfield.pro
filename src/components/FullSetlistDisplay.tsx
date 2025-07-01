@@ -685,7 +685,15 @@ export default function FullSetlistDisplay({
                                   </div>
                                 )}
                                 {entry.joty_round && (
-                                  <JOTYBadge round={entry.joty_round} compact={true} />
+                                  <JOTYBadge 
+                                    round={entry.joty_round} 
+                                    compact={true}
+                                    onClick={() => {
+                                      // Extract year from the show date
+                                      const year = new Date(show.show_date).getFullYear();
+                                      navigate(`/joty/${year}`);
+                                    }}
+                                  />
                                 )}
                               </div>
                             </div>
