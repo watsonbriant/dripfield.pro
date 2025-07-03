@@ -57,15 +57,50 @@ export const AdminSong: React.FC = () => {
 
   async function fetchAllSongs() {
     try {
-      const { data, error } = await supabase
+      // First get the total count
+      const { count, error: countError } = await supabase
         .from('songs')
-        .select('song, song_id, song_category, song_originalartist, song_categoryorder, song_coachnotes')
-        .order('song', { ascending: true });
-  
-      if (error) throw error;
-      setAllSongs(data || []);
+        .select('*', { count: 'exact', head: true });
+      
+      if (countError) {
+        console.error('Error fetching count:', countError);
+        throw countError;
+      }
+      
+      // Fetch in batches of 1000
+      const batchSize = 1000;
+      const totalBatches = Math.ceil((count || 0) / batchSize);
+      let allData: any[] = [];
+      
+      for (let i = 0; i < totalBatches; i++) {
+        const start = i * batchSize;
+        const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+        
+        const { data, error } = await supabase
+          .from('songs')
+          .select('song, song_id, song_category, song_originalartist, song_categoryorder, song_coachnotes')
+          .order('song', { ascending: true })
+          .range(start, end);
+        
+        if (error) {
+          console.error(`Error fetching batch ${i + 1}:`, error);
+          throw error;
+        }
+        
+        if (data) {
+          allData = [...allData, ...data];
+        }
+      }
+      
+      if (allData.length > 0) {
+        setAllSongs(allData);
+      } else {
+        console.warn('No songs returned from query');
+        setAllSongs([]);
+      }
     } catch (error) {
       console.error('Error fetching songs:', error);
+      setAllSongs([]);
     }
   }
 
