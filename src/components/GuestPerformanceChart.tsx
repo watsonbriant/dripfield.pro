@@ -24,6 +24,8 @@ interface ChartPerformance {
   show_tour: string | null;
   show_subvenue: string;
   show_venue_location: string;
+  venue_id: string;
+  tour_id: string | null;
 }
 
 interface GuestPerformanceChartProps {
@@ -124,9 +126,12 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
 
   // Function to navigate to venue pages
   const navigateToVenue = (perf: ChartPerformance) => {
-    // If we have the venue location, use that
-    if (perf.show_venue_location) {
-      navigate(`/venue/${encodeURIComponent(perf.show_venue_location)}`);
+    // Use venue_id instead of venue_location
+    if (perf.venue_id) {
+      const venueUrl = `/venue/${perf.venue_id}`;
+      navigate(venueUrl);
+    } else {
+      console.warn('No venue_id found for performance:', perf);
     }
   };
 
@@ -303,7 +308,22 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                     </span>
                   </td>
                   <td className="px-4 py-1 text-black whitespace-nowrap">{perf.show_group}</td>
-                  <td className="px-4 py-1 text-black whitespace-nowrap">{perf.show_tour || '-'}</td>
+                  <td className="px-4 py-1 text-black whitespace-nowrap">
+                    {perf.show_tour ? (
+                      <button
+                        onClick={() => {
+                          if (perf.tour_id) {
+                            navigate(`/tours/${perf.tour_id}`);
+                          }
+                        }}
+                        className="hover:text-[#a9682e] hover:underline transition-colors"
+                      >
+                        {perf.show_tour}
+                      </button>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td 
                     className="px-4 py-1 text-black whitespace-nowrap relative"
                     onMouseEnter={(e) => {
@@ -331,7 +351,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                     </button>
                     {hoveredPerformance?.show_id === perf.show_id && (
                     <div 
-                      className="fixed bg-[#f9ae37] text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+                      className="fixed bg-secondary font-semibold text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
                       style={{
                           left: `${mousePosition.x + 10}px`,
                           top: `${mousePosition.y - 10}px`,

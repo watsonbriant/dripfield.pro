@@ -23,6 +23,8 @@ interface Performance {
   show_subvenue: string;
   show_venue_location: string;
   show_tour: string | null;
+  tour_id: string | null;
+  venue_id: string;
 }
 
 // CircularProgress component for reuse
@@ -131,7 +133,18 @@ export function Guest() {
                   show_group,
                   show_subvenue,
                   show_venue_location,
-                  show_tour
+                  show_tour,
+                  tours:show_tour(
+                    tour_id
+                  ),
+                  subvenues:show_subvenue(
+                    subvenue,
+                    subvenue_venue,
+                    venues:subvenue_venue(
+                      venue,
+                      venue_id
+                    )
+                  )
                 )
               )
             `, { count: 'exact' })
@@ -160,11 +173,15 @@ export function Guest() {
         
         // Process the joined data to get unique shows
         const uniqueShowsMap = {};
-        
+
         allShows.forEach(item => {
           if (item.setlist_entries && item.setlist_entries.shows) {
             const show = item.setlist_entries.shows;
             
+            // Extract venue_id from the nested relationship
+            const venueId = show.subvenues?.venues?.venue_id || '';
+            const tourId = show.tours?.tour_id || null;  // Add this line
+
             // Use show_id as the key to ensure uniqueness
             uniqueShowsMap[show.show_id] = {
               show_id: show.show_id,
@@ -172,7 +189,9 @@ export function Guest() {
               show_group: show.show_group || '',
               show_subvenue: show.show_subvenue || '',
               show_venue_location: show.show_venue_location || '',
-              show_tour: show.show_tour || null
+              show_tour: show.show_tour || null,
+              tour_id: tourId,  // Add this line
+              venue_id: venueId
             };
           }
         });
