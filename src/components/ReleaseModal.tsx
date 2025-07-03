@@ -226,9 +226,37 @@ export function ReleaseModal({
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-black mb-1">
-                Service
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-semibold text-black">
+                  Service
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (formData.release_link) {
+                      const link = formData.release_link.toLowerCase();
+                      let service = '';
+                      
+                      if (link.includes('bandcamp.com')) {
+                        service = 'Bandcamp';
+                      } else if (link.includes('youtube.com')) {
+                        service = 'YouTube';
+                      } else if (link.includes('nugsnet')) {
+                        service = 'nugs';
+                      } else if (link.includes('spotify.com')) {
+                        service = 'Spotify';
+                      }
+                      
+                      if (service) {
+                        handleInputChange('release_service', service);
+                      }
+                    }
+                  }}
+                  className="text-xs px-2 py-1 bg-blue-500 font-semibold hover:bg-blue-600 text-white rounded border border-black transition-colors"
+                >
+                  Auto-detect Service
+                </button>
+              </div>
               <input
                 type="text"
                 value={formData.release_service}
@@ -239,9 +267,23 @@ export function ReleaseModal({
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-black mb-1">
-                Artwork URL
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-semibold text-black">
+                  Artwork URL
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (formData.release_link && formData.release_link.length >= 11) {
+                      const videoId = formData.release_link.slice(-11);
+                      handleInputChange('release_artwork', `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`);
+                    }
+                  }}
+                  className="text-xs px-2 py-1 bg-blue-500 font-semibold hover:bg-blue-600 text-white rounded border border-black transition-colors"
+                >
+                  YouTube Thumbnail
+                </button>
+              </div>
               <input
                 type="text"
                 value={formData.release_artwork}
