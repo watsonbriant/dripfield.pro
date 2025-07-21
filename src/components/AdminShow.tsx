@@ -21,6 +21,7 @@ interface ShowData {
     show_coachnotes: string | null;
     show_time: string | null;
     show_callbacks: string | null;
+    show_wl_link: string | null;
 }
 
 interface GroupData {
@@ -542,7 +543,8 @@ export const AdminShow: React.FC = () => {
                     show_alert: editedShow.show_alert,
                     show_coachnotes: editedShow.show_coachnotes,
                     show_time: editedShow.show_time,
-                    show_callbacks: editedShow.show_callbacks
+                    show_callbacks: editedShow.show_callbacks,
+                    show_wl_link: editedShow.show_wl_link
                 })
                 .eq('show_id', editedShow.show_id);
 
@@ -858,6 +860,19 @@ export const AdminShow: React.FC = () => {
                                 value={editedShow?.show_time ? editedShow.show_time.slice(0, 16) : ''}
                                 onChange={handleInputChange}
                                 readOnly={!isEditing}
+                                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-black">WysteriaLane.org Thread Link</label>
+                            <input
+                                type="url"
+                                name="show_wl_link"
+                                value={editedShow?.show_wl_link || ''}
+                                onChange={handleInputChange}
+                                readOnly={!isEditing}
+                                placeholder="https://wysterialane.org/..."
                                 className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
                             />
                         </div>
