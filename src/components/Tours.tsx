@@ -10,6 +10,7 @@ import LongestSongs from './LongestSongs';
 import TourSongsCombined from './TourSongsCombined';
 import NotPlayedInTour from './NotPlayedInTour';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
+import wlImage from '../img/WL.png';
 
 interface Show {
   show_iscanon: boolean;
@@ -27,6 +28,7 @@ interface Show {
   show_subvenue_venue?: string; // Added for venue navigation
   venue_id?: string; // Added for venue ID
   attended?: boolean; // Added to track if user attended
+  show_wl_link?: string | null;
   setlist_entries?: Array<{
     entry_length: string | null;
     entry_song: string;
@@ -517,6 +519,7 @@ export function Tours() {
             show_canonid,
             show_venue_location,
             show_subvenue_venue,
+            show_wl_link,
             subvenues:show_subvenue(
               venues:subvenue_venue(
                 venue_id
@@ -1120,6 +1123,7 @@ export function Tours() {
                       { key: 'show_subvenue', label: 'Venue' },
                       { key: 'show_venue_location', label: 'Location' },
                       { key: 'users', label: <Users size={16} className="text-black" strokeWidth={2} /> },
+                      { key: 'wl_link', label: <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" /> },
                       { key: 'show_detail', label: 'Detail' }
                     ].map(({ key, label }) => (
                       <th
@@ -1127,11 +1131,11 @@ export function Tours() {
                         onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'users' ? handleSort(key) : null}
                         className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'text-center' : 'text-left'} 
                           text-s font-semibold text-black whitespace-nowrap 
-                          ${key !== 'attended' && key !== 'setlist' && key !== 'users' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
+                          ${key !== 'attended' && key !== 'setlist' && key !== 'users' && key !== 'wl_link' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
                       >
-                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'setlist' || key === 'users' ? 'justify-center' : ''} gap-1`}>
+                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'setlist' || key === 'users' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
                           {label}
-                          {key !== 'attended' && key !== 'setlist' && key !== 'users' && getSortIcon(key)}
+                          {key !== 'attended' && key !== 'setlist' && key !== 'users' && key !== 'wl_link' && getSortIcon(key)}
                         </div>
                       </th>
                     ))}
@@ -1216,6 +1220,18 @@ export function Tours() {
                       <td className="w-8 text-center text-black">
                         {attendeeCounts[show.show_id] > 0 && (
                           <span className="text-xs font-semibold">{attendeeCounts[show.show_id]}</span>
+                        )}
+                      </td>
+                      <td className="w-8 text-center align-middle">
+                        {show.show_wl_link && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => window.open(show.show_wl_link, '_blank')}
+                              className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
+                            >
+                              <img src={wlImage} alt="WysteriaLane" className="w-[14.5px] h-[14.5px]" />
+                            </button>
+                          </div>
                         )}
                       </td>
                       <td className="px-4 py-0.5 text-black whitespace-nowrap">

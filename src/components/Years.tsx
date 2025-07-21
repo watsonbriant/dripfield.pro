@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic, Users } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
+import wlImage from '../img/WL.png';
 
 interface Year {
   year: string;
@@ -25,6 +26,7 @@ interface Show {
   show_subvenue_venue: string; // Added for venue navigation
   venue_id?: string; // Added for venue ID
   attended?: boolean; // Added to track if user attended
+  show_wl_link?: string | null;
 }
 
 interface TourCount {
@@ -84,6 +86,7 @@ export function Years() {
     show_canonid: number | null;
     show_subvenue_venue: string;
     show_venue_location: string;
+    show_wl_link?: string | null;
     subvenues?: {
       venues?: {
         venue_id: string;
@@ -467,6 +470,7 @@ export function Years() {
             show_canonid,
             show_subvenue_venue,
             show_venue_location,
+            show_wl_link,
             subvenues:show_subvenue(
               venues:subvenue_venue(
                 venue_id
@@ -672,6 +676,11 @@ export function Years() {
                           <Users size={16} className="text-black" strokeWidth={2} />
                         </div>
                       </th>
+                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-black">
+                        <div className="flex justify-center items-center">
+                          <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" />
+                        </div>
+                      </th>
                       <th 
                         className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_detail')}
@@ -771,6 +780,18 @@ export function Years() {
                         <td className="w-8 text-center text-black">
                           {attendeeCounts[show.show_id] > 0 && (
                             <span className="text-xs font-semibold">{attendeeCounts[show.show_id]}</span>
+                          )}
+                        </td>
+                        <td className="w-8 text-center align-middle">
+                          {show.show_wl_link && (
+                            <div className="flex justify-center items-center h-full">
+                              <button
+                                onClick={() => window.open(show.show_wl_link, '_blank')}
+                                className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
+                              >
+                                <img src={wlImage} alt="WysteriaLane" className="w-[14.5px] h-[14.5px]" />
+                              </button>
+                            </div>
                           )}
                         </td>
                         <td className="px-4 py-0.5 text-black whitespace-nowrap">
