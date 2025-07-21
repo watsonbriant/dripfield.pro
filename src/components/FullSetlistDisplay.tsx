@@ -31,7 +31,8 @@ interface Show {
   show_tour: string | null;
   show_callbacks: string | null;
   tour_showfields: boolean;
-  tour_id: string; // Add this field without making it optional
+  tour_id: string;
+  show_wl_link?: string | null; 
 }
 
 interface SetlistEntry {

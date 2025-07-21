@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Link, Pencil } from 'lucide-react';
 import ShowAttendButton from './ShowAttendButton';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import wlImage from '../img/WL.png';
 
 interface ShowPosition {
   current: number;
@@ -25,6 +26,7 @@ interface ShowInfoContentProps {
     show_canonid: number | null;
     show_tour: string | null;
     tour_id?: string;
+    show_wl_link?: string | null;
   };
   navigateToVenue?: () => void;
   showPosition: ShowPosition | null;
@@ -44,6 +46,8 @@ const ShowInfoContent = React.memo(({
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [wlHovered, setWlHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Check if user is admin
   useEffect(() => {
@@ -96,43 +100,22 @@ const ShowInfoContent = React.memo(({
     // Navigate to admin
     navigate('/admin');
   };
+
+  const handleWlMouseMove = (e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
   
   return (
     <div className="bg-primary border border-black rounded-lg p-4">
-      <div className="flex justify-between items-center">
-        <div className="text-xl font-bold text-black">
-          {formatInTimeZone(
-            new Date(show.show_date),
-            'UTC',
-            'MM.dd.yy'
-          )}
-        </div>
-        {/* Admin buttons */}
-        {isAdmin && (
-          <div className="flex gap-2">
-            <button
-              onClick={handleCopyLink}
-              className={`p-1.5 rounded border transition-all duration-200 ${
-                linkCopied 
-                  ? 'bg-green-500 text-white border-green-600' 
-                  : 'bg-[#f9ae37] text-black border-black hover:bg-white'
-              }`}
-              title="Copy Show ID"
-            >
-              <Link size={16} />
-            </button>
-            <button
-              onClick={handleEditShow}
-              className="p-1.5 rounded bg-[#f9ae37] text-black border border-black hover:bg-white transition-colors"
-              title="Edit Show"
-            >
-              <Pencil size={16} />
-            </button>
-          </div>
-        )}
-      </div>
-      <div className="mt-2 space-y-4">
+      <div className="grid grid-cols-[1fr_auto] gap-4 items-start">
         <div className="space-y-1">
+          <div className="text-xl font-bold text-black">
+            {formatInTimeZone(
+              new Date(show.show_date),
+              'UTC',
+              'MM.dd.yy'
+            )}
+          </div>
           <p className="text-lg font-semibold text-black leading-5">{show.show_group}</p>
           {show.show_detail && (
             <p className="text-sm text-black">{show.show_detail}</p>
@@ -145,6 +128,35 @@ const ShowInfoContent = React.memo(({
             </p>
           )}
         </div>
+        {/* WL Image - always visible if show_wl_link exists */}
+        {show.show_wl_link && (
+          <div className="relative">
+            <button
+              onClick={() => window.open(show.show_wl_link, '_blank')}
+              className="p-1 rounded border text-black hover:border-[#78b1a1] hover:bg-[#78b1a1]/30 transition-colors"
+              onMouseEnter={(e) => {
+                setWlHovered(true);
+                setMousePosition({ x: e.clientX, y: e.clientY });
+              }}
+              onMouseMove={handleWlMouseMove}
+              onMouseLeave={() => setWlHovered(false)}
+              title="Chat on WysteriaLane.org!"
+            >
+              <img 
+                src={wlImage} 
+                alt="WysteriaLane" 
+                className="w-8 h-8"
+              />
+            </button>
+            {wlHovered && (
+              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg whitespace-nowrap z-[9999]">
+                Chat on WysteriaLane.org!
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="mt-2 space-y-4">
         <hr className="border-black/10" />
         <div className="space-y-1">
           <p className="text-md font-semibold text-black leading-5 text-left w-full">
@@ -175,45 +187,95 @@ const ShowInfoContent = React.memo(({
                 </span>
               </p>
               {showPosition ? (
-                <div className="flex justify-center items-center pt-1 gap-4">
-                  <button 
-                    className={`p-1 rounded-full border ${
-                      showPosition.prevShowId 
-                        ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
-                        : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
-                    } transition-colors`}
-                    onClick={() => {
-                      if (showPosition.prevShowId) {
-                        navigate(`/setlist/${showPosition.prevShowId}`);
-                      }
-                    }}
-                    disabled={!showPosition.prevShowId}
-                  >
-                    <ArrowLeft size={12} />
-                  </button>
-                  <span className="text-sm text-black">
-                    Show {showPosition.current} of {showPosition.total}
-                  </span>
-                  <button 
-                    className={`p-1 rounded-full border ${
-                      showPosition.nextShowId 
-                        ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
-                        : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
-                    } transition-colors`}
-                    onClick={() => {
-                      if (showPosition.nextShowId) {
-                        navigate(`/setlist/${showPosition.nextShowId}`);
-                      }
-                    }}
-                    disabled={!showPosition.nextShowId}
-                  >
-                    <ArrowRight size={12} />
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex justify-center items-center pt-1 gap-4">
+                    <button 
+                      className={`p-1 rounded-full border ${
+                        showPosition.prevShowId 
+                          ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
+                          : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
+                      } transition-colors`}
+                      onClick={() => {
+                        if (showPosition.prevShowId) {
+                          navigate(`/setlist/${showPosition.prevShowId}`);
+                        }
+                      }}
+                      disabled={!showPosition.prevShowId}
+                    >
+                      <ArrowLeft size={12} />
+                    </button>
+                    <span className="text-sm text-black">
+                      Show {showPosition.current} of {showPosition.total}
+                    </span>
+                    <button 
+                      className={`p-1 rounded-full border ${
+                        showPosition.nextShowId 
+                          ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
+                          : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
+                      } transition-colors`}
+                      onClick={() => {
+                        if (showPosition.nextShowId) {
+                          navigate(`/setlist/${showPosition.nextShowId}`);
+                        }
+                      }}
+                      disabled={!showPosition.nextShowId}
+                    >
+                      <ArrowRight size={12} />
+                    </button>
+                  </div>
+                  {/* Admin buttons - centered below navigation */}
+                  {isAdmin && (
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={handleCopyLink}
+                        className={`p-1.5 rounded border transition-all duration-200 ${
+                          linkCopied 
+                            ? 'bg-green-500 text-white border-green-600' 
+                            : 'bg-secondary text-black border-black hover:bg-white'
+                        }`}
+                        title="Copy Show ID"
+                      >
+                        <Link size={16} />
+                      </button>
+                      <button
+                        onClick={handleEditShow}
+                        className="p-1.5 rounded bg-secondary text-black border border-black hover:bg-white transition-colors"
+                        title="Edit Show"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <p className="text-sm text-black">
-                  {show.show_canonid ? "Show information loading..." : "Non-canonical show"}
-                </p>
+                <div className="space-y-2">
+                  <p className="text-sm text-black text-center">
+                    {show.show_canonid ? "Show information loading..." : "Non-canonical show"}
+                  </p>
+                  {/* Admin buttons - centered below text */}
+                  {isAdmin && (
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={handleCopyLink}
+                        className={`p-1.5 rounded border transition-all duration-200 ${
+                          linkCopied 
+                            ? 'bg-green-500 text-white border-green-600' 
+                            : 'bg-[#f9ae37] text-black border-black hover:bg-white'
+                        }`}
+                        title="Copy Show ID"
+                      >
+                        <Link size={16} />
+                      </button>
+                      <button
+                        onClick={handleEditShow}
+                        className="p-1.5 rounded bg-[#f9ae37] text-black border border-black hover:bg-white transition-colors"
+                        title="Edit Show"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </>

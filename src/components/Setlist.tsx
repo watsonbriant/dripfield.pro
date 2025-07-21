@@ -74,7 +74,8 @@ interface Show {
   show_coachnotes: string | null;
   show_callbacks: string | null;
   show_subvenue_venue?: string; // Added for venue navigation
-  venue_id?: string; // Added for venue ID
+  venue_id?: string;
+  show_wl_link?: string | null;
   tours: {
     tour_showfields: boolean;
     tour_id: string; // Add this field
@@ -274,6 +275,7 @@ export function Setlist() {
             show_coachnotes,
             show_canonid,
             show_callbacks,
+            show_wl_link,
             show_subvenue_venue,
             subvenues:show_subvenue(
               venues:subvenue_venue(
