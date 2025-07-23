@@ -452,6 +452,7 @@ export default function FullSetlistDisplay({
           showPosition={showPosition}
           attendeeCount={attendeeCount}
           onAttendeeCountChange={setAttendeeCount}
+          setlist={setlist}
         />
         {show.show_coachnotes && (
           <div className="bg-primary border border-black rounded-lg p-4">
@@ -1089,6 +1090,7 @@ export default function FullSetlistDisplay({
               showPosition={showPosition}
               attendeeCount={attendeeCount}
               onAttendeeCountChange={setAttendeeCount}
+              setlist={setlist}
             />
             {show.show_coachnotes && (
               <div className="bg-primary border border-black rounded-lg p-4">

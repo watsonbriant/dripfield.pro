@@ -6,6 +6,14 @@ import ShowAttendButton from './ShowAttendButton';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import wlImage from '../img/WL.png';
+import ShowImageGenerator from './ShowImageGenerator';
+
+interface SetlistEntry {
+  entry_id: string;
+  entry_song: string;
+  entry_short: string | null;
+  entry_segue: string | null;
+}
 
 interface ShowPosition {
   current: number;
@@ -31,7 +39,8 @@ interface ShowInfoContentProps {
   navigateToVenue?: () => void;
   showPosition: ShowPosition | null;
   attendeeCount: number;
-  onAttendeeCountChange?: (newCount: number) => void; // New prop for updating attendee count
+  onAttendeeCountChange?: (newCount: number) => void;
+  setlist?: SetlistEntry[];
 }
 
 // Memoize this component to prevent re-renders from parent
@@ -40,7 +49,8 @@ const ShowInfoContent = React.memo(({
   navigateToVenue, 
   showPosition, 
   attendeeCount,
-  onAttendeeCountChange
+  onAttendeeCountChange,
+  setlist = []
 }: ShowInfoContentProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -224,7 +234,7 @@ const ShowInfoContent = React.memo(({
                     </button>
                   </div>
                   {/* Admin buttons - centered below navigation */}
-                  {isAdmin && (
+                  {(isAdmin || user?.id === '8f13a985-ef21-44dc-a381-d6e80c43803f') && (
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={handleCopyLink}
@@ -237,13 +247,16 @@ const ShowInfoContent = React.memo(({
                       >
                         <Link size={16} />
                       </button>
-                      <button
-                        onClick={handleEditShow}
-                        className="p-1.5 rounded bg-secondary text-black border border-black hover:bg-white transition-colors"
-                        title="Edit Show"
-                      >
-                        <Pencil size={16} />
-                      </button>
+                      <ShowImageGenerator show={show} setlist={setlist} />
+                      {isAdmin && (
+                        <button
+                          onClick={handleEditShow}
+                          className="p-1.5 rounded bg-secondary text-black border border-black hover:bg-white transition-colors"
+                          title="Edit Show"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -253,7 +266,7 @@ const ShowInfoContent = React.memo(({
                     {show.show_canonid ? "Show information loading..." : "Non-canonical show"}
                   </p>
                   {/* Admin buttons - centered below text */}
-                  {isAdmin && (
+                  {(isAdmin || user?.id === '8f13a985-ef21-44dc-a381-d6e80c43803f') && (
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={handleCopyLink}
@@ -266,13 +279,16 @@ const ShowInfoContent = React.memo(({
                       >
                         <Link size={16} />
                       </button>
-                      <button
-                        onClick={handleEditShow}
-                        className="p-1.5 rounded bg-[#f9ae37] text-black border border-black hover:bg-white transition-colors"
-                        title="Edit Show"
-                      >
-                        <Pencil size={16} />
-                      </button>
+                      <ShowImageGenerator show={show} setlist={setlist} className="bg-[#f9ae37]" />
+                      {isAdmin && (
+                        <button
+                          onClick={handleEditShow}
+                          className="p-1.5 rounded bg-[#f9ae37] text-black border border-black hover:bg-white transition-colors"
+                          title="Edit Show"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

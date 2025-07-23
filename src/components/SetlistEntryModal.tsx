@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Save, Edit, X, Trash2, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { Save, Edit, X, Trash2, Check, ChevronDown, ChevronUp, Search } from 'lucide-react';
 
 interface SetlistEntryData {
   entry_id: string;
@@ -86,6 +86,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   const [allGuests, setAllGuests] = useState<GuestCategory[]>([]);
   const [selectedGuestIds, setSelectedGuestIds] = useState<string[]>([]);
   const [isGuestSectionExpanded, setIsGuestSectionExpanded] = useState(false);
+  const [guestSearchTerm, setGuestSearchTerm] = useState('');
 
   const [selectedNewSongOption, setSelectedNewSongOption] = useState<string>("N/A");
 
@@ -215,6 +216,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
 
     fetchOptions();
   }, []);
+
+  // Filtered guests based on search term
+  const filteredGuestsByCategory = React.useMemo(() => {
+    if (!guestSearchTerm) return allGuests;
+    
+    return allGuests.map(category => ({
+      ...category,
+      guests: category.guests.filter(guest => 
+        guest.guest.toLowerCase().includes(guestSearchTerm.toLowerCase()) ||
+        guest.guest_displayname?.toLowerCase().includes(guestSearchTerm.toLowerCase()) ||
+        guest.guest_instrument?.toLowerCase().includes(guestSearchTerm.toLowerCase())
+      )
+    })).filter(category => category.guests.length > 0);
+  }, [allGuests, guestSearchTerm]);
 
   // Update local state when entry changes
   useEffect(() => {
@@ -859,9 +874,25 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             
             {isGuestSectionExpanded && (
               <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'}`}>
-                {allGuests.length > 0 ? (
+                {/* Add search input */}
+                {(isEditing || isNewEntry) && (
+                  <div className="mb-3">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={guestSearchTerm}
+                        onChange={(e) => setGuestSearchTerm(e.target.value)}
+                        placeholder="Search guests..."
+                        className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                      />
+                      <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                    </div>
+                  </div>
+                )}
+                
+                {filteredGuestsByCategory.length > 0 ? (
                   <div className="max-h-60 overflow-y-auto">
-                    {allGuests.map(category => (
+                    {filteredGuestsByCategory.map(category => (
                       <div key={category.category} className="mb-4">
                         <h4 className="text-sm font-medium text-black mb-2">{category.category}</h4>
                         <div className="space-y-2">
@@ -889,7 +920,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-black/60 text-sm">No guests available</p>
+                  <p className="text-black/60 text-sm">
+                    {guestSearchTerm ? 'No guests found matching your search' : 'No guests available'}
+                  </p>
                 )}
                 
                 {selectedGuestIds.length > 0 && (
