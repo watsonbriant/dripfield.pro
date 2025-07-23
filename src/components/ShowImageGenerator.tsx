@@ -564,19 +564,40 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
         if (!generatedImageUrl) return;
         
         try {
-            const response = await fetch(generatedImageUrl);
-            const blob = await response.blob();
+            // Check if we're on a mobile device or if clipboard.write is not supported
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const hasClipboardWrite = 'clipboard' in navigator && 'write' in navigator.clipboard;
             
-            await navigator.clipboard.write([
-                new ClipboardItem({
-                    [blob.type]: blob
-                })
-            ]);
-            
-            setImageCopied(true);
-            setTimeout(() => setImageCopied(false), 2000);
+            if (!isMobile && hasClipboardWrite) {
+                // Desktop: Use clipboard API
+                const response = await fetch(generatedImageUrl);
+                const blob = await response.blob();
+                
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        [blob.type]: blob
+                    })
+                ]);
+                
+                setImageCopied(true);
+                setTimeout(() => setImageCopied(false), 2000);
+            } else {
+                // Mobile/fallback: Auto-download the image
+                const link = document.createElement('a');
+                link.href = generatedImageUrl;
+                link.download = `${show.show_group}-${formatInTimeZone(new Date(show.show_date), 'UTC', 'MM-dd-yy')}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show feedback that download started
+                setImageCopied(true);
+                setTimeout(() => setImageCopied(false), 2000);
+            }
         } catch (err) {
-            console.error('Failed to copy image to clipboard:', err);
+            console.error('Failed to copy/download image:', err);
+            // Fallback to download if clipboard fails
+            handleSaveImage();
         }
     };
 
@@ -630,19 +651,10 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                                         ? 'bg-green-500 text-white font-mohr border-green-600' 
                                         : 'bg-[#f9ae37] text-black font-mohr border-black hover:bg-white'
                                 }`}
-                                title="Copy to Clipboard"
+                                title="Copy to Clipboard (Desktop) / Download (Mobile)"
                             >
                                 <Copy size={16} />
-                                {imageCopied ? 'Copied!' : 'Copy to Clipboard'}
-                            </button>
-                            
-                            <button
-                                onClick={handleSaveImage}
-                                className="flex items-center gap-2 px-4 py-2 font-mohr rounded-lg bg-[#f9ae37] text-black border border-black hover:bg-white transition-colors"
-                                title="Save to Device"
-                            >
-                                <ArrowDownToLine size={16} />
-                                Save to Device
+                                {imageCopied ? 'Success!' : 'Copy/Download'}
                             </button>
                         </div>
                         
