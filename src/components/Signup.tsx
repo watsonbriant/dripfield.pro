@@ -94,7 +94,7 @@ export const Signup: React.FC = () => {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="mt-8 max-w-md mx-auto bg-primary border border-black rounded-lg p-6">
-        <h1 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0.5 rounded-full border border-black mb-6">Create a new account</h1>
+        <h1 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0.5 rounded-full border border-black mb-6">Create a New Account</h1>
 
         {message ? (
           <div className="p-4 bg-green-100 rounded-lg border border-green-300 mb-4">
@@ -116,7 +116,7 @@ export const Signup: React.FC = () => {
             
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
-                Email address
+                Email Address
               </label>
               <input
                 id="email"
