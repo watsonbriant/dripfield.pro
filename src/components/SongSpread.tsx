@@ -201,9 +201,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
 
   return (
     <div className="bg-primary border border-black rounded-lg p-3">
-      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
-        Song Spread
-      </h2>
+      <h2 className="text-lg font-semibold text-black mb-4">Song Spread</h2>
       <div className="space-y-1.5">
         {sortedCategories.map(({ category, count, songs, artwork }) => (
           <div key={category}>

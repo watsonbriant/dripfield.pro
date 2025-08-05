@@ -1,4 +1,5 @@
 import React from 'react';
+import { Clock, Flame } from 'lucide-react';
 
 // Add the getRarityColor function
 const getRarityColor = (percentage: string | null): string => {
@@ -147,11 +148,14 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
   if (!shouldShowLength && !shouldShowRarity) return null;
 
   return (
-    <div className="bg-primary border border-black rounded-lg p-3 mb-6">
+    <div className="bg-primary border border-black rounded-lg p-4 mb-6">
       {shouldShowLength && (
         <div>
-          <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Show Length</h2>
-          <p className="text-black text-sm">
+          <div className="flex justify-between items-center mb-1">
+            <h2 className="text-lg font-semibold text-black">Show Length</h2>
+            <Clock className="text-black w-[1rem] h-[1rem]" />
+          </div>
+          <p className="text-black text-xs">
             {totalLength || 'The length of this show is unknown.'}
           </p>
         </div>
@@ -159,19 +163,22 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
       
       {shouldShowRarity && (
         <div className={shouldShowLength ? "mt-4" : ""}>
-          <div className="flex items-center">
-            <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Show Rarity</h2>
-            {rarityStats && (
-              <span 
-                className="text-white text-sm font-medium px-2 py-0.5 rounded-md inline-block ml-3"
-                style={{ 
-                  backgroundColor: getRarityColor(rarityStats.percentage + '%'),
-                  border: '1px solid black'
-                }}
-              >
-                {rarityStats.percentage}%
-              </span>
-            )}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <h2 className="text-lg font-semibold text-black">Show Rarity</h2>
+              {rarityStats && (
+                <span
+                  className="text-white text-sm font-medium px-2 py-0.5 rounded-md inline-block ml-3"
+                  style={{
+                    backgroundColor: getRarityColor(rarityStats.percentage + '%'),
+                    border: '1px solid black'
+                  }}
+                >
+                  {rarityStats.percentage}%
+                </span>
+              )}
+            </div>
+            <Flame className="text-black w-[1rem] h-[1rem]" />
           </div>
           {!rarityStats && (
             <p className="text-black text-sm">

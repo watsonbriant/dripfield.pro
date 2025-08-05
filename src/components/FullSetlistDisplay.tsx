@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ShowStats from './ShowStats';
 import SongSpread from './SongSpread';
-import { ArrowLeft, ArrowRight, User, MoveRight } from 'lucide-react';
+import { Pen, User, MoveRight } from 'lucide-react';
 import ReleaseContainer from './ReleaseContainer';
 import ShowInfoContent from './ShowInfoContent';
 import ShowChanges from './ShowChanges';
@@ -456,9 +456,12 @@ export default function FullSetlistDisplay({
         />
         {show.show_coachnotes && (
           <div className="bg-primary border border-black rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-black mb-2">Show Notes</h2>
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-lg font-semibold text-black">Show Notes</h2>
+              <Pen className="text-black w-[1rem] h-[1rem]" />
+            </div>
             <div 
-              className="text-black text-xs [&_a]:text-[#a9682e] hover:[&_a]:text-[#a9682e]/80 [&_a]:font-semibold"
+              className="text-black text-xs [&_a]:text-[#a9682e] hover:[&_a]:text-[#a9682e]/80 [&_a]:font-semibold mt-2"
               dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
             />
           </div>
@@ -1094,9 +1097,12 @@ export default function FullSetlistDisplay({
             />
             {show.show_coachnotes && (
               <div className="bg-primary border border-black rounded-lg p-4">
-                <h2 className="text-lg font-semibold text-black mb-2">Show Notes</h2>
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-lg font-semibold text-black">Show Notes</h2>
+                  <Pen className="text-black w-[1rem] h-[1rem]" />
+                </div>
                 <div 
-                  className="text-black text-xs [&_a]:text-[#a9682e] hover:[&_a]:text-[#a9682e]/80 [&_a]:font-semibold"
+                  className="text-black text-xs [&_a]:text-[#a9682e] hover:[&_a]:text-[#a9682e]/80 [&_a]:font-semibold mt-2"
                   dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
                 />
               </div>
