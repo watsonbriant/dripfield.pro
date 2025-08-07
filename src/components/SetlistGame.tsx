@@ -224,9 +224,9 @@ export function SetlistGame() {
     isLessThan24Hours: boolean;  // Add this new property
   } => {
     const now = new Date();
+    // Ensure proper timezone handling for the show time
     const showDateTime = new Date(showTime);
-    const oneHourBefore = new Date(showDateTime);
-    oneHourBefore.setHours(oneHourBefore.getHours() - 1);
+    const oneHourBefore = new Date(showDateTime.getTime() - (60 * 60 * 1000)); // Subtract 1 hour in milliseconds
 
     const isSelectionClosed = now >= oneHourBefore;
 
@@ -430,7 +430,8 @@ export function SetlistGame() {
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Uses user's local timezone
     });
   };
 

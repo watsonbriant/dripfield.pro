@@ -4,6 +4,37 @@ import { supabase } from '../lib/supabase';
 import ShowModal from './ShowModal';
 import { ShowReleaseModal } from './ShowReleaseModal';
 
+// Convert UTC datetime to Eastern Time for display
+const convertToEasternDisplay = (utcDatetime: string | null): string => {
+    if (!utcDatetime) return '';
+    
+    const date = new Date(utcDatetime);
+    // Convert to Eastern Time
+    const easternDate = new Date(date.toLocaleString("en-US", {timeZone: "America/New_York"}));
+    
+    // Format for datetime-local input (YYYY-MM-DDTHH:MM)
+    const year = easternDate.getFullYear();
+    const month = String(easternDate.getMonth() + 1).padStart(2, '0');
+    const day = String(easternDate.getDate()).padStart(2, '0');
+    const hours = String(easternDate.getHours()).padStart(2, '0');
+    const minutes = String(easternDate.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+// Convert Eastern Time input back to UTC for storage
+const convertFromEasternToUTC = (easternDatetime: string): string => {
+    if (!easternDatetime) return '';
+    
+    // Create date assuming the input is in Eastern Time
+    const easternDate = new Date(easternDatetime);
+    // Get the timezone offset for Eastern Time
+    const easternOffset = easternDate.getTimezoneOffset() + 300; // 300 minutes = 5 hours (EST offset)
+    const utcDate = new Date(easternDate.getTime() + (easternOffset * 60000));
+    
+    return utcDate.toISOString();
+};
+
 interface ShowData {
     show_id: string;
     show_date: string;
@@ -853,12 +884,19 @@ export const AdminShow: React.FC = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Show Time</label>
+                            <label className="block text-sm font-semibold text-black">Show Time (Eastern Time)</label>
                             <input
                                 type="datetime-local"
                                 name="show_time"
-                                value={editedShow?.show_time ? editedShow.show_time.slice(0, 16) : ''}
-                                onChange={handleInputChange}
+                                value={convertToEasternDisplay(editedShow?.show_time || null)}
+                                onChange={(e) => {
+                                    if (!editedShow) return;
+                                    const utcValue = e.target.value ? convertFromEasternToUTC(e.target.value) : null;
+                                    setEditedShow({
+                                        ...editedShow,
+                                        show_time: utcValue
+                                    });
+                                }}
                                 readOnly={!isEditing}
                                 className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
                             />
