@@ -83,7 +83,7 @@ export function Tours() {
   const { tour } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [currentTour, setCurrentTour] = React.useState<string>('2025 Summer');
+  const [currentTour, setCurrentTour] = React.useState<string>('2025 Fall');
   const [currentTourId, setCurrentTourId] = React.useState<string>('');
   const [currentTourShowFields, setCurrentTourShowFields] = React.useState<boolean>(false);
   const [shows, setShows] = React.useState<Show[]>([]);
