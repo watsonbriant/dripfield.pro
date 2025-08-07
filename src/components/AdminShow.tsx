@@ -6,49 +6,61 @@ import { ShowReleaseModal } from './ShowReleaseModal';
 
 // Convert UTC datetime to Eastern Time for display
 const convertToEasternDisplay = (utcDatetime: string | null): string => {
-    console.log('convertToEasternDisplay - Input:', utcDatetime);
-    
     if (!utcDatetime) return '';
     
-    const date = new Date(utcDatetime);
-    console.log('convertToEasternDisplay - parsed date:', date);
+    const utcDate = new Date(utcDatetime);
     
-    // Convert to Eastern Time
-    const easternDate = new Date(date.toLocaleString("en-US", {timeZone: "America/New_York"}));
-    console.log('convertToEasternDisplay - easternDate:', easternDate);
+    // Create a new date representing the same moment in Eastern Time
+    const easternDateString = utcDate.toLocaleString('en-CA', { 
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
     
-    // Format for datetime-local input (YYYY-MM-DDTHH:MM)
-    const year = easternDate.getFullYear();
-    const month = String(easternDate.getMonth() + 1).padStart(2, '0');
-    const day = String(easternDate.getDate()).padStart(2, '0');
-    const hours = String(easternDate.getHours()).padStart(2, '0');
-    const minutes = String(easternDate.getMinutes()).padStart(2, '0');
-    
-    const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
-    console.log('convertToEasternDisplay - Output formatted:', formatted);
+    // Convert from "YYYY-MM-DD, HH:MM" to "YYYY-MM-DDTHH:MM"
+    const formatted = easternDateString.replace(', ', 'T');
     
     return formatted;
 };
 
 // Convert Eastern Time input to UTC for storage
 const convertFromEasternToUTC = (easternDatetime: string): string => {
-    console.log('convertFromEasternToUTC - Input:', easternDatetime);
-    
     if (!easternDatetime) return '';
     
-    // Parse the datetime-local input as Eastern Time
-    // Create a temporary date string with timezone info
-    const tempDate = new Date(easternDatetime + ' EST');
-    console.log('convertFromEasternToUTC - tempDate:', tempDate);
-    
-    // Convert to UTC by using the built-in timezone handling
-    const utcDate = new Date(tempDate.toLocaleString('en-US', { timeZone: 'UTC' }));
-    console.log('convertFromEasternToUTC - utcDate:', utcDate);
-    
-    const isoString = utcDate.toISOString();
-    console.log('convertFromEasternToUTC - Output ISO:', isoString);
-    
-    return isoString;
+    try {
+        // Parse the datetime-local input as Eastern Time
+        const [datePart, timePart] = easternDatetime.split('T');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute] = timePart.split(':').map(Number);
+        
+        // Create a date in Eastern Time using Intl.DateTimeFormat to handle EST/EDT automatically
+        const easternDate = new Date();
+        easternDate.setFullYear(year, month - 1, day);
+        easternDate.setHours(hour, minute, 0, 0);
+        
+        // Convert to Eastern timezone string and then parse as UTC
+        const easternISO = easternDate.toLocaleString('sv-SE', { timeZone: 'America/New_York' }).replace(' ', 'T') + ':00.000Z';
+        
+        // Better approach: use the fact that we know the offset
+        const tempUtc = new Date(Date.UTC(year, month - 1, day, hour, minute));
+        
+        // Get the timezone offset for this specific date (handles EST vs EDT)
+        const testDate = new Date(year, month - 1, day);
+        const easternOffset = testDate.toLocaleString('en', { timeZone: 'America/New_York', timeZoneName: 'short' }).includes('EDT') ? -4 : -5;
+        
+        // Apply the offset to convert Eastern to UTC
+        const utcDate = new Date(tempUtc.getTime() - (easternOffset * 60 * 60 * 1000));
+        
+        const isoString = utcDate.toISOString();
+        
+        return isoString;
+    } catch (error) {
+        return '';
+    }
 };
 
 interface ShowData {
@@ -213,7 +225,6 @@ export const AdminShow: React.FC = () => {
                 }
             }
             } catch (error) {
-            console.error('Error restoring selected show from localStorage:', error);
             }
         }
     }, [allShows]);
@@ -275,7 +286,6 @@ export const AdminShow: React.FC = () => {
                 setLoadingProgress(0);
             }, 300);
         } catch (error) {
-            console.error('Error fetching shows:', error);
             setLoadingProgress(100);
             setTimeout(() => {
                 setLoading(false);
@@ -326,7 +336,6 @@ export const AdminShow: React.FC = () => {
             if (songsError) throw songsError;
             setSongs(songsData || []);
         } catch (error) {
-            console.error('Error fetching reference data:', error);
         }
     }
 
@@ -349,7 +358,6 @@ export const AdminShow: React.FC = () => {
             if (error) throw error;
             setShowReleases(data || []);
         } catch (error) {
-            console.error('Error fetching show releases:', error);
             setShowReleases([]);
         } finally {
             setLoadingReleases(false);
@@ -426,7 +434,6 @@ export const AdminShow: React.FC = () => {
         try {
             localStorage.setItem('adminSelectedShowId', show.show_id);
         } catch (error) {
-            console.error('Error saving selected show to localStorage:', error);
         }
     };
 
@@ -436,8 +443,6 @@ export const AdminShow: React.FC = () => {
         const { name, value, type } = e.target;
         const checked = (e.target as HTMLInputElement).checked;
 
-        console.log('handleInputChange - field:', name, 'value:', value);
-
         if (name === 'show_date' && value) {
             // Ensure the date is stored in YYYY-MM-DD format
             setEditedShow({
@@ -446,7 +451,6 @@ export const AdminShow: React.FC = () => {
             });
         } else {
             const newValue = type === 'checkbox' ? checked : (value === '' ? null : value);
-            console.log('handleInputChange - setting field:', name, 'to:', newValue);
             
             setEditedShow({
                 ...editedShow,
@@ -577,15 +581,12 @@ export const AdminShow: React.FC = () => {
 
     const handleSaveChanges = async () => {
         if (!editedShow) return;
-
-        console.log('handleSaveChanges - editedShow.show_time:', editedShow.show_time);
         
         setIsSubmitting(true);
 
         try {
             // Convert show_time from Eastern to UTC before saving
             const showTimeUTC = editedShow.show_time ? convertFromEasternToUTC(editedShow.show_time) : null;
-            console.log('handleSaveChanges - showTimeUTC after conversion:', showTimeUTC);
 
             const updateData = {
                 show_date: editedShow.show_date,
@@ -602,8 +603,6 @@ export const AdminShow: React.FC = () => {
                 show_callbacks: editedShow.show_callbacks,
                 show_wl_link: editedShow.show_wl_link
             };
-            
-            console.log('handleSaveChanges - Update data being sent:', updateData);
 
             const { error } = await supabase
                 .from('shows')
@@ -611,11 +610,8 @@ export const AdminShow: React.FC = () => {
                 .eq('show_id', editedShow.show_id);
 
             if (error) {
-                console.error('Error updating show:', error);
                 throw error;
             }
-
-            console.log('handleSaveChanges - Update successful');
             
             setSelectedShow(editedShow);
             setIsEditing(false);
@@ -624,7 +620,6 @@ export const AdminShow: React.FC = () => {
             fetchAllShows();
 
         } catch (error) {
-            console.error('Error updating show:', error);
         } finally {
             setIsSubmitting(false);
         }
