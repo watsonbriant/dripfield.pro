@@ -22,15 +22,16 @@ const convertToEasternDisplay = (utcDatetime: string | null): string => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-// Convert Eastern Time input back to UTC for storage
+// Convert Eastern Time input to UTC for storage
 const convertFromEasternToUTC = (easternDatetime: string): string => {
     if (!easternDatetime) return '';
     
-    // Create date assuming the input is in Eastern Time
-    const easternDate = new Date(easternDatetime);
-    // Get the timezone offset for Eastern Time
-    const easternOffset = easternDate.getTimezoneOffset() + 300; // 300 minutes = 5 hours (EST offset)
-    const utcDate = new Date(easternDate.getTime() + (easternOffset * 60000));
+    // Parse the datetime-local input as Eastern Time
+    // Create a temporary date string with timezone info
+    const tempDate = new Date(easternDatetime + ' EST');
+    
+    // Convert to UTC by using the built-in timezone handling
+    const utcDate = new Date(tempDate.toLocaleString('en-US', { timeZone: 'UTC' }));
     
     return utcDate.toISOString();
 };
@@ -560,6 +561,9 @@ export const AdminShow: React.FC = () => {
         setIsSubmitting(true);
 
         try {
+            // Convert show_time from Eastern to UTC before saving
+            const showTimeUTC = editedShow.show_time ? convertFromEasternToUTC(editedShow.show_time) : null;
+
             const { error } = await supabase
                 .from('shows')
                 .update({
@@ -573,7 +577,7 @@ export const AdminShow: React.FC = () => {
                     show_detail: editedShow.show_detail,
                     show_alert: editedShow.show_alert,
                     show_coachnotes: editedShow.show_coachnotes,
-                    show_time: editedShow.show_time,
+                    show_time: showTimeUTC,
                     show_callbacks: editedShow.show_callbacks,
                     show_wl_link: editedShow.show_wl_link
                 })
@@ -889,14 +893,7 @@ export const AdminShow: React.FC = () => {
                                 type="datetime-local"
                                 name="show_time"
                                 value={convertToEasternDisplay(editedShow?.show_time || null)}
-                                onChange={(e) => {
-                                    if (!editedShow) return;
-                                    const utcValue = e.target.value ? convertFromEasternToUTC(e.target.value) : null;
-                                    setEditedShow({
-                                        ...editedShow,
-                                        show_time: utcValue
-                                    });
-                                }}
+                                onChange={handleInputChange}
                                 readOnly={!isEditing}
                                 className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
                             />
