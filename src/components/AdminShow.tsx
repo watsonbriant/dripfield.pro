@@ -6,11 +6,16 @@ import { ShowReleaseModal } from './ShowReleaseModal';
 
 // Convert UTC datetime to Eastern Time for display
 const convertToEasternDisplay = (utcDatetime: string | null): string => {
+    console.log('convertToEasternDisplay - Input:', utcDatetime);
+    
     if (!utcDatetime) return '';
     
     const date = new Date(utcDatetime);
+    console.log('convertToEasternDisplay - parsed date:', date);
+    
     // Convert to Eastern Time
     const easternDate = new Date(date.toLocaleString("en-US", {timeZone: "America/New_York"}));
+    console.log('convertToEasternDisplay - easternDate:', easternDate);
     
     // Format for datetime-local input (YYYY-MM-DDTHH:MM)
     const year = easternDate.getFullYear();
@@ -19,21 +24,31 @@ const convertToEasternDisplay = (utcDatetime: string | null): string => {
     const hours = String(easternDate.getHours()).padStart(2, '0');
     const minutes = String(easternDate.getMinutes()).padStart(2, '0');
     
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
+    console.log('convertToEasternDisplay - Output formatted:', formatted);
+    
+    return formatted;
 };
 
 // Convert Eastern Time input to UTC for storage
 const convertFromEasternToUTC = (easternDatetime: string): string => {
+    console.log('convertFromEasternToUTC - Input:', easternDatetime);
+    
     if (!easternDatetime) return '';
     
     // Parse the datetime-local input as Eastern Time
     // Create a temporary date string with timezone info
     const tempDate = new Date(easternDatetime + ' EST');
+    console.log('convertFromEasternToUTC - tempDate:', tempDate);
     
     // Convert to UTC by using the built-in timezone handling
     const utcDate = new Date(tempDate.toLocaleString('en-US', { timeZone: 'UTC' }));
+    console.log('convertFromEasternToUTC - utcDate:', utcDate);
     
-    return utcDate.toISOString();
+    const isoString = utcDate.toISOString();
+    console.log('convertFromEasternToUTC - Output ISO:', isoString);
+    
+    return isoString;
 };
 
 interface ShowData {
@@ -421,6 +436,8 @@ export const AdminShow: React.FC = () => {
         const { name, value, type } = e.target;
         const checked = (e.target as HTMLInputElement).checked;
 
+        console.log('handleInputChange - field:', name, 'value:', value);
+
         if (name === 'show_date' && value) {
             // Ensure the date is stored in YYYY-MM-DD format
             setEditedShow({
@@ -428,9 +445,12 @@ export const AdminShow: React.FC = () => {
                 [name]: value,
             });
         } else {
+            const newValue = type === 'checkbox' ? checked : (value === '' ? null : value);
+            console.log('handleInputChange - setting field:', name, 'to:', newValue);
+            
             setEditedShow({
                 ...editedShow,
-                [name]: type === 'checkbox' ? checked : (value === '' ? null : value),
+                [name]: newValue,
             });
         }
     };
@@ -558,29 +578,36 @@ export const AdminShow: React.FC = () => {
     const handleSaveChanges = async () => {
         if (!editedShow) return;
 
+        console.log('handleSaveChanges - editedShow.show_time:', editedShow.show_time);
+        
         setIsSubmitting(true);
 
         try {
             // Convert show_time from Eastern to UTC before saving
             const showTimeUTC = editedShow.show_time ? convertFromEasternToUTC(editedShow.show_time) : null;
+            console.log('handleSaveChanges - showTimeUTC after conversion:', showTimeUTC);
+
+            const updateData = {
+                show_date: editedShow.show_date,
+                show_group: editedShow.show_group,
+                show_tour: editedShow.show_tour,
+                show_subvenue: editedShow.show_subvenue,
+                show_iscanon: editedShow.show_iscanon,
+                show_year: editedShow.show_year,
+                show_issetlistgame: editedShow.show_issetlistgame,
+                show_detail: editedShow.show_detail,
+                show_alert: editedShow.show_alert,
+                show_coachnotes: editedShow.show_coachnotes,
+                show_time: showTimeUTC,
+                show_callbacks: editedShow.show_callbacks,
+                show_wl_link: editedShow.show_wl_link
+            };
+            
+            console.log('handleSaveChanges - Update data being sent:', updateData);
 
             const { error } = await supabase
                 .from('shows')
-                .update({
-                    show_date: editedShow.show_date,
-                    show_group: editedShow.show_group,
-                    show_tour: editedShow.show_tour,
-                    show_subvenue: editedShow.show_subvenue,
-                    show_iscanon: editedShow.show_iscanon,
-                    show_year: editedShow.show_year,
-                    show_issetlistgame: editedShow.show_issetlistgame,
-                    show_detail: editedShow.show_detail,
-                    show_alert: editedShow.show_alert,
-                    show_coachnotes: editedShow.show_coachnotes,
-                    show_time: showTimeUTC,
-                    show_callbacks: editedShow.show_callbacks,
-                    show_wl_link: editedShow.show_wl_link
-                })
+                .update(updateData)
                 .eq('show_id', editedShow.show_id);
 
             if (error) {
@@ -588,6 +615,8 @@ export const AdminShow: React.FC = () => {
                 throw error;
             }
 
+            console.log('handleSaveChanges - Update successful');
+            
             setSelectedShow(editedShow);
             setIsEditing(false);
 
