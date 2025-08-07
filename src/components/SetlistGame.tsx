@@ -52,7 +52,7 @@ interface SubmissionDetails {
 export function SetlistGame() {
   const [loading, setLoading] = useState(true);
   const [gameShows, setGameShows] = useState<GameShow[]>([]);
-  const [activeLeague, setActiveLeague] = useState("2025 Misc");
+  const [activeLeague, setActiveLeague] = useState("2025 Fall");
   const { user } = useAuth();
   const [activeSongSelectionShow, setActiveSongSelectionShow] = useState<GameShow | null>(null);
   const [userPicks, setUserPicks] = useState<UserPick[]>([]);
