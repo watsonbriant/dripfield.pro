@@ -148,7 +148,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
           if (data.showIds.size === 0) return;
           
           // Find winners (users with max score)
-          let maxScore = 0;
+          let maxScore = -Infinity;
           let winners: Array<{username: string, score: number}> = [];
           
           data.userScores.forEach((score, userId) => {
