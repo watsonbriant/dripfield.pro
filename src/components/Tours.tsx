@@ -383,7 +383,7 @@ export function Tours() {
 
   React.useEffect(() => {
     if (!tour) {
-      navigate('/tours/2025 Summer', { replace: true });
+      navigate('/tours/2025 Fall', { replace: true });
     }
   }, [tour, navigate]);
 
@@ -431,11 +431,11 @@ export function Tours() {
         }
 
         // Find the tour_id for initial navigation
-        const winter2025 = data?.find(t => t.tour === '2025 Summer');
+        const winter2025 = data?.find(t => t.tour === '2025 Fall');
         if (winter2025 && !tour) {
           navigate(`/tours/${winter2025.tour_id}`, { replace: true });
           setCurrentTourId(winter2025.tour_id);
-          setCurrentTour('2025 Summer');
+          setCurrentTour('2025 Fall');
           setCurrentTourShowFields(winter2025.tour_showfields || false);
         }
 
