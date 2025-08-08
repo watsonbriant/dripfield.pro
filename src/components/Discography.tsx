@@ -9,6 +9,7 @@ interface Album {
   artist: string;
   artwork: string;
   category: string;
+  releaseDate?: string;
   tracks: {
     name: string;
     id: string;
@@ -55,7 +56,8 @@ export function Discography() {
             category_release_artist,
             category_artwork,
             category_canonid,
-            category
+            category,
+            category_releasedate
           `)
           .order('category_canonid', { ascending: true })
           .not('category', 'ilike', '%Unreleased%')
@@ -100,6 +102,7 @@ export function Discography() {
             artist: album.category_release_artist || '',
             artwork: album.category_artwork || '',
             category: album.category || '',
+            releaseDate: album.category_releasedate || undefined,
             tracks: songData?.map(song => ({
               name: song.song,
               id: song.song_id,
@@ -206,7 +209,17 @@ export function Discography() {
               </div>
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-black">{album.title}</h3>
-                <p className="text-black/70 text-sm mb-2">{album.artist}</p>
+                <p className="text-black/70 font-semibold text-sm">{album.artist}</p>
+                {album.releaseDate && (
+                  <p className="text-black/70 text-xs mb-2">
+                    {new Date(album.releaseDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                )}
+                {!album.releaseDate && <div className="mb-2" />}
 
                 {album.tracks.length > 0 && (
                   <>
