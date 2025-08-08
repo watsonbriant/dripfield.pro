@@ -212,15 +212,36 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
           }
         });
         
-        // Convert to array format for chart
-        const chartData = Object.entries(yearData)
+        // Convert to array format for chart and fill in missing years
+        let chartData = Object.entries(yearData)
           .map(([year, counts]) => ({
             year,
             gooseCount: counts.gooseCount,
             otherCount: counts.otherCount
           }))
           .sort((a, b) => parseInt(a.year) - parseInt(b.year));
-        
+
+        // Fill in missing years between first and last show
+        if (chartData.length > 0) {
+          const firstYear = parseInt(chartData[0].year);
+          const lastYear = parseInt(chartData[chartData.length - 1].year);
+          
+          const completeData = [];
+          for (let year = firstYear; year <= lastYear; year++) {
+            const existingData = chartData.find(d => parseInt(d.year) === year);
+            if (existingData) {
+              completeData.push(existingData);
+            } else {
+              completeData.push({
+                year: year.toString(),
+                gooseCount: 0,
+                otherCount: 0
+              });
+            }
+          }
+          chartData = completeData;
+        }
+
         setShowData(chartData);
         setLoadingProgress(100);
       } catch (error) {
@@ -282,8 +303,6 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
   }
   
   // Filter out years with no shows if needed
-  const filteredData = showData.filter(year => year.gooseCount > 0 || year.otherCount > 0);
-
   return (
     <div className="bg-primary p-3 rounded-lg border border-black">
       <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">{getChartTitle()}</h3>
