@@ -72,11 +72,11 @@ export function Songs() {
 
   const fetchSongs = async (type: TableType, page: number, field: SortField, direction: SortDirection) => {
     try {
-      const categoryType = {
-        goose: 'Goose',
-        covers: 'Cover Songs',
-        adjacent: 'Goose-adjacent',
-        collaborations: 'Live Collaborations'
+      const categoryTypes = {
+        goose: ['Goose', 'Goose Misc', 'Ted Tapes'],
+        covers: ['Cover Songs'],
+        adjacent: ['Goose-adjacent'],
+        collaborations: ['Live Collaborations']
       }[type];
 
       const { data, count, error } = await supabase
@@ -88,8 +88,8 @@ export function Songs() {
           song_id,
           categories!inner(category_type)
         `, { count: 'exact' })
-        .eq('categories.category_type', categoryType)
-        .eq('song_placeholder', false) // Only show songs where song_placeholder is false
+        .in('categories.category_type', categoryTypes)
+        .eq('song_placeholder', false)
         .order(field, { ascending: direction === 'asc' })
         .range((page - 1) * songsPerPage, page * songsPerPage - 1);
 
