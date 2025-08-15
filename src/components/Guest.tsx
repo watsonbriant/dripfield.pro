@@ -329,7 +329,7 @@ export function Guest() {
   }
 
   return (
-    <div className="max-w-[872px] mx-auto">
+    <div className="max-w-[936px] mx-auto">
       <div className="flex justify-between">
         <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">
           {guest.guest}

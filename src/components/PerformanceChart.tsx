@@ -62,7 +62,6 @@ const placementColors: Record<string, string> = {
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selectedGroup }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const currentYear = new Date().getFullYear();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredPerformance, setHoveredPerformance] = useState<{
     formattedDate: string;
@@ -78,7 +77,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
   const [loadingAttended, setLoadingAttended] = useState(false);
   
   const years = Array.from(
-    { length: currentYear - 2012 + 1 },
+    { length: 2026 - 2012 + 1 },
     (_, i) => 2012 + i
   );
 

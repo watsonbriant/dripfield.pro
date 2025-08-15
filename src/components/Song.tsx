@@ -392,14 +392,14 @@ export function Song() {
   }
 
   return (
-    <div className={`${song.song_lyrics ? "max-w-[872px] xl:max-w-[1280px]" : "max-w-[872px]"} mx-auto`}>
+    <div className={`${song.song_lyrics ? "max-w-[936px] xl:max-w-[1280px]" : "max-w-[936px]"} mx-auto`}>
       <div className="flex justify-between">
         <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block mr-4 px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-6">{song.song}</h2>
         <SongSearch />
       </div>
     
       <div className={`${song.song_lyrics 
-        ? "grid grid-cols-1 gap-6 space-y-0 xl:grid-cols-[minmax(872px,1fr)_1fr]" 
+        ? "grid grid-cols-1 gap-6 space-y-0 xl:grid-cols-[minmax(936px,1fr)_1fr]" 
         : "space-y-6"} mb-8`}>
         {/* Left column - main content */}
         <div className="space-y-6">

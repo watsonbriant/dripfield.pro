@@ -39,7 +39,6 @@ interface GuestPerformanceChartProps {
 
 function GuestPerformanceChart({ performances, selectedGroup, selectedSong, songShowMap }: GuestPerformanceChartProps) {
   const navigate = useNavigate();
-  const currentYear = new Date().getFullYear();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredPerformance, setHoveredPerformance] = useState<{
     formattedDate: string;
@@ -57,7 +56,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
   
   // Always display years starting from 2012 like the song performance chart
   const years = Array.from(
-    { length: currentYear - 2012 + 1 },
+    { length: 2026 - 2012 + 1 },
     (_, i) => 2012 + i
   );
 
