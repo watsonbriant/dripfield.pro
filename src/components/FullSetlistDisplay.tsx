@@ -757,9 +757,9 @@ export default function FullSetlistDisplay({
                         {show.show_canonid !== null && (
                           <div className={`text-black/80 text-center rounded-md ${
                               entry.last_count?.includes('TD') 
-                                ? 'bg-blue-300 text-black' 
+                                ? 'bg-[#55c26d] text-black' 
                                 : entry.last_count?.includes('Debut')
-                                  ? 'bg-red-300 text-black'
+                                  ? 'bg-[#ec7171] text-black'
                                   : ''
                             } ${entry.last_show_id ? 'cursor-pointer hover:text-[#a9682e] hover:underline transition-colors' : ''}`}
                             onClick={() => {
