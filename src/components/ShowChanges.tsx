@@ -356,7 +356,7 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                             {/* Close button */}
                             <button
                                 onClick={handleCloseModal}
-                                className="absolute top-2 right-2 bg-[#f9ae37] hover:bg-tertiary border border-secondary rounded-full p-2 transition-colors"
+                                className="absolute top-2 right-2 bg-red-600 hover:bg-tertiary border border-secondary rounded-lg p-2 transition-colors"
                             >
                                 <X className="w-5 h-5 text-fifth" />
                             </button>
