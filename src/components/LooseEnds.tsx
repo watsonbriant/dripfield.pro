@@ -436,7 +436,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
             
             if (userId) {
                 try {
-                  // First get the user's attended shows (simple query)
+                  // Get the user's attended shows
                   const { data: attendedShows, error: attendedError } = await supabase
                     .from('user_attended_shows')
                     .select('show_id')
@@ -454,30 +454,11 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                   // Get the IDs of all attended shows
                   const attendedShowIds = attendedShows.map(show => show.show_id);
               
-                  // Now get details about these shows to check which ones are canonical
-                  const { data: showDetails, error: showDetailsError } = await supabase
-                    .from('shows')
-                    .select('show_id, show_canonid')
-                    .in('show_id', attendedShowIds)
-                    .not('show_canonid', 'is', null);
-              
-                  if (showDetailsError) {
-                    console.error('Error fetching show details:', showDetailsError);
-                    return;
-                  }
-              
-                  if (!showDetails || showDetails.length === 0) {
-                    return;
-                  }
-              
-                  // Filter to only canonical show IDs
-                  const canonicalShowIds = showDetails.map(show => show.show_id);
-              
-                  // Now get setlist entries for these canonical shows that match songs in this category
+                  // Get setlist entries for these shows that match songs in this category
                   const { data: entries, error: entriesError } = await supabase
                     .from('setlist_entries')
                     .select('entry_song')
-                    .in('entry_show', canonicalShowIds)
+                    .in('entry_show', attendedShowIds)
                     .in('entry_song', songNamesInCategory);
               
                   if (entriesError) {
@@ -491,7 +472,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                     seenCount = uniqueSongsSeen.length;
                   }
                 } catch (err) {
-                  console.error('Error in canonical show processing:', err);
+                  console.error('Error in show processing:', err);
                 }
               }
             

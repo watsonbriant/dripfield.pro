@@ -714,7 +714,7 @@ export default function FullSetlistDisplay({
                             
                             {entry.entry_coachnotes && shouldShowCoachNotesForEntry(entry.entry_id, true) && (
                               <div 
-                                className="text-fifth/80 text-xs mt-0.5 w-full break-words [&_a]:text-[#a9682e] [&_a]:font-medium"
+                                className="text-fifth/80 text-xs mt-0.5 w-full break-words [&_a]:text-[#a9682e] [&_a]:font-medium font-light"
                                 dangerouslySetInnerHTML={{ __html: entry.entry_coachnotes }}
                               />
                             )}
@@ -952,7 +952,7 @@ export default function FullSetlistDisplay({
                     {guestGroups.length > 0 && (
                       <div className="bg-primary border border-secondary rounded-lg p-3 h-fit relative">
                         <User className="w-5 h-5 text-fifth absolute top-3 right-3" />
-                        <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
+                        <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-1 pr-8">
                           {guestGroups.map((group, index) => (
                           <React.Fragment key={index}>
                             <div 
