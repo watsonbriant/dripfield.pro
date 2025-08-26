@@ -1179,7 +1179,7 @@ export function Tours() {
                         <td className="w-8 text-center">
                           {show.attended && (
                             <div className="flex justify-center items-center h-full">
-                              <div className="rounded-lg p-0.5 bg-green-600">
+                              <div className="rounded-full p-0.5 bg-green-600">
                                 <Check size={12} className="text-white" strokeWidth={3} />
                               </div>
                             </div>
