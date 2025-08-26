@@ -244,7 +244,7 @@ export const PublicProfile: React.FC = () => {
   if (isLoading) {
     return (
       <div className="max-w-[1280px] mx-auto flex items-center justify-center h-64">
-        <div className="font-mohr bg-[#f9ae37] text-fifth px-4 py-2 rounded-full border border-black">Loading profile...</div>
+        <div className="font-mohr bg-tertiary text-fifth px-4 py-2 rounded-full border border-secondary">Loading profile...</div>
       </div>
     );
   }
@@ -252,12 +252,12 @@ export const PublicProfile: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-[1280px] mx-auto mt-8">
-        <div className="bg-white/20 border border-black rounded-lg p-6 text-center">
-          <h3 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-4 py-1 rounded-full border border-black mb-2">Error</h3>
+        <div className="bg-white/20 border border-secondary rounded-lg p-6 text-center">
+          <h3 className="text-xl font-mohr bg-tertiary text-fifth inline-block px-4 py-1 rounded-full border border-secondary mb-2">Error</h3>
           <p className="text-fifth/80">{error}</p>
           <button 
             onClick={() => navigate('/')} 
-            className="mt-4 px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-fifth rounded-full border border-black font-semibold"
+            className="mt-4 px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-fifth rounded-full border border-secondary font-semibold"
           >
             Return Home
           </button>
@@ -283,14 +283,14 @@ export const PublicProfile: React.FC = () => {
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f9ae37] text-fifth font-semibold border border-black"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-secondary"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-4 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-4 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -298,8 +298,8 @@ export const PublicProfile: React.FC = () => {
                     setActiveTab(tab);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm text-fifth hover:bg-canvas transition-colors ${
-                    activeTab === tab ? 'bg-canvas font-semibold' : ''
+                  className={`w-full text-left px-4 py-0.5 text-sm font-light text-fifth hover:bg-canvas transition-colors ${
+                    activeTab === tab ? 'bg-canvas font-medium' : ''
                   }`}
                 >
                   {tab}
