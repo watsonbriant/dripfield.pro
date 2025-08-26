@@ -304,7 +304,7 @@ function App() {
             <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute left-0 p-2 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-secondary"
+                className="absolute left-0 p-2 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-fifth"
               >
                 <Menu className="w-6 h-6" />
               </button>

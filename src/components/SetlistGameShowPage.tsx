@@ -931,10 +931,6 @@ export function SetlistGameShowPage() {
             </Link>
           </>
         )}
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-fifth bg-canvas rounded-lg py-1 px-2 border border-secondary">
-          {show ? `${formatDate(show.show_date)} – ${show.show_venue_location}` : 'Loading...'}
-        </span>
       </div>
 
       {loading ? (

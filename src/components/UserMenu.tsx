@@ -119,13 +119,13 @@ export const UserMenu: React.FC = () => {
             e.preventDefault();
             window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
           }}
-          className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2 hidden md:block`}
+          className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-fifth mr-2 hidden md:block`}
         >
           Donate
         </Link>
         <Link
           to="/login"
-          className={`relative px-3 pt-1 pb-1.5 ${isMobile ? 'text-sm' : 'text-xl'} font-trad text-fifth bg-tertiary hover:bg-tertiary/80 rounded-lg transition-colors border border-black`}
+          className={`relative px-3 pt-1 pb-1.5 ${isMobile ? 'text-sm' : 'text-xl'} font-trad text-fifth bg-tertiary hover:bg-tertiary/80 rounded-lg transition-colors border border-fifth`}
           onClick={(e) => {
             // Only show sparkle on non-mobile
             if (!isMobile) {
@@ -173,14 +173,14 @@ export const UserMenu: React.FC = () => {
           e.preventDefault();
           window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
         }}
-        className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-lg transition-colors border border-black mr-2 hidden md:block`}
+        className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-lg transition-colors border border-fifth mr-2 hidden md:block`}
       >
         Donate
       </Link>
       <div className="relative" ref={menuRef}>
         <button
           type="button"
-          className="mt-0.5 relative inline-flex items-center gap-1 px-3 pt-1 pb-1.5 rounded-lg bg-tertiary text-fifth font-trad hover:bg-primary transition-colors focus:outline-none border border-black"
+          className="mt-0.5 relative inline-flex items-center gap-1 px-3 pt-1 pb-1.5 rounded-lg bg-tertiary text-fifth font-trad hover:bg-primary transition-colors focus:outline-none border border-fifth"
           onClick={handleButtonClick}
         >
           {/* Show User icon on mobile, username on desktop */}
@@ -207,8 +207,8 @@ export const UserMenu: React.FC = () => {
         </button>
         
         {isOpen && (
-          <div className="absolute right-0 mt-2 bg-secondary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-48 font-medium">
-            <div className="w-full text-left px-4 py-1 text-base leading-tight bg-tertiary font-sans font-normal border-b border-black">
+          <div className="absolute right-0 mt-2 bg-secondary border border-fifth rounded-lg shadow-lg z-50 overflow-y-auto w-48 font-medium">
+            <div className="w-full text-left px-4 py-1 text-base leading-tight bg-tertiary font-sans font-normal border-b border-fifth">
               <span className="font-trad text-xl">{username || displayText}</span>
             </div>
             <Link

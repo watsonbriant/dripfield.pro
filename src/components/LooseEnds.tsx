@@ -714,7 +714,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
             {groupedLooseEnds[category].map((looseEnd) => (
               <div
                 key={looseEnd.end_id}
-                className="bg-primary border border-secondary rounded-lg overflow-hidden hover:bg-canvas transition-all flex flex-col"
+                className="bg-primary border border-secondary rounded-lg overflow-hidden hover:bg-[#d5e4e1] transition-all flex flex-col"
               >
                 <div className="relative pb-[49.25%]">
                   <img
@@ -756,7 +756,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
                       </div>
                       <div className="w-full bg-gray-300 rounded-full h-2 overflow-hidden border border-secondary">
                         <div 
-                          className={`h-2 ${looseEnd.isCompleted ? 'bg-[#006400]' : 'bg-[#E17401]'}`}
+                          className={`h-2 ${looseEnd.isCompleted ? 'bg-[#006400]' : 'bg-fourth'}`}
                           style={{ width: `${looseEnd.progress.percentage}%` }}
                         ></div>
                       </div>

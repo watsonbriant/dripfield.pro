@@ -466,7 +466,7 @@ export default function FullSetlistDisplay({
           setlist={setlist}
         />
         {show.show_coachnotes && (
-          <div className="bg-primary border border-secondary rounded-lg p-4">
+          <div className="bg-primary border border-secondary rounded-lg p-3">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-semibold text-fifth">Show Notes</h2>
               <Pen className="text-fifth w-[1rem] h-[1rem]" />
