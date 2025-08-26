@@ -225,10 +225,10 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
   if (!isOpen || !change) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-primary border border-black rounded-lg p-4 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
+      <div className="bg-primary border border-secondary rounded-lg p-3 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
             {isNewChange ? 'Add Show Change' : 'Edit Show Change'}
           </h3>
           <div className="flex gap-2">
@@ -237,7 +237,7 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
                 <button
                   onClick={toggleEdit}
                   disabled={isSubmitting}
-                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
                 >
                   {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
                 </button>
@@ -256,9 +256,9 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
                   disabled={isSubmitting}
                   className={`flex items-center justify-center w-10 h-10 rounded-md border ${
                     isDeleteConfirming 
-                      ? 'bg-green-500 hover:bg-green-600 border-black' 
-                      : 'bg-red-500 hover:bg-red-600 border-black'
-                  } text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                      ? 'bg-green-500 hover:bg-green-600 border-secondary' 
+                      : 'bg-red-500 hover:bg-red-600 border-secondary'
+                  } text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                   title={isDeleteConfirming ? "Confirm Delete" : "Delete"}
                 >
                   {isDeleteConfirming ? (
@@ -273,7 +273,7 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
               <button
                 onClick={handleSaveChanges}
                 disabled={isSubmitting || !editedChange?.change_type || !editedChange?.change}
-                className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+                className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
               >
                 <Save className="w-5 h-5" />
                 {isSubmitting && <span className="ml-1">...</span>}
@@ -281,38 +281,38 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-canvas hover:bg-black/10 transition-colors border border-black"
+              className="flex items-center justify-center w-10 h-10 rounded-md bg-red-500 hover:bg-red-600 transition-colors border border-secondary"
             >
-              <X className="w-5 h-5 text-black" />
+              <X className="w-5 h-5 text-fifth" />
             </button>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           {/* Change Order */}
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-black">Order</label>
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-fifth">Order</label>
             <input
               type="number"
               name="change_order"
               value={editedChange?.change_order || ''}
               onChange={handleInputChange}
               readOnly={!isEditing && !isNewChange}
-              className={`w-full px-2 py-2 rounded-md border ${
-                isEditing || isNewChange ? 'border-black bg-canvas' : 'border-black bg-canvas/50'
-              } text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+              className={`w-full px-2 py-2 font-light rounded-md border ${
+                isEditing || isNewChange ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'
+              } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
             />
           </div>
 
           {/* Change Type */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-black">Type</label>
+            <label className="block text-sm font-medium text-fifth">Type</label>
             {isEditing || isNewChange ? (
               <select
                 name="change_type"
                 value={editedChange?.change_type || ''}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 required
               >
                 <option value="">Select a type...</option>
@@ -327,7 +327,7 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
                 type="text"
                 value={editedChange?.change_type || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 font-light rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               />
             )}
           </div>
@@ -335,14 +335,14 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
           {/* Change */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-semibold text-black">Change</label>
+              <label className="block text-sm font-medium text-fifth">Change</label>
               {(isEditing || isNewChange) && (
                 <div className="flex items-center gap-2">
                   {/* Songs Dropdown */}
                   <select
                     value={selectedSongId}
                     onChange={(e) => handleSongSelect(e.target.value)}
-                    className="px-2 py-1 w-48 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-xs"
+                    className="px-2 py-1 w-48 rounded-md border border-secondary font-light bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                   >
                     <option value="">Add song link...</option>
                     {songs.map((song) => (
@@ -356,7 +356,7 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
                   <button
                     type="button"
                     onClick={handleInsertArrow}
-                    className="px-2 py-1 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold border border-black"
+                    className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold border border-secondary"
                     title="Insert arrow"
                   >
                     →
@@ -372,14 +372,14 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
               rows={6}
               placeholder="Enter the change details..."
               className={`w-full px-2 py-2 rounded-md border ${
-                isEditing || isNewChange ? 'border-black bg-canvas' : 'border-black bg-canvas/50'
-              } text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm font-mono`}
+                isEditing || isNewChange ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'
+              } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-mono`}
             />
             {!isEditing && !isNewChange && editedChange?.change && (
-              <div className="mt-2 p-3 bg-canvas rounded-md border border-black/20">
-                <p className="text-xs text-black/60 mb-2">Rendered HTML:</p>
+              <div className="mt-2 p-3 bg-canvas rounded-md border border-secondary/20">
+                <p className="text-xs text-fifth/60 mb-2">Rendered HTML:</p>
                 <div 
-                  className="text-sm text-black [&_a]:font-semibold"
+                  className="text-sm font-light text-fifth [&_a]:font-medium"
                   dangerouslySetInnerHTML={{ __html: editedChange.change }}
                 />
               </div>

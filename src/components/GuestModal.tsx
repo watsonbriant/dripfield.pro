@@ -149,29 +149,29 @@ const GuestModal: React.FC<GuestModalProps> = ({
         className="fixed inset-0 bg-black/50 z-50"
         onClick={onClose}
       />
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-md md:w-full z-50 bg-primary rounded-lg border border-black shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-black/10">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-md md:w-full z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
+        <div className="flex items-center justify-between p-3 border-b border-secondary">
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
             {isNewGuest ? 'Add New Guest' : 'Edit Guest'}
           </h2>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
+            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
           >
-            <X className="w-5 h-5 text-black" />
+            <X className="w-5 h-5 text-fifth" />
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex-1 overflow-y-auto p-3">
+          <form onSubmit={handleSubmit} className="space-y-2">
             {error && (
-              <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-sm text-black">
+              <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-sm text-fifth">
                 {error}
               </div>
             )}
             
-            <div className="space-y-2">
-              <label htmlFor="guest" className="block text-sm font-semibold text-black">
+            <div className="space-y-1">
+              <label htmlFor="guest" className="block text-sm font-medium text-fifth">
                 Guest Name <span className="text-red-600">*</span>
               </label>
               <input
@@ -180,13 +180,13 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 required
               />
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="guest_displayname" className="block text-sm font-semibold text-black">
+            <div className="space-y-1">
+              <label htmlFor="guest_displayname" className="block text-sm font-medium text-fifth">
                 Display Name
               </label>
               <input
@@ -195,12 +195,12 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest_displayname || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               />
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="guest_instrument" className="block text-sm font-semibold text-black">
+            <div className="space-y-1">
+              <label htmlFor="guest_instrument" className="block text-sm font-medium text-fifth">
                 Instrument
               </label>
               <input
@@ -209,12 +209,12 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest_instrument || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               />
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="guest_category" className="block text-sm font-semibold text-black">
+            <div className="space-y-1">
+              <label htmlFor="guest_category" className="block text-sm font-medium text-fifth">
                 Category <span className="text-red-600">*</span>
               </label>
               <select
@@ -222,7 +222,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 name="guest_category"
                 value={formData.guest_category || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 required
               >
                 <option value="">-- Select Category --</option>
@@ -235,7 +235,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
             </div>
             
             {isNewGuest && (
-              <div className="text-xs text-black italic pt-2">
+              <div className="text-xs text-fifth italic pt-1">
                 Note: Canon ID will be automatically assigned based on the selected category.
               </div>
             )}
@@ -244,14 +244,14 @@ const GuestModal: React.FC<GuestModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-lg border border-black bg-white text-black hover:bg-gray-200 transition-colors text-sm"
+                className="px-2 py-1.5 rounded-lg border border-secondary bg-canvas text-fifth hover:bg-black/20 transition-colors text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 rounded-lg border border-black bg-[#f9ae37] text-black hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2 py-1.5 rounded-lg border border-secondary bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Saving...' : isNewGuest ? 'Add Guest' : 'Save Changes'}
               </button>

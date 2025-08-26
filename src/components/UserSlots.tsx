@@ -29,6 +29,17 @@ interface SlotData {
   [key: string]: string | SongEntryWithId[] | null;
 }
 
+const cleanSongName = (songName: string): string => {
+    return songName
+      .replace(/\[/g, '(')
+      .replace(/\]/g, ')')
+      .replace(/ñ/g, 'n')
+      .replace(/ü/g, 'u')
+      .replace(/–/g, '-')
+      .replace(/…/g, '...')
+      .replace(/∆/g, 'a');
+  };
+
 // CircularProgress component
 const CircularProgress = ({ value }: { value: number }) => {
   const radius = 40;
@@ -44,7 +55,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#dad0bc" 
+          stroke="#b4b2b2" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -53,7 +64,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#8ec1b6" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -62,7 +73,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-black">
+      <div className="absolute text-lg font-bold text-fifth">
         {Math.round(value)}%
       </div>
     </div>
@@ -435,9 +446,9 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
                   navigate(`/song/${songId}`);
                 }
               }}
-              className="font-semibold hover:text-[#a9682e] transition-colors text-black table-link cursor-pointer inline"
+              className="font-semibold hover:underline transition-colors text-fifth table-link cursor-pointer inline"
             >
-              {song.song}
+              {cleanSongName(song.song)}
             </a>
           </React.Fragment>
         ))}
@@ -498,50 +509,50 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
     return (
       <div className="flex flex-col justify-center items-center h-56">
         <CircularProgress value={loadingProgress} />
-        <p className="text-black mt-4">{getLoadingMessage()}</p>
+        <p className="text-fifth mt-4">{getLoadingMessage()}</p>
       </div>
     );
   }
 
   if (!effectiveUserId) {
     return (
-      <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
-        <p className="text-black">{getNoUserMessage()}</p>
+      <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+        <p className="text-fifth">{getNoUserMessage()}</p>
       </div>
     );
   }
 
   if (attendedShowIds.length === 0) {
     return (
-      <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
-        <p className="text-black">{getNoShowsMessage()}</p>
+      <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+        <p className="text-fifth">{getNoShowsMessage()}</p>
       </div>
     );
   }
 
   if (!hasSlotEntries) {
     return (
-      <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
-        <p className="text-black">{getNoSlotsMessage()}</p>
+      <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+        <p className="text-fifth">{getNoSlotsMessage()}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="bg-primary border border-black rounded-lg p-3">       
+      <div className="bg-primary border border-secondary rounded-lg p-3">       
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
             <thead>
               <tr className="bg-canvas border-y border-white/10">
                 <th 
-                  className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-black">
+                  className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-fifth">
                   Date
                 </th>
                 {activeColumns.map(column => (
                   <th 
                     key={column} 
-                    className="px-4 py-1 text-left text-s font-semibold text-white/90"
+                    className="px-4 py-1 text-left text-s font-semibold text-primary"
                     style={{ 
                       width: '190px',
                       minWidth: '190px',
@@ -563,13 +574,13 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
                   key={`slot-${slot.show_id}`}
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-black/10 transition-colors text-xs`}
+                  } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="w-[85px] min-w-[85px] px-4 py-1 text-black whitespace-nowrap">
-                    <span className="font-semibold">
+                  <td className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-fifth">
+                    <span className="font-medium">
                       <button
                         onClick={() => navigate(`/setlist/${slot.show_id}`)}
-                        className="hover:text-[#a9682e] transition-colors table-link"
+                        className="hover:underline transition-colors table-link"
                       >
                         {slot.Show_Date
                           .split('-')
@@ -582,7 +593,7 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
                   {activeColumns.map(column => (
                     <td 
                       key={`${slot.show_id}-${column}`} 
-                      className="px-4 py-1 text-left align-middle"
+                      className="px-4 py-1 text-left font-trad text-[0.875rem] leading-[0.75rem] align-middle"
                       style={{ 
                         width: '190px',
                         minWidth: '190px',

@@ -18,6 +18,17 @@ interface NotPlayedInTourProps {
   songIdMap: { [songName: string]: string };
 }
 
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
+
 const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, showIds, songIdMap }) => {
   const navigate = useNavigate();
   const [notPlayedSongs, setNotPlayedSongs] = useState<NotPlayedSong[]>([]);
@@ -164,38 +175,38 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
   }, [tourId, tourName, showIds]);
 
   return (
-    <div className="bg-primary border border-black rounded-lg p-3">
-      <h2 className="text-lg font-mohr bg-[#CE1126] text-white inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1.5">
+    <div className="bg-primary border border-secondary rounded-lg p-3">
+      <h2 className="text-lg font-semibold bg-[#CE1126] text-white inline-block px-3 rounded-lg border border-secondary mb-1.5">
         Most Common Not Played
       </h2>
       
       <div className={`${loading ? 'opacity-20' : ''} transition-opacity duration-300`}>
         {notPlayedSongs.length === 0 ? (
           <div className="text-center py-4">
-            <p className="text-black/70 text-xs">No historical songs to display.</p>
+            <p className="text-fifth/70 text-xs">No historical songs to display.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-y-auto max-h-64">
             <table className="w-full border-collapse">
               <tbody className="divide-y divide-white/5">
                 {notPlayedSongs.map((song, index) => (
                   <tr
                     key={song.song_id}
-                    className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors`}
+                    className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}
                   >
-                    <td className="pl-4 text-black text-xs">
+                    <td className="pl-4 text-fifth">
                       <div className="flex items-center justify-between">
                         <button
                           onClick={() => navigate(`/song/${song.song_id}`)}
-                          className="font-semibold hover:underline cursor-pointer text-left"
+                          className="font-trad text-fifth text-[1rem] leading-[1rem] pb-0.5 hover:underline cursor-pointer text-left"
                         >
-                          {song.song}
+                          {cleanSongName(song.song)}
                         </button>
                         {song.category_artwork && (
                           <img
                             src={song.category_artwork}
                             alt={`${song.song} artwork`}
-                            className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                            className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
                             onError={(e) => {
                               // Hide the image if it fails to load
                               (e.target as HTMLImageElement).style.display = 'none';
@@ -204,7 +215,7 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
                         )}
                       </div>
                     </td>
-                    <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black text-xs">
+                    <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                       {song.play_count}
                     </td>
                   </tr>

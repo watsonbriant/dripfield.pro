@@ -1,4 +1,3 @@
-import coachLogo from '../img/Coach.png';
 import { GiWhistle } from "react-icons/gi";
 
 interface ToggleSwitchProps {
@@ -13,8 +12,8 @@ const ToggleSwitch = ({ checked, onChange }: ToggleSwitchProps) => {
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-12 border border-black hover:bg-[#f9ae37]/40 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ec742e]/50 ${
-          checked ? 'bg-[#f9ae37]' : 'bg-primary'
+        className={`relative inline-flex h-6 w-[3.125rem] border border-secondary hover:bg-tertiary/40 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary/50 ${
+          checked ? 'bg-tertiary' : 'bg-primary'
         }`}
       >
         <span

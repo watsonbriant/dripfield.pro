@@ -100,6 +100,18 @@ export function SetlistGameShowPage() {
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
   const [activePill, setActivePill] = useState<'songs' | 'openers' | 'closers'>('songs');
 
+  // Add the cleanSongName function from Tours component
+  const cleanSongName = (songName: string): string => {
+    return songName
+      .replace(/\[/g, '(')
+      .replace(/\]/g, ')')
+      .replace(/ñ/g, 'n')
+      .replace(/ü/g, 'u')
+      .replace(/–/g, '-')
+      .replace(/…/g, '...')
+      .replace(/∆/g, 'a');
+  };
+
   // Fetch show details
   useEffect(() => {
     async function fetchShowDetails() {
@@ -904,9 +916,9 @@ export function SetlistGameShowPage() {
   return (
     <div className="max-w-[1280px] mx-auto">
       {/* Breadcrumbs */}
-      <div className="flex items-center mb-6 font-semibold text-sm text-black/70">
-        <Link to="/setlistgame" className="hover:text-[#a9682e] transition-colors">
-          <div className="flex items-center">
+      <div className="flex items-center mb-6 font-semibold text-sm text-fifth">
+        <Link to="/setlistgame" className="hover:underline transition-colors">
+          <div className="flex items-center bg-tertiary rounded-lg py-1 px-2 border border-secondary text-fifth">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Echo of a Show
           </div>
@@ -914,13 +926,13 @@ export function SetlistGameShowPage() {
         {show && show.show_tour && show.tours?.tour_id && (
           <>
             <ChevronRight className="w-4 h-4 mx-2" />
-            <Link to={`/setlistgame/tour/${show.tours.tour_id}`} className="hover:text-[#a9682e] transition-colors">
+            <Link to={`/setlistgame/tour/${show.tours.tour_id}`} className="hover:underline transition-colors bg-tertiary rounded-lg py-1 px-2 border border-secondary">
               {show.show_tour}
             </Link>
           </>
         )}
         <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-black">
+        <span className="text-fifth bg-canvas rounded-lg py-1 px-2 border border-secondary">
           {show ? `${formatDate(show.show_date)} – ${show.show_venue_location}` : 'Loading...'}
         </span>
       </div>
@@ -932,30 +944,30 @@ export function SetlistGameShowPage() {
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black/70 mt-4">Loading show details...</p>
+          <p className="text-fifth mt-4">Loading show details...</p>
         </div>
       ) : show ? (
         <div className="space-y-6">
           {/* Show Info Header */}
-          <div className="bg-primary border border-black rounded-lg p-4">
+          <div className="bg-primary border border-secondary rounded-lg p-3">
             <div className="flex flex-col items-center text-center md:flex-row md:justify-between md:items-center md:text-left">
               <div className="flex flex-col items-center md:items-start">
-                <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1 flex items-center gap-2">
+                <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-2">
                   {formatDate(show.show_date)}
                 </h2>
-                <h2 className="text-sm text-black/90">
+                <h2 className="text-sm font-medium text-fifth/90">
                   {show.show_subvenue}
                 </h2>
-                <p className="text-black/70 text-xs mb-1">
+                <p className="text-fifth font-light text-xs mb-0.5">
                   {show.show_venue_location}<br />
                 </p>
-                <p className="text-[#a9682e] text-xs font-semibold">
+                <p className="text-fourth text-xs font-medium">
                   {show.show_detail && show.show_detail}
                 </p>
               </div>
 
               <div className="mt-4 md:mt-0 flex flex-col items-center md:items-end">
-                <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-3">
+                <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-3 font-light">
                   {show.show_scored ? (
                     <div className="px-3 py-1.5 bg-blue-500/20 text-blue-700 rounded-md text-sm inline-block border border-blue-500/30">
                       Game Completed
@@ -974,7 +986,7 @@ export function SetlistGameShowPage() {
                   {user && userSubmission && (
                     <button
                       onClick={handleViewSubmission}
-                      className="px-3 py-1.5 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors text-sm border border-black"
+                      className="px-3 py-1.5 bg-tertiary hover:bg-tertiary/40 text-fifth font-medium rounded-md transition-colors text-sm border border-secondary"
                     >
                       {show.show_scored ? 'View My Results' : 'View My Picks'}
                     </button>
@@ -984,16 +996,16 @@ export function SetlistGameShowPage() {
             </div>
 
             {/* Players Stats */}
-            <div className="mt-6 flex flex-col items-center sm:flex-row sm:justify-between gap-4 pt-4 border-t border-black/10">
+            <div className="mt-3 flex flex-col items-center sm:flex-row sm:justify-between gap-3 pt-3 border-t border-secondary">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-black/60" />
-                <span className="text-sm text-black/90">
-                  <span className="font-semibold text-black">{totalPlayers}</span> {totalPlayers === 1 ? 'user' : 'users'} playing
+                <Users className="w-5 h-5 text-fifth/60" />
+                <span className="text-sm font-light text-fifth/90">
+                  <span className="font-medium text-fifth">{totalPlayers}</span> {totalPlayers === 1 ? 'user' : 'users'} playing
                 </span>
               </div>
 
               {show.show_tour && (
-                <div className="px-3 py-1 bg-secondary text-black font-semibold rounded-md text-sm border border-black">
+                <div className="px-3 py-1 bg-secondary text-fifth font-semibold rounded-md text-sm border border-secondary">
                   {show.show_tour}
                 </div>
               )}
@@ -1002,19 +1014,19 @@ export function SetlistGameShowPage() {
 
           {/* Main Content - Different sections based on show status */}
           {show.show_scored ? (
-            <div className="bg-primary border border-black rounded-lg p-4">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-black" />
+            <div className="bg-primary border border-secondary rounded-lg p-3">
+              <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-3 gap-2">
+                <Award className="w-5 h-5 text-fifth" />
                 <span>Standings</span>
               </h2>
 
               {standings.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-black/70">No standings available yet.</p>
+                  <p className="text-fifth">No standings available yet.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-                  <table className="w-full border-collapse min-w-max table-fixed">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse min-w-max table-fixed"> 
                     <colgroup>
                       <col className="w-12" /> {/* Rank column - narrow */}
                       <col className="w-44" /> {/* User column - flexible but with minimum width */}
@@ -1025,26 +1037,26 @@ export function SetlistGameShowPage() {
                       <col className="w-[65px] min-w-[65px]" /> {/* Show Closer */}
                     </colgroup>
                     <thead>
-                      <tr className="bg-canvas border-y border-black/10">
-                        <th className="px-1 py-2 text-left text-xs font-semibold text-black whitespace-nowrap text-center">
+                      <tr className="bg-canvas border-y border-secondary/10">
+                        <th className="px-1 py-2 text-left text-xs font-semibold text-fifth whitespace-nowrap text-center">
                           Rank
                         </th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-black whitespace-nowrap">
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-fifth whitespace-nowrap">
                           User
                         </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-black">
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
                           Total Points
                         </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-black">
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
                           Songs Picked
                         </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-black">
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
                           Sets Picked
                         </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-black">
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
                           Show Opener
                         </th>
-                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-black">
+                        <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
                           Show Closer
                         </th>
                       </tr>
@@ -1055,15 +1067,15 @@ export function SetlistGameShowPage() {
                           key={player.userId}
                           className={`
                         ${user && player.userId === user.id
-                              ? 'bg-[#f9ae37]/80 text-black'
+                              ? 'bg-tertiary/80 text-fifth'
                               : index % 2 === 0
                                 ? 'bg-primary'
                                 : 'bg-canvas'
                             } 
-                        hover:bg-black/10 transition-colors
+                        hover:bg-tertiary/40 transition-colors
                         `}
                         >
-                          <td className="px-1 py-0.5 text-xs text-center font-semibold"
+                          <td className="px-1 py-0.5 text-xs text-center font-medium"
                             style={{ color: 'black' }}>
                             {index + 1}
                           </td>
@@ -1071,20 +1083,20 @@ export function SetlistGameShowPage() {
                             style={{ color: 'black' }}>
                             <button
                               onClick={() => handleViewOtherUserSubmission(player.userId, player.username)}
-                              className="hover:underline hover:text-[#a9682e] transition-colors focus:outline-none"
+                              className="hover:underline transition-colors focus:outline-none"
                             >
                               {player.username}
                             </button>
                           </td>
-                          <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-semibold"
-                            style={{ color: '#a9682e' }}>
+                          <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-medium"
+                            style={{ color: '#8e6c7a' }}>
                             {player.totalPoints}
                           </td>
-                          <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center"
+                          <td className="px-0.5 py-0.5 whitespace-nowrap font-light text-xs text-center"
                             style={{ color: 'black' }}>
                             {player.songsPicked}
                           </td>
-                          <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center"
+                          <td className="px-0.5 py-0.5 whitespace-nowrap font-light text-xs text-center"
                             style={{ color: 'black' }}>
                             {player.setsPicked}
                           </td>
@@ -1110,36 +1122,36 @@ export function SetlistGameShowPage() {
               )}
             </div>
           ) : (
-            <div className="bg-primary border border-black rounded-lg p-6 text-center">
-              <div className="flex items-center justify-center mb-6">
+            <div className="bg-primary border border-secondary rounded-lg p-3 text-center">
+              <div className="flex items-center justify-center mb-2">
                 <List className="w-10 h-10 text-[#a9682e]" />
               </div>
 
               {show.isSelectionClosed ? (
                 <>
-                  <h2 className="text-xl font-semibold text-black mb-2">
+                  <h2 className="text-xl font-medium text-fifth mb-2">
                     Picks are closed for this show.
                   </h2>
-                  <p className="text-black/70 max-w-lg mx-auto">
+                  <p className="text-fifth max-w-lg mx-auto">
                     Check back later to see results after the setlist has been scored.
                   </p>
                 </>
               ) : (
                 <>
-                  <h2 className="text-lg font-semibold text-black mb-2">
+                  <h2 className="text-lg font-medium text-fifth mb-2">
                     Show is open for picks.
                   </h2>
                   {user ? (
                     <button
                       onClick={handleMakePicks}
-                      className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors border border-black"
+                      className="px-4 py-1 bg-tertiary hover:bg-tertiary/40 text-fifth font-medium rounded-md transition-colors border border-secondary"
                     >
                       {userSubmission ? 'Edit Picks' : 'Make Picks'}
                     </button>
                   ) : (
                     <Link
                       to="/login"
-                      className="px-4 py-2 bg-[#f9ae37]/50 hover:bg-[#f9ae37]/60 text-black font-medium rounded-md transition-colors inline-block border border-black/60"
+                      className="px-4 py-2 bg-[#f9ae37]/50 hover:bg-[#f9ae37]/60 text-fifth font-medium rounded-md transition-colors inline-block border border-secondary/60"
                     >
                       Login to Play
                     </Link>
@@ -1154,11 +1166,11 @@ export function SetlistGameShowPage() {
             {/* Mobile view container */}
             <div className="mb-6 lg:hidden">
               {/* Container for everything including heading, pills, and songs */}
-              <div className="bg-primary border border-black rounded-lg p-4">
+              <div className="bg-primary border border-secondary rounded-lg p-3">
               <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
                 {/* Top Picks heading */}
-                <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex px-3 pt-1 pb-0.5 rounded-full border border-black flex items-center gap-2">
-                  <MusicIcon className="w-5 h-5 text-black mb-0.5" />
+                <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap gap-2">
+                  <MusicIcon className="w-5 h-5 text-fifth mb-0.5" />
                   <span>Top Picks</span>
                 </h2>
 
@@ -1167,8 +1179,8 @@ export function SetlistGameShowPage() {
                   <button
                     onClick={() => setActivePill('songs')}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${activePill === 'songs'
-                        ? 'bg-tertiary text-white border-black'
-                        : 'bg-black/10 text-black/70 border-black/30 hover:bg-black/20'
+                        ? 'bg-fourth text-primary border-secondary'
+                        : 'bg-black/10 text-fifth border-secondary/30 hover:bg-black/20'
                       }`}
                   >
                     Songs
@@ -1176,8 +1188,8 @@ export function SetlistGameShowPage() {
                   <button
                     onClick={() => setActivePill('openers')}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${activePill === 'openers'
-                        ? 'bg-[#006400] text-white border-black'
-                        : 'bg-black/10 text-black/70 border-black/30 hover:bg-black/20'
+                        ? 'bg-[#006400] text-primary border-secondary'
+                        : 'bg-black/10 text-fifth border-secondary/30 hover:bg-black/20'
                       }`}
                   >
                     Openers
@@ -1185,8 +1197,8 @@ export function SetlistGameShowPage() {
                   <button
                     onClick={() => setActivePill('closers')}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${activePill === 'closers'
-                        ? 'bg-[#E17401] text-white border-black'
-                        : 'bg-black/10 text-black/70 border-black/30 hover:bg-black/20'
+                        ? 'bg-[#E17401] text-primary border-secondary'
+                        : 'bg-black/10 text-fifth border-secondary/30 hover:bg-black/20'
                       }`}
                   >
                     Closers
@@ -1195,12 +1207,12 @@ export function SetlistGameShowPage() {
                 </div>
 
                 {/* Content section */}
-                <div className="bg-[#f8e4c9] rounded-lg">
+                <div className="rounded-lg">
                   {activePill === 'songs' && (
                     <div className="space-y-1">
                       {topSongs.length === 0 ? (
                         <div className="text-center py-8">
-                          <p className="text-black/70">No song data available yet.</p>
+                          <p className="text-fifth">No song data available yet.</p>
                         </div>
                       ) : (
                         topSongs.map((song, index) => (
@@ -1209,14 +1221,14 @@ export function SetlistGameShowPage() {
                             className="flex items-center justify-between rounded-md bg-canvas"
                           >
                             <div className="flex items-center gap-3 flex-1">
-                              <span className="text-sm text-black bg-black/10 px-2 rounded font-semibold border border-black/10 min-w-[24px] text-center">
+                              <span className="text-sm text-fifth bg-black/10 px-2 rounded font-medium border border-secondary/10 min-w-[24px] text-center">
                                 {index + 1}
                               </span>
                               {song.category_artwork && (
                                 <img
                                   src={song.category_artwork}
                                   alt={`${song.song} artwork`}
-                                  className="w-6 h-6 rounded-full object-cover border border-black/20"
+                                  className="w-6 h-6 rounded-full object-cover border border-secondary/20"
                                   onError={(e) => {
                                     // Hide the image if it fails to load
                                     (e.target as HTMLImageElement).style.display = 'none';
@@ -1225,13 +1237,13 @@ export function SetlistGameShowPage() {
                               )}
                               <Link
                                 to={`/song/${song.song_id}`}
-                                className="text-black font-semibold text-sm hover:text-[#a9682e] transition-colors truncate"
+                                className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1 hover:underline transition-colors truncate"
                               >
-                                {song.song}
+                                {cleanSongName(song.song)}
                               </Link>
                             </div>
                             <div className="flex items-center">
-                              <span className="text-sm text-black bg-primary px-2 rounded font-semibold border border-black/10 min-w-[28px] text-center">
+                              <span className="text-sm text-fifth bg-primary px-2 rounded font-medium border border-secondary/10 min-w-[28px] text-center">
                                 {song.count}
                               </span>
                             </div>
@@ -1245,7 +1257,7 @@ export function SetlistGameShowPage() {
                     <div className="space-y-1">
                       {topOpeners.length === 0 ? (
                         <div className="text-center py-8">
-                          <p className="text-black/70">No opener data available yet.</p>
+                          <p className="text-fifth">No opener data available yet.</p>
                         </div>
                       ) : (
                         topOpeners.map((song, index) => (
@@ -1254,14 +1266,14 @@ export function SetlistGameShowPage() {
                             className="flex items-center justify-between rounded-md bg-canvas"
                           >
                             <div className="flex items-center gap-3 flex-1">
-                              <span className="text-sm text-black bg-black/10 px-2 rounded font-semibold border border-black/10 min-w-[24px] text-center">
+                              <span className="text-sm text-fifth bg-black/10 px-2 rounded font-medium border border-secondary/10 min-w-[24px] text-center">
                                 {index + 1}
                               </span>
                               {song.category_artwork && (
                                 <img
                                   src={song.category_artwork}
                                   alt={`${song.song} artwork`}
-                                  className="w-6 h-6 rounded-full object-cover border border-black/20"
+                                  className="w-6 h-6 rounded-full object-cover border border-secondary/20"
                                   onError={(e) => {
                                     // Hide the image if it fails to load
                                     (e.target as HTMLImageElement).style.display = 'none';
@@ -1270,13 +1282,13 @@ export function SetlistGameShowPage() {
                               )}
                               <Link
                                 to={`/song/${song.song_id}`}
-                                className="text-black font-semibold text-sm hover:text-[#a9682e] transition-colors truncate"
+                                className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1 hover:underline transition-colors truncate"
                               >
-                                {song.song}
+                                {cleanSongName(song.song)}
                               </Link>
                             </div>
                             <div className="flex items-center">
-                              <span className="text-sm text-black bg-primary px-2 rounded font-semibold border border-black/10 min-w-[28px] text-center">
+                              <span className="text-sm text-fifth bg-primary px-2 rounded font-medium border border-secondary/10 min-w-[28px] text-center">
                                 {song.count}
                               </span>
                             </div>
@@ -1290,7 +1302,7 @@ export function SetlistGameShowPage() {
                     <div className="space-y-1">
                       {topClosers.length === 0 ? (
                         <div className="text-center py-8">
-                          <p className="text-black/70">No closer data available yet.</p>
+                          <p className="text-fifth">No closer data available yet.</p>
                         </div>
                       ) : (
                         topClosers.map((song, index) => (
@@ -1299,14 +1311,14 @@ export function SetlistGameShowPage() {
                             className="flex items-center justify-between rounded-md bg-canvas"
                           >
                             <div className="flex items-center gap-3 flex-1">
-                              <span className="text-sm text-black bg-black/10 px-2 rounded font-semibold border border-black/10 min-w-[24px] text-center">
+                              <span className="text-sm text-fifth bg-black/10 px-2 rounded font-medium border border-secondary/10 min-w-[24px] text-center">
                                 {index + 1}
                               </span>
                               {song.category_artwork && (
                                 <img
                                   src={song.category_artwork}
                                   alt={`${song.song} artwork`}
-                                  className="w-6 h-6 rounded-full object-cover border border-black/20"
+                                  className="w-6 h-6 rounded-full object-cover border border-secondary/20"
                                   onError={(e) => {
                                     // Hide the image if it fails to load
                                     (e.target as HTMLImageElement).style.display = 'none';
@@ -1315,13 +1327,13 @@ export function SetlistGameShowPage() {
                               )}
                               <Link
                                 to={`/song/${song.song_id}`}
-                                className="text-black font-semibold text-sm hover:text-[#a9682e] transition-colors truncate"
+                                className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1 hover:underline transition-colors truncate"
                               >
-                                {song.song}
+                                {cleanSongName(song.song)}
                               </Link>
                             </div>
                             <div className="flex items-center">
-                              <span className="text-sm text-black bg-primary px-2 rounded font-semibold border border-black/10 min-w-[28px] text-center">
+                              <span className="text-sm text-fifth bg-primary px-2 rounded font-medium border border-secondary/10 min-w-[28px] text-center">
                                 {song.count}
                               </span>
                             </div>
@@ -1337,15 +1349,15 @@ export function SetlistGameShowPage() {
             {/* Desktop view - show grid layout with all three sections */}
             <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6">
               {/* Top Songs Picked */}
-              <div className="bg-primary border border-black rounded-lg p-4">
-                <h3 className="text-lg font-semibold bg-tertiary text-white inline-flex px-3 py-0.5 rounded-full border border-black mb-3 flex items-center gap-2">
-                  <MusicIcon className="w-4 h-4 text-white" />
+              <div className="bg-primary border border-secondary rounded-lg p-3">
+                <h3 className="text-lg font-semibold bg-fourth text-primary inline-flex px-3 py-0.5 rounded-lg border border-secondary mb-3 flex items-center gap-2">
+                  <MusicIcon className="w-4 h-4 text-primary" />
                   <span>Top Songs Picked</span>
                 </h3>
 
                 {topSongs.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-black/70 text-xs">No song data available yet.</p>
+                    <p className="text-fifth text-xs">No song data available yet.</p>
                   </div>
                 ) : (
                   <div className="space-y-1">
@@ -1355,14 +1367,14 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between rounded-md bg-canvas"
                       >
                         <div className="flex items-center gap-3 flex-1">
-                          <span className="text-sm text-black bg-black/10 px-2 rounded font-semibold border border-black/10">
+                          <span className="text-sm text-fifth bg-black/10 px-2 rounded font-medium border border-secondary/10">
                             {index + 1}
                           </span>
                           {song.category_artwork && (
                             <img
                               src={song.category_artwork}
                               alt={`${song.song} artwork`}
-                              className="w-6 h-6 rounded-full object-cover border border-black/20"
+                              className="w-6 h-6 rounded-full object-cover border border-secondary/20"
                               onError={(e) => {
                                 // Hide the image if it fails to load
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -1371,13 +1383,13 @@ export function SetlistGameShowPage() {
                           )}
                           <Link
                             to={`/song/${song.song_id}`}
-                            className="text-black font-semibold text-sm hover:text-[#a9682e] transition-colors truncate"
+                            className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1 hover:underline transition-colors truncate"
                           >
-                            {song.song}
+                            {cleanSongName(song.song)}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-black bg-primary px-2 rounded font-semibold border border-black/10">
+                          <span className="text-sm text-fifth bg-primary px-2 rounded font-medium border border-secondary/10">
                             {song.count}
                           </span>
                         </div>
@@ -1388,15 +1400,15 @@ export function SetlistGameShowPage() {
               </div>
 
               {/* Top Show Openers Picked */}
-              <div className="bg-primary border border-black rounded-lg p-4">
-                <h3 className="text-lg font-semibold bg-[#006400] text-white inline-flex px-3 py-0.5 rounded-full border border-black mb-3 flex items-center gap-2">
-                  <MusicIcon className="w-4 h-4 text-white" />
+              <div className="bg-primary border border-secondary rounded-lg p-3">
+                <h3 className="text-lg font-semibold bg-[#006400] text-primary inline-flex px-3 py-0.5 rounded-lg border border-secondary mb-3 flex items-center gap-2">
+                  <MusicIcon className="w-4 h-4 text-primary" />
                   <span>Top Show Openers</span>
                 </h3>
 
                 {topOpeners.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-black/70 text-xs">No opener data available yet.</p>
+                    <p className="text-fifth text-xs">No opener data available yet.</p>
                   </div>
                 ) : (
                   <div className="space-y-1">
@@ -1406,14 +1418,14 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between rounded-md bg-canvas"
                       >
                         <div className="flex items-center gap-3 flex-1">
-                          <span className="text-sm text-black bg-black/10 px-2 rounded font-semibold border border-black/10">
+                          <span className="text-sm text-fifth bg-black/10 px-2 rounded font-medium border border-secondary/10">
                             {index + 1}
                           </span>
                           {song.category_artwork && (
                             <img
                               src={song.category_artwork}
                               alt={`${song.song} artwork`}
-                              className="w-6 h-6 rounded-full object-cover border border-black/20"
+                              className="w-6 h-6 rounded-full object-cover border border-secondary/20"
                               onError={(e) => {
                                 // Hide the image if it fails to load
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -1422,13 +1434,13 @@ export function SetlistGameShowPage() {
                           )}
                           <Link
                             to={`/song/${song.song_id}`}
-                            className="text-black font-semibold text-sm hover:text-[#a9682e] transition-colors truncate"
+                            className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1 hover:underline transition-colors truncate"
                           >
-                            {song.song}
+                            {cleanSongName(song.song)}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-black bg-primary px-2 rounded font-semibold border border-black/10">
+                          <span className="text-sm text-fifth bg-primary px-2 rounded font-medium border border-secondary/10">
                             {song.count}
                           </span>
                         </div>
@@ -1439,15 +1451,15 @@ export function SetlistGameShowPage() {
               </div>
 
               {/* Top Show Closers Picked */}
-              <div className="bg-primary border border-black rounded-lg p-4">
-                <h3 className="text-lg font-semibold bg-[#E17401] text-white inline-flex px-3 py-0.5 rounded-full border border-black mb-3 flex items-center gap-2">
-                  <MusicIcon className="w-4 h-4 text-white" />
+              <div className="bg-primary border border-secondary rounded-lg p-3">
+                <h3 className="text-lg font-semibold bg-[#E17401] text-primary inline-flex px-3 py-0.5 rounded-lg border border-secondary mb-3 flex items-center gap-2">
+                  <MusicIcon className="w-4 h-4 text-primary" />
                   <span>Top Show Closers</span>
                 </h3>
 
                 {topClosers.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-black/70 text-xs">No closer data available yet.</p>
+                    <p className="text-fifth text-xs">No closer data available yet.</p>
                   </div>
                 ) : (
                   <div className="space-y-1">
@@ -1457,14 +1469,14 @@ export function SetlistGameShowPage() {
                         className="flex items-center justify-between rounded-md bg-canvas"
                       >
                         <div className="flex items-center gap-3 flex-1">
-                          <span className="text-sm text-black bg-black/10 px-2 rounded font-semibold border border-black/10">
+                          <span className="text-sm text-fifth bg-black/10 px-2 rounded font-medium border border-secondary/10">
                             {index + 1}
                           </span>
                           {song.category_artwork && (
                             <img
                               src={song.category_artwork}
                               alt={`${song.song} artwork`}
-                              className="w-6 h-6 rounded-full object-cover border border-black/20"
+                              className="w-6 h-6 rounded-full object-cover border border-secondary/20"
                               onError={(e) => {
                                 // Hide the image if it fails to load
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -1473,13 +1485,13 @@ export function SetlistGameShowPage() {
                           )}
                           <Link
                             to={`/song/${song.song_id}`}
-                            className="text-black font-semibold text-sm hover:text-[#a9682e] transition-colors truncate"
+                            className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1 hover:underline transition-colors truncate"
                           >
-                            {song.song}
+                            {cleanSongName(song.song)}
                           </Link>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-black bg-primary px-2 rounded font-semibold border border-black/10">
+                          <span className="text-sm text-fifth bg-primary px-2 rounded font-medium border border-secondary/10">
                             {song.count}
                           </span>
                         </div>
@@ -1492,8 +1504,8 @@ export function SetlistGameShowPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-primary border border-black rounded-lg p-6 text-center">
-          <p className="text-black/70">Show not found.</p>
+        <div className="bg-primary border border-secondary rounded-lg p-3 text-center">
+          <p className="text-fifth">Show not found.</p>
         </div>
       )}
 

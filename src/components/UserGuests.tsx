@@ -42,7 +42,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#8ec1b6" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -51,7 +51,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-black">
+      <div className="absolute text-lg font-bold text-fifth">
         {Math.round(value)}%
       </div>
     </div>
@@ -434,14 +434,14 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
     return (
       <div className="flex flex-col justify-center items-center h-56">
         <CircularProgress value={loadingProgress} />
-        <p className="text-black mt-4">{getLoadingMessage()}</p>
+        <p className="text-fifth mt-4">{getLoadingMessage()}</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-primary p-4 rounded-lg border border-black">
+      <div className="bg-primary p-3 rounded-lg border border-secondary">
         <div className="text-center text-red-500 py-8">{getErrorMessage()}</div>
       </div>
     );
@@ -449,8 +449,8 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
 
   if (Object.keys(guestsByCategory).length === 0) {
     return (
-      <div className="bg-primary p-4 rounded-lg border border-black">
-        <div className="text-center text-black py-12">
+      <div className="bg-primary p-3 rounded-lg border border-secondary">
+        <div className="text-center text-fifth py-12">
           <p>{getEmptyStateMessage()}</p>
         </div>
       </div>
@@ -490,16 +490,16 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
     }
     
     return (
-      <div className="mb-6 bg-primary p-4 rounded-lg border border-black" key={category}>
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">{displayName}</h2>
+      <div className="bg-primary p-3 rounded-lg border border-secondary" key={category}>
+        <h2 className="text-lg font-medium bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">{displayName}</h2>
       
         <div className="overflow-x-auto relative">
           <table className="w-full border-collapse table-fixed">
             <thead>
               <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap w-[40%]">Guest</th>
-                <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-[30%]"># of Songs</th>
-                <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-[30%]"># of Shows</th>
+                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap w-[40%]">Guest</th>
+                <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-[30%]"># of Songs</th>
+                <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-[30%]"># of Shows</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -508,18 +508,18 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
                   key={guest.guest_id}
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-black/10 transition-colors text-xs`}
+                  } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <button
                       onClick={() => navigate(`/guest/${guest.guest_id}`)}
-                      className="font-semibold hover:text-[#a9682e] hover:underline transition-colors"
+                      className="font-medium hover:underline transition-colors"
                     >
                       {guest.guest}
                     </button>
                   </td>
-                  <td className="px-4 py-0.5 text-center text-black whitespace-nowrap">{guest.song_count}</td>
-                  <td className="px-4 py-0.5 text-center text-black whitespace-nowrap">{guest.show_count}</td>
+                  <td className="px-4 py-0.5 text-center text-fifth font-light whitespace-nowrap">{guest.song_count}</td>
+                  <td className="px-4 py-0.5 text-center text-fifth font-light whitespace-nowrap">{guest.show_count}</td>
                 </tr>
               ))}
             </tbody>

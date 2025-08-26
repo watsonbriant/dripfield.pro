@@ -113,6 +113,17 @@ export function Tours() {
     songName: ''
   });
 
+  const cleanSongName = (songName: string): string => {
+    return songName
+      .replace(/\[/g, '(')
+      .replace(/\]/g, ')')
+      .replace(/ñ/g, 'n')
+      .replace(/ü/g, 'u')
+      .replace(/–/g, '-')
+      .replace(/…/g, '...')
+      .replace(/∆/g, 'a');
+  };
+
   const getRarityColor = (percentage: string | null): string => {
     // If percentage is null or not a valid percentage string, return transparent
     if (!percentage || percentage === '-') return 'transparent';
@@ -337,8 +348,8 @@ export function Tours() {
       return null;
     }
     return sortDirection === 'asc' ?
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" /> :
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-fifth" /> :
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-fifth" />;
   };
 
   const sortData = (data: Show[]) => {
@@ -957,11 +968,11 @@ export function Tours() {
                   songName: song.song
                 });
               }}
-              className={`font-semibold hover:text-[#a9682e] transition-colors text-black table-link cursor-pointer inline ${
+              className={`text-fifth text-[0.875rem] leading-[0.75rem] font-trad transition-colors text-fifth table-link cursor-pointer inline ${
                 index < songs.length - 1 ? 'mr-1' : ''
               }`}
             >
-              {song.song}
+              {cleanSongName(song.song)}
             </a>
           </React.Fragment>
         ))}
@@ -973,12 +984,12 @@ export function Tours() {
   if (isLoading) {
     return (
       <div className="max-w-[1280px] mx-auto">
-        <div className="flex justify-between mb-6">
-          <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Tours</h1>
+        <div className="flex justify-between mb-6 items-center">
+          <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Tours</h1>
           <div className="relative" ref={dropdownRef}>
             <div className="hidden md:block">
               <button
-                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black transition-colors text-base font-mohr"
+                className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
               >
                 {currentTour}
                 <ChevronDown className="w-4 h-4" />
@@ -986,13 +997,13 @@ export function Tours() {
             </div>
           </div>
         </div>
-        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading tour data...</p>
+          <p className="text-fifth mt-4">Loading tour data...</p>
         </div>
       </div>
     );
@@ -1002,12 +1013,12 @@ export function Tours() {
   if (tours.length === 0) {
     return (
       <div className="max-w-[1280px] mx-auto">
-        <div className="flex justify-between mb-6">
-          <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Tours</h1>
+        <div className="flex justify-between mb-6 items-center">
+          <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Tours</h1>
           <div className="relative" ref={dropdownRef}>
             <div className="hidden md:block">
               <button
-                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black transition-colors text-base font-mohr"
+                className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
               >
                 Select Tour
                 <ChevronDown className="w-4 h-4" />
@@ -1015,8 +1026,8 @@ export function Tours() {
             </div>
           </div>
         </div>
-        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
-          <p className="text-black">No tours found</p>
+        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+          <p className="text-fifth">No tours found</p>
         </div>
       </div>
     );
@@ -1025,13 +1036,13 @@ export function Tours() {
   // Return statement of the Tours component
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Tours</h1>
+      <div className="flex justify-between mb-6 items-center">
+        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Tours</h1>
         <div className="relative" ref={dropdownRef}>
           <div className="md:hidden">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#fce7ca]/90 transition-colors border border-black"
+              className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
             >
               <Search className="w-6 h-6" />
             </button>
@@ -1041,7 +1052,7 @@ export function Tours() {
               title="Select Tour"
             >
               <div className="space-y-0">
-                <div className="divide-y divide-black/10">
+                <div className="divide-y divide-white/10">
                   {tours.map((tour) => (
                     <button
                       key={tour.tour}
@@ -1051,9 +1062,9 @@ export function Tours() {
                         navigate(`/tours/${tour.tour_id}`);
                         setIsModalOpen(false);
                       }}
-                      className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
+                      className="w-full text-left px-4 py-1 text-sm font-semibold hover:bg-secondary transition-colors"
                     >
-                      <span className="text-black">{tour.tour}</span>
+                      <span className="text-fifth">{tour.tour}</span>
                     </button>
                   ))}
                 </div>
@@ -1063,7 +1074,7 @@ export function Tours() {
           <div className="hidden md:block">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
+              className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
             >
               {currentTour}
               <ChevronDown className="w-4 h-4" />
@@ -1072,8 +1083,9 @@ export function Tours() {
           {isDropdownOpen && (
             <div
               ref={dropdownListRef}
-              className={`absolute py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-64 max-h-96'
-                }`}
+              className={`absolute py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto ${
+                window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-80 max-h-96'
+              }`}
             >
               {tours.map((tour) => (
                 <button
@@ -1084,8 +1096,9 @@ export function Tours() {
                     navigate(`/tours/${tour.tour_id}`);
                     setIsDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${currentTour === tour.tour ? 'bg-[#f9ae37]' : ''
-                    }`}
+                  className={`w-full text-left px-4 py-1 text-sm font-medium hover:bg-secondary transition-colors ${
+                    currentTour === tour.tour ? 'bg-tertiary' : ''
+                  }`}
                 >
                   {tour.tour}
                 </button>
@@ -1096,17 +1109,17 @@ export function Tours() {
       </div>
 
       {shows.length === 0 ? (
-        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
-          <p className="text-black">No shows found for {currentTour}</p>
+        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+          <p className="text-fifth">No shows found for {currentTour}</p>
         </div>
       ) : (
         <div className="mt-6">
-          <div className="bg-primary border border-black rounded-lg p-3">
+          <div className="bg-primary border border-secondary rounded-lg p-3">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+              <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
                 {currentTour}
               </h2>
-              <span className="text-black font-semibold text-lg">{shows.length} {shows.length === 1 ? 'Show' : 'Shows'}</span>
+              <span className="text-fifth font-semibold text-lg">{shows.length} {shows.length === 1 ? 'Show' : 'Shows'}</span>
             </div>
 
             <div className="overflow-x-auto">
@@ -1115,14 +1128,14 @@ export function Tours() {
                   <tr className="bg-canvas border-y border-white/10">
                     {[
                       { key: 'show_date', label: 'Date' },
-                      ...(user ? [{ key: 'attended', label: <Check size={16} className="text-black" strokeWidth={4} /> }] : []),
-                      { key: 'setlist', label: <FileMusic size={16} className="text-black" strokeWidth={2} /> },
+                      ...(user ? [{ key: 'attended', label: <Check size={16} className="text-fifth" strokeWidth={4} /> }] : []),
+                      { key: 'setlist', label: <FileMusic size={16} className="text-fifth" strokeWidth={2} /> },
                       { key: 'show_group', label: 'Group' },
                       { key: 'show_length', label: 'Length' },
                       { key: 'show_rarity', label: 'Rarity' },
                       { key: 'show_subvenue', label: 'Venue' },
                       { key: 'show_venue_location', label: 'Location' },
-                      { key: 'users', label: <Users size={16} className="text-black" strokeWidth={2} /> },
+                      { key: 'users', label: <Users size={16} className="text-fifth" strokeWidth={2} /> },
                       { key: 'wl_link', label: <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" /> },
                       { key: 'show_detail', label: 'Detail' }
                     ].map(({ key, label }) => (
@@ -1130,7 +1143,7 @@ export function Tours() {
                         key={key}
                         onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'users' ? handleSort(key) : null}
                         className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'text-center' : 'text-left'} 
-                          text-s font-semibold text-black whitespace-nowrap 
+                          text-s font-semibold text-fifth whitespace-nowrap 
                           ${key !== 'attended' && key !== 'setlist' && key !== 'users' && key !== 'wl_link' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
                       >
                         <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'setlist' || key === 'users' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
@@ -1146,13 +1159,13 @@ export function Tours() {
                     <tr
                       key={show.show_id}
                       className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                        } hover:bg-black/10 transition-colors text-xs`}
+                        } hover:bg-tertiary/40 transition-colors text-xs`}
                     >
-                      <td className="px-4 py-0.5 text-black text-center whitespace-nowrap">
-                        <span className="font-semibold">
+                      <td className="px-4 py-0.5 text-center whitespace-nowrap">
+                        <span className="font-medium text-fifth">
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-[#a9682e] transition-colors table-link"
+                            className="transition-colors table-link"
                           >
                             {show.show_date
                               .split('-')
@@ -1166,7 +1179,7 @@ export function Tours() {
                         <td className="w-8 text-center">
                           {show.attended && (
                             <div className="flex justify-center items-center h-full">
-                              <div className="rounded-full p-0.5 bg-green-600">
+                              <div className="rounded-lg p-0.5 bg-green-600">
                                 <Check size={12} className="text-white" strokeWidth={3} />
                               </div>
                             </div>
@@ -1181,21 +1194,21 @@ export function Tours() {
                                 // Navigate with a state parameter to open the modal
                                 navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
                               }}
-                              className="hover:text-[#a9682e] hover:bg-[#f9ae37] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                              className="hover:text-fifth hover:bg-tertiary hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
                             >
-                              <FileMusic size={14.5} className="text-black" strokeWidth={2} />
+                              <FileMusic size={14.5} className="text-fifth" strokeWidth={2} />
                             </button>
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_group}</td>
-                      <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap text-center">
                         {show.show_length || ''}
                       </td>
                       <td className="px-4 py-0 whitespace-nowrap text-center">
                         {show.show_rarity ? (
                           <span
-                            className="text-white font-medium px-2 py-0.5 rounded-md inline-block"
+                            className="text-white font-normal px-2 py-0.5 rounded-md inline-block"
                             style={{
                               backgroundColor: getRarityColor(show.show_rarity)
                             }}
@@ -1203,23 +1216,23 @@ export function Tours() {
                             {show.show_rarity}
                           </span>
                         ) : (
-                          <span className="text-black"></span>
+                          <span className="text-fifth"></span>
                         )}
                       </td>
-                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                         <button
                           onClick={() => navigateToVenue(show)}
-                          className="hover:text-[#a9682e] hover:underline transition-colors"
+                          className="hover:underline transition-colors"
                         >
                           {show.show_subvenue}
                         </button>
                       </td>
-                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                         {show.show_venue_location}
                       </td>
-                      <td className="w-8 text-center text-black">
+                      <td className="w-8 text-center text-fifth">
                         {attendeeCounts[show.show_id] > 0 && (
-                          <span className="text-xs font-semibold">{attendeeCounts[show.show_id]}</span>
+                          <span className="text-xs font-medium">{attendeeCounts[show.show_id]}</span>
                         )}
                       </td>
                       <td className="w-8 text-center align-middle">
@@ -1234,7 +1247,7 @@ export function Tours() {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                         {show.show_detail && show.show_detail}
                         {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
                         {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
@@ -1250,8 +1263,8 @@ export function Tours() {
 
       {shows.length > 0 && hasSlotEntries && (
         <div className="mt-6">
-          <div className="bg-primary border border-black rounded-lg p-3">
-            <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+          <div className="bg-primary border border-secondary rounded-lg p-3">
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary mb-2">
               Slots
             </h2>
 
@@ -1260,13 +1273,13 @@ export function Tours() {
                 <thead>
                   <tr className="bg-canvas border-y border-white/10">
                     <th
-                      className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-black">
+                      className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-fifth">
                       Date
                     </th>
                     {activeColumns.map(column => (
                       <th
                         key={column}
-                        className="px-4 py-1 text-left text-s font-semibold text-white/90"
+                        className="px-4 py-1 text-left text-s font-semibold text-primary"
                         style={{
                           width: '190px',
                           minWidth: '190px',
@@ -1287,13 +1300,13 @@ export function Tours() {
                     <tr
                       key={`slot-${slot.show_id}`}
                       className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                        } hover:bg-black/10 transition-colors text-xs`}
+                        } hover:bg-tertiary/40 transition-colors text-xs`}
                     >
-                      <td className="w-[85px] min-w-[85px] px-4 py-1 text-black whitespace-nowrap">
-                        <span className="font-semibold">
+                      <td className="w-[85px] min-w-[85px] px-4 py-1 whitespace-nowrap">
+                        <span className="font-medium text-fifth">
                           <button
                             onClick={() => navigate(`/setlist/${slot.show_id}`)}
-                            className="hover:text-[#a9682e] transition-colors table-link"
+                            className="transition-colors table-link"
                           >
                             {slot.Show_Date
                               .split('-')
@@ -1306,7 +1319,7 @@ export function Tours() {
                       {activeColumns.map(column => (
                         <td
                           key={`${slot.show_id}-${column}`}
-                          className="px-4 py-1 text-left align-middle"
+                          className="px-4 py-0.5 text-left align-middle"
                           style={{
                             width: '190px',
                             minWidth: '190px',

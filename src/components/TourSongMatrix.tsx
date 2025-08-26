@@ -28,6 +28,17 @@ interface SongData {
   categoryCanonId: number;
 }
 
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
+
 const TourSongMatrix: React.FC<SongSpreadProps> = ({ 
   shows, 
   songIdMap = {}, 
@@ -395,10 +406,9 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">Song Matrix</h2>
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="flex justify-center items-center h-40">
-          <div className="animate-pulse text-black">Loading song matrix...</div>
+          <div className="animate-pulse text-fifth">Loading song matrix...</div>
         </div>
       </div>
     );
@@ -406,8 +416,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
 
   if (errorMessage) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">Song Matrix</h2>
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="text-center py-6 text-red-500">{errorMessage}</div>
       </div>
     );
@@ -415,17 +424,16 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
 
   if (songMatrix.songs.length === 0) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">Song Matrix</h2>
-        <div className="text-center py-6 text-black">No song data available for this tour</div>
+      <div className="bg-primary border border-secondary rounded-lg p-3">
+        <div className="text-center py-6 text-fifth">No song data available for this tour</div>
       </div>
     );
   }
 
   return (
-    <div className={`${!hideTitle ? "bg-primary border border-black rounded-lg p-3" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-secondary mb-4">
           {songMatrix.songs.length} Songs Played
         </h2>
       )}
@@ -433,8 +441,8 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
       <div className="overflow-x-auto" style={{ overflowY: 'auto' }}>
         <table className="w-full border-collapse min-w-max">
           <thead>
-            <tr className="bg-canvas border-y border-[#d9c3a5]">
-              <th className="px-2 py-1 text-left text-xs font-bold text-black border-l border-r border-black/10">
+            <tr className="bg-canvas border-y border-secondary">
+              <th className="px-2 py-1 text-left text-xs font-medium text-fifth border-l border-r border-secondary">
                 Song
               </th>
               {songMatrix.showDates.map((date, index) => {
@@ -444,7 +452,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
                 return (
                   <th 
                     key={index} 
-                    className="px-1 py-1 text-center text-xs font-semibold text-black whitespace-nowrap border-l border-r border-black/10" 
+                    className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border-l border-r border-secondary" 
                     style={{ width: 'min-content' }}
                   >
                     <button 
@@ -465,10 +473,10 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
               return (
                 <tr 
                   key={song} 
-                  className={songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'}
+                  className={`${songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40`}
                 >
-                  <td className="px-2 py-0.5 text-black whitespace-nowrap font-semibold text-xs border"
-                    style={{ borderColor: 'rgb(217, 195, 165)' }}>
+                  <td className="font-trad text-fifth text-[.875rem] leading-[1rem] pb-1 pl-2 whitespace-nowrap font-trad border"
+                    style={{ borderColor: 'rgb(180, 178, 178)' }}>
                     <button 
                       onClick={() => {
                         setModalSongData({
@@ -476,9 +484,9 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
                           songName: song
                         });
                       }}
-                      className="hover:text-[#a9682e] transition-colors cursor-pointer"
+                      className="hover:underline transition-colors cursor-pointer"
                     >
-                      {song}
+                      {cleanSongName(song)}
                     </button>
                   </td>
                   
@@ -490,10 +498,10 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
                       <td 
                         key={`${song}-${show.show_id}`} 
                         className="text-center border"
-                        style={{ backgroundColor: bgColor, borderColor: 'rgb(217, 195, 165)' }}
+                        style={{ backgroundColor: bgColor, borderColor: 'rgb(180, 178, 178)' }}
                       >
                         {performance && (
-                          <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
+                          <div className="w-full h-full flex items-center justify-center text-white text-xs font-medium">
                             {performance.tourAppearanceCount}
                           </div>
                         )}

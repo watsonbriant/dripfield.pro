@@ -100,6 +100,17 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
         return a.placement.localeCompare(b.placement);
     });
 
+    // Adjust percentages to ensure they sum to 100%
+    const adjustedStats = sortedStats.map((stat, index) => {
+        if (index === sortedStats.length - 1) {
+            return {
+                ...stat,
+                percentage: stat.percentage
+            };
+        }
+        return stat;
+    });
+
     // Sort by count for the "all stats" tooltip (most common first)
     const statsForDisplay = [...placementStats].sort((a, b) => {
         // If both have order, sort by order
@@ -117,33 +128,15 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
         <>
             <style>{tooltipStyles}</style>
             <div>
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex justify-between items-center mb-0.5">
                     <div className="flex items-center">
-                        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
-                            Set Placements
-                        </h2>
-                        {/* Info icon moved inline with heading */}
-                        <button
-                            className="ml-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black text-xs font-semibold p-2 rounded-full flex items-center justify-center border border-black z-10 stats-toggle-button"
-                            onMouseEnter={(e) => {
-                                setShowAllStats(true);
-                                setMousePosition({ x: e.clientX, y: e.clientY });
-                            }}
-                            onMouseMove={(e) => {
-                                setMousePosition({ x: e.clientX, y: e.clientY });
-                            }}
-                            onMouseLeave={() => {
-                                setShowAllStats(false);
-                            }}
-                        >
-                            <ChartBarDecreasing className="w-4 h-4" />
-                        </button>
+                        <div className="text-fifth text-base font-medium mb-1">Set Placements</div>
                     </div>
                 </div>
 
-                <div className="relative">
-                    <div className="flex overflow-hidden h-8 rounded-full border border-black">
-                        {sortedStats.map((stat, index) => {
+                <div className="relative flex items-center">
+                    <div className="flex overflow-hidden h-8 rounded-lg border border-secondary flex-1" style={{gap: 0}}>
+                        {adjustedStats.map((stat, index) => {
                             const minWidth = stat.percentage < 5 ? '5px' : undefined;
                             return (
                                 <div
@@ -154,7 +147,7 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                                         backgroundColor: placementColors[stat.placement] || '#000000',
                                         minWidth: minWidth
                                     }}
-                                    className="h-full flex items-center justify-center text-white text-xs font-bold transition-all hover:opacity-90 cursor-pointer relative"
+                                    className="h-full flex items-center justify-center text-primary text-xs font-bold transition-all hover:opacity-70 cursor-pointer relative"
                                     onMouseEnter={(e) => {
                                         setHoveredSection(stat);
                                         setMousePosition({ x: e.clientX, y: e.clientY });
@@ -170,12 +163,27 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                             );
                         })}
                     </div>
+                    <button
+                        className="ml-2 bg-tertiary hover:bg-primary text-fifth text-xs font-semibold p-1.5 rounded-lg flex items-center justify-center border border-secondary z-10 stats-toggle-button flex-shrink-0"
+                        onMouseEnter={(e) => {
+                            setShowAllStats(true);
+                            setMousePosition({ x: e.clientX, y: e.clientY });
+                        }}
+                        onMouseMove={(e) => {
+                            setMousePosition({ x: e.clientX, y: e.clientY });
+                        }}
+                        onMouseLeave={() => {
+                            setShowAllStats(false);
+                        }}
+                    >
+                        <ChartBarDecreasing className="w-4 h-4" />
+                    </button>
                 </div>
 
                 {/* Tooltip for hovered section */}
                 {hoveredSection && (
                     <div
-                        className="fixed bg-secondary text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+                        className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
                         style={{
                             left: `${mousePosition.x + 10}px`,
                             top: `${mousePosition.y - 10}px`,
@@ -185,10 +193,10 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                             backgroundColor: 'tertiary'
                         }}
                     >
-                        <div className="space-y-0.5">
-                            <div className="font-bold">{hoveredSection.placement}</div>
-                            <div>Times played: <span className="font-semibold">&nbsp;&nbsp;{hoveredSection.count}</span></div>
-                            <div>Percentage: <span className="font-semibold">&nbsp;&nbsp;{hoveredSection.percentage.toFixed(1)}%</span></div>
+                        <div className='font-light'>
+                            <div className="font-medium">{hoveredSection.placement}</div>
+                            <div>Times played: <span className="font-medium">&nbsp;&nbsp;{hoveredSection.count}</span></div>
+                            <div>Percentage: <span className="font-medium">&nbsp;&nbsp;{hoveredSection.percentage.toFixed(1)}%</span></div>
                         </div>
                     </div>
                 )}
@@ -196,7 +204,7 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                 {/* All Stats Tooltip - use same positioning as section tooltips */}
                 {showAllStats && (
                     <div
-                        className="fixed bg-secondary text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+                        className="fixed bg-tertiary text-fifth px-2 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
                         style={{
                             left: `${mousePosition.x + 10}px`,
                             top: `${mousePosition.y - 10}px`,
@@ -206,16 +214,19 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                             backgroundColor: 'tertiary'
                         }}
                     >
-                        <div className="space-y-1 max-h-[300px] overflow-y-auto">
+                        <div className="max-h-[300px] overflow-y-auto">
                             {statsForDisplay.map((stat, index) => (
-                                <div key={index} className="flex items-center">
-                                    <div
-                                        className="w-3 h-3 mr-2 flex-shrink-0"
-                                        style={{ backgroundColor: placementColors[stat.placement] || '#000000' }}
-                                    ></div>
-                                    <div className="flex justify-between w-full">
+                                <div key={index} className="flex items-center justify-between font-light">
+                                    <div className="flex items-center">
+                                        <div
+                                            className="w-3 h-3 mr-2 flex-shrink-0 rounded-sm"
+                                            style={{ backgroundColor: placementColors[stat.placement] || '#000000' }}
+                                        ></div>
                                         <span>{stat.placement}:</span>
-                                        <span className="font-semibold ml-4">{stat.count} ({stat.percentage.toFixed(1)}%)</span>
+                                    </div>
+                                    <div className="flex items-center ml-4">
+                                        <span className="font-medium">{stat.count}</span>
+                                        <span className="font-normal ml-1">({stat.percentage.toFixed(1)}%)</span>
                                     </div>
                                 </div>
                             ))}
@@ -224,8 +235,8 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                 )}
 
                 {/* Mobile stats display - shows below the pill on mobile */}
-                <div className="mobile-stats-container mt-4 bg-canvas text-black px-3 py-2 rounded border border-black hidden">
-                    <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
+                <div className="mobile-stats-container mt-3 bg-canvas text-fifth px-3 py-2 rounded border border-secondary hidden">
+                    <div className="space-y-1 max-h-[300px] overflow-y-auto">
                         {statsForDisplay.map((stat, index) => (
                             <div key={index} className="flex items-center">
                                 <div
@@ -233,9 +244,12 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                                     style={{ backgroundColor: placementColors[stat.placement] || '#000000' }}
                                 ></div>
                                 <div className="flex justify-between w-full text-xs">
-                                    <span>{stat.placement}:</span>
-                                    <span className="font-semibold ml-4">{stat.count}&nbsp;&nbsp;({stat.percentage.toFixed(1)}%)</span>
-                                </div>
+                                    <span className='font-light'>{stat.placement}:</span>
+                                    <div className="flex items-center ml-4">
+                                        <span className="font-medium">{stat.count}</span>
+                                        <span className="font-normal ml-1">({stat.percentage.toFixed(1)}%)</span>
+                                    </div>
+                                </div> 
                             </div>
                         ))}
                     </div>

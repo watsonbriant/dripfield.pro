@@ -37,52 +37,64 @@ const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber,
     onMatchupClick(team1, team2, regionColor);
   };
 
+  // Clean song names for display
+  const cleanSongName = (songName: string): string => {
+    return songName
+      .replace(/\[/g, '(')
+      .replace(/\]/g, ')')
+      .replace(/ñ/g, 'n')
+      .replace(/ü/g, 'u')
+      .replace(/–/g, '-')
+      .replace(/…/g, '...')
+      .replace(/∆/g, 'a');
+  };
+
   return (
     <div>
-      <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
+      <div className="bg-canvas border border-secondary/50 rounded-lg overflow-hidden">
         <div 
-          className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-            team1.percentage > team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
+          className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+            team1.percentage > team2.percentage ? 'font-bold bg-tertiary/80' : ''
           }`}
           onClick={handleTeamClick}
         >
           <div className="flex justify-between items-center text-xs">
             <div className="flex items-center gap-1.5">
-              <span className={`${regionColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
+              <span className={`${regionColor} text-primary px-1 py-0.5 rounded w-6 font-medium text-center`}>
                 {team1.seed}
               </span>
-              <span className="text-black">{team1.name}</span>
+              <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(team1.name)}</span>
             </div>
             <div className="flex items-center gap-2">
               {team1.date && (
-                <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                   {team1.date}
                 </span>
               )}
-              <span className="text-black font-semibold">{team1.percentage}%</span>
+              <span className="text-fifth font-semibold">{team1.percentage}%</span>
             </div>
           </div>
         </div>
         <div 
-          className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-            team2.percentage > team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
+          className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+            team2.percentage > team1.percentage ? 'font-bold bg-tertiary/80' : ''
           }`}
           onClick={handleTeamClick}
         >
           <div className="flex justify-between items-center text-xs">
             <div className="flex items-center gap-1.5">
-              <span className={`${regionColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
+              <span className={`${regionColor} text-primary px-1 py-0.5 rounded w-6 font-medium text-center`}>
                 {team2.seed}
               </span>
-              <span className="text-black">{team2.name}</span>
+              <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(team2.name)}</span>
             </div>
             <div className="flex items-center gap-2">
               {team2.date && (
-                <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                   {team2.date}
                 </span>
               )}
-              <span className="text-black font-semibold">{team2.percentage}%</span>
+              <span className="text-fifth font-semibold">{team2.percentage}%</span>
             </div>
           </div>
         </div>
@@ -107,6 +119,18 @@ export function Joty() {
     team1Color?: string;
     team2Color?: string;
   } | null>(null);
+
+  // Clean song names for display - same function as in Tours component
+  const cleanSongName = (songName: string): string => {
+    return songName
+      .replace(/\[/g, '(')
+      .replace(/\]/g, ')')
+      .replace(/ñ/g, 'n')
+      .replace(/ü/g, 'u')
+      .replace(/–/g, '-')
+      .replace(/…/g, '...')
+      .replace(/∆/g, 'a');
+  };
 
   // Available years
   const availableYears = [2024, 2023, 2022, 2021, 2020];
@@ -194,7 +218,7 @@ export function Joty() {
         if (regionsData && regionsData.length === 4 && matchesData) {
           // Process regions
           const sortedRegions = regionsData.sort((a, b) => a.joty_region_prioritylevel - b.joty_region_prioritylevel);
-          const regionColors = ["bg-[#006400]", "bg-[#019B7A]", "bg-[#E17401]", "bg-[#7C2128]"];
+          const regionColors = ["bg-[#CE1126]", "bg-[#2563eb]", "bg-[#f97316]", "bg-[#16a34a]"];
           
           const processedRegions = sortedRegions.map((region, index) => ({
             name: region.joty_region_displayname || region.joty_region_name || `Region ${index + 1}`,
@@ -230,8 +254,8 @@ export function Joty() {
                 date: formatDate(match.entry1),
                 venue: match.entry1?.shows?.show_venue_location || '',
                 entryShort: match.entry1?.entry_short || null,
-                subvenue: match.entry1?.shows?.show_subvenue || null,  // Add this line
-                fullDate: formatFullDate(match.entry1)  // Add this line
+                subvenue: match.entry1?.shows?.show_subvenue || null,
+                fullDate: formatFullDate(match.entry1)
               },
               team2: {
                 seed: match.joty_entry2_rank || 16,
@@ -241,8 +265,8 @@ export function Joty() {
                 date: formatDate(match.entry2),
                 venue: match.entry2?.shows?.show_venue_location || '',
                 entryShort: match.entry2?.entry_short || null,
-                subvenue: match.entry2?.shows?.show_subvenue || null,  // Add this line
-                fullDate: formatFullDate(match.entry2)  // Add this line
+                subvenue: match.entry2?.shows?.show_subvenue || null,
+                fullDate: formatFullDate(match.entry2)
               }
             };
           });
@@ -268,8 +292,8 @@ export function Joty() {
 
   if (!loading && regions.length !== 4) {
     return (
-      <div className="max-w-[1600px] mx-auto p-4 text-center">
-        <div className="text-black">Unable to load tournament data. Please ensure 4 regions exist for {selectedYear}.</div>
+      <div className="max-w-[1600px] mx-auto text-center">
+        <div className="text-fifth">Unable to load tournament data. Please ensure 4 regions exist for {selectedYear}.</div>
       </div>
     );
   }
@@ -291,13 +315,13 @@ export function Joty() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto p-4">
+    <div className="max-w-[1600px] mx-auto">
       {/* Header with Year Selector */}
       <div className="mb-8">
         {/* Desktop Layout */}
         <div className="hidden lg:flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h2 className="text-3xl font-mohr inline-block px-3 pt-1.5 bg-[#f9ae37] rounded-full border border-black">
+            <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
               Jam of the Year
             </h2>
             
@@ -305,7 +329,7 @@ export function Joty() {
             <select
               value={selectedYear}
               onChange={(e) => handleYearChange(parseInt(e.target.value))}
-              className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
+              className="bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold appearance-none pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-tertiary"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                 backgroundPosition: 'right 0.5rem center',
@@ -324,14 +348,14 @@ export function Joty() {
             {/* Logos */}
             <div className="flex items-center gap-2">
               <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
-                <img src={aatLogo} alt="Always Almost There" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" />
+                <img src={aatLogo} alt="Always Almost There" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" />
               </a>
-              <a href="https://www.nugs.net/" target="blank"><img src={nugsLogo} alt="nugs" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" /></a>
+              <a href="https://www.nugs.net/" target="blank"><img src={nugsLogo} alt="nugs" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" /></a>
             </div>
             
             {/* Credits */}
-            <div className="bg-tertiary border border-black rounded-lg px-3 py-1.5 max-w-[315px]">
-              <p className="text-xs font-semibold text-white">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
+            <div className="bg-fourth border border-secondary rounded-lg px-3 py-1.5 max-w-[350px]">
+              <p className="text-xs font-medium text-primary">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
             </div>
           </div>
         </div>
@@ -339,7 +363,7 @@ export function Joty() {
         {/* Mobile Layout */}
         <div className="lg:hidden">
           <div className="text-center mb-4">
-            <h2 className="text-3xl font-mohr inline-block px-3 pt-1.5 bg-[#f9ae37] rounded-full border border-black">
+            <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
               Jam of the Year
             </h2>
             
@@ -348,7 +372,7 @@ export function Joty() {
               <select
                 value={selectedYear}
                 onChange={(e) => handleYearChange(parseInt(e.target.value))}
-                className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
+                className="bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-fourth/40 transition-colors text-lg font-semibold appearance-none pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-tertiary"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                   backgroundPosition: 'right 0.5rem center',
@@ -365,23 +389,23 @@ export function Joty() {
             {/* Logos */}
             <div className="flex items-center justify-center gap-3 mt-4 mb-4">
               <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
-                <img src={aatLogo} alt="Always Almost There" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" />
+                <img src={aatLogo} alt="Always Almost There" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" />
               </a>
               <a href="https://www.nugs.net/" target="_blank">
-                <img src={nugsLogo} alt="nugs" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#f9ae37]" />
+                <img src={nugsLogo} alt="nugs" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" />
               </a>
             </div>
           </div>
           
           {/* Credits */}
-          <div className="bg-tertiary border border-black rounded-lg px-3 py-1.5 mb-4 mx-auto max-w-[315px]">
-            <p className="text-xs font-semibold text-white text-center">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
+          <div className="bg-fourth border border-secondary rounded-lg px-3 py-1.5 mb-4 mx-auto max-w-[350px]">
+            <p className="text-xs font-medium text-primary text-center">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
           </div>
         </div>
       </div>
 
       {/* Bracket Container */}
-      <div className={`bg-primary border border-black rounded-lg p-2 overflow-x-auto ${loading ? 'opacity-20' : ''} transition-opacity duration-300`}>
+      <div className={`bg-primary border border-secondary rounded-lg p-2 overflow-x-auto ${loading ? 'opacity-20' : ''} transition-opacity duration-300`}>
         <div className="flex gap-4 min-w-[1400px]">
           {/* Left Side - All Regions stacked */}
           <div className="flex-1">
@@ -389,16 +413,16 @@ export function Joty() {
               {/* All regions sorted by priority level */}
               {[topLeftRegion, bottomLeftRegion, topRightRegion, bottomRightRegion].map((region) => (
                 <div key={region?.priorityLevel || Math.random()}>
-                  <h2 className={`text-lg font-mohr ${region?.color || 'bg-gray-500'} ${region?.priorityLevel > 1 ? 'text-white' : 'text-white'} inline-block px-2 pt-0.5 rounded-full border border-black mb-2`}>
+                  <h2 className={`text-lg font-semibold ${region?.color || 'bg-gray-500'} ${region?.priorityLevel > 1 ? 'text-primary' : 'text-primary'} inline-block px-2 py-0.5 rounded-lg border border-secondary mb-2`}>
                     {region?.name || 'Loading...'} Region
                   </h2>
                   
                   {/* Round headers row */}
                   <div className="grid grid-cols-4 gap-2 mb-2">
-                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Round of 64</h3>
-                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Round of 32</h3>
-                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Sweet 16</h3>
-                    <h3 className="text-center text-xs font-bold text-black min-w-[270px]">Elite 8</h3>
+                    <h3 className="text-center text-xs font-semibold text-fifth min-w-[270px]">Round of 64</h3>
+                    <h3 className="text-center text-xs font-semibold text-fifth min-w-[270px]">Round of 32</h3>
+                    <h3 className="text-center text-xs font-semibold text-fifth min-w-[270px]">Sweet 16</h3>
+                    <h3 className="text-center text-xs font-semibold text-fifth min-w-[270px]">Elite 8</h3>
                   </div>
                   
                   {/* Matches grid */}
@@ -504,9 +528,9 @@ export function Joty() {
 
           {/* Final Four Column */}
           <div className="min-w-[300px]">
-            <div className='bg-canvas p-2 rounded-lg border border-black/10'>
-              <div className="text-center mb-4">
-                <h2 className="text-xl font-mohr inline-block px-2 pt-0.5 bg-[#f9ae37] rounded-full border border-black">
+            <div className='bg-canvas p-2 rounded-lg border border-secondary/10'>
+              <div className="text-center mb-2">
+                <h2 className="text-xl font-semibold inline-block px-2 py-0.5 bg-fifth text-primary rounded-lg border border-secondary">
                   Final Four
                 </h2>
               </div>
@@ -520,50 +544,50 @@ export function Joty() {
                     // For match 61: top seed from region 1 (green), bottom seed from region 2 (teal)
                     return (
                       <div>
-                        <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
+                        <div className="bg-canvas border border-secondary/50 rounded-lg overflow-hidden">
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-tertiary/80' : ''
                             }`}
-                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#006400]', 'bg-[#019B7A]')}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-tertiary/80', 'bg-[#CE1126]', 'bg-[#2563eb]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
-                                <span className="bg-[#006400] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                <span className="bg-[#CE1126] text-primary px-1 py-0.5 rounded w-6 font-medium text-center">
                                   {match.team1.seed}
                                 </span>
-                                <span className="text-black">{match.team1.name}</span>
+                                <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(match.team1.name)}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {match.team1.date && (
-                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                  <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                                     {match.team1.date}
                                   </span>
                                 )}
-                                <span className="text-black font-semibold">{match.team1.percentage}%</span>
+                                <span className="text-fifth font-semibold">{match.team1.percentage}%</span>
                               </div>
                             </div>
                           </div>
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-tertiary/80' : ''
                             }`}
-                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#006400]', 'bg-[#019B7A]')}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-tertiary/80', 'bg-[#CE1126]', 'bg-[#2563eb]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
-                                <span className="bg-[#019B7A] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                <span className="bg-[#2563eb] text-primary px-1 py-0.5 rounded w-6 font-medium text-center">
                                   {match.team2.seed}
                                 </span>
-                                <span className="text-black">{match.team2.name}</span>
+                                <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(match.team2.name)}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {match.team2.date && (
-                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                  <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                                     {match.team2.date}
                                   </span>
                                 )}
-                                <span className="text-black font-semibold">{match.team2.percentage}%</span>
+                                <span className="text-fifth font-semibold">{match.team2.percentage}%</span>
                               </div>
                             </div>
                           </div>
@@ -582,50 +606,50 @@ export function Joty() {
                     // For match 62: top seed from region 3 (orange), bottom seed from region 4 (dark red)
                     return (
                       <div>
-                        <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
+                        <div className="bg-canvas border border-secondary/50 rounded-lg overflow-hidden">
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-tertiary/80' : ''
                             }`}
-                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#E17401]', 'bg-[#7C2128]')}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-tertiary/80', 'bg-[#f97316]', 'bg-[#16a34a]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
-                                <span className="bg-[#E17401] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                <span className="bg-[#f97316] text-primary px-1 py-0.5 rounded w-6 font-medium text-center">
                                   {match.team1.seed}
                                 </span>
-                                <span className="text-black">{match.team1.name}</span>
+                                <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(match.team1.name)}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {match.team1.date && (
-                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                  <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                                     {match.team1.date}
                                   </span>
                                 )}
-                                <span className="text-black font-semibold">{match.team1.percentage}%</span>
+                                <span className="text-fifth font-semibold">{match.team1.percentage}%</span>
                               </div>
                             </div>
                           </div>
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-tertiary/80' : ''
                             }`}
-                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', 'bg-[#E17401]', 'bg-[#7C2128]')}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-tertiary/80', 'bg-[#f97316]', 'bg-[#16a34a]')}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
-                                <span className="bg-[#7C2128] text-white px-1 py-0.5 rounded w-6 font-semibold text-center">
+                                <span className="bg-[#16a34a] text-primary px-1 py-0.5 rounded w-6 font-medium text-center">
                                   {match.team2.seed}
                                 </span>
-                                <span className="text-black">{match.team2.name}</span>
+                                <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(match.team2.name)}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {match.team2.date && (
-                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                  <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                                     {match.team2.date}
                                   </span>
                                 )}
-                                <span className="text-black font-semibold">{match.team2.percentage}%</span>
+                                <span className="text-fifth font-semibold">{match.team2.percentage}%</span>
                               </div>
                             </div>
                           </div>
@@ -637,8 +661,8 @@ export function Joty() {
                 
                 {/* Championship */}
                 <div>
-                  <div className="text-center mb-4">
-                    <h2 className="text-xl font-mohr inline-block px-2 mt-6 pt-0.5 bg-[#f9ae37] rounded-full border border-black">
+                  <div className="text-center mt-8 mb-2">
+                    <h2 className="text-xl font-semibold inline-block px-2 py-0.5 bg-fifth text-primary rounded-lg border border-secondary">
                       Championship
                     </h2>
                   </div>
@@ -649,55 +673,55 @@ export function Joty() {
                     if (!match || !match61 || !match62) return <div className="h-[52px]"></div>;
                     
                     // Determine colors based on semifinal winners
-                    const topSeedColor = match61.team1.percentage > match61.team2.percentage ? 'bg-[#006400]' : 'bg-[#019B7A]';
-                    const bottomSeedColor = match62.team1.percentage > match62.team2.percentage ? 'bg-[#E17401]' : 'bg-[#7C2128]';
+                    const topSeedColor = match61.team1.percentage > match61.team2.percentage ? 'bg-[#CE1126]' : 'bg-[#2563eb]';
+                    const bottomSeedColor = match62.team1.percentage > match62.team2.percentage ? 'bg-[#f97316]' : 'bg-[#16a34a]';
                     
                     return (
                       <div>
-                        <div className="bg-canvas border border-black/50 rounded-lg overflow-hidden">
+                        <div className="bg-canvas border border-secondary/50 rounded-lg overflow-hidden">
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+                              match.team1.percentage > match.team2.percentage ? 'font-bold bg-tertiary/80' : ''
                             }`}
-                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', topSeedColor, bottomSeedColor)}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-tertiary/80', topSeedColor, bottomSeedColor)}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
-                                <span className={`${topSeedColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
+                                <span className={`${topSeedColor} text-primary px-1 py-0.5 rounded w-6 font-medium text-center`}>
                                   {match.team1.seed}
                                 </span>
-                                <span className="text-black">{match.team1.name}</span>
+                                <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(match.team1.name)}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {match.team1.date && (
-                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                  <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                                     {match.team1.date}
                                   </span>
                                 )}
-                                <span className="text-black font-semibold">{match.team1.percentage}%</span>
+                                <span className="text-fifth font-semibold">{match.team1.percentage}%</span>
                               </div>
                             </div>
                           </div>
                           <div 
-                            className={`pl-0.5 pr-1 py-0.5 hover:bg-primary transition-colors cursor-pointer ${
-                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-[#f9ae37]' : ''
+                            className={`pl-0.5 pr-1 py-0.5 hover:bg-fourth/40 transition-colors cursor-pointer ${
+                              match.team2.percentage > match.team1.percentage ? 'font-bold bg-tertiary/80' : ''
                             }`}
-                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-[#f9ae37]', topSeedColor, bottomSeedColor)}
+                            onClick={() => handleMatchupClick(match.team1, match.team2, 'bg-tertiary/80', topSeedColor, bottomSeedColor)}
                           >
                             <div className="flex justify-between items-center text-xs">
                               <div className="flex items-center gap-1.5">
-                                <span className={`${bottomSeedColor} text-white px-1 py-0.5 rounded w-6 font-semibold text-center`}>
+                                <span className={`${bottomSeedColor} text-primary px-1 py-0.5 rounded w-6 font-medium text-center`}>
                                   {match.team2.seed}
                                 </span>
-                                <span className="text-black">{match.team2.name}</span>
+                                <span className="text-fifth font-trad text-[1rem] leading-[1rem] pb-1">{cleanSongName(match.team2.name)}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {match.team2.date && (
-                                  <span className="bg-secondary text-black px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                                  <span className="bg-fifth text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
                                     {match.team2.date}
                                   </span>
                                 )}
-                                <span className="text-black font-semibold">{match.team2.percentage}%</span>
+                                <span className="text-fifth font-semibold">{match.team2.percentage}%</span>
                               </div>
                             </div>
                           </div>
@@ -717,12 +741,12 @@ export function Joty() {
                       : championship.team2;
                     
                     return (
-                      <div className="inline-block bg-secondary border border-black rounded-lg px-4 py-3">
-                        <p className="text-sm font-bold text-black mb-1">{selectedYear} Jam of the Year</p>
-                        <p className="text-2xl font-mohr text-black">{champion.name}</p>
+                      <div className="inline-block bg-tertiary/80 border border-secondary rounded-lg p-2">
+                        <p className="text-sm font-semibold text-fifth mb-1">{selectedYear} Jam of the Year</p>
+                        <p className="text-2xl font-trad text-[1.5rem] leading-[1.5rem] pb-1 text-fifth">{cleanSongName(champion.name)}</p>
                         {champion.date && champion.venue && (
-                          <p className="text-sm text-black mt-1 font-bold">
-                            {champion.date}.{selectedYear.toString().slice(2)}<br /><span className="font-medium">{champion.venue}</span>
+                          <p className="text-sm text-fifth mt-1 font-medium">
+                            {champion.date}.{selectedYear.toString().slice(2)}<br /><span className="font-light">{champion.venue}</span>
                           </p>
                         )}
                       </div>

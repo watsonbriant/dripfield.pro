@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Share, X, Copy, ArrowDownToLine } from 'lucide-react';
 import { formatInTimeZone } from 'date-fns-tz';
-import logoImage from '../img/Logo_Main_Transparent.png';
-import backgroundImage from '../img/bg.jpg';
+import logoImage from '../img/Logo2_Text.png';
+import backgroundImage from '../img/bg3.jpg';
 
 interface SetlistEntry {
     entry_id: string;
@@ -31,6 +31,17 @@ interface ShowImageGeneratorProps {
     setlist?: SetlistEntry[];
     className?: string;
 }
+
+const cleanSongName = (songName: string): string => {
+    return songName
+        .replace(/\[/g, '(')
+        .replace(/\]/g, ')')
+        .replace(/ñ/g, 'n')
+        .replace(/ü/g, 'u')
+        .replace(/–/g, '-')
+        .replace(/…/g, '...')
+        .replace(/∆/g, 'a');
+};
 
 const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
     show,
@@ -143,18 +154,18 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
             const tempY = currentY;
 
             // Date height estimation
-            const dateFont = 'bold 48px "SF Pro", "Inter", system-ui, sans-serif';
+            const dateFont = '500 48px "Rubik", "Inter", system-ui, sans-serif';
             const formattedDate = formatInTimeZone(new Date(show.show_date), 'UTC', 'MM.dd.yy');
             const dateLines = wrapText(formattedDate, maxTextWidth, dateFont);
             estimatedHeight += (dateLines.length * 60) + 0;
 
             // Group height estimation  
-            const groupFont = 'bold 36px "SF Pro", "Inter", system-ui, sans-serif';
+            const groupFont = '500 36px "Rubik", "Inter", system-ui, sans-serif';
             const groupLines = wrapText(show.show_group, maxTextWidth, groupFont);
             estimatedHeight += (groupLines.length * 60) + 0;
 
             // Detail height estimation
-            const detailFont = '28px "SF Pro", "Inter", system-ui, sans-serif';
+            const detailFont = '28px "Rubik", "Inter", system-ui, sans-serif';
             let detailLines: string[] = [];
             if (show.show_detail) {
                 detailLines = wrapText(show.show_detail, maxTextWidth, detailFont);
@@ -162,12 +173,12 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
             }
 
             // Subvenue height estimation
-            const subvenueFont = 'bold 28px "SF Pro", "Inter", system-ui, sans-serif';
+            const subvenueFont = '500 28px "Rubik", "Inter", system-ui, sans-serif';
             const subvenueLines = wrapText(show.show_subvenue, maxTextWidth, subvenueFont);
             estimatedHeight += (subvenueLines.length * 60) + 0;
 
             // Location height estimation
-            const locationFont = '24px "SF Pro", "Inter", system-ui, sans-serif';
+            const locationFont = '24px "Rubik", "Inter", system-ui, sans-serif';
             const locationLines = wrapText(show.show_venue_location, maxTextWidth, locationFont);
             estimatedHeight += (locationLines.length * 60) + 0;
 
@@ -199,7 +210,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
             };
 
             // Draw container background
-            ctx.fillStyle = 'rgb(250, 226, 198)';
+            ctx.fillStyle = 'rgb(240, 240, 240)';
             drawRoundedRect(containerX, containerStartY, containerWidth, containerHeight, cornerRadius, true, false);
 
             // Draw container border
@@ -311,8 +322,8 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                         const tempDiv = document.createElement('div');
                         tempDiv.innerHTML = entry.entry_coachnotes;
                         const plainTextNotes = tempDiv.textContent || tempDiv.innerText || '';
-                        const noteLines = wrapText(plainTextNotes, maxTextWidth - 60, '20px "SF Pro", "Inter", system-ui, sans-serif');
-                        estimatedSetlistHeight += 28 + (noteLines.length * 24) + 8; // offset + note lines + spacing
+                        const noteLines = wrapText(plainTextNotes, maxTextWidth - 60, '16px "Rubik", "Inter", system-ui, sans-serif');
+                        estimatedSetlistHeight += 28 + (noteLines.length * 20) + 8; // offset + note lines + spacing
                     } else {
                         // Regular entry
                         estimatedSetlistHeight += 36;
@@ -325,7 +336,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                 const setlistContainerHeight = estimatedSetlistHeight + (setlistContainerPadding * 2);
 
                 // Draw setlist container background
-                ctx.fillStyle = 'rgb(250, 226, 198)';
+                ctx.fillStyle = 'rgb(240, 240, 240)';
                 drawRoundedRect(setlistContainerX, setlistContainerStartY, setlistContainerWidth, setlistContainerHeight, cornerRadius, true, false);
 
                 // Draw setlist container border
@@ -395,7 +406,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                             drawRoundedRect((canvasWidth - maxTextWidth) / 2, currentY - 20, maxTextWidth, 28, 6, true, false);
                             
                             ctx.fillStyle = '#000000';
-                            ctx.font = 'bold 20px "SF Pro", "Inter", system-ui, sans-serif';
+                            ctx.font = '500 20px "Rubik", "Inter", system-ui, sans-serif';
                             ctx.textAlign = 'center';
                             ctx.fillText(getEncoreLabel(entry.entry_set), canvasWidth / 2, currentY);
                             currentY += 36;
@@ -409,7 +420,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                         drawRoundedRect((canvasWidth - maxTextWidth) / 2, currentY - 20, maxTextWidth, 28, 6, true, false);
                         
                         ctx.fillStyle = '#000000';
-                        ctx.font = 'bold 20px "SF Pro", "Inter", system-ui, sans-serif';
+                        ctx.font = '500 20px "Rubik", "Inter", system-ui, sans-serif';
                         ctx.textAlign = 'center';
                         ctx.fillText('Set Break', canvasWidth / 2, currentY);
                         currentY += 36;
@@ -441,7 +452,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
 
                 // Draw number text
                 ctx.fillStyle = placementColor !== 'transparent' ? '#ffffff' : '#000000';
-                ctx.font = '600 24px "SF Pro", "Inter", system-ui, sans-serif';
+                ctx.font = '500 24px "Rubik", "Inter", system-ui, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText(
                     displayNumber?.toString() || '', 
@@ -451,19 +462,19 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
 
                 // Draw song name (bold, black)
                 ctx.fillStyle = '#000000';
-                ctx.font = 'bold 24px "SF Pro", "Inter", system-ui, sans-serif';
+                ctx.font = '500 28px "Traditional", "Inter", system-ui, sans-serif';
                 ctx.textAlign = 'left';
-                ctx.fillText(entry.entry_song, numberX + 60, currentY + 2);
+                ctx.fillText(cleanSongName(entry.entry_song), numberX + 60, currentY + 2);
 
                 // Measure song name width to position additional elements
-                const songWidth = ctx.measureText(entry.entry_song).width;
+                const songWidth = ctx.measureText(cleanSongName(entry.entry_song)).width;
                 let currentX = numberX + 63 + songWidth;
 
                 // Draw entry_short in red if present
                 if (entry.entry_short) {
                     currentX += 6; // Add padding before short
                     ctx.fillStyle = '#dc2626'; // red-600 equivalent
-                    ctx.font = '600 16px "SF Pro", "Inter", system-ui, sans-serif';
+                    ctx.font = '500 16px "Rubik", "Inter", system-ui, sans-serif';
                     const shortText = `[${entry.entry_short}]`; // Removed leading space since we're adding padding
                     ctx.fillText(shortText, currentX, currentY);
                     currentX += ctx.measureText(shortText).width;
@@ -497,9 +508,9 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
 
                 // Add coach notes if present
                 if (entry.entry_coachnotes) {
-                    currentY += 28; // Move down for coach notes
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // Slightly transparent black
-                    ctx.font = '20px "SF Pro", "Inter", system-ui, sans-serif';
+                    currentY += 24; // Move down for coach notes
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'; // Slightly transparent black
+                    ctx.font = '14px "Rubik", "Inter", system-ui, sans-serif';
                     ctx.textAlign = 'left';
                     
                     // Parse HTML and convert to plain text for canvas rendering
@@ -508,14 +519,14 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                     const plainTextNotes = tempDiv.textContent || tempDiv.innerText || '';
                     
                     // Wrap the coach notes text
-                    const noteLines = wrapText(plainTextNotes, maxTextWidth - 60, '20px "SF Pro", "Inter", system-ui, sans-serif');
+                    const noteLines = wrapText(plainTextNotes, maxTextWidth - 60, '16px "Rubik", "Inter", system-ui, sans-serif');
                     
                     for (const line of noteLines) {
                         ctx.fillText(line, numberX + 60, currentY + 2);
-                        currentY += 24; // Line height for coach notes
+                        currentY += 20; // Line height for coach notes
                     }
                     
-                    currentY += 8; // Extra spacing after coach notes
+                    currentY += 12; // Extra spacing after coach notes
                 } else {
                     currentY += 36; // Normal spacing if no coach notes
                 }
@@ -619,7 +630,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                 className={`p-1.5 rounded border transition-all duration-200 ${
                     imageCopied 
                         ? 'bg-green-500 text-white border-green-600' 
-                        : 'bg-secondary text-black border-black hover:bg-white'
+                        : 'bg-tertiary text-fifth border-secondary hover:bg-white'
                 } ${className}`}
                 title="Generate Show Image"
             >
@@ -629,16 +640,16 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
             {/* Image Modal */}
             {showModal && generatedImageUrl && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
-                    <div className="bg-secondary border border-black rounded-lg p-4 max-w-4xl max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-primary border border-secondary rounded-lg p-4 max-w-4xl max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
+                            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
                                 Generated Setlist Image
                             </h3>
                             <button 
                                 onClick={() => setShowModal(false)}
-                                className="flex items-center justify-center w-10 h-10 rounded-md bg-red-600 hover:bg-tertiary transition-colors border border-black"
+                                className="flex items-center justify-center w-10 h-10 rounded-md bg-red-600 hover:bg-primary transition-colors border border-secondary"
                             >
-                                <X className="w-6 h-6 text-black" />
+                                <X className="w-6 h-6 text-fifth" />
                             </button>
                         </div>
                         
@@ -646,10 +657,10 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                         <div className="flex justify-center gap-3 mb-4">
                             <button
                                 onClick={handleCopyImage}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-200 ${
+                                className={`flex items-center gap-2 px-3 py-1 rounded-lg border transition-all duration-200 ${
                                     imageCopied 
-                                        ? 'bg-green-500 text-white font-mohr border-green-600' 
-                                        : 'bg-[#f9ae37] text-black font-mohr border-black hover:bg-white'
+                                        ? 'bg-green-500 text-white font-medium border-green-600' 
+                                        : 'bg-tertiary text-fifth font-medium border-secondary hover:bg-white'
                                 }`}
                                 title="Copy to Clipboard (Desktop) / Download (Mobile)"
                             >
@@ -658,7 +669,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                             </button>
                         </div>
                         
-                        <img src={generatedImageUrl} alt="Generated show image" className="max-w-full h-auto border border-black" />
+                        <img src={generatedImageUrl} alt="Generated show image" className="max-w-full h-auto border border-secondary" />
                     </div>
                 </div>
             )}

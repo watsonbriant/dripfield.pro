@@ -13,9 +13,10 @@ interface VenueBasic {
 
 interface VenueSearchProps {
   className?: string;
+  onModalStateChange?: (isOpen: boolean) => void;
 }
 
-export function VenueSearch({ className = '' }: VenueSearchProps) {
+export function VenueSearch({ className = '', onModalStateChange }: VenueSearchProps) {
   const navigate = useNavigate();
   const [allVenues, setAllVenues] = React.useState<VenueBasic[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -23,6 +24,16 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
   const [selectedVenue, setSelectedVenue] = React.useState<string>('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+    onModalStateChange?.(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    onModalStateChange?.(false);
+  };
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -92,24 +103,24 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
     <div className={`relative ${className}`} ref={dropdownRef}>
       <div className="md:hidden">
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors border border-black"
+          onClick={handleModalOpen}
+          className="p-2 rounded-md bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
         >
           <Search className="w-6 h-6" />
         </button>
         <Modal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleModalClose}
           title="Select Venue"
         >
           <div className="space-y-0">
-            <div className="sticky top-0 bg-primary pb-4">
+            <div className="sticky -top-4 bg-primary pb-4">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search venues..."
-                className="w-full px-4 py-2 rounded-md border border-black bg-canvas text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e]"
+                className="w-full px-4 py-2 rounded-md border border-secondary bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
               />
             </div>
             <div className="divide-y divide-black/10">
@@ -117,21 +128,21 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
                 <button
                   key={`${venue.subvenue}-${venue.subvenue_venue}`}
                   onClick={() => handleVenueSelect(venue)}
-                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-black"
+                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-fifth"
                 >
                   <span>
                     {venue.subvenue}
                     {venue.subvenue_venue_location && (
                       <>
-                        <span className="text-black/70">&nbsp;&nbsp;&nbsp;</span>
-                        <span className="text-xs text-black/60">{venue.subvenue_venue_location}</span>
+                        <span className="text-fifth/70">&nbsp;&nbsp;&nbsp;</span>
+                        <span className="text-fifth/90 text-xs font-light ml-2">{venue.subvenue_venue_location}</span>
                       </>
                     )}
                   </span>
                 </button>
               ))}
               {filteredVenues.length === 0 && (
-                <div className="px-4 py-2 text-sm text-black/60 italic">
+                <div className="px-4 py-2 text-sm text-fifth/60 italic">
                   No venues found
                 </div>
               )}
@@ -142,14 +153,14 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
       <div className="hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
+          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
         >
-          {selectedVenue || 'Search Venues'}
+          {selectedVenue || 'Search'}
           <ChevronDown className="w-4 h-4" />
         </button>
       </div>
       {isDropdownOpen && (
-        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
+        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-[9999] overflow-y-auto ${
           window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-96 max-h-96'
         }`}>
           <div className="p-2">
@@ -159,9 +170,9 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search venues..."
-                className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-black text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] placeholder-black/60"
+                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-fifth text-sm focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
             </div>
           </div>
           <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
@@ -169,19 +180,19 @@ export function VenueSearch({ className = '' }: VenueSearchProps) {
               <button
                 key={`${venue.subvenue}-${venue.subvenue_venue}`}
                 onClick={() => handleVenueSelect(venue)}
-                className="w-full text-left px-4 py-1 text-sm text-black font-semibold hover:bg-canvas transition-colors"
+                className="w-full text-left px-4 py-1 text-sm text-fifth leading-[1rem] font-medium hover:bg-canvas transition-colors"
               >
                 {venue.subvenue}
                 {venue.subvenue_venue_location && (
                   <>
-                    <span className="text-black/70">&nbsp;&nbsp;&nbsp;</span>
-                    <span className="text-xs text-black/60">{venue.subvenue_venue_location}</span>
+                    <span className="text-fifth/70">&nbsp;&nbsp;&nbsp;</span>
+                    <span className="text-fifth/90 text-xs font-light ml-2">{venue.subvenue_venue_location}</span>
                   </>
                 )}
               </button>
             ))}
             {filteredVenues.length === 0 && (
-              <div className="px-4 py-2 text-sm text-black/60 italic">
+              <div className="px-4 py-2 text-sm text-fifth/60 italic">
                 No venues found
               </div>
             )}

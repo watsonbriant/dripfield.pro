@@ -43,6 +43,17 @@ interface SongTourPerformancesModalProps {
   currentShowId: string;
 }
 
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
+
 const placementColors: Record<string, string> = {
   'Set 1 Opener': '#006400',
   'Set 1 Closer': '#995905',
@@ -279,21 +290,21 @@ export default function SongTourPerformancesModal({
       />
       
       {/* Custom Modal with 650px max-width on desktop */}
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[650px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-black shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-black/10 bg-canvas rounded-t-lg">
+      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[650px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-secondary bg-primary rounded-t-lg">
             <div className="flex items-center flex-1">
-                <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block mr-4 px-3 pt-1.5 pb-0.5 rounded-full border border-black">{songName}</h2>
+                <h2 className="text-xl font-trad bg-tertiary text-fifth inline-block px-3 pb-0.5 rounded-lg border border-secondary mr-4">{cleanSongName(songName)}</h2>
                 {tourName && (
-                <span className="text-xs font-medium bg-secondary text-black px-3 py-1 rounded-full border border-black whitespace-nowrap mr-4">
+                <span className="text-xs font-medium bg-secondary text-fifth px-3 py-1 rounded-full border border-secondary whitespace-nowrap mr-4">
                     {tourName}
                 </span>
                 )}
             </div>
             <button
                 onClick={onClose}
-                className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors flex-shrink-0"
+                className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors flex-shrink-0"
             >
-                <X className="w-5 h-5 text-black" />
+                <X className="w-5 h-5 text-fifth" />
             </button>
         </div>
         
@@ -306,34 +317,34 @@ export default function SongTourPerformancesModal({
                   <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
                   <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
                 </div>
-                <p className="text-black mt-4">Loading performances...</p>
+                <p className="text-fifth mt-4">Loading performances...</p>
               </div>
             ) : performances.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-black">No performances found in this tour.</p>
+                <p className="text-fifth">No performances found in this tour.</p>
               </div>
             ) : (
               <>
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse min-w-max">
                     <thead>
-                      <tr className="bg-canvas border-y border-black/10">
-                        <th className="px-4 py-2 text-center text-s font-semibold text-black whitespace-nowrap">
+                      <tr className="bg-canvas border-y border-secondary">
+                        <th className="px-4 py-2 text-center text-s font-semibold text-fifth whitespace-nowrap">
                           Show
                         </th>
-                        <th className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap">
+                        <th className="px-4 py-2 text-left text-s font-semibold text-fifth whitespace-nowrap">
                           Location
                         </th>
-                        <th className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap">
+                        <th className="px-4 py-2 text-left text-s font-semibold text-fifth whitespace-nowrap">
                           &nbsp;
                         </th>
-                        <th className="px-4 py-2 text-center text-s font-semibold text-black whitespace-nowrap">
+                        <th className="px-4 py-2 text-center text-s font-semibold text-fifth whitespace-nowrap">
                           Length
                         </th>
-                        <th className="px-4 py-2 text-center text-s font-semibold text-black whitespace-nowrap">
-                          <User strokeWidth={2} className="text-black w-5 h-5 mx-auto" />
+                        <th className="px-4 py-2 text-center text-s font-semibold text-fifth whitespace-nowrap">
+                          <User strokeWidth={2} className="text-fifth w-5 h-5 mx-auto" />
                         </th>
-                        <th className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap">
+                        <th className="px-4 py-2 text-left text-s font-semibold text-fifth whitespace-nowrap">
                           Coach's Notes
                         </th>
                       </tr>
@@ -343,16 +354,16 @@ export default function SongTourPerformancesModal({
                         return (
                           <tr 
                             key={`${perf.show_id}-${index}`}
-                            className="bg-primary hover:bg-black/10 transition-colors text-xs"
+                            className="bg-primary hover:bg-tertiary/40 transition-colors text-xs"
                           >
-                            <td className="px-3 py-1 text-black whitespace-nowrap text-center relative">
-                              <span className="font-semibold">
+                            <td className="px-3 py-1 text-fifth whitespace-nowrap text-center relative">
+                              <span className="font-medium">
                                   <button
                                   onClick={() => {
                                       navigate(`/setlist/${perf.show_id}`);
                                       onClose();
                                   }}
-                                  className="hover:text-[#a9682e] transition-colors table-link"
+                                  className="hover:underline transition-colors table-link"
                                   >
                                   {formatInTimeZone(
                                       new Date(perf.show_date),
@@ -369,23 +380,23 @@ export default function SongTourPerformancesModal({
                               )}
                               </td>
                             <td 
-                              className="px-4 py-1 text-black whitespace-nowrap relative"
+                              className="px-4 py-1 text-fifth whitespace-nowrap relative"
                             >
                               <button
                                 onClick={() => {
                                   navigateToVenue(perf);
                                   onClose();
                                 }}
-                                className="hover:text-[#a9682e] hover:underline transition-colors"
+                                className="hover:underline font-light transition-colors"
                               >
                                 {perf.show_venue_location}
                               </button>
                             </td>
-                            <td className="px-4 py-1 text-black">
-                              {perf.entry_short && <span className="text-red-600 mr-2 font-semibold">[{perf.entry_short}]</span>}
+                            <td className="px-4 py-1 text-fifth">
+                              {perf.entry_short && <span className="text-red-600 mr-2 font-medium">[{perf.entry_short}]</span>}
                               {perf.entry_segue && <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />}
                             </td>
-                            <td className="px-4 py-1 text-black whitespace-nowrap text-center">
+                            <td className="px-4 py-1 text-fifth whitespace-nowrap font-light text-center">
                               {perf.entry_length ? formatLength(perf.entry_length) : ''}
                             </td>
                             <td className="px-4 py-1">
@@ -394,7 +405,7 @@ export default function SongTourPerformancesModal({
                                 style={{ backgroundColor: getGuestColor(perf) }}
                               />
                             </td>
-                            <td className="px-4 py-1 text-black">
+                            <td className="px-4 py-1 text-fifth font-light">
                               {perf.entry_coachnotes ? (
                                 <div dangerouslySetInnerHTML={{ __html: perf.entry_coachnotes }} />
                               ) : ''}
@@ -407,8 +418,8 @@ export default function SongTourPerformancesModal({
                 </div>
 
                 {guestGroups.length > 0 && (
-                  <div className="bg-canvas border border-black/10 rounded-lg p-2 mt-4 mx-8 relative">
-                    <User className="w-5 h-5 text-black absolute top-2 right-2" />
+                  <div className="bg-canvas border border-secondary rounded-lg p-2 mt-4 mx-8 relative">
+                    <User className="w-5 h-5 text-fifth absolute top-2 right-2" />
                     <div className="grid grid-cols-[20px_1fr] gap-x-2 gap-y-2 pr-8 ml-1 items-center">
                       {guestGroups.map((group, index) => (
                         <React.Fragment key={index}>
@@ -416,14 +427,14 @@ export default function SongTourPerformancesModal({
                             className="w-4 h-4 rounded"
                             style={{ backgroundColor: group.color }}
                           />
-                          <div className="text-black text-sm flex items-center flex-wrap">
+                          <div className="text-fifth text-sm flex items-center flex-wrap">
                             {group.guests
                               .sort((a, b) => a.guest_canonid - b.guest_canonid)
                               .map((g, gIndex) => (
                                 <React.Fragment key={g.guest_id}>
                                   <span className="inline-block whitespace-nowrap">
                                     <span 
-                                      className="cursor-pointer hover:text-[#a9682e] transition-colors font-semibold"
+                                      className="cursor-pointer hover:underline transition-colors font-medium"
                                       onClick={() => {
                                         navigate(`/guest/${g.guest_id}`);
                                         onClose();
@@ -447,7 +458,7 @@ export default function SongTourPerformancesModal({
         </div>
         
         {/* Footer with Song History button */}
-        <div className="border-t border-black/10 p-4 bg-canvas rounded-b-lg flex justify-center">
+        <div className="border-t border-secondary p-4 bg-canvas rounded-b-lg flex justify-center">
           <button
             onClick={() => {
               if (songId) {
@@ -455,7 +466,7 @@ export default function SongTourPerformancesModal({
                 onClose();
               }
             }}
-            className="bg-[#f9ae37] hover:bg-secondary text-black font-bold py-1 px-3 rounded-lg border border-black transition-colors"
+            className="bg-tertiary hover:bg-primary text-fifth font-medium py-1 px-3 rounded-lg border border-secondary transition-colors"
           >
             Song History
           </button>

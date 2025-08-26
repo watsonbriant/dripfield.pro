@@ -205,36 +205,30 @@ export function Guests() {
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading members...</p>
+          <p className="text-fifth mt-4">Loading members...</p>
         </div>
       );
     }
 
     return (
-      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-secondary rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
           Current Goose Members
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
-            <thead>
-              <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Member</th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Instruments</th>
-              </tr>
-            </thead>
             <tbody className="divide-y divide-white/5">
               {currentMembersTable.members.map((member, index) => (
-                <tr key={member.guest} className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}>
-                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                <tr key={member.guest} className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}>
+                  <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
+                      className="font-medium hover:underline transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${member.guest_id}`)}
                     >
                       {member.guest}
                     </span>
                   </td>
-                  <td className="px-4 py-0.5 text-black whitespace-nowrap">{member.guest_instrument}</td>
+                  <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{member.guest_instrument}</td>
                 </tr>
               ))}
             </tbody>
@@ -253,41 +247,35 @@ export function Guests() {
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading members...</p>
+          <p className="text-fifth mt-4">Loading members...</p>
         </div>
       );
     }
   
     return (
-      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-secondary rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
           Former Goose Members
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
-            <thead>
-              <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black">Member</th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-black">Instruments</th>
-              </tr>
-            </thead>
             <tbody className="divide-y divide-white/5">
               {formerMembersTable.members.map((member, index) => (
                 <tr
                   key={member.guest}
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-black/10 transition-colors text-xs`}
+                  } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
+                      className="font-medium hover:underline transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${member.guest_id}`)}
                     >
                       {member.guest}
                     </span>
                   </td>
-                  <td className="px-4 py-0.5 text-black">
+                  <td className="px-4 py-0.5 font-light text-fifth">
                     {member.guest_instrument}
                   </td>
                 </tr>
@@ -310,41 +298,35 @@ export function Guests() {
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading guests...</p>
+          <p className="text-fifth mt-4">Loading guests...</p>
         </div>
       );
     }
   
     return (
-      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-secondary rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
           Guests
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
-            <thead>
-              <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black">Guest</th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-black">Instruments</th>
-              </tr>
-            </thead>
             <tbody className="divide-y divide-white/5">
               {guestTable.guests.map((guest, index) => (
                 <tr
                   key={guest.guest}
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-black/10 transition-colors text-xs`}
+                  } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
+                      className="font-medium hover:underline transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${guest.guest_id}`)}
                     >
                       {guest.guest}
                     </span>
                   </td>
-                  <td className="px-4 py-0.5 text-black">
+                  <td className="px-4 py-0.5 text-fifth font-light">
                     {guest.guest_instrument}
                   </td>
                 </tr>
@@ -354,7 +336,7 @@ export function Guests() {
         </div>
   
         <div className="mt-4 flex items-center justify-between px-4">
-          <div className="text-sm text-black">
+          <div className="text-sm font-light text-fifth">
             Showing {(guestTable.currentPage - 1) * guestsPerPage + 1}-{Math.min(guestTable.currentPage * guestsPerPage, guestTable.totalCount)} of {guestTable.totalCount}
           </div>
           <div className="flex items-center gap-2">
@@ -363,13 +345,13 @@ export function Guests() {
               disabled={guestTable.currentPage === 1}
               className={`p-1 rounded-md transition-colors ${
                 guestTable.currentPage === 1
-                  ? 'text-black/30 cursor-not-allowed'
-                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
+                  ? 'text-fifth/30 cursor-not-allowed'
+                  : 'text-fifth hover:underline hover:bg-tertiary/40'
               }`}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-sm text-black">
+            <span className="text-sm font-light text-fifth">
               Page {guestTable.currentPage} of {totalPages}
             </span>
             <button
@@ -377,8 +359,8 @@ export function Guests() {
               disabled={guestTable.currentPage === totalPages}
               className={`p-1 rounded-md transition-colors ${
                 guestTable.currentPage === totalPages
-                  ? 'text-black/30 cursor-not-allowed'
-                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
+                  ? 'text-fifth/30 cursor-not-allowed'
+                  : 'text-fifth hover:underline hover:bg-tertiary/40'
               }`}
             >
               <ChevronRight className="w-5 h-5" />
@@ -400,34 +382,29 @@ export function Guests() {
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading groups...</p>
+          <p className="text-fifth mt-4">Loading groups...</p>
         </div>
       );
     }
   
     return (
-      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+      <div className="flex-1 min-w-0 bg-primary border border-secondary rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
           Groups
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-max">
-            <thead>
-              <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black">Group</th>
-              </tr>
-            </thead>
             <tbody className="divide-y divide-white/5">
               {groupTable.groups.map((group, index) => (
                 <tr
                   key={group.guest}
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-black/10 transition-colors text-xs`}
+                  } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                  <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
-                      className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
+                      className="font-medium hover:underline transition-colors table-link cursor-pointer"
                       onClick={() => navigate(`/guest/${group.guest_id}`)}
                     >
                       {group.guest}
@@ -440,7 +417,7 @@ export function Guests() {
         </div>
   
         <div className="mt-4 flex items-center justify-between px-4">
-          <div className="text-sm text-black">
+          <div className="text-sm font-light text-fifth">
             Showing {(groupTable.currentPage - 1) * guestsPerPage + 1}-{Math.min(groupTable.currentPage * guestsPerPage, groupTable.totalCount)} of {groupTable.totalCount}
           </div>
           <div className="flex items-center gap-2">
@@ -449,13 +426,13 @@ export function Guests() {
               disabled={groupTable.currentPage === 1}
               className={`p-1 rounded-md transition-colors ${
                 groupTable.currentPage === 1
-                  ? 'text-black/30 cursor-not-allowed'
-                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
+                  ? 'text-fifth/30 cursor-not-allowed'
+                  : 'text-fifth hover:underline hover:bg-tertiary/40'
               }`}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-sm text-black">
+            <span className="text-sm font-light text-fifth">
               Page {groupTable.currentPage} of {totalPages}
             </span>
             <button
@@ -463,8 +440,8 @@ export function Guests() {
               disabled={groupTable.currentPage === totalPages}
               className={`p-1 rounded-md transition-colors ${
                 groupTable.currentPage === totalPages
-                  ? 'text-black/30 cursor-not-allowed'
-                  : 'text-black hover:text-[#a9682e] hover:bg-black/10'
+                  ? 'text-fifth/30 cursor-not-allowed'
+                  : 'text-fifth hover:underline hover:bg-tertiary/40'
               }`}
             >
               <ChevronRight className="w-5 h-5" />
@@ -478,7 +455,7 @@ export function Guests() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6 items-center">
-        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Guests</h1>
+        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Guests</h1>
         <GuestSearch />
       </div>
 

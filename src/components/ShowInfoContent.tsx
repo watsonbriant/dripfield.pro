@@ -116,23 +116,23 @@ const ShowInfoContent = React.memo(({
   };
   
   return (
-    <div className="bg-primary border border-black rounded-lg p-4">
+    <div className="bg-primary border border-secondary rounded-lg p-3">
       <div className="grid grid-cols-[1fr_auto] gap-4 items-start">
-        <div className="space-y-1">
-          <div className="text-xl font-bold text-black">
+        <div className="space-y-0">
+          <div className="text-xl font-medium text-fifth">
             {formatInTimeZone(
               new Date(show.show_date),
               'UTC',
               'MM.dd.yy'
             )}
           </div>
-          <p className="text-lg font-semibold text-black leading-5">{show.show_group}</p>
+          <p className="text-2xl font-trad text-fifth leading-5 pb-2">{show.show_group}</p>
           {show.show_detail && (
-            <p className="text-sm text-black">{show.show_detail}</p>
+            <p className="text-sm text-fifth">{show.show_detail}</p>
           )}
           {show.show_alert && (
             <p className="text-sm">
-              <span className="font-bold text-[#E83356]">
+              <span className="font-medium text-[#E83356]">
                 [{show.show_alert}]
               </span>
             </p>
@@ -143,7 +143,7 @@ const ShowInfoContent = React.memo(({
           <div className="relative">
             <button
               onClick={() => window.open(show.show_wl_link, '_blank')}
-              className="p-1 rounded border text-black hover:border-[#78b1a1] hover:bg-[#78b1a1]/30 transition-colors"
+              className="p-1 rounded hover:border border border-primary text-fifth hover:border-[#78b1a1] hover:bg-[#78b1a1]/30 transition-colors"
               onMouseEnter={(e) => {
                 setWlHovered(true);
                 setMousePosition({ x: e.clientX, y: e.clientY });
@@ -159,21 +159,21 @@ const ShowInfoContent = React.memo(({
               />
             </button>
             {wlHovered && (
-              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-semibold bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg whitespace-nowrap z-[9999]">
+              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-semibold bg-secondary text-fifth px-3 py-1 rounded border border-secondary shadow-lg whitespace-nowrap z-[9999]">
                 Chat on WysteriaLane.org!
               </div>
             )}
           </div>
         )}
       </div>
-      <div className="mt-2 space-y-4">
-        <hr className="border-black/10" />
-        <div className="space-y-1">
-          <p className="text-md font-semibold text-black leading-5 text-left w-full">
+      <div className="mt-2 space-y-2">
+        <hr className="border-secondary" />
+        <div className="space-y-0">
+          <p className="text-md font-medium text-fifth leading-5 text-left w-full">
             {navigateToVenue ? (
               <button 
                 onClick={navigateToVenue}
-                className="hover:text-[#a9682e] hover:underline transition-colors cursor-pointer text-left w-full"
+                className="hover:underline transition-colors cursor-pointer text-left w-full"
               >
                 {show.show_subvenue}
               </button>
@@ -181,16 +181,16 @@ const ShowInfoContent = React.memo(({
               <span className="text-left w-full">{show.show_subvenue}</span>
             )}
           </p>
-          <p className="text-sm text-black text-left w-full">{show.show_venue_location}</p>
+          <p className="text-sm font-light text-fifth text-left w-full">{show.show_venue_location}</p>
         </div>
         {/* Tour information with horizontal divider */}
         {show.show_tour && (
           <>
-            <hr className="border-black/10" />
-            <div className="space-y-1">
-              <p className="text-md font-semibold text-black leading-5 text-center">
+            <hr className="border-secondary" />
+            <div className="space-y-0">
+              <p className="text-md font-medium text-fifth leading-5 text-center">
                 <span 
-                  className="cursor-pointer hover:text-[#a9682e] hover:underline transition-colors"
+                  className="cursor-pointer hover:underline transition-colors"
                   onClick={() => navigate(`/tours/${show.tour_id}`)}
                 >
                   {show.show_tour}
@@ -198,12 +198,12 @@ const ShowInfoContent = React.memo(({
               </p>
               {showPosition ? (
                 <div className="space-y-2">
-                  <div className="flex justify-center items-center pt-1 gap-4">
+                  <div className="flex justify-center items-center pt-0.5 gap-4">
                     <button 
                       className={`p-1 rounded-full border ${
                         showPosition.prevShowId 
-                          ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
-                          : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
+                          ? 'text-fifth bg-tertiary hover:bg-primary border border-secondary' 
+                          : 'text-secondary border-secondary cursor-not-allowed'
                       } transition-colors`}
                       onClick={() => {
                         if (showPosition.prevShowId) {
@@ -214,14 +214,14 @@ const ShowInfoContent = React.memo(({
                     >
                       <ArrowLeft size={12} />
                     </button>
-                    <span className="text-sm text-black">
+                    <span className="text-sm text-fifth font-light">
                       Show {showPosition.current} of {showPosition.total}
                     </span>
                     <button 
                       className={`p-1 rounded-full border ${
                         showPosition.nextShowId 
-                          ? 'text-black bg-[#f9ae37] hover:bg-white border border-black' 
-                          : 'text-[#9d9d9d] border-[#9d9d9d] cursor-not-allowed'
+                          ? 'text-fifth bg-tertiary hover:bg-primary border border-secondary' 
+                          : 'text-secondary border-secondary cursor-not-allowed'
                       } transition-colors`}
                       onClick={() => {
                         if (showPosition.nextShowId) {
@@ -240,8 +240,8 @@ const ShowInfoContent = React.memo(({
                         onClick={handleCopyLink}
                         className={`p-1.5 rounded border transition-all duration-200 ${
                           linkCopied 
-                            ? 'bg-green-500 text-white border-green-600' 
-                            : 'bg-secondary text-black border-black hover:bg-white'
+                            ? 'bg-green-500 text-primary border-green-600' 
+                            : 'bg-tertiary text-fifth border-secondary hover:bg-primary'
                         }`}
                         title="Copy Show ID"
                       >
@@ -251,7 +251,7 @@ const ShowInfoContent = React.memo(({
                       {isAdmin && (
                         <button
                           onClick={handleEditShow}
-                          className="p-1.5 rounded bg-secondary text-black border border-black hover:bg-white transition-colors"
+                          className="p-1.5 rounded bg-tertiary text-fifth border border-secondary hover:bg-primary transition-colors"
                           title="Edit Show"
                         >
                           <Pencil size={16} />
@@ -262,7 +262,7 @@ const ShowInfoContent = React.memo(({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-sm text-black text-center">
+                  <p className="text-sm text-fifth text-center">
                     {show.show_canonid ? "Show information loading..." : "Non-canonical show"}
                   </p>
                   {/* Admin buttons - centered below text */}
@@ -272,8 +272,8 @@ const ShowInfoContent = React.memo(({
                         onClick={handleCopyLink}
                         className={`p-1.5 rounded border transition-all duration-200 ${
                           linkCopied 
-                            ? 'bg-green-500 text-white border-green-600' 
-                            : 'bg-[#f9ae37] text-black border-black hover:bg-white'
+                            ? 'bg-green-500 text-primary border-green-600' 
+                            : 'bg-tertiary text-fifth border-secondary hover:bg-primary'
                         }`}
                         title="Copy Show ID"
                       >
@@ -283,7 +283,7 @@ const ShowInfoContent = React.memo(({
                       {isAdmin && (
                         <button
                           onClick={handleEditShow}
-                          className="p-1.5 rounded bg-[#f9ae37] text-black border border-black hover:bg-white transition-colors"
+                          className="p-1.5 rounded bg-tertiary text-fifth border border-secondary hover:bg-primary transition-colors"
                           title="Edit Show"
                         >
                           <Pencil size={16} />
@@ -297,7 +297,7 @@ const ShowInfoContent = React.memo(({
           </>
         )}
         {/* Attendance information with horizontal divider */}
-        <hr className="border-black/10" />
+        <hr className="border-secondary" />
         <div className="flex justify-center items-center space-x-4">
           <ShowAttendButton 
             showId={show.show_id} 
@@ -310,7 +310,7 @@ const ShowInfoContent = React.memo(({
               }
             }}
           />
-          <p className="text-sm text-black">
+          <p className="text-sm font-light text-fifth">
             {attendeeCount} {attendeeCount === 1 ? 'attendee' : 'attendees'}
           </p>
         </div>

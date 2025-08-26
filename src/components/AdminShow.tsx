@@ -379,7 +379,7 @@ export const AdminShow: React.FC = () => {
         const locationStr = ` [${show.show_group} – ${show.show_venue_location || 'Unknown'}]`;
         return (
             <>
-                <span className="font-semibold">{dateStr}</span>
+                <span className="font-medium">{dateStr}</span>
                 {canonIdStr}
                 {locationStr}
             </>
@@ -638,14 +638,14 @@ export const AdminShow: React.FC = () => {
     return (
         <div>
             {/* Header with buttons and dropdown */}
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Show Management</h3>
+            <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Show Management</h3>
 
                 <div className="flex items-center gap-2">
                     {/* Add New Show button */}
                     <button
                         onClick={handleOpenNewShowModal}
-                        className="flex items-center gap-2 bg-[#f9ae37] text-black px-1.5 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
+                        className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-primary"
                     >
                         <Plus className="w-5 h-5" />
                     </button>
@@ -654,14 +654,14 @@ export const AdminShow: React.FC = () => {
                     <div className="relative" ref={dropdownRef}>
                         <button
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
+                            className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
                         >
                             Show
                             <ChevronDown className="w-4 h-4" />
                         </button>
 
                         {isDropdownOpen && (
-                            <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-96 max-h-96 overflow-y-auto">
+                            <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
                                 <div className="p-2">
                                     <div className="relative">
                                         <input
@@ -669,16 +669,16 @@ export const AdminShow: React.FC = () => {
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             placeholder="Search shows..."
-                                            className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                                            className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                                         />
-                                        <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                                        <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                                     </div>
                                 </div>
                                 <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
                                     {loading && loadingProgress < 100 ? (
-                                        <div className="flex flex-col justify-center items-center p-4 h-16">
-                                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
-                                            <p className="text-xs text-black/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
+                                        <div className="flex flex-col justify-center items-center p-3 h-16">
+                                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
+                                            <p className="text-xs text-fifth/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
                                         </div>
                                     ) : (
                                         <>
@@ -686,13 +686,13 @@ export const AdminShow: React.FC = () => {
                                                 <button
                                                     key={show.show_id}
                                                     onClick={() => handleShowSelect(show)}
-                                                    className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
+                                                    className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-canvas transition-colors"
                                                 >
                                                     {getShowDisplayText(show)}
                                                 </button>
                                             ))}
                                             {filteredShows.length === 0 && !loading && (
-                                                <div className="px-4 py-2 text-sm text-black/60 italic">
+                                                <div className="px-4 py-2 text-sm text-fifth/60 italic">
                                                     No shows found
                                                 </div>
                                             )}
@@ -708,14 +708,14 @@ export const AdminShow: React.FC = () => {
             {/* Show details section */}
             {selectedShow && (
                 <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-lg text-black font-semibold">
+                    <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-lg text-fifth font-medium">
                             {formatDate(selectedShow.show_date)} - {selectedShow.show_subvenue}
                         </h4>
                         <button
                             onClick={toggleEdit}
                             disabled={isSubmitting}
-                            className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+                            className="px-2 py-1.5  font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-primary border-secondary hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
                         >
                             {isEditing ? (
                                 <>
@@ -731,27 +731,27 @@ export const AdminShow: React.FC = () => {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Date</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Date</label>
                             <input
                                 type="date"
                                 name="show_date"
                                 value={editedShow?.show_date || ''}
                                 onChange={handleInputChange}
                                 readOnly={!isEditing}
-                                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+                                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Group</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Group</label>
                             {isEditing ? (
                                 <select
                                     name="show_group"
                                     value={editedShow?.show_group || ''}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                                 >
                                     <option value="">-- Select Group --</option>
                                     {groups.map((group) => (
@@ -765,19 +765,19 @@ export const AdminShow: React.FC = () => {
                                     type="text"
                                     value={editedShow?.show_group || ''}
                                     readOnly
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                                 />
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Tour</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Tour</label>
                             {isEditing ? (
                                 <select
                                     name="show_tour"
                                     value={editedShow?.show_tour || ''}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                                 >
                                     <option value="">-- Select Tour --</option>
                                     {tours.map((tour) => (
@@ -791,19 +791,19 @@ export const AdminShow: React.FC = () => {
                                     type="text"
                                     value={editedShow?.show_tour || ''}
                                     readOnly
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                                 />
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Subvenue</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Subvenue</label>
                             {isEditing ? (
                                 <select
                                     name="show_subvenue"
                                     value={editedShow?.show_subvenue || ''}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                                 >
                                     <option value="">-- Select Subvenue --</option>
                                     {subvenues.map((subvenue) => (
@@ -817,19 +817,19 @@ export const AdminShow: React.FC = () => {
                                     type="text"
                                     value={editedShow?.show_subvenue || ''}
                                     readOnly
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                                 />
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Year</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Year</label>
                             {isEditing ? (
                                 <select
                                     name="show_year"
                                     value={editedShow?.show_year || ''}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                                 >
                                     <option value="">-- Select Year --</option>
                                     {years.map((year) => (
@@ -843,88 +843,88 @@ export const AdminShow: React.FC = () => {
                                     type="text"
                                     value={editedShow?.show_year || ''}
                                     readOnly
-                                    className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                    className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                                 />
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Canon ID</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Canon ID</label>
                             <input
                                 type="text"
                                 value={editedShow?.show_canonid || ''}
                                 readOnly
-                                className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                                className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                             />
-                            <p className="text-xs text-black/60 italic">Auto-generated value</p>
+                            <p className="text-xs text-fifth/60 italic">Auto-generated value</p>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Detail</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Detail</label>
                             <input
                                 type="text"
                                 name="show_detail"
                                 value={editedShow?.show_detail || ''}
                                 onChange={handleInputChange}
                                 readOnly={!isEditing}
-                                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+                                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Alert</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Alert</label>
                             <input
                                 type="text"
                                 name="show_alert"
                                 value={editedShow?.show_alert || ''}
                                 onChange={handleInputChange}
                                 readOnly={!isEditing}
-                                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+                                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black flex items-center gap-2">
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth flex items-center gap-2">
                                 <input
                                     type="checkbox"
                                     name="show_iscanon"
                                     checked={editedShow?.show_iscanon || false}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="rounded border-black focus:ring-[#a9682e]"
+                                    className="rounded border-secondary focus:ring-fourth"
                                 />
                                 Is Canon?
                             </label>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black flex items-center gap-2">
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth flex items-center gap-2">
                                 <input
                                     type="checkbox"
                                     name="show_issetlistgame"
                                     checked={editedShow?.show_issetlistgame || false}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="rounded border-black focus:ring-[#a9682e]"
+                                    className="rounded border-secondary focus:ring-fourth"
                                 />
                                 Is Setlist Game?
                             </label>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">Show Time (Eastern Time)</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">Show Time (Eastern Time)</label>
                             <input
                                 type="datetime-local"
                                 name="show_time"
                                 value={convertToEasternDisplay(editedShow?.show_time || null)}
                                 onChange={handleInputChange}
                                 readOnly={!isEditing}
-                                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+                                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-black">WysteriaLane.org Thread Link</label>
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-fifth">WysteriaLane.org Thread Link</label>
                             <input
                                 type="url"
                                 name="show_wl_link"
@@ -932,27 +932,27 @@ export const AdminShow: React.FC = () => {
                                 onChange={handleInputChange}
                                 readOnly={!isEditing}
                                 placeholder="https://wysterialane.org/..."
-                                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+                                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                             />
                         </div>
 
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="block text-sm font-semibold text-black">Coach's Notes</label>
+                        <div className="space-y-1 md:col-span-2">
+                            <label className="block text-sm font-medium text-fifth">Coach's Notes</label>
                             <textarea
                                 name="show_coachnotes"
                                 value={editedShow?.show_coachnotes || ''}
                                 onChange={handleInputChange}
                                 readOnly={!isEditing}
                                 rows={3}
-                                className={`w-full px-3 py-2 rounded-md border ${isEditing ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+                                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                             />
                         </div>
 
                         {/* Callbacks field - shows rendered HTML when not editing, raw code when editing */}
                         {(selectedShow?.show_callbacks || isEditing) && (
-                            <div className="space-y-2 md:col-span-2">
+                            <div className="space-y-1 md:col-span-2">
                                 <div className="flex items-center justify-between">
-                                    <label className="block text-sm font-semibold text-black">Callbacks</label>
+                                    <label className="block text-sm font-medium text-fifth">Callbacks</label>
                                     
                                     {/* Button group - only show when editing */}
                                     {isEditing && (
@@ -961,7 +961,7 @@ export const AdminShow: React.FC = () => {
                                             <button
                                                 type="button"
                                                 onClick={insertArrow}
-                                                className="flex items-center gap-1 bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                className="flex items-center gap-1 bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
                                                 title="Insert arrow"
                                             >
                                                 →
@@ -971,7 +971,7 @@ export const AdminShow: React.FC = () => {
                                             <button
                                                 type="button"
                                                 onClick={insertLineBreak}
-                                                className="bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                className="bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
                                                 title="Insert <br /> tag"
                                             >
                                                 BR
@@ -982,14 +982,14 @@ export const AdminShow: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => setIsShowDropdownOpen(!isShowDropdownOpen)}
-                                                    className="flex items-center gap-1 bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                    className="flex items-center gap-1 bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
                                                 >
                                                     Insert Show
                                                     <ChevronDown className="w-3 h-3" />
                                                 </button>
                                                 
                                                 {isShowDropdownOpen && (
-                                                    <div className="absolute right-0 mt-1 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-96 max-h-64 overflow-y-auto">
+                                                    <div className="absolute right-0 mt-1 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-96 max-h-64 overflow-y-auto">
                                                         <div className="p-2">
                                                             <div className="relative">
                                                                 <input
@@ -997,9 +997,9 @@ export const AdminShow: React.FC = () => {
                                                                     value={showSearchTerm}
                                                                     onChange={(e) => setShowSearchTerm(e.target.value)}
                                                                     placeholder="Search shows..."
-                                                                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                                                                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                                                                 />
-                                                                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                                                                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                                                             </div>
                                                         </div>
                                                         <div className="max-h-48 overflow-y-auto divide-y divide-black/10">
@@ -1008,13 +1008,13 @@ export const AdminShow: React.FC = () => {
                                                                     key={show.show_id}
                                                                     type="button"
                                                                     onClick={() => insertShowLink(show)}
-                                                                    className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
+                                                                    className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-canvas transition-colors"
                                                                 >
                                                                     {getShowDisplayText(show)}
                                                                 </button>
                                                             ))}
                                                             {filteredShowsForDropdown.length === 0 && (
-                                                                <div className="px-4 py-2 text-sm text-black/60 italic">
+                                                                <div className="px-4 py-2 text-sm text-fifth/60 italic">
                                                                     No shows found
                                                                 </div>
                                                             )}
@@ -1028,14 +1028,14 @@ export const AdminShow: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => setIsSongDropdownOpen(!isSongDropdownOpen)}
-                                                    className="flex items-center gap-1 bg-[#f9ae37] text-black px-3 py-1 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-xs font-semibold"
+                                                    className="flex items-center gap-1 bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
                                                 >
                                                     Insert Song
                                                     <ChevronDown className="w-3 h-3" />
                                                 </button>
                                                 
                                                 {isSongDropdownOpen && (
-                                                    <div className="absolute right-0 mt-1 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-64 max-h-64 overflow-y-auto">
+                                                    <div className="absolute right-0 mt-1 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-64 max-h-64 overflow-y-auto">
                                                         <div className="p-2">
                                                             <div className="relative">
                                                                 <input
@@ -1043,9 +1043,9 @@ export const AdminShow: React.FC = () => {
                                                                     value={songSearchTerm}
                                                                     onChange={(e) => setSongSearchTerm(e.target.value)}
                                                                     placeholder="Search songs..."
-                                                                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                                                                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                                                                 />
-                                                                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                                                                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                                                             </div>
                                                         </div>
                                                         <div className="max-h-48 overflow-y-auto divide-y divide-black/10">
@@ -1054,13 +1054,13 @@ export const AdminShow: React.FC = () => {
                                                                     key={song.song_id}
                                                                     type="button"
                                                                     onClick={() => insertSongLink(song)}
-                                                                    className="w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors"
+                                                                    className="w-full text-left px-2 py-1 font-medium text-xs text-fifth hover:bg-canvas transition-colors"
                                                                 >
                                                                     {song.song}
                                                                 </button>
                                                             ))}
                                                             {filteredSongs.length === 0 && (
-                                                                <div className="px-4 py-2 text-sm text-black/60 italic">
+                                                                <div className="px-4 py-2 text-sm text-fifth/60 italic">
                                                                     No songs found
                                                                 </div>
                                                             )}
@@ -1079,12 +1079,12 @@ export const AdminShow: React.FC = () => {
                                         value={editedShow?.show_callbacks || ''}
                                         onChange={handleInputChange}
                                         rows={4}
-                                        className="w-full px-3 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm font-mono"
+                                        className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm font-mono"
                                         placeholder="Enter callbacks HTML..."
                                     />
                                 ) : (
                                     <div 
-                                        className="w-full px-3 py-2 rounded-md border border-black bg-canvas/50 text-black text-sm min-h-[100px] [&_a]:font-semibold [&_a]:text-blue-600 [&_a]:underline"
+                                        className="w-full px-2 py-1.5 rounded-md border font-light border-secondary bg-canvas/50 text-fifth text-sm min-h-[100px] [&_a]:font-medium [&_a]:text-fourth"
                                         dangerouslySetInnerHTML={{ __html: selectedShow.show_callbacks }}
                                     />
                                 )}
@@ -1094,12 +1094,12 @@ export const AdminShow: React.FC = () => {
 
                     {/* Releases table */}
                     {selectedShow && (
-                    <div className="mt-6 space-y-2">
+                    <div className="mt-6 space-y-1">
                         <div className="flex justify-between items-center">
-                        <h4 className="text-base text-black font-semibold">Releases</h4>
+                        <h4 className="text-base text-fifth font-medium">Releases</h4>
                         <button
                             onClick={handleAddRelease}
-                            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white border border-black rounded-lg text-sm hover:bg-green-600/80 transition-colors"
+                            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-primary border border-secondary rounded-lg text-sm hover:bg-green-600/80 transition-colors"
                         >
                             <Plus className="w-4 h-4" />
                             Add Release
@@ -1107,18 +1107,18 @@ export const AdminShow: React.FC = () => {
                         </div>
                         
                         {loadingReleases ? (
-                        <div className="flex justify-center items-center p-4">
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
-                            <p className="text-sm text-black/70 ml-2">Loading releases...</p>
+                        <div className="flex justify-center items-center p-3">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
+                            <p className="text-sm text-fifth/70 ml-2">Loading releases...</p>
                         </div>
                         ) : showReleases.length > 0 ? (
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
                             <thead>
-                                <tr className="bg-canvas border-y border-black/10">
-                                <th className="px-4 py-1 text-left text-sm font-semibold text-black">Display Name</th>
-                                <th className="px-4 py-1 text-left text-sm font-semibold text-black">Service</th>
-                                <th className="px-4 py-1 text-center text-sm font-semibold text-black">Order</th>
+                                <tr className="bg-canvas border-y border-secondary/10">
+                                <th className="px-4 py-1 text-left text-sm font-medium text-fifth">Display Name</th>
+                                <th className="px-4 py-1 text-left text-sm font-medium text-fifth">Service</th>
+                                <th className="px-4 py-1 text-center text-sm font-medium text-fifth">Order</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-black/5">
@@ -1128,15 +1128,15 @@ export const AdminShow: React.FC = () => {
                                     onClick={() => handleEditRelease(releaseShow.release_id, releaseShow.release_order)}
                                     className={`${
                                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                    } hover:bg-black/10 transition-colors cursor-pointer`}
+                                    } hover:bg-tertiary/40 transition-colors cursor-pointer`}
                                 >
-                                    <td className="px-4 py-1 text-sm text-black">
+                                    <td className="px-4 py-1 text-xs font-light text-fifth">
                                     {releaseShow.releases.release_displayname}
                                     </td>
-                                    <td className="px-4 py-1 text-sm text-black">
+                                    <td className="px-4 py-1 text-xs font-light text-fifth">
                                     {releaseShow.releases.release_service || '-'}
                                     </td>
-                                    <td className="px-4 py-1 text-sm text-black text-center">
+                                    <td className="px-4 py-1 text-xs font-light text-fifth text-center">
                                     {releaseShow.release_order}
                                     </td>
                                 </tr>
@@ -1145,7 +1145,7 @@ export const AdminShow: React.FC = () => {
                             </table>
                         </div>
                         ) : (
-                        <div className="text-sm text-black/60 italic p-4 bg-canvas rounded-md border border-black/10">
+                        <div className="text-sm text-fifth/80 italic p-3 bg-canvas rounded-md border border-secondary/10">
                             No releases associated with this show
                         </div>
                         )}

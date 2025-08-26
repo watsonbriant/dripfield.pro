@@ -172,7 +172,7 @@ export const PublicProfile: React.FC = () => {
       case 'Overview':
         return (
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Profile Overview</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Profile Overview</h3>
             <div className="grid grid-cols-1 gap-6">
               <OverviewChart userId={userId} />
               <UserStats userId={userId} showCopyButton={false} />
@@ -199,7 +199,7 @@ export const PublicProfile: React.FC = () => {
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Songs Seen</h3>
+              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Songs Seen</h3>
               <UserSongToggleSwitch
                 isRight={showSongMatrix}
                 onToggle={setShowSongMatrix}
@@ -219,14 +219,14 @@ export const PublicProfile: React.FC = () => {
       case 'Slots':
         return (
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Slots</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Slots</h3>
             <UserSlots userId={userId} />
           </div>
         );
       case 'Guests':
         return (
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Guests Seen</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Guests Seen</h3>
             <UserGuests userId={userId} />
           </div>
         );
@@ -244,7 +244,7 @@ export const PublicProfile: React.FC = () => {
   if (isLoading) {
     return (
       <div className="max-w-[1280px] mx-auto flex items-center justify-center h-64">
-        <div className="font-mohr bg-[#f9ae37] text-black px-4 py-2 rounded-full border border-black">Loading profile...</div>
+        <div className="font-mohr bg-[#f9ae37] text-fifth px-4 py-2 rounded-full border border-black">Loading profile...</div>
       </div>
     );
   }
@@ -253,11 +253,11 @@ export const PublicProfile: React.FC = () => {
     return (
       <div className="max-w-[1280px] mx-auto mt-8">
         <div className="bg-white/20 border border-black rounded-lg p-6 text-center">
-          <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-4 py-1 rounded-full border border-black mb-2">Error</h3>
-          <p className="text-black/80">{error}</p>
+          <h3 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-4 py-1 rounded-full border border-black mb-2">Error</h3>
+          <p className="text-fifth/80">{error}</p>
           <button 
             onClick={() => navigate('/')} 
-            className="mt-4 px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black rounded-full border border-black font-semibold"
+            className="mt-4 px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-fifth rounded-full border border-black font-semibold"
           >
             Return Home
           </button>
@@ -274,8 +274,8 @@ export const PublicProfile: React.FC = () => {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="flex flex-row justify-between items-center mt-2">
-        <h2 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">
+      <div className="flex flex-row justify-between items-center">
+        <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
           {formatUsername(profileUsername)}'s Stats
         </h2>
         
@@ -283,7 +283,7 @@ export const PublicProfile: React.FC = () => {
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f9ae37] text-black font-semibold border border-black"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f9ae37] text-fifth font-semibold border border-black"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
@@ -298,7 +298,7 @@ export const PublicProfile: React.FC = () => {
                     setActiveTab(tab);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors ${
+                  className={`w-full text-left px-4 py-1 text-sm text-fifth hover:bg-canvas transition-colors ${
                     activeTab === tab ? 'bg-canvas font-semibold' : ''
                   }`}
                 >
@@ -311,17 +311,17 @@ export const PublicProfile: React.FC = () => {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-primary px-1 py-1 rounded-full border border-black">
+          <div className="bg-primary px-1 py-1 rounded-lg border border-secondary">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
                   key={tab}
                   ref={el => tabsRef.current[index] = el}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-1 px-3 font-semibold relative z-10 text-sm transition-colors duration-200 ${
+                  className={`py-1 px-3 font-medium relative z-10 text-sm transition-colors duration-200 ${
                     activeTab === tab
-                      ? 'text-black'
-                      : 'text-black/60 hover:text-black/90'
+                      ? 'text-fifth'
+                      : 'text-fifth hover:underline'
                   }`}
                 >
                   {tab}
@@ -331,7 +331,7 @@ export const PublicProfile: React.FC = () => {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-[#f9ae37] rounded-full top-0 transition-all duration-300 ease-in-out border border-black"
+                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-secondary"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>

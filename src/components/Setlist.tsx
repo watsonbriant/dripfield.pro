@@ -381,13 +381,13 @@ export function Setlist() {
   if (loading) {
     return (
       <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading setlist...</p>
+          <p className="text-fifth mt-4">Loading setlist...</p>
         </div>
       </div>
     );
@@ -396,8 +396,8 @@ export function Setlist() {
   if (!show) {
     return (
       <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
-          <p className="text-black">Show not found</p>
+        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+          <p className="text-fifth">Show not found</p>
         </div>
       </div>
     );
@@ -407,10 +407,10 @@ export function Setlist() {
     <div className="max-w-[1280px] mx-auto">
       {/* Header section */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">
+        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
           Setlist
         </h1>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           {hasCoachNotes && (
             <ToggleSwitch
               checked={showCoachNotes}
@@ -421,7 +421,7 @@ export function Setlist() {
             <div className="md:block">
               <button
                 onClick={() => setIsShowDatesDropdownOpen(!isShowDatesDropdownOpen)}
-                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
+                className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
               >
                 Shows
                 <ChevronDown className="w-4 h-4" />
@@ -430,7 +430,7 @@ export function Setlist() {
             {isShowDatesDropdownOpen && (
               <div 
                 ref={showDatesDropdownListRef}
-                className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
+                className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
               >
                 {showDates.map((showDate) => (
                   <button
@@ -445,7 +445,7 @@ export function Setlist() {
                     }`}
                   >
                     <div className="flex justify-between items-center">
-                      <div className="truncate text-black">
+                      <div className="truncate text-fifth">
                         <span className="font-semibold">
                           {showDate.formatted_show_date} 
                           {showDate.show_venue_location && (
@@ -457,12 +457,12 @@ export function Setlist() {
                       </div>
                       <div className="flex items-center gap-2 text-xs shrink-0">
                         {showDate.show_rarity_percentage && (
-                          <span className="px-2 py-0.5 bg-canvas rounded border border-black/20 text-black">
+                          <span className="px-2 py-0.5 bg-canvas rounded border border-secondary/20 text-fifth">
                             {showDate.show_rarity_percentage}
                           </span>
                         )}
                         {showDate.total_entry_length && (
-                          <span className="px-2 py-0.5 bg-canvas rounded border border-black/20 text-black">
+                          <span className="px-2 py-0.5 bg-canvas rounded border border-secondary/20 text-fifth">
                             {showDate.total_entry_length}
                           </span>
                         )}
@@ -477,7 +477,7 @@ export function Setlist() {
             <div className="md:hidden">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#fce7ca]/90 transition-colors border border-black"
+                className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
               >
                 <MapPin className="w-6 h-6" />
               </button>
@@ -497,7 +497,7 @@ export function Setlist() {
                         }}
                         className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
                       >
-                        <span className="text-black">{tour.tour}</span>
+                        <span className="text-fifth">{tour.tour}</span>
                       </button>
                     ))}
                   </div>
@@ -507,7 +507,7 @@ export function Setlist() {
             <div className="hidden md:block">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
+                className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
               >
                 Tours
                 <ChevronDown className="w-4 h-4" />
@@ -516,7 +516,7 @@ export function Setlist() {
             {isDropdownOpen && (
               <div 
                 ref={dropdownListRef}
-                className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
+                className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
               >
                 {tours.map((tour) => (
                   <button
@@ -529,7 +529,7 @@ export function Setlist() {
                       show?.show_tour === tour.tour ? 'bg-[#f9ae37]' : ''
                     }`}
                   >
-                    <span className="text-black">{tour.tour}</span>
+                    <span className="text-fifth">{tour.tour}</span>
                   </button>
                 ))}
               </div>

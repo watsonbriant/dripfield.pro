@@ -249,13 +249,13 @@ export const AdminChanges: React.FC = () => {
   return (
     <div>
       {/* Header with right-aligned dropdown */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Show Changes Management</h3>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Show Changes Management</h3>
         
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
+            className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
           >
             Select Show
             <ChevronDown className="w-4 h-4" />
@@ -312,13 +312,13 @@ export const AdminChanges: React.FC = () => {
       {/* Selected show display */}
       {selectedShow && (
         <div>
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-2 flex items-center justify-between">
             <div>
-              <h4 className="text-lg text-black font-semibold">
+              <h4 className="text-lg text-black font-medium">
                 {formatDate(selectedShow.show_date)}
                 &nbsp;[{selectedShow.show_group}]
               </h4>
-              <div className="text-sm text-black/70 mt-1">
+              <div className="text-sm text-black/70">
                 {selectedShow.show_subvenue} — {selectedShow.show_venue_location}
               </div>
             </div>
@@ -326,7 +326,7 @@ export const AdminChanges: React.FC = () => {
             {/* Add New Change Button */}
             <button
               onClick={handleCreateNewChange}
-              className="flex items-center gap-2 bg-[#f9ae37] text-black px-1.5 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
+              className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-primary"
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -334,7 +334,7 @@ export const AdminChanges: React.FC = () => {
           
           {loading ? (
             <div className="flex justify-center items-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#f9ae37]"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-fourth"></div>
             </div>
           ) : (
             <>
@@ -354,14 +354,14 @@ export const AdminChanges: React.FC = () => {
                           key={change.show_change_uuid} 
                           className={`${
                             index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                          } hover:bg-black/10 transition-colors text-xs cursor-pointer`}
+                          } hover:bg-tertiary/40 transition-colors text-xs cursor-pointer`}
                           onClick={() => handleChangeSelect(change)}
                         >
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap text-center">{change.change_order}</td>
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap text-center">{change.change_type}</td>
-                          <td className="px-2 py-0.5 text-black">
+                          <td className="px-2 py-0.5 text-black font-light whitespace-nowrap text-center">{change.change_order}</td>
+                          <td className="px-2 py-0.5 text-black font-light whitespace-nowrap text-center">{change.change_type}</td>
+                          <td className="px-2 py-0.5 text-black font-light">
                             <div 
-                              className="[&_a]:font-semibold"
+                              className="[&_a]:font-medium"
                               dangerouslySetInnerHTML={{ __html: change.change }}
                             />
                           </td>

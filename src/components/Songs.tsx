@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { SongSearch } from './SongSearch';
 
 interface Song {
@@ -9,359 +8,286 @@ interface Song {
   song_category: string;
   song_originalartist: string;
   song_id: string;
+  song_categoryorder: number;
 }
 
-type SortField = 'song' | 'song_category' | 'song_originalartist';
-type SortDirection = 'asc' | 'desc';
-
-type TableType = 'goose' | 'covers' | 'adjacent' | 'collaborations';
-
-interface TableState {
-  songs: Song[];
-  loading: boolean;
-  currentPage: number;
-  totalCount: number;
-  sortField: SortField;
-  sortDirection: SortDirection;
-}
-
-interface SongBasic {
-  song: string;
-  song_id: string;
-}
+type Category = {
+  category: string;
+  category_canonid: number;
+  category_display_name: string;
+  category_color1: string;
+  category_color2: string;
+  category_artwork: string;
+  category_type: string;
+};
 
 export function Songs() {
   const navigate = useNavigate();
-  const songsPerPage = 30;
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [gooseTable, setGooseTable] = React.useState<TableState>({
-    songs: [],
-    loading: true,
-    currentPage: 1,
-    totalCount: 0,
-    sortField: 'song',
-    sortDirection: 'asc'
-  });
-
-  const [coversTable, setCoversTable] = React.useState<TableState>({
-    songs: [],
-    loading: true,
-    currentPage: 1,
-    totalCount: 0,
-    sortField: 'song',
-    sortDirection: 'asc'
-  });
-
-  const [adjacentTable, setAdjacentTable] = React.useState<TableState>({
-    songs: [],
-    loading: true,
-    currentPage: 1,
-    totalCount: 0,
-    sortField: 'song',
-    sortDirection: 'asc'
-  });
-
-  const [collaborationsTable, setCollaborationsTable] = React.useState<TableState>({
-    songs: [],
-    loading: true,
-    currentPage: 1,
-    totalCount: 0,
-    sortField: 'song',
-    sortDirection: 'asc'
-  });
-
-  const fetchSongs = async (type: TableType, page: number, field: SortField, direction: SortDirection) => {
-    try {
-      const categoryTypes = {
-        goose: ['Goose', 'Goose Misc', 'Ted Tapes'],
-        covers: ['Cover Songs'],
-        adjacent: ['Goose-adjacent'],
-        collaborations: ['Live Collaborations']
-      }[type];
-
-      const { data, count, error } = await supabase
-        .from('songs')
-        .select(`
-          song,
-          song_category,
-          song_originalartist,
-          song_id,
-          categories!inner(category_type)
-        `, { count: 'exact' })
-        .in('categories.category_type', categoryTypes)
-        .eq('song_placeholder', false)
-        .order(field, { ascending: direction === 'asc' })
-        .range((page - 1) * songsPerPage, page * songsPerPage - 1);
-
-      if (error) throw error;
-
-      const formattedData = data?.map(song => ({
-        song: song.song,
-        song_category: song.song_category,
-        song_originalartist: song.song_originalartist,
-        song_id: song.song_id
-      })) || [];
-
-      return { songs: formattedData, count: count || 0 };
-    } catch (error) {
-      console.error(`Error fetching ${type} songs:`, error);
-      return { songs: [], count: 0 };
-    }
+  // Responsive columns hook
+  const useResponsiveColumns = () => {
+    const [columnCount, setColumnCount] = useState(1);
+    
+    useEffect(() => {
+      const handleResize = () => {
+        const width = window.innerWidth;
+        if (width >= 1280) {
+          setColumnCount(4);
+        } else if (width >= 1024) {
+          setColumnCount(3);
+        } else if (width >= 640) {
+          setColumnCount(2);
+        } else {
+          setColumnCount(1);
+        }
+      };
+      
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    
+    return columnCount;
   };
 
-  React.useEffect(() => {
-    async function fetchGooseSongs() {
-      setGooseTable(prev => ({ ...prev, loading: true }));
-      const { songs, count } = await fetchSongs('goose', gooseTable.currentPage, gooseTable.sortField, gooseTable.sortDirection);
-      setGooseTable(prev => ({
-        ...prev,
-        songs,
-        totalCount: count,
-        loading: false
-      }));
+  const currentColumnCount = useResponsiveColumns();
+
+  // Fetch all data
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      
+      try {
+        // Fetch categories
+        const { data: categoriesData, error: catError } = await supabase
+          .from('categories')
+          .select('*')
+          .order('category_canonid', { ascending: true });
+        
+        if (catError) throw catError;
+        
+        // Fetch all songs
+        const { data: songsData, error: songsError } = await supabase
+          .from('songs')
+          .select('*')
+          .eq('song_placeholder', false)
+          .order('song_categoryorder', { ascending: true });
+        
+        if (songsError) throw songsError;
+        
+        setCategories(categoriesData || []);
+        setSongs(songsData || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
+
+  // Group songs by category
+  const songsByCategory = React.useMemo(() => {
+    const grouped: Record<string, Song[]> = {};
+    
+    categories.forEach(category => {
+      const categorySongs = songs.filter(
+        song => song.song_category === category.category
+      );
+      
+      const sortedSongs = categorySongs.sort((a, b) => {
+        if (a.song_categoryorder !== b.song_categoryorder) {
+          return a.song_categoryorder - b.song_categoryorder;
+        }
+        return a.song.localeCompare(b.song);
+      });
+      
+      grouped[category.category] = sortedSongs;
+    });
+    
+    return grouped;
+  }, [songs, categories]);
+
+  // Separate categories into sections
+  const sectionedCategories = React.useMemo(() => {
+    // Filter by category_type
+    const gooseCategories = categories.filter(cat => 
+      ['Goose', 'Goose Misc', 'Ted Tapes'].includes(cat.category_type)
+    );
+    
+    const coverCategories = categories.filter(cat => 
+      ['Cover Songs', 'Live Collaborations'].includes(cat.category_type)
+    );
+    
+    const otherCategories = categories.filter(cat => 
+      cat.category_type === 'Goose-adjacent'
+    );
+    
+    return { 
+      goose: gooseCategories, 
+      covers: coverCategories, 
+      other: otherCategories 
+    };
+  }, [categories]);
+
+  // Create columns for category layout
+  const createCategoryColumns = (sectionCategories: Category[], numColumns: number = 4) => {
+    const sortedCategories = [...sectionCategories].sort(
+      (a, b) => a.category_canonid - b.category_canonid
+    );
+    
+    if (numColumns === 1) {
+      return [sortedCategories];
     }
-    fetchGooseSongs();
-  }, [gooseTable.currentPage, gooseTable.sortField, gooseTable.sortDirection]);
-
-  React.useEffect(() => {
-    async function fetchCoverSongs() {
-      setCoversTable(prev => ({ ...prev, loading: true }));
-      const { songs, count } = await fetchSongs('covers', coversTable.currentPage, coversTable.sortField, coversTable.sortDirection);
-      setCoversTable(prev => ({
-        ...prev,
-        songs,
-        totalCount: count,
-        loading: false
-      }));
+    
+    const totalCategories = sortedCategories.length;
+    const result: Category[][] = Array.from({ length: numColumns }, () => []);
+    
+    const rowsNeeded = Math.ceil(totalCategories / numColumns);
+    
+    const grid: Category[][] = [];
+    for (let i = 0; i < rowsNeeded; i++) {
+      grid.push([]);
+      for (let j = 0; j < numColumns; j++) {
+        const index = i + j * rowsNeeded;
+        if (index < totalCategories) {
+          grid[i].push(sortedCategories[index]);
+        }
+      }
     }
-    fetchCoverSongs();
-  }, [coversTable.currentPage, coversTable.sortField, coversTable.sortDirection]);
-
-  React.useEffect(() => {
-    async function fetchAdjacentSongs() {
-      setAdjacentTable(prev => ({ ...prev, loading: true }));
-      const { songs, count } = await fetchSongs('adjacent', adjacentTable.currentPage, adjacentTable.sortField, adjacentTable.sortDirection);
-      setAdjacentTable(prev => ({
-        ...prev,
-        songs,
-        totalCount: count,
-        loading: false
-      }));
+    
+    for (let col = 0; col < numColumns; col++) {
+      for (let row = 0; row < rowsNeeded; row++) {
+        if (grid[row] && grid[row][col]) {
+          result[col].push(grid[row][col]);
+        }
+      }
     }
-    fetchAdjacentSongs();
-  }, [adjacentTable.currentPage, adjacentTable.sortField, adjacentTable.sortDirection]);
-
-  React.useEffect(() => {
-    async function fetchCollaborationSongs() {
-      setCollaborationsTable(prev => ({ ...prev, loading: true }));
-      const { songs, count } = await fetchSongs('collaborations', collaborationsTable.currentPage, collaborationsTable.sortField, collaborationsTable.sortDirection);
-      setCollaborationsTable(prev => ({
-        ...prev,
-        songs,
-        totalCount: count,
-        loading: false
-      }));
-    }
-    fetchCollaborationSongs();
-  }, [collaborationsTable.currentPage, collaborationsTable.sortField, collaborationsTable.sortDirection]);
-
-  const handleSort = (type: TableType, field: SortField) => {
-    const setState = type === 'goose' ? setGooseTable : 
-                    type === 'covers' ? setCoversTable :
-                    type === 'adjacent' ? setAdjacentTable :
-                    setCollaborationsTable;
-    const state = type === 'goose' ? gooseTable :
-                 type === 'covers' ? coversTable :
-                 type === 'adjacent' ? adjacentTable :
-                 collaborationsTable;
-
-    setState(prev => ({
-      ...prev,
-      sortField: field,
-      sortDirection: field === prev.sortField && prev.sortDirection === 'asc' ? 'desc' : 'asc',
-      currentPage: 1
-    }));
+    
+    return result;
   };
 
-  const renderSortIcon = (tableState: TableState, field: SortField) => {
-    if (field !== tableState.sortField) {
-      return <ChevronDown className="w-4 h-4 opacity-0 group-hover:opacity-50" />;
-    }
-    return tableState.sortDirection === 'asc' ? (
-      <ChevronUp className="w-4 h-4" />
-    ) : (
-      <ChevronDown className="w-4 h-4" />
+  // Create columns for each section
+  const gooseColumns = React.useMemo(() => 
+    createCategoryColumns(sectionedCategories.goose, currentColumnCount),
+    [sectionedCategories.goose, currentColumnCount]
+  );
+
+  const coversColumns = React.useMemo(() => 
+    createCategoryColumns(sectionedCategories.covers, Math.min(currentColumnCount, 2)),
+    [sectionedCategories.covers, currentColumnCount]
+  );
+
+  const otherColumns = React.useMemo(() => 
+    createCategoryColumns(sectionedCategories.other, currentColumnCount),
+    [sectionedCategories.other, currentColumnCount]
+  );
+
+  // Render a category section
+  const renderCategorySection = (columns: Category[][], title: string, sectionType: 'goose' | 'covers' | 'other') => {
+    if (columns.flat().length === 0) return null;
+    
+    const getCoverSongGridClass = () => {
+      if (sectionType !== 'covers') return "space-y-0";
+      return `grid ${
+        currentColumnCount === 4 || (currentColumnCount === 2 && window.innerWidth < 1024) 
+          ? 'grid-cols-2' 
+          : 'grid-cols-1'
+      } gap-x-2 gap-y-0`;
+    };
+    
+    const songListClass = getCoverSongGridClass();
+    
+    return (
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
+          {title}
+        </h3>
+        <div className={`grid grid-cols-1 ${
+          sectionType === 'covers' 
+            ? 'sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2' 
+            : 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+        } gap-6`}>
+          {columns.map((columnCategories, columnIndex) => (
+            <div key={`${title}-column-${columnIndex}`} className="flex flex-col gap-6">
+              {columnCategories.map(category => {
+                const categorySongs = songsByCategory[category.category] || [];
+                
+                return (
+                  <div 
+                    key={category.category} 
+                    className="bg-primary rounded-lg p-3 border border-secondary h-auto w-full relative"
+                  >
+                    <div className="flex items-center justify-between mb-1 pb-2 border-b border-secondary">
+                      <h4 className="text-lg font-medium text-fifth leading-[1.25rem] pl-0.5">
+                        {category.category}
+                      </h4>
+                      {category.category_artwork && (
+                        <div className="h-7 flex-shrink-0">
+                          <img 
+                            src={category.category_artwork} 
+                            alt={`${category.category} artwork`}
+                            className="h-full object-contain rounded border border-secondary"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <ul className={songListClass}>
+                      {categorySongs.map(song => (
+                        <li 
+                          key={song.song_id} 
+                          className="text-xs hover:bg-tertiary/40 transition-colors py-0.5 px-1 rounded cursor-pointer"
+                          onClick={() => navigate(`/song/${song.song_id}`)}
+                        >
+                          <span className="font-light hover:underline transition-colors text-left text-xs text-fifth">
+                            {song.song}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
     );
   };
 
-  const handlePageChange = (type: TableType, newPage: number) => {
-    const setState = type === 'goose' ? setGooseTable :
-                    type === 'covers' ? setCoversTable :
-                    type === 'adjacent' ? setAdjacentTable :
-                    setCollaborationsTable;
-    setState(prev => ({ ...prev, currentPage: newPage }));
-  };
-
-  const SongsTable = ({ type, state }: { type: TableType; state: TableState }) => {
-    const totalPages = Math.ceil(state.totalCount / songsPerPage);
-
-    const getTableTitle = (type: TableType) => {
-      switch (type) {
-        case 'goose':
-          return 'Goose Songs';
-        case 'covers':
-          return 'Cover Songs';
-        case 'adjacent':
-          return 'Goose-Adjacent Songs';
-        case 'collaborations':
-          return 'Live Collaborations';
-        default:
-          return '';
-      }
-    };
-
+  if (loading) {
     return (
-      <div className="flex-1 min-w-0 bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
-          {getTableTitle(type)}
-        </h2>
-        {state.loading ? (
-          <div className="text-center py-12">
+      <div className="max-w-[1280px] mx-auto">
+        <div className="flex justify-center items-center h-56">
+          <div className="text-center">
             <div className="flex items-center justify-center space-x-2">
               <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
               <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
               <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
             </div>
-            <p className="text-black mt-4">Loading songs...</p>
+            <p className="text-fifth mt-4">Loading songs...</p>
           </div>
-        ) : state.songs.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-black">No songs found</p>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse min-w-max">
-                <thead>
-                  <tr className="bg-canvas border-y border-white/10">
-                    <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
-                      <button 
-                        onClick={() => handleSort(type, 'song')}
-                        className="flex items-center gap-1 hover:text-[#a9682e] group"
-                      >
-                        Song
-                        {renderSortIcon(state, 'song')}
-                      </button>
-                    </th>
-                    {(type === 'goose' || type === 'adjacent') && (
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
-                        <button 
-                          onClick={() => handleSort(type, 'song_category')}
-                          className="flex items-center gap-1 hover:text-[#a9682e] group"
-                        >
-                          Category
-                          {renderSortIcon(state, 'song_category')}
-                        </button>
-                      </th>
-                    )}
-                    <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
-                      <button 
-                        onClick={() => handleSort(type, 'song_originalartist')}
-                        className="flex items-center gap-1 hover:text-[#a9682e] group"
-                      >
-                        Original Artist
-                        {renderSortIcon(state, 'song_originalartist')}
-                      </button>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {state.songs.map((song, index) => (
-                    <tr
-                      key={song.song_id}
-                      className={`${
-                        index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                      } hover:bg-black/10 transition-colors text-xs`}
-                    >
-                      <td className="px-4 py-0.5 text-black whitespace-nowrap">
-                        <span 
-                          className="font-semibold hover:text-[#a9682e] transition-colors table-link cursor-pointer"
-                          onClick={() => navigate(`/song/${song.song_id}`)}
-                        >
-                          {song.song}
-                        </span>
-                      </td>
-                      {(type === 'goose' || type === 'adjacent') && (
-                        <td className="px-4 py-0.5 text-black whitespace-nowrap">{song.song_category}</td>
-                      )}
-                      <td className="px-4 py-0.5 text-black whitespace-nowrap">{song.song_originalartist}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="mt-4 flex items-center justify-between px-4">
-              <div className="text-sm text-black">
-                Showing {(state.currentPage - 1) * songsPerPage + 1}-{Math.min(state.currentPage * songsPerPage, state.totalCount)} of {state.totalCount}
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handlePageChange(type, state.currentPage - 1)}
-                  disabled={state.currentPage === 1}
-                  className={`p-1 rounded-md transition-colors ${
-                    state.currentPage === 1
-                      ? 'text-black/30 cursor-not-allowed'
-                      : 'text-black hover:text-[#a9682e] hover:bg-black/10'
-                  }`}
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <span className="text-sm text-black">
-                  Page {state.currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() => handlePageChange(type, state.currentPage + 1)}
-                  disabled={state.currentPage === totalPages}
-                  className={`p-1 rounded-md transition-colors ${
-                    state.currentPage === totalPages
-                      ? 'text-black/30 cursor-not-allowed'
-                      : 'text-black hover:text-[#a9682e] hover:bg-black/10'
-                  }`}
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          </>
-        )}
+        </div>
       </div>
     );
-  };
+  }
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Songs</h1>
+      <div className="flex justify-between mb-6 items-center">
+        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
+          Songs
+        </h1>
         <SongSearch />
       </div>
-      <div className="flex flex-col gap-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="w-full">
-            <SongsTable type="goose" state={gooseTable} />
-          </div>
-          <div className="w-full">
-            <SongsTable type="covers" state={coversTable} />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="w-full">
-            <SongsTable type="adjacent" state={adjacentTable} />
-          </div>
-          <div className="w-full">
-            <SongsTable type="collaborations" state={collaborationsTable} />
-          </div>
-        </div>
+      <div className="pb-8">
+        {renderCategorySection(gooseColumns, "Goose Songs", 'goose')}
+        {renderCategorySection(coversColumns, "Cover Songs", 'covers')}
+        {renderCategorySection(otherColumns, "Other Songs", 'other')}
       </div>
     </div>
   );

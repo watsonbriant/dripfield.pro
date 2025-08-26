@@ -16,12 +16,14 @@ interface SongsPlayedProps {
   selectedSong: string | null;
   onSongClick: (song: string) => void;
   CircularProgress?: React.FC<{ value: number }>; // Added prop to receive CircularProgress component
+  cleanSongName?: (songName: string) => string;
 }
 
 interface SongSpreadItem {
   category: string;
   count: number;
   canonid: number;
+  artwork?: string | null;
   songs: {
     song: string;
     playCount: number;
@@ -63,7 +65,7 @@ const DefaultCircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-sm font-bold text-black">
+      <div className="absolute text-sm font-bold text-fifth">
         {Math.round(value)}%
       </div>
     </div>
@@ -75,7 +77,8 @@ export function SongsPlayed({
   isLoading, 
   selectedSong, 
   onSongClick,
-  CircularProgress = DefaultCircularProgress
+  CircularProgress = DefaultCircularProgress,
+  cleanSongName
 }: SongsPlayedProps) {
   const [songs, setSongs] = useState<SongCount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -187,6 +190,21 @@ export function SongsPlayed({
             }, {});
           }
         }
+
+        let categoryArtwork: Record<string, string | null> = {};
+        if (categories.length > 0) {
+          const { data: artworkData, error: artworkError } = await supabase
+            .from('categories')
+            .select('category, category_artwork')
+            .in('category', categories);
+            
+          if (!artworkError && artworkData) {
+            categoryArtwork = artworkData.reduce((acc, cat) => {
+              acc[cat.category] = cat.category_artwork;
+              return acc;
+            }, {});
+          }
+        }
         
         // Convert to array format with category information
         const songsArray = Object.entries(songData).map(([song, data]) => ({
@@ -226,8 +244,9 @@ export function SongsPlayed({
         // Convert to sorted array for the spread chart
         const spreadData = Object.keys(categoryTotalPerformances).map(category => ({
           category,
-          count: categoryTotalPerformances[category], // Total performances, not unique songs
+          count: categoryTotalPerformances[category],
           canonid: categoryCanonIds[category] || 9999,
+          artwork: categoryArtwork[category],
           songs: categorySongs[category].sort((a, b) => b.playCount - a.playCount)
         })).sort((a, b) => {
           if (b.count !== a.count) {
@@ -317,13 +336,13 @@ export function SongsPlayed({
   
   return (
     <div>
-      <div className="flex justify-between items-center mb-3">
-        <h2 className="text-black font-semibold">
+      <div className="pl-2 pr-2 flex justify-between items-center mb-3">
+        <h2 className="text-fifth text-sm flex justify-between font-light">
           {songs.length} Unique Songs
         </h2>
         <button 
           onClick={() => setIsSpreadModalOpen(true)} 
-          className="text-black hover:text-[#a9682e] transition-colors"
+          className="text-fifth hover:text-tertiary transition-colors"
           aria-label="Show song spread"
         >
           <ChartBarDecreasing size={18} />
@@ -337,16 +356,16 @@ export function SongsPlayed({
           placeholder="Search songs..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-canvas border border-black rounded-md px-3 py-1.5 text-sm text-black focus:outline-none focus:ring-1 focus:ring-[#a9682e] placeholder-black/60"
+          className="w-full bg-canvas border border-secondary rounded-md px-3 py-1.5 text-sm text-fifth focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
         />
       </div>
       
       {sortedSongs.length > 0 ? (
         <div className="relative">
           {/* Sticky table header */}
-          <div className="sticky top-0 z-10 bg-primary grid grid-cols-2 text-sm text-black border-b border-black/10 pb-1 mb-2">
+          <div className="sticky top-0 z-10 bg-primary grid grid-cols-2 text-sm text-fifth border-b border-secondary pb-1 mb-2">
             <div 
-              className="cursor-pointer hover:text-[#a9682e] flex items-center"
+              className="cursor-pointer hover:text-tertiary font-medium flex items-center"
               onClick={() => handleSortClick('song')}
             >
               <span>Song</span>
@@ -355,7 +374,7 @@ export function SongsPlayed({
               )}
             </div>
             <div 
-              className="cursor-pointer hover:text-[#a9682e] text-right flex items-center justify-end"
+              className="cursor-pointer hover:text-tertiary font-medium text-right flex items-center justify-end"
               onClick={() => handleSortClick('count')}
             >
               <span>Count</span>
@@ -367,26 +386,26 @@ export function SongsPlayed({
           
           {/* Scrollable song list */}
           <div className="max-h-[234px] overflow-y-auto">
-            <div className="space-y-1">
+            <div>
               {sortedSongs.map((song, index) => (
                 <div 
                   key={index} 
                   onClick={() => onSongClick(song.song)}
-                  className={`flex justify-between text-sm font-semibold cursor-pointer ${
+                  className={`flex justify-between text-sm cursor-pointer ${
                     selectedSong === song.song 
-                      ? 'bg-[#f9ae37]/40' 
-                      : 'hover:bg-[#f9ae37]/20'
+                      ? 'bg-tertiary/80' 
+                      : 'hover:bg-tertiary/40'
                   }`}
                 >
-                  <span className="truncate text-black">{song.song}</span>
-                  <span className="text-black">{song.play_count}</span>
+                  <span className="pl-2 truncate font-trad text-fifth">{cleanSongName ? cleanSongName(song.song) : song.song}</span>
+                  <span className="pr-2 text-fifth font-base">{song.play_count}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
       ) : (
-        <div className="text-black/70 text-center py-4">
+        <div className="text-fifth/70 text-center py-4">
           {searchTerm ? 'No songs match your search.' : 'No songs found.'}
         </div>
       )}
@@ -398,21 +417,32 @@ export function SongsPlayed({
         title="Song Category Spread"
       >
         <div className="space-y-1.5 max-h-[80vh] overflow-y-auto p-1">
-          {songSpreadData.map(({ category, count, songs }) => (
+          {songSpreadData.map(({ category, count, songs, artwork }) => (
             <div key={category}>
-              <div className="text-black text-sm font-semibold">
+              <div className="text-fifth text-sm font-medium">
                 {category}
               </div>
               <div className="h-5 rounded overflow-hidden">
                 <div 
-                  className="h-full bg-[#f9ae37] rounded relative"
+                  className="h-full bg-secondary border-secondary rounded relative flex items-center"
                   style={{ 
                     width: `${(count / maxCount) * 100}%`,
-                    minWidth: count < 10 ? '24px' : count < 100 ? '32px' : count < 1000 ? '40px' : '48px'
+                    minWidth: count < 10 ? '42px' : count < 100 ? '51px' : count < 1000 ? '60px' : '69px'
                   }}
                 >
+                  {artwork && (
+                    <img 
+                      src={artwork} 
+                      alt=""
+                      onError={(e) => {
+                        console.error(`Failed to load image for ${category}:`, artwork);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      className="h-4 w-4 ml-0.5 object-cover rounded-sm"
+                    />
+                  )}
                   <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                    <span className="text-black text-sm font-semibold">{count}</span>
+                    <span className="text-fifth text-sm font-semibold">{count}</span>
                   </div>
                 </div>
               </div>

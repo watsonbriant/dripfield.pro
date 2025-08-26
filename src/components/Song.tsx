@@ -57,6 +57,17 @@ interface Stats {
   hasRarity: boolean;
 }
 
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
+
 const getRarityColor = (percentage: string | null): string => {
   // If percentage is null or not a valid percentage string, return transparent
   if (!percentage || percentage === '-') return 'transparent';
@@ -371,11 +382,11 @@ export function Song() {
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-lg bg-tertiary animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-tertiary animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-tertiary animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading song data...</p>
+          <p className="text-fifth mt-4">Loading song data...</p>
         </div>
       </div>
     );
@@ -385,7 +396,7 @@ export function Song() {
     return (
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
-          <p className="text-black">Song not found</p>
+          <p className="text-fifth">Song not found</p>
         </div>
       </div>
     );
@@ -394,7 +405,7 @@ export function Song() {
   return (
     <div className={`${song.song_lyrics ? "max-w-[936px] xl:max-w-[1280px]" : "max-w-[936px]"} mx-auto`}>
       <div className="flex justify-between">
-        <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block mr-4 px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-6">{song.song}</h2>
+        <h2 className="text-2xl font-trad bg-tertiary text-fifth inline-block mr-4 px-4 pt-0.5 pb-1.5 rounded-lg border border-secondary mb-6">{cleanSongName(song.song)}</h2>
         <SongSearch />
       </div>
     
@@ -416,23 +427,23 @@ export function Song() {
           } gap-6`}>
             {/* Song Info */}
             <div className="h-full">
-              <div className="bg-primary rounded-lg p-3 border border-black w-full h-full relative">
+              <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
                 {song.categories?.category_artwork && (
                   <img 
-                    src={song.categories.category_artwork} 
+                    src={song.categories.category_artwork}
                     alt={`${song.song_category} artwork`}
-                    className="absolute top-2 right-2 w-16 h-16 rounded-md object-cover border border-black"
+                    className="float-right ml-3 mb-2 w-20 h-20 rounded-md object-cover border border-secondary"
                   />
                 )}
-                <div className="space-y-4">
+                <div className="space-y-2">
                   <div>
-                    <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Category</h2>
-                    <div className="text-black text-sm font-semibold mb-1">{song.song_category}</div>
+                    <div className="text-fifth text-base font-medium">Category</div>
+                    <div className="text-fifth text-sm font-light mb-1">{song.song_category}</div>
                   </div>
                   {song.song_originalartist && (
                     <div>
-                      <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Original Artist</h2>
-                      <div className="text-black text-sm font-semibold">{song.song_originalartist}</div>
+                      <div className="text-fifth text-base font-medium">Original Artist</div>
+                    <div className="text-fifth text-sm font-light">{song.song_originalartist}</div>
                     </div>
                   )}
                 </div>
@@ -442,13 +453,13 @@ export function Song() {
             {/* Performance Stats */}
             {performances.length > 0 && (
               <div className="h-full">
-                <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
+                <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full space-y-2">
                   {stats.hasRarity && (
                     <>
                       <div className="flex items-center mb-1">
-                        <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">Song Rarity</h2>
+                        <div className="text-fifth text-base font-medium">Song Rarity</div>
                         <span 
-                          className="text-white text-sm font-semibold px-2 py-0.5 mb-1 rounded-md inline-block ml-6"
+                          className="text-primary text-sm font-normal border border-secondary px-2 py-0.5 rounded-md inline-block ml-6"
                           style={{ 
                             backgroundColor: getRarityColor(stats.rarity) 
                           }}
@@ -456,21 +467,20 @@ export function Song() {
                           {stats.rarity}
                         </span>
                       </div>
-                      <div className="border-t border-black/20 mt-2 pt-2" />
                     </>
                   )}
                   <div className={!stats.hasRarity ? "mt-0" : ""}>
-                    <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mt-1 mb-1">Performances by Group</h2>
-                    <div className="space-y-1">
+                    <div className="text-fifth text-base font-medium mb-1">Performances by Group</div>
+                    <div>
                       {stats.groupCounts.map(({ group, count }) => (
                         <div 
                           key={group} 
-                          className={`text-black text-sm flex justify-between font-semibold cursor-pointer ${
-                            selectedGroup === group ? 'bg-[#f9ae37]/40' : 'hover:bg-[#f9ae37]/20'
+                          className={`pl-2 pr-2 text-fifth text-sm flex justify-between font-medium cursor-pointer ${
+                            selectedGroup === group ? 'bg-tertiary/80' : 'hover:bg-tertiary/40'
                           }`}
                           onClick={() => handleGroupClick(group)}
                         >
-                          <span>{group}</span>
+                          <span className='font-light'>{group}</span>
                           <span>{count}</span>
                         </div>
                       ))}
@@ -483,10 +493,10 @@ export function Song() {
             {/* Song Notes */}
             {song.song_coachnotes && (
               <div className="h-full">
-                <div className="bg-primary rounded-lg p-3 border border-black w-full h-full">
-                  <div className="text-black mb-1 font-semibold">Song Notes</div>
+                <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
+                  <div className="text-fifth text-base font-medium mb-1">Song Notes</div>
                   <div 
-                    className="text-black text-xs"
+                    className="text-fifth font-light text-xs"
                     dangerouslySetInnerHTML={{ __html: song.song_coachnotes }}
                   />
                 </div>
@@ -497,7 +507,7 @@ export function Song() {
           {/* Song Placement Pill */}
           {placementStats.length > 0 && (
             <div className="overflow-x-auto">
-              <div className="bg-primary border border-black rounded-lg p-4">
+              <div className="bg-primary border border-secondary rounded-lg p-3">
                 <SongPlacementPill placementStats={placementStats} />
               </div>
             </div>
@@ -511,9 +521,9 @@ export function Song() {
                 selectedGroup={selectedGroup}
               />
             ) : (
-              <div className="bg-primary border border-black rounded-lg p-4">
-                <p className="text-black text-center">
-                  <span className="font-semibold">{song.song}</span> hasn't been played live.
+              <div className="bg-primary border border-secondary rounded-lg p-3">
+                <p className="text-fifth text-center font-light">
+                  <span className="font-medium">{song.song}</span> hasn't been played live.
                 </p>
               </div>
             )}
@@ -522,15 +532,15 @@ export function Song() {
 
         {/* Right column - Lyrics (only shown if lyrics exist) */}
         {song.song_lyrics && (
-          <div className="h-fit xl:sticky xl:top-4">
-            <div className="bg-primary rounded-lg p-3 border border-black w-full">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3">Lyrics</h2>
+          <div className="h-fit xl:sticky xl:top-3">
+            <div className="bg-primary rounded-lg p-3 border border-secondary w-full">
+              <div className="text-fifth text-base font-medium mb-1">Lyrics</div>
               <div 
-                className="text-black text-sm lyrics-container pr-2"
+                className="text-fifth font-light text-xs lyrics-container pr-2"
                 dangerouslySetInnerHTML={{ 
                   __html: song.song_lyrics.replace(
                     /\[(.*?)\]/g, 
-                    '<span class="font-bold">[$1]</span>'
+                    '<span class="font-medium">[$1]</span>'
                   ) 
                 }}
               />

@@ -3,6 +3,54 @@
 @tailwind utilities;
 
 @font-face {
+  font-family: 'TimesBI';
+  src: url('./fonts/Times\ New\ Roman\ Bold\ Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TimesB';
+  src: url('./fonts/Times\ New\ Roman\ Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TimesI';
+  src: url('./fonts/Times\ New\ Roman\ Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Times';
+  src: url('./fonts/Times\ New\ Roman.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TraditionalI';
+  src: url('./fonts/Traditional-Italic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Traditional';
+  src: url('./fonts/Traditional-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Hero';
   src: url('./fonts/Hero.ttf') format('truetype');
   font-weight: normal;
@@ -14,6 +62,54 @@
   font-family: 'Mohr';
   src: url('./fonts/Mohr2.ttf') format('truetype');
   font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rubik';
+  src: url('./fonts/Rubik-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rubik';
+  src: url('./fonts/Rubik-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rubik';
+  src: url('./fonts/Rubik-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rubik';
+  src: url('./fonts/Rubik-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rubik';
+  src: url('./fonts/Rubik-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rubik';
+  src: url('./fonts/Rubik-Black.ttf') format('truetype');
+  font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
@@ -143,4 +239,27 @@ html {
   height: 20px;
   animation: sparkle 0.5s forwards;
   z-index: 10;
+}
+
+@keyframes irisOpen {
+  0% {
+    clip-path: circle(0% at 50% 50%);
+  }
+  100% {
+    clip-path: circle(100% at 50% 50%);
+  }
+}
+
+.iris-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.iris-reveal {
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 0.3s ease-in-out;
+}
+
+.iris-effect:hover .iris-reveal {
+  clip-path: circle(100% at 50% 50%);
 }

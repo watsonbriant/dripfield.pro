@@ -454,56 +454,56 @@ export function TourDetailsPage() {
     return (
         <div className="max-w-[1280px] mx-auto">
             {/* Breadcrumbs */}
-            <div className="flex items-center mb-6 font-semibold text-sm text-black/70">
-                <Link to="/setlistgame" className="hover:text-[#a9682e] transition-colors">
-                    <div className="flex items-center">
+            <div className="flex items-center mb-6 font-semibold text-sm text-fifth">
+                <Link to="/setlistgame" className="hover:underline transition-colors">
+                    <div className="flex items-center bg-tertiary rounded-lg py-1 px-2 border border-secondary text-fifth">
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Echo of a Show
                     </div>
                 </Link>
                 <ChevronRight className="w-4 h-4 mx-2" />
-                <span className="text-black">
+                <span className="text-fifth bg-canvas rounded-lg py-1 px-2 border border-secondary">
                     {tourInfo?.tour || 'Tour Details'}
                 </span>
             </div>
 
             {loading ? (
-                <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+                <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
                     <div className="flex items-center justify-center space-x-2">
                         <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
                         <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
                         <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
                     </div>
-                    <p className="text-black mt-4">Loading tour details...</p>
+                    <p className="text-fifth mt-4">Loading tour details...</p>
                 </div>
             ) : (
                 <div className="space-y-6">
                     {/* Tour Info Card */}
-                    <div className="bg-primary border border-black rounded-lg p-4">
+                    <div className="bg-primary border border-secondary rounded-lg p-3">
                         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                             <div>
-                                <h1 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">{tourInfo?.tour}</h1>
-                                <div className="mt-2 flex gap-3">
+                                <h1 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-2">{tourInfo?.tour}</h1>
+                                <div className="flex gap-3">
                                     <div className="flex items-center">
-                                        <span className="text-black/70 text-sm">Shows:</span>
-                                        <span className="ml-1 mr-1 text-sm font-semibold text-black">{tourStats.totalShows}</span>
+                                        <span className="text-fifth font-light text-sm">Shows:</span>
+                                        <span className="ml-1 mr-1 text-sm font-medium text-fifth">{tourStats.totalShows}</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <span className="text-black/70 text-sm">Players:</span>
-                                        <span className="ml-1 text-sm font-semibold text-black">{tourStats.totalPlayers}</span>
+                                        <span className="text-fifth font-light text-sm">Players:</span>
+                                        <span className="ml-1 text-sm font-medium text-fifth">{tourStats.totalPlayers}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {tourStats.tourWinners.length > 0 && (
                                 <div className="mt-4 md:mt-0">
-                                    <div className="bg-[#f9ae37]/30 rounded-md p-3 border border-[#f9ae37]">
+                                    <div className="bg-tertiary/40 rounded-md p-3 border border-tertiary">
                                         <div className="flex items-center">
-                                            <Trophy className="w-5 h-5 text-black mr-2" />
-                                            <span className="font-semibold text-black mr-2">Tour Champion{tourStats.tourWinners.length > 1 ? 's' : ''}: </span>
+                                            <Trophy className="w-5 h-5 text-fifth mr-2" />
+                                            <span className="font-semibold text-fifth mr-2">Tour Champion{tourStats.tourWinners.length > 1 ? 's' : ''}: </span>
                                             <div className="ml-1 flex flex-wrap">
                                                 {tourStats.tourWinners.map((winner, idx) => (
-                                                    <span key={idx} className="text-[#a9682e] font-bold">
+                                                    <span key={idx} className="text-fourth font-semibold">
                                                         {winner.username}
                                                         {idx < tourStats.tourWinners.length - 1 ? ', ' : ''}
                                                     </span>
@@ -517,9 +517,9 @@ export function TourDetailsPage() {
                     </div>
 
                     {/* Tour Shows Table - rest of the component remains the same */}
-                    <div className="bg-primary border border-black rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-4">
-                            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+                    <div className="bg-primary border border-secondary rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-2">
                                 <ListMusic className="w-5 h-5 mr-2" />
                                 <span>Shows</span>
                             </h2>
@@ -527,13 +527,13 @@ export function TourDetailsPage() {
 
                         {gameShows.length === 0 ? (
                             <div className="text-center py-8">
-                                <p className="text-black">No shows found for this tour.</p>
+                                <p className="text-fifth">No shows found for this tour.</p>
                             </div>
                         ) : (
-                            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                            <div className="overflow-x-auto">
                                 <table className="w-full border-collapse min-w-max table-fixed">
                                     <colgroup>
-                                        <col className="w-28" />
+                                        <col className="w-20" />
                                         <col className="w-44" />
                                         <col className="w-[65px] min-w-[65px]" />
                                         <col className="w-[65px] min-w-[65px]" />
@@ -547,19 +547,19 @@ export function TourDetailsPage() {
                                         <col className="w-[65px] min-w-[65px]" />
                                     </colgroup>
                                     <thead>
-                                        <tr className="bg-canvas border-y border-black/10">
-                                            <th className="px-4 py-1 text-left text-xs font-semibold text-black whitespace-nowrap">Date</th>
-                                            <th className="px-4 py-1 text-left text-xs font-semibold text-black whitespace-nowrap">Location</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Players</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">High Score</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Avg Score</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Avg +/- Picks</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Total Songs Correct</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Avg Songs Correct</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Total Sets Correct</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Avg Sets Correct</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Opener Picks</th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">Closer Picks</th>
+                                        <tr className="bg-canvas border-y border-secondary/10">
+                                            <th className="px-4 py-1 text-center text-xs font-semibold text-fifth whitespace-nowrap">Date</th>
+                                            <th className="px-4 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap">Location</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Players</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">High Score</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Avg Score</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Avg +/- Picks</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Total Songs Correct</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Avg Songs Correct</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Total Sets Correct</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Avg Sets Correct</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Opener Picks</th>
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">Closer Picks</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-black/5">
@@ -569,68 +569,68 @@ export function TourDetailsPage() {
                                             return (
                                                 <tr
                                                     key={show.show_id}
-                                                    className={`${bgColor} hover:bg-black/10 transition-colors text-xs`}
+                                                    className={`${bgColor} hover:bg-tertiary/40 transition-colors text-xs`}
                                                 >
-                                                    <td className="px-4 py-0.5 text-black whitespace-nowrap">
-                                                        <span className="font-semibold">
+                                                    <td className="px-4 py-0.5 text-fifth text-center whitespace-nowrap">
+                                                        <span className="font-medium">
                                                             <Link
                                                                 to={`/setlistgame/${show.show_id}`}
-                                                                className="hover:text-[#a9682e] transition-colors table-link"
+                                                                className="hover:underline transition-colors table-link"
                                                             >
                                                                 {formatDate(show.show_date)}
                                                             </Link>
                                                         </span>
                                                     </td>
-                                                    <td className="px-4 py-0.5 text-black/70 whitespace-nowrap">
+                                                    <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                                                         {show.show_venue_location}
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.playerCount !== undefined ? show.playerCount : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black font-semibold text-xs">
+                                                        <span className="text-fourth font-medium text-xs">
                                                             {show.show_scored && show.highScore !== undefined ? show.highScore : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.show_scored && show.averageScore !== undefined ? show.averageScore.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className={`text-xs ${show.show_scored && show.averageOverUnder && show.averageOverUnder > 0 ? 'text-red-600' : show.show_scored && show.averageOverUnder && show.averageOverUnder < 0 ? 'text-green-600' : 'text-black/70'}`}>
+                                                        <span className={`text-xs font-light ${show.show_scored && show.averageOverUnder && show.averageOverUnder > 0 ? 'text-red-600' : show.show_scored && show.averageOverUnder && show.averageOverUnder < 0 ? 'text-green-600' : 'text-fifth'}`}>
                                                             {show.show_scored && show.averageOverUnder !== undefined ? (show.averageOverUnder > 0 ? '+' : '') + show.averageOverUnder.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.show_scored && show.totalCorrectSongs !== undefined ? show.totalCorrectSongs : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.show_scored && show.averageCorrectSongs !== undefined ? show.averageCorrectSongs.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.show_scored && show.totalCorrectSets !== undefined ? show.totalCorrectSets : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.show_scored && show.averageCorrectSets !== undefined ? show.averageCorrectSets.toFixed(2) : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.show_scored && show.usersPickedOpener !== undefined ? show.usersPickedOpener : '-'}
                                                         </span>
                                                     </td>
                                                     <td className="px-0.5 py-0.5 text-center">
-                                                        <span className="text-black/70 text-xs">
+                                                        <span className="text-fifth font-light text-xs">
                                                             {show.show_scored && show.usersPickedCloser !== undefined ? show.usersPickedCloser : '-'}
                                                         </span>
                                                     </td>
@@ -644,9 +644,9 @@ export function TourDetailsPage() {
                     </div>
 
                     {/* Tour Standings */}
-                    <div className="bg-primary border border-black rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-4">
-                            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+                    <div className="bg-primary border border-secondary rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-2">
                                 <Trophy className="w-5 h-5 mr-2" />
                                 <span>Standings</span>
                             </h2>
@@ -654,10 +654,10 @@ export function TourDetailsPage() {
 
                         {standings.length === 0 ? (
                             <div className="text-center py-8">
-                                <p className="text-black">No standings available yet for this tour.</p>
+                                <p className="text-fifth">No standings available yet for this tour.</p>
                             </div>
                         ) : (
-                            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                            <div className="overflow-x-auto">
                                 <table className="w-full border-collapse min-w-max table-fixed">
                                     <colgroup>
                                         <col className="w-12" />
@@ -671,32 +671,32 @@ export function TourDetailsPage() {
                                         <col className="w-[65px] min-w-[65px]" />
                                     </colgroup>
                                     <thead>
-                                        <tr className="bg-canvas border-y border-black/10">
-                                            <th className="px-1 py-1 text-left text-xs font-semibold text-black whitespace-nowrap text-center">
+                                        <tr className="bg-canvas border-y border-secondary/10">
+                                            <th className="px-1 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap text-center">
                                                 Rank
                                             </th>
-                                            <th className="px-3 py-1 text-left text-xs font-semibold text-black whitespace-nowrap">
+                                            <th className="px-3 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap">
                                                 User
                                             </th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
                                                 Total Points
                                             </th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
                                                 Shows Played
                                             </th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
                                                 Points Per Show
                                             </th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
                                                 Songs Picked
                                             </th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
                                                 Sets Picked
                                             </th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
                                                 Openers
                                             </th>
-                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-black">
+                                            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
                                                 Closers
                                             </th>
                                         </tr>
@@ -706,40 +706,40 @@ export function TourDetailsPage() {
                                             <tr
                                                 key={player.userId}
                                                 className={`
-                          ${user && player.userId === user.id
-                                                        ? 'bg-[#f9ae37]'
-                                                        : index % 2 === 0
-                                                            ? 'bg-primary'
-                                                            : 'bg-canvas'
+                                                    ${user && player.userId === user.id
+                                                    ? 'bg-tertiary/80'
+                                                    : index % 2 === 0
+                                                    ? 'bg-primary'
+                                                    : 'bg-canvas'
                                                     } 
-                          hover:bg-black/10 transition-colors
-                        `}
+                                                hover:bg-tertiary/40 transition-colors
+                                                `}
                                             >
-                                                <td className="px-1 py-0.5 text-xs text-center font-semibold text-black">
+                                                <td className="px-1 py-0.5 text-xs text-center font-medium text-fifth">
                                                     {index + 1}
                                                 </td>
-                                                <td className="px-3 py-0.5 whitespace-normal font-medium text-xs text-black">
+                                                <td className="px-3 py-0.5 whitespace-normal font-medium text-xs text-fifth">
                                                     {player.username}
                                                 </td>
-                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-semibold text-black">
+                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-medium text-fourth">
                                                     {player.totalPoints}
                                                 </td>
-                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
+                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
                                                     {player.showsPlayed}
                                                 </td>
-                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
+                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
                                                     {player.avgPointsPerShow.toFixed(2)}
                                                 </td>
-                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
+                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
                                                     {player.songsPicked}
                                                 </td>
-                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
+                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
                                                     {player.setsPicked}
                                                 </td>
-                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
+                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
                                                     {player.showOpenersPicked}
                                                 </td>
-                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-black">
+                                                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
                                                     {player.showClosersPicked}
                                                 </td>
                                             </tr>

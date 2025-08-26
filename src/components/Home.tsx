@@ -5,7 +5,7 @@ import SetlistDisplay from './SetlistDisplay';
 import { useNavigate } from 'react-router-dom';
 import coverImage from '../img/Cover.jpg';
 import gooseGif from '../img/Goose.gif';
-import fullLogo from '../img/Logo_Full_Transparent.png';
+import cover2 from '../img/Cover2.jpg';
 import textLogo from '../img/Logo_Text.png'
 
 interface Show {
@@ -82,6 +82,17 @@ interface NotPlayedSong {
   category_canonid: number;
   category_artwork?: string;
 }
+
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
 
 export function Home() {
   const navigate = useNavigate();
@@ -990,7 +1001,7 @@ export function Home() {
     <div className="max-w-[1280px] mx-auto">
       {!isSupabaseConfigured() && (
         <div className="bg-primary border border-white/10 rounded-lg p-4 mb-6">
-          <p className="text-black">
+          <p className="text-fifth">
             Please connect to Supabase using the button in the top right to view setlist data.
           </p>
         </div>
@@ -1000,22 +1011,22 @@ export function Home() {
         {/* Left Column - adjust width based on image aspect ratio */}
         <div className="w-full lg:w-[43%] space-y-6 mr-6">
           {/* Logo container with natural height on mobile, fixed on desktop */}
-          <div className="h-auto md:h-[342px] overflow-hidden rounded-lg flex items-center justify-center">
+          <div className="h-auto md:h-[204.05px] overflow-hidden rounded-lg flex items-center justify-center">
             <img
-              src={fullLogo}
+              src={cover2}
               alt="Dripfield.pro logo"
-              className="hidden md:block h-full w-auto object-contain"
+              className="hidden md:block h-full w-auto border border-secondary rounded-lg object-contain"
             />
             <img
-              src={textLogo}
+              src={cover2}
               alt="Dripfield.pro logo"
-              className="block md:hidden h-auto w-auto"
+              className="block md:hidden h-auto w-auto border border-secondary rounded-lg"
             />
           </div>
 
           {/* Last 5 Shows Table */}
-          <div className="bg-primary border border-black rounded-lg p-3">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Last 5 Shows</h2>
+          <div className="bg-primary border border-secondary rounded-lg p-3">
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">Last 5 Shows</h2>
             {loading ? (
               <div className="text-center py-12">
                 <p className="text-[#fce7ca]/70">Loading shows...</p>
@@ -1028,10 +1039,10 @@ export function Home() {
                       <tr
                         key={show.show_id}
                         className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                          } hover:bg-black/10 transition-colors text-xs`}
+                          } hover:bg-tertiary/40 transition-colors text-xs text-fifth`}
                       >
                         <td
-                          className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
+                          className="px-4 py-0.5 whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1043,24 +1054,24 @@ export function Home() {
                         >
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-[#a9682e] transition-colors table-link"
+                            className="transition-colors table-link"
                           >
-                            <span className="font-semibold">{show.formatted_show_date}</span>
+                            <span className="font-medium text-fifth">{show.formatted_show_date}</span>
                           </button>
                           {hoveredDate === show.show_id && (
-                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
                               }}>
-                              {show.show_group && <div><strong>{show.show_group}</strong></div>}
-                              {show.show_tour && <div>{show.show_tour}</div>}
-                              {show.show_detail && <div>{show.show_detail}</div>}
+                              {show.show_group && <div><span className="font-medium">{show.show_group}</span></div>}
+                              {show.show_tour && <div><span className="font-light">{show.show_tour}</span></div>}
+                              {show.show_detail && <div><span className="font-light">{show.show_detail}</span></div>}
                             </div>
                           )}
                         </td>
                         <td
-                          className="px-4 py-0.5 text-black relative cursor-pointer"
+                          className="px-4 py-0.5 relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1073,7 +1084,7 @@ export function Home() {
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => navigateToVenue(show)}
-                              className="hover:text-[#a9682e] hover:underline transition-colors"
+                              className="font-light hover:underline transition-colors"
                             >
                               {show.venue_location}
                             </button>
@@ -1091,7 +1102,7 @@ export function Home() {
                             )}
                           </div>
                           {hoveredLocation === show.show_id && (
-                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary font-medium shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -1109,9 +1120,9 @@ export function Home() {
           </div>
 
           {/* Most Recent Show Section */}
-          <div className="bg-primary border border-black rounded-lg p-3">
+          <div className="bg-primary border border-secondary rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Most Recent Show</h2>
+              <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary">Most Recent Show</h2>
               {mostRecentShow && mostRecentShow.show_group === 'Goose' && (
                 <div className="flex-shrink-0">
                   <img
@@ -1131,23 +1142,23 @@ export function Home() {
               </div>
             ) : mostRecentShow ? (
               <div>
-                <div className="mb-2 text-lg text-black">
+                <div className="mb-2 text-lg text-fifth font-medium">
                   <div className="text-base">
                     <button
                       onClick={() => navigate(`/setlist/${mostRecentShow.show_id}`)}
-                      className="hover:text-[#a9682e] transition-colors table-link"
+                      className="transition-colors table-link"
                     >
-                      <strong>{mostRecentShow.formatted_show_date}</strong>
+                      {mostRecentShow.formatted_show_date}
                     </button>
                     {" — "}
                     <button
                       onClick={() => navigateToVenue(mostRecentShow)}
-                      className="hover:text-[#a9682e] transition-colors table-link"
+                      className="transition-colors table-link"
                     >
-                      <strong>{mostRecentShow.venue_location}</strong>
+                      {mostRecentShow.venue_location}
                     </button>
                     <br />
-                    <strong>{mostRecentShow.show_group}</strong>
+                    <span className="font-semibold">{mostRecentShow.show_group}</span>
                   </div>
                 </div>
 
@@ -1159,7 +1170,7 @@ export function Home() {
                   <SetlistDisplay setlist={setlist} navigate={navigate} />
                 ) : (
                   <div>
-                    <p className="text-black text-sm">Setlist not available.</p>
+                    <p className="text-fifth text-sm">Setlist not available.</p>
                   </div>
                 )}
               </div>
@@ -1171,8 +1182,8 @@ export function Home() {
           </div>
 
           {/* Next 5 Shows Table */}
-          <div className="bg-primary border border-black rounded-lg p-3">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Next 5 Shows</h2>
+          <div className="bg-primary border border-secondary rounded-lg p-3">
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">Next 5 Shows</h2>
             {loadingUpcoming ? (
               <div className="text-center py-12">
                 <p className="text-[#fce7ca]/70">Loading shows...</p>
@@ -1185,10 +1196,10 @@ export function Home() {
                       <tr
                         key={show.show_id}
                         className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                          } hover:bg-black/10 transition-colors text-xs`}
+                          } hover:bg-tertiary/40 transition-colors text-xs text-fifth`}
                       >
                         <td
-                          className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
+                          className="px-4 py-0.5 whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1200,24 +1211,24 @@ export function Home() {
                         >
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-[#a9682e] transition-colors table-link"
+                            className="transition-colors table-link"
                           >
-                            <span className="font-semibold">{show.formatted_show_date}</span>
+                            <span className="font-medium text-fifth">{show.formatted_show_date}</span>
                           </button>
                           {hoveredDate === show.show_id && (
-                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
                               }}>
-                              {show.show_group && <div><strong>{show.show_group}</strong></div>}
-                              {show.show_tour && <div>{show.show_tour}</div>}
-                              {show.show_detail && <div>{show.show_detail}</div>}
+                              {show.show_group && <div><span className="font-medium">{show.show_group}</span></div>}
+                              {show.show_tour && <div><span className="font-light">{show.show_tour}</span></div>}
+                              {show.show_detail && <div><span className="font-light">{show.show_detail}</span></div>}
                             </div>
                           )}
                         </td>
                         <td
-                          className="px-4 py-0.5 text-black relative cursor-pointer"
+                          className="px-4 py-0.5 relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1230,7 +1241,7 @@ export function Home() {
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => navigateToVenue(show)}
-                              className="hover:text-[#a9682e] transition-colors table-link"
+                              className="font-light hover:underline transition-colors"
                             >
                               {show.venue_location}
                             </button>
@@ -1248,7 +1259,7 @@ export function Home() {
                             )}
                           </div>
                           {hoveredLocation === show.show_id && (
-                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary font-medium shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -1266,15 +1277,15 @@ export function Home() {
           </div>
 
           {/* This Day in Goose History Table */}
-          <div className="bg-primary border border-black rounded-lg p-3">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">This Day in Goose History</h2>
+          <div className="bg-primary border border-secondary rounded-lg p-3">
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">This Day in Goose History</h2>
             {loadingHistorical ? (
               <div className="text-center py-2 text-xs">
                 <p className="text-[#fce7ca]/70">Loading shows...</p>
               </div>
             ) : historicalShows.length === 0 ? (
               <div className="text-center py-2 text-sm">
-                <p className="text-black font-semibold">No shows occurred on this date in Goose history.</p>
+                <p className="text-fifth font-semibold">No shows occurred on this date in Goose history.</p>
               </div>
             ) : (
               <div className="overflow-x-auto relative">
@@ -1284,10 +1295,10 @@ export function Home() {
                       <tr
                         key={show.show_id}
                         className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                          } hover:bg-black/10 transition-colors text-xs`}
+                          } hover:bg-tertiary/40 transition-colors text-xs text-fifth`}
                       >
                         <td
-                          className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer relative"
+                          className="px-4 py-0.5 whitespace-nowrap cursor-pointer relative"
                           onMouseEnter={(e) => {
                             setHoveredDate(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1299,24 +1310,24 @@ export function Home() {
                         >
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
-                            className="hover:text-[#a9682e] transition-colors table-link"
+                            className="transition-colors table-link"
                           >
-                            <span className="font-semibold">{show.formatted_show_date}</span>
+                            <span className="font-medium text-fifth">{show.formatted_show_date}</span>
                           </button>
                           {hoveredDate === show.show_id && (
-                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
                               }}>
-                              {show.show_group && <div><strong>{show.show_group}</strong></div>}
-                              {show.show_tour && <div>{show.show_tour}</div>}
-                              {show.show_detail && <div>{show.show_detail}</div>}
+                              {show.show_group && <div><span className="font-medium">{show.show_group}</span></div>}
+                              {show.show_tour && <div><span className="font-light">{show.show_tour}</span></div>}
+                              {show.show_detail && <div><span className="font-light">{show.show_detail}</span></div>}
                             </div>
                           )}
                         </td>
                         <td
-                          className="px-4 py-0.5 text-black relative cursor-pointer"
+                          className="px-4 py-0.5 relative cursor-pointer"
                           onMouseEnter={(e) => {
                             setHoveredLocation(show.show_id);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -1329,7 +1340,7 @@ export function Home() {
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => navigateToVenue(show)}
-                              className="hover:text-[#a9682e] transition-colors table-link"
+                              className="font-light hover:underline transition-colors"
                             >
                               {show.venue_location}
                             </button>
@@ -1347,7 +1358,7 @@ export function Home() {
                             )}
                           </div>
                           {hoveredLocation === show.show_id && (
-                            <div className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999]"
+                            <div className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary font-medium shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
@@ -1368,24 +1379,24 @@ export function Home() {
         {/* Right Column - adjust width based on image aspect ratio */}
         <div className="w-full lg:w-[57%] space-y-6">
           {/* Cover Image with fixed height - hidden on mobile */}
-          <div className="hidden md:block h-[342px] overflow-hidden rounded-lg">
+          <div className="hidden md:block overflow-hidden rounded-lg">
             <img
               src={coverImage}
               alt="Dripfield.pro banner"
-              className="w-full h-full object-cover shadow-lg"
+              className="w-full h-full object-cover border border-secondary rounded-lg shadow-lg"
             />
           </div>
 
           {/* Stats Section */}
-          <div className="bg-primary border border-black rounded-lg p-3 relative">
+          <div className="bg-primary border border-secondary rounded-lg p-3 relative">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
+              <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary mb-2">
                 {selectedYear === 'all-time' ? 'All-Time' : selectedYear} Stats
               </h2>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value === 'all-time' ? 'all-time' : Number(e.target.value))}
-                className="bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr appearance-none pr-8 cursor-pointer"
+                className="bg-tertiary text-fifth px-4 py-1.5 rounded-lg border border-secondary hover:bg-primary transition-colors text-base font-semibold appearance-none pr-10 cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                   backgroundPosition: 'right 0.5rem center',
@@ -1408,7 +1419,7 @@ export function Home() {
                   {/* Top Songs */}
                   {topSongs.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-fourth">Top Songs Played</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1416,21 +1427,21 @@ export function Home() {
                             <tr
                               key={song.song_id}
                               className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                } hover:bg-black/10 transition-colors text-xs`}
+                                } hover:bg-tertiary/40 transition-colors text-xs`}
                             >
-                              <td className="pl-4 text-black">
+                              <td className="pl-4 text-fifth">
                                 <div className="flex items-center justify-between">
                                   <button
                                     onClick={() => navigate(`/song/${song.song_id}`)}
-                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                    className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                   >
-                                    {song.song}
+                                    {cleanSongName(song.song)}
                                   </button>
                                   {song.category_artwork && (
                                     <img
                                       src={song.category_artwork}
                                       alt={`${song.song} artwork`}
-                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                       onError={(e) => {
                                         // Hide the image if it fails to load
                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -1439,7 +1450,7 @@ export function Home() {
                                   )}
                                 </div>
                               </td>
-                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                                 {song.play_count}
                               </td>
                             </tr>
@@ -1453,7 +1464,7 @@ export function Home() {
                   {/* Top Show Openers */}
                   {showOpeners.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1461,21 +1472,21 @@ export function Home() {
                             <tr
                               key={opener.song_id}
                               className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                } hover:bg-black/10 transition-colors text-xs`}
+                                } hover:bg-tertiary/40 transition-colors text-xs`}
                             >
-                              <td className="pl-4 text-black">
+                              <td className="pl-4 text-fifth">
                                 <div className="flex items-center justify-between">
                                   <button
                                     onClick={() => navigate(`/song/${opener.song_id}`)}
-                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                    className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                   >
-                                    {opener.song_name}
+                                    {cleanSongName(opener.song_name)}
                                   </button>
                                   {opener.category_artwork && (
                                     <img
                                       src={opener.category_artwork}
                                       alt={`${opener.song_name} artwork`}
-                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                       onError={(e) => {
                                         // Hide the image if it fails to load
                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -1484,7 +1495,7 @@ export function Home() {
                                   )}
                                 </div>
                               </td>
-                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                                 {opener.times_played}
                               </td>
                             </tr>
@@ -1498,7 +1509,7 @@ export function Home() {
                   {/* Top Set Closers */}
                   {setClosers.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1506,21 +1517,21 @@ export function Home() {
                             <tr
                               key={closer.song_id}
                               className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                } hover:bg-black/10 transition-colors text-xs`}
+                                } hover:bg-tertiary/40 transition-colors text-xs`}
                             >
-                              <td className="pl-4 text-black">
+                              <td className="pl-4 text-fifth">
                                 <div className="flex items-center justify-between">
                                   <button
                                     onClick={() => navigate(`/song/${closer.song_id}`)}
-                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                    className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                   >
-                                    {closer.song_name}
+                                    {cleanSongName(closer.song_name)}
                                   </button>
                                   {closer.category_artwork && (
                                     <img
                                       src={closer.category_artwork}
                                       alt={`${closer.song_name} artwork`}
-                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                       onError={(e) => {
                                         // Hide the image if it fails to load
                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -1529,7 +1540,7 @@ export function Home() {
                                   )}
                                 </div>
                               </td>
-                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                                 {closer.times_played}
                               </td>
                             </tr>
@@ -1547,7 +1558,7 @@ export function Home() {
                   {/* Most Common Not Played */}
                   {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1555,21 +1566,21 @@ export function Home() {
                             <tr
                               key={song.song_id}
                               className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                } hover:bg-black/10 transition-colors text-xs`}
+                                } hover:bg-tertiary/40 transition-colors text-xs`}
                             >
-                              <td className="pl-4 text-black">
+                              <td className="pl-4 text-fifth">
                                 <div className="flex items-center justify-between">
                                   <button
                                     onClick={() => navigate(`/song/${song.song_id}`)}
-                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                    className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                   >
-                                    {song.song}
+                                    {cleanSongName(song.song)}
                                   </button>
                                   {song.category_artwork && (
                                     <img
                                       src={song.category_artwork}
                                       alt={`${song.song} artwork`}
-                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                       onError={(e) => {
                                         // Hide the image if it fails to load
                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -1578,7 +1589,7 @@ export function Home() {
                                   )}
                                 </div>
                               </td>
-                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                                 {song.play_count}
                               </td>
                             </tr>
@@ -1592,7 +1603,7 @@ export function Home() {
                   {/* Top Set Openers */}
                   {setOpeners.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1600,21 +1611,21 @@ export function Home() {
                             <tr
                               key={opener.song_id}
                               className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                } hover:bg-black/10 transition-colors text-xs`}
+                                } hover:bg-tertiary/40 transition-colors text-xs`}
                             >
-                              <td className="pl-4 text-black">
+                              <td className="pl-4 text-fifth">
                                 <div className="flex items-center justify-between">
                                   <button
                                     onClick={() => navigate(`/song/${opener.song_id}`)}
-                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                    className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                   >
-                                    {opener.song_name}
+                                    {cleanSongName(opener.song_name)}
                                   </button>
                                   {opener.category_artwork && (
                                     <img
                                       src={opener.category_artwork}
                                       alt={`${opener.song_name} artwork`}
-                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                       onError={(e) => {
                                         // Hide the image if it fails to load
                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -1623,7 +1634,7 @@ export function Home() {
                                   )}
                                 </div>
                               </td>
-                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                                 {opener.times_played}
                               </td>
                             </tr>
@@ -1637,7 +1648,7 @@ export function Home() {
                   {/* Top Encores */}
                   {encores.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1645,21 +1656,21 @@ export function Home() {
                             <tr
                               key={encore.song_id}
                               className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                } hover:bg-black/10 transition-colors text-xs`}
+                                } hover:bg-tertiary/40 transition-colors text-xs`}
                             >
-                              <td className="pl-4 text-black">
+                              <td className="pl-4 text-fifth">
                                 <div className="flex items-center justify-between">
                                   <button
                                     onClick={() => navigate(`/song/${encore.song_id}`)}
-                                    className="font-semibold hover:underline cursor-pointer text-left"
+                                    className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                   >
-                                    {encore.song_name}
+                                    {cleanSongName(encore.song_name)}
                                   </button>
                                   {encore.category_artwork && (
                                     <img
                                       src={encore.category_artwork}
                                       alt={`${encore.song_name} artwork`}
-                                      className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                      className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                       onError={(e) => {
                                         // Hide the image if it fails to load
                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -1668,7 +1679,7 @@ export function Home() {
                                   )}
                                 </div>
                               </td>
-                              <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                              <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                                 {encore.times_played}
                               </td>
                             </tr>
@@ -1686,7 +1697,7 @@ export function Home() {
                 {/* 1. Top Songs */}
                 {topSongs.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-tertiary">Top Songs Played</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-fourth">Top Songs Played</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1694,21 +1705,21 @@ export function Home() {
                           <tr
                             key={song.song_id}
                             className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              } hover:bg-tertiary/40 transition-colors text-xs`}
                           >
-                            <td className="pl-4 text-black">
+                            <td className="pl-4 text-fifth">
                               <div className="flex items-center justify-between">
                                 <button
                                   onClick={() => navigate(`/song/${song.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                  className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                 >
-                                  {song.song}
+                                  {cleanSongName(song.song)}
                                 </button>
                                 {song.category_artwork && (
                                   <img
                                     src={song.category_artwork}
                                     alt={`${song.song} artwork`}
-                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                     onError={(e) => {
                                       // Hide the image if it fails to load
                                       (e.target as HTMLImageElement).style.display = 'none';
@@ -1717,7 +1728,7 @@ export function Home() {
                                 )}
                               </div>
                             </td>
-                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                               {song.play_count}
                             </td>
                           </tr>
@@ -1731,7 +1742,7 @@ export function Home() {
                 {/* 2. Most Common Not Played */}
                 {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1739,21 +1750,21 @@ export function Home() {
                           <tr
                             key={song.song_id}
                             className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              } hover:bg-tertiary/40 transition-colors text-xs`}
                           >
-                            <td className="pl-4 text-black">
+                            <td className="pl-4 text-fifth">
                               <div className="flex items-center justify-between">
                                 <button
                                   onClick={() => navigate(`/song/${song.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                  className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                 >
-                                  {song.song}
+                                  {cleanSongName(song.song)}
                                 </button>
                                 {song.category_artwork && (
                                   <img
                                     src={song.category_artwork}
                                     alt={`${song.song} artwork`}
-                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                     onError={(e) => {
                                       // Hide the image if it fails to load
                                       (e.target as HTMLImageElement).style.display = 'none';
@@ -1762,7 +1773,7 @@ export function Home() {
                                 )}
                               </div>
                             </td>
-                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                               {song.play_count}
                             </td>
                           </tr>
@@ -1776,7 +1787,7 @@ export function Home() {
                 {/* 3. Top Show Openers */}
                 {showOpeners.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#006400]">Top Show Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1784,21 +1795,21 @@ export function Home() {
                           <tr
                             key={opener.song_id}
                             className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              } hover:bg-tertiary/40 transition-colors text-xs`}
                           >
-                            <td className="pl-4 text-black">
+                            <td className="pl-4 text-fifth">
                               <div className="flex items-center justify-between">
                                 <button
                                   onClick={() => navigate(`/song/${opener.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                  className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                 >
-                                  {opener.song_name}
+                                  {cleanSongName(opener.song_name)}
                                 </button>
                                 {opener.category_artwork && (
                                   <img
                                     src={opener.category_artwork}
                                     alt={`${opener.song_name} artwork`}
-                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                     onError={(e) => {
                                       // Hide the image if it fails to load
                                       (e.target as HTMLImageElement).style.display = 'none';
@@ -1807,7 +1818,7 @@ export function Home() {
                                 )}
                               </div>
                             </td>
-                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                               {opener.times_played}
                             </td>
                           </tr>
@@ -1821,7 +1832,7 @@ export function Home() {
                 {/* 4. Top Set Openers */}
                 {setOpeners.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1829,21 +1840,21 @@ export function Home() {
                           <tr
                             key={opener.song_id}
                             className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              } hover:bg-tertiary/40 transition-colors text-xs`}
                           >
-                            <td className="pl-4 text-black">
+                            <td className="pl-4 text-fifth">
                               <div className="flex items-center justify-between">
                                 <button
                                   onClick={() => navigate(`/song/${opener.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                  className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                 >
-                                  {opener.song_name}
+                                  {cleanSongName(opener.song_name)}
                                 </button>
                                 {opener.category_artwork && (
                                   <img
                                     src={opener.category_artwork}
                                     alt={`${opener.song_name} artwork`}
-                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                     onError={(e) => {
                                       // Hide the image if it fails to load
                                       (e.target as HTMLImageElement).style.display = 'none';
@@ -1852,7 +1863,7 @@ export function Home() {
                                 )}
                               </div>
                             </td>
-                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                               {opener.times_played}
                             </td>
                           </tr>
@@ -1866,7 +1877,7 @@ export function Home() {
                 {/* 5. Top Set Closers */}
                 {setClosers.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1874,21 +1885,21 @@ export function Home() {
                           <tr
                             key={closer.song_id}
                             className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              } hover:bg-tertiary/40 transition-colors text-xs`}
                           >
-                            <td className="pl-4 text-black">
+                            <td className="pl-4 text-fifth">
                               <div className="flex items-center justify-between">
                                 <button
                                   onClick={() => navigate(`/song/${closer.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                  className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                 >
-                                  {closer.song_name}
+                                  {cleanSongName(closer.song_name)}
                                 </button>
                                 {closer.category_artwork && (
                                   <img
                                     src={closer.category_artwork}
                                     alt={`${closer.song_name} artwork`}
-                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                     onError={(e) => {
                                       // Hide the image if it fails to load
                                       (e.target as HTMLImageElement).style.display = 'none';
@@ -1897,7 +1908,7 @@ export function Home() {
                                 )}
                               </div>
                             </td>
-                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                               {closer.times_played}
                             </td>
                           </tr>
@@ -1911,7 +1922,7 @@ export function Home() {
                 {/* 6. Top Encores */}
                 {encores.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-1 rounded-full border border-black inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#7C2128]">Top Encores</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1919,21 +1930,21 @@ export function Home() {
                           <tr
                             key={encore.song_id}
                             className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                              } hover:bg-black/10 transition-colors text-xs`}
+                              } hover:bg-tertiary/40 transition-colors text-xs`}
                           >
-                            <td className="pl-4 text-black">
+                            <td className="pl-4 text-fifth">
                               <div className="flex items-center justify-between">
                                 <button
                                   onClick={() => navigate(`/song/${encore.song_id}`)}
-                                  className="font-semibold hover:underline cursor-pointer text-left"
+                                  className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                 >
-                                  {encore.song_name}
+                                  {cleanSongName(encore.song_name)}
                                 </button>
                                 {encore.category_artwork && (
                                   <img
                                     src={encore.category_artwork}
                                     alt={`${encore.song_name} artwork`}
-                                    className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                                    className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
                                     onError={(e) => {
                                       // Hide the image if it fails to load
                                       (e.target as HTMLImageElement).style.display = 'none';
@@ -1942,7 +1953,7 @@ export function Home() {
                                 )}
                               </div>
                             </td>
-                            <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                            <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                               {encore.times_played}
                             </td>
                           </tr>

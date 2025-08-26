@@ -32,9 +32,10 @@ import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 import { Joty } from './components/Joty';
 import sparklePic from './img/sparkle.png';
-import bgPic from './img/bg.jpg';
+import bgPic from './img/bg3.jpg';
 
-import logo from './img/Logo_Text.png';
+import logo from './img/Logo2_Text.png';
+import logo2 from './img/Logo3_Text.jpg';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -217,21 +218,29 @@ function App() {
 
   return (
     <div 
-      className="flex flex-col md:h-screen bg-fixed bg-cover bg-center" 
-      style={{ backgroundImage: `url(${bgPic})` }}
+      className="flex flex-col md:h-screen bg-repeat bg-center" 
+      style={{ 
+        backgroundImage: `url(${bgPic})`,
+        backgroundSize: '1400px auto'
+      }}
     >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
-        <header className="z-20 bg-primary border-b border-black/15 px-6 py-1 md:sticky md:top-0">
+        <header className="z-20 bg-primary border-b border-secondary/15 px-6 py-1 md:sticky md:top-0">
           <div className="flex items-center max-w-[1280px] mx-auto w-full">
           <button
             onClick={handleLogoClick}
-            className="focus:outline-none mr-4 relative"
+            className="focus:outline-none mr-4 relative iris-effect rounded-lg"
           >
             <img 
               src={logo} 
               alt="Dripfield.pro Logo" 
               className="h-12 w-auto"
+            />
+            <img 
+              src={logo2} 
+              alt="Dripfield.pro Logo" 
+              className="h-12 w-auto absolute top-0 left-0 iris-reveal"
             />
             {/* Sparkle effect for logo - only on desktop */}
             {logoSparkle.show && !isMobile && (
@@ -277,7 +286,7 @@ function App() {
         {/* Mobile Sidebar - ensure it's above the overlay */}
         <div className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:hidden fixed w-64 h-[calc(100%)] top-[50px] z-30 transition-transform duration-300 ease-in-out`}>
+        } lg:hidden fixed w-64 h-[calc(100%)] top-[70px] z-30 transition-transform duration-300 ease-in-out`}>
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)} 
             openShowModal={openShowModal}
@@ -289,24 +298,29 @@ function App() {
         </div>
 
         {/* Main content wrapper */}
-        <div className="flex-1 flex flex-col min-h-screen md:min-h-0 overflow-auto">
+        <div className="flex-1 flex flex-col overflow-auto">
           {/* Mobile-only header */}
           <header className="z-20 bg-primary border-b border-white/10 p-4 lg:hidden">
             <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute left-0 p-2 rounded-md bg-[#f9ae37] hover:bg-tertiary text-black transition-colors border border-black"
+                className="absolute left-0 p-2 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-secondary"
               >
                 <Menu className="w-6 h-6" />
               </button>
               <button
                 onClick={handleLogoClick}
-                className="focus:outline-none relative"
+                className="focus:outline-none mr-4 relative iris-effect rounded-lg"
               >
                 <img 
                   src={logo} 
                   alt="Dripfield.pro Logo" 
-                  className="h-8 w-auto"
+                  className="h-12 w-auto"
+                />
+                <img 
+                  src={logo2} 
+                  alt="Dripfield.pro Logo" 
+                  className="h-12 w-auto absolute top-0 left-0 iris-reveal"
                 />
               </button>
               <div className="absolute right-0 flex items-center">
@@ -365,6 +379,13 @@ function App() {
               <Route path="/setlistgame/:showId" element={<SetlistGameShowPage />} />
             </Routes>
           </main>
+          
+          {/* Footer */}
+          <footer className="p-4 md:p-8 pt-0 text-center text-fifth/70 text-[0.625rem]">
+            <div className="bg-primary max-w-[1280px] mx-auto p-2 rounded mt-8 md:mt-0 border border-secondary">
+              <p>All statistical information and computations copyright ©2025, Brian Watson and Dripfield.pro. No portion of this website's content may be reproduced without permission. Song lyrics and titles are the copyright of No Coincidence Records, Factory Underground Records, and their respective publishers, including Lantern Collective, Master Cat Music, Gong Gang, Potato Party, Space Panther Music, and Spun Haus Productions. Show posters and artwork are the copyright of their respective artists.</p>
+            </div>
+          </footer>
         </div>
       </div>
 
@@ -372,17 +393,17 @@ function App() {
       {isShowModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsShowModalOpen(false)}></div>
-          <div className="relative bg-primary border border-black rounded-lg p-4 w-full max-w-md mx-4">
+          <div className="relative bg-primary border border-secondary rounded-lg p-4 w-full max-w-md mx-4">
             <button
               onClick={() => setIsShowModalOpen(false)}
-              className="absolute top-4 right-4 rounded-md text-black hover:text-[#a9682e] focus:outline-none"
+              className="absolute top-4 right-4 rounded-md text-fifth hover:text-tertiary focus:outline-none"
             >
               <X className="w-6 h-6" />
             </button>
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Find a Show</h2>
+            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Find a Show</h2>
             <form onSubmit={handleShowSearch} className="space-y-4">
               <div>
-                <label htmlFor="showId" className="block text-sm font-semibold text-black mb-1">
+                <label htmlFor="showId" className="block text-sm font-medium text-fifth mb-1">
                   Enter Show ID
                 </label>
                 <input
@@ -390,14 +411,14 @@ function App() {
                   id="showId"
                   value={showId}
                   onChange={(e) => setShowId(e.target.value)}
-                  className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e]"
+                  className="w-full px-2 py-1.5 bg-canvas border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary font-light text-sm"
                   placeholder="Enter Show ID"
                   autoFocus
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-[#f9ae37] hover:bg-[#e29d26] text-black font-medium rounded-md transition-colors border border-black"
+                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-secondary"
               >
                 Go
               </button>

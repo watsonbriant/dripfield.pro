@@ -199,7 +199,7 @@ export function Venue() {
             <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading venue data...</p>
+          <p className="text-fifth mt-4">Loading venue data...</p>
         </div>
       </div>
     );
@@ -209,40 +209,41 @@ export function Venue() {
     return (
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
-          <p className="text-black">Venue not found</p>
+          <p className="text-fifth">Venue not found</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-[872px] mx-auto">
-      <div className="flex justify-between">
-        <h2 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1">
-          {venue.venue}
-        </h2>
+    <div className="max-w-[936px] mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center space-x-2 mb-1 mr-2">
+          <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
+            {venue.venue}
+          </h2>
+          {venue.venue_location && (
+            <div className="bg-secondary text-fifth text-xs font-medium px-2 py-1 rounded-lg border border-secondary">
+              {venue.venue_location}
+            </div>
+          )}
+        </div>
         <VenueSearch />
       </div>
-      
-      {venue.venue_location && (
-        <div className="mb-4">
-          <div className="text-black text-sm font-semibold">{venue.venue_location}</div>
-        </div>
-      )}
 
       <div className="space-y-6 mb-8">
         {/* Shows List */}
-        <div className="bg-primary border border-black rounded-lg p-4">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Shows</h2>
+        <div className="bg-primary border border-secondary rounded-lg p-3">
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Shows</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse min-w-max">
               <thead>
-                <tr className="bg-canvas border-y border-black/10">
-                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Date</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Group</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Venue</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Tour</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-black">Detail</th>
+                <tr className="bg-canvas border-y border-secondary/10">
+                  <th className="px-4 py-2 text-center text-s font-semibold text-fifth w-12">Date</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Group</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Venue</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Tour</th>
+                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5">
@@ -251,12 +252,12 @@ export function Venue() {
                     key={show.show_id}
                     className={`${
                       index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                    } hover:bg-black/10 transition-colors text-xs`}
+                    } hover:bg-tertiary/40 transition-colors text-xs`}
                   >
-                    <td className="px-4 py-1 text-black whitespace-nowrap">
+                    <td className="px-4 py-1 text-fifth whitespace-nowrap text-center">
                       <button
                         onClick={() => navigate(`/setlist/${show.show_id}`)}
-                        className="font-semibold hover:text-[#a9682e] transition-colors table-link"
+                        className="font-medium hover:underline transition-colors table-link"
                       >
                         {formatInTimeZone(
                           new Date(show.show_date),
@@ -265,28 +266,28 @@ export function Venue() {
                         )}
                       </button>
                     </td>
-                    <td className="px-4 py-1 text-black whitespace-nowrap">
+                    <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
                       {show.show_group}
                     </td>
-                    <td className="px-4 py-1 text-black whitespace-nowrap">
+                    <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
                       {show.show_subvenue}
                     </td>
-                    <td className="px-4 py-1 text-black whitespace-nowrap">
+                    <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
                       {show.show_tour && (
                         <button
                           onClick={() => navigate(`/tours/${show.tours?.tour_id}`)}
-                          className="hover:underline hover:text-[#a9682e] transition-colors"
+                          className="hover:underline transition-colors"
                         >
                           {show.show_tour}
                         </button>
                       )}
                     </td>
-                    <td className="px-4 py-1 text-black whitespace-nowrap">
+                    <td className="px-4 py-1 text-fifth whitespace-nowrap">
                       {show.show_detail && show.show_detail}
                       {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
                       {show.show_alert && 
-                        <span className="text-red-600">
-                          <strong>[{show.show_alert}]</strong>
+                        <span className="text-red-600 font-medium">
+                          [{show.show_alert}]
                         </span>
                       }
                     </td>

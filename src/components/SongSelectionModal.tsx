@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Plus, Trash2, ChevronUp, ChevronDown, Share, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +12,7 @@ interface SongSelectionModalProps {
     show_id: string;
     show_date: string;
     show_subvenue: string;
+    show_detail: string;
     show_venue_location: string;
     show_time: string;
     show_tour: string;
@@ -69,6 +71,17 @@ interface SongPick {
   score?: number;
   result?: string;
 }
+
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
 
 // Component for the song selection modal
 export function SongSelectionModal({ 
@@ -380,15 +393,15 @@ export function SongSelectionModal({
   const ToggleSwitch = () => {
     return (
       <div className="flex items-center justify-center my-3">
-        <div className="inline-flex border border-black rounded-lg overflow-hidden">
+        <div className="inline-flex border border-secondary rounded-lg overflow-hidden">
           <span 
-            className={`px-4 py-1.5 transition-colors font-semibold hover:bg-black/20 text-base ${!showActualSetlist ? 'bg-[#f9ae37] text-black' : 'bg-canvas text-black'}`}
+            className={`px-4 py-1.5 transition-colors font-semibold hover:bg-tertiary/40 text-base ${!showActualSetlist ? 'bg-tertiary text-fifth' : 'bg-canvas text-fifth'}`}
             onClick={() => setShowActualSetlist(false)}
           >
             My Picks
           </span>
           <span 
-            className={`px-4 py-1.5 transition-colors font-semibold hover:bg-black/20 text-base ${showActualSetlist ? 'bg-[#f9ae37] text-black' : 'bg-canvas text-black'}`}
+            className={`px-4 py-1.5 transition-colors font-semibold hover:bg-tertiary/40 text-base ${showActualSetlist ? 'bg-tertiary text-fifth' : 'bg-canvas text-fifth'}`}
             onClick={() => setShowActualSetlist(true)}
           >
             Actual Setlist
@@ -1599,67 +1612,81 @@ export function SongSelectionModal({
   const TooltipContainer = React.memo(({ result, score, pick }: { 
     result: string | undefined, 
     score: number | undefined,
-    pick?: SongPick // Need to pass the pick to check showcloser_correct and showopener_correct
+    pick?: SongPick
   }) => {
     const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
     const tooltipRef = useRef<HTMLDivElement>(null);
     
     // Calculate tooltip position when it becomes visible
     useEffect(() => {
       if (showTooltip && containerRef.current && tooltipRef.current) {
-        // Get the position and dimensions of the tooltip container
         const containerRect = containerRef.current.getBoundingClientRect();
-        const tooltipHeight = tooltipRef.current.offsetHeight;
+        const tooltipRect = tooltipRef.current.getBoundingClientRect();
         
-        // Check if the tooltip would extend below the visible area
-        const viewportHeight = window.innerHeight;
-        const tooltipBottom = containerRect.top + tooltipHeight;
-        const isOverflowing = tooltipBottom > viewportHeight - 20; // 20px buffer
+        // Get actual tooltip dimensions
+        const tooltipWidth = tooltipRect.width || tooltipRef.current.offsetWidth;
+        const tooltipHeight = tooltipRect.height || tooltipRef.current.offsetHeight;
         
-        // Adjust top position if needed to prevent overflow
-        if (isOverflowing) {
-          tooltipRef.current.style.top = 'auto';
-          tooltipRef.current.style.bottom = '0';
-        } else {
-          tooltipRef.current.style.top = '-2px';
-          tooltipRef.current.style.bottom = 'auto';
+        // Position tooltip so its RIGHT edge is 8px (2 Tailwind units) to the LEFT of the container
+        let x = containerRect.left - tooltipWidth - 8; // 8px = 2 Tailwind units
+        let y = containerRect.top + (containerRect.height / 2) - (tooltipHeight / 2); // Center vertically
+        
+        // Keep tooltip within viewport bounds
+        if (x < 8) {
+          // If no space on left, show on right side instead
+          x = containerRect.right + 8;
         }
+        if (y < 8) {
+          y = 8;
+        }
+        if (y + tooltipHeight > window.innerHeight - 8) {
+          y = window.innerHeight - tooltipHeight - 8;
+        }
+        
+        setTooltipPosition({ x, y });
       }
-    }, [showTooltip]);
+    }, [showTooltip]); // Remove tooltipRef dependency to avoid infinite loops
+    
+    // Create the tooltip content using React Portal
+    const tooltipContent = showTooltip ? createPortal(
+      <div 
+        ref={tooltipRef}
+        className="bg-tertiary border border-secondary text-fifth font-medium px-3 py-1.5 rounded shadow-lg text-xs whitespace-nowrap pointer-events-none"
+        style={{
+          position: 'fixed',
+          left: `${tooltipPosition.x}px`,
+          top: `${tooltipPosition.y}px`,
+          zIndex: 999999,
+          // Initially invisible to measure dimensions
+          visibility: tooltipPosition.x === 0 && tooltipPosition.y === 0 ? 'hidden' : 'visible',
+        }}
+        dangerouslySetInnerHTML={{ 
+          __html: getResultDescription(result, pick?.showcloser_correct ?? false, pick?.showopener_correct ?? false)
+        }}
+      />,
+      document.body
+    ) : null;
     
     return (
-      <div 
-        className="flex items-center justify-center w-8 h-6 cursor-pointer relative"
-        ref={containerRef}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-      >
-        {result === 'not_played' ? (
-          // Show red X icon for not played songs
-          <X className="w-6 h-6 text-white p-0.5 bg-red-600 rounded-lg" />
-        ) : (
-          // Show green +score for played songs
-          <span className="font-semibold text-white bg-green-600 rounded-lg px-1">
-            +{score}
-          </span>
-        )}
-        
-        {/* Tooltip that appears on hover - now uses absolute positioning */}
-        {showTooltip && (
-          <div 
-            ref={tooltipRef}
-            className="absolute right-full mr-2 bg-secondary border border-black text-black font-semibold px-3 py-1.5 rounded shadow-lg z-[99999] text-xs whitespace-nowrap"
-            style={{
-              pointerEvents: 'none', // Ensure tooltip doesn't interfere with mouse events
-              top: '-5px', // Default position, may be overridden by useEffect
-            }}
-            dangerouslySetInnerHTML={{ 
-              __html: getResultDescription(result, pick?.showcloser_correct ?? false, pick?.showopener_correct ?? false)
-            }}
-          />
-        )}
-      </div>
+      <>
+        <div 
+          className="flex items-center justify-center w-8 h-6 cursor-pointer relative"
+          ref={containerRef}
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
+          {result === 'not_played' ? (
+            <X className="w-6 h-6 text-primary p-0.5 bg-red-600 rounded-lg" />
+          ) : (
+            <span className="font-medium text-primary bg-green-600 rounded-lg px-1">
+              +{score}
+            </span>
+          )}
+        </div>
+        {tooltipContent}
+      </>
     );
   });
 
@@ -1677,7 +1704,7 @@ export function SongSelectionModal({
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="mt-3 ml-4">
-          <h1 className="text-xl font-mohr text-black">Echo of a Show</h1>
+          <h1 className="text-xl font-mohr text-fifth">Echo of a Show</h1>
           <h2 className="text-xs font-semibold text-[#a9682e]">A Setlist Game for Goose the Band</h2>
         </div>
         {/* Logo */}
@@ -1690,7 +1717,7 @@ export function SongSelectionModal({
       
       {/* Show Info */}
       <div className="mb-3 ml-4 pb-3 border-b border-white/10">
-        <h3 className="text-lg font-mohr text-black/90">
+        <h3 className="text-lg font-mohr text-fifth/90">
           {formatDate(show.show_date)} — {show.show_subvenue}
         </h3>
         <p className="text-[#a9682e]/70 text-sm">
@@ -1701,7 +1728,7 @@ export function SongSelectionModal({
             {show.show_detail}
           </p>
         )}
-        <p className="text-black/90 text-sm mt-2">
+        <p className="text-fifth/90 text-sm mt-2">
           Picks by: <span className="font-semibold">{username || 'My Picks'}</span>
         </p>
       </div>
@@ -1710,7 +1737,7 @@ export function SongSelectionModal({
       <div className="space-y-3 ml-4">
         {getUniqueSets().map(setId => (
           <div key={setId} className="mb-2">
-            <h4 className="text-base font-mohr text-black mb-1">
+            <h4 className="text-base font-mohr text-fifth mb-1">
               {getSetDisplayName(setId)}
             </h4>
             <div className="space-y-1">
@@ -1720,13 +1747,13 @@ export function SongSelectionModal({
                   className="flex items-center rounded-md px-1 py-1 bg-[#0e151b]/20 text-[#fce7ca]/90"
                 >
                   <span 
-                    className="text-white text-center text-xs rounded font-semibold w-6 h-5 flex items-center justify-center mr-2"
+                    className="text-primary text-center text-xs rounded font-semibold w-6 h-5 flex items-center justify-center mr-2"
                     style={{ backgroundColor: getPlacementColor(pick.placement) }}
                   >
                     {index + 1}
                   </span>
-                  <span className="text-sm text-black ml-2 font-medium">
-                    {pick.song}
+                  <span className="text-sm text-fifth ml-2 font-medium">
+                    {cleanSongName(pick.song)}
                   </span>
                   
                   {/* Show score if available */}
@@ -1751,7 +1778,7 @@ export function SongSelectionModal({
       {/* Footer - only show for scored shows */}
       {show.show_scored && (
         <div className="mt-4 pt-3 border-t border-white/10 text-center">
-          <div className="text-white font-bold">
+          <div className="text-primary font-bold">
             {submissionDetails?.totalScore} points
           </div>
           <div className="text-xs text-[#fce7ca]/70 mt-1">
@@ -1770,49 +1797,47 @@ export function SongSelectionModal({
         className="fixed inset-0 bg-black/50 z-50"
         onClick={onClose}
       />
-      <div className="fixed inset-x-4 inset-y-4 md:inset-x-auto md:inset-y-auto md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-50 bg-primary rounded-lg border border-black shadow-xl flex flex-col md:h-auto md:max-h-[90vh] md:w-[min(1000px,calc(100vw-32px))]">
+      <div className="fixed inset-x-4 inset-y-4 md:inset-x-auto md:inset-y-auto md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col md:h-auto md:max-h-[90vh] md:w-[min(1000px,calc(100vw-32px))]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-black">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+        <div className="flex items-center justify-between p-3 border-b border-secondary">
+          <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
             {viewMode 
               ? (show.show_scored ? 'Setlist Game Results' : 'Your Setlist Picks')
               : (isEditing ? 'Edit Setlist Picks' : 'Select Setlist')}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
+            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
           >
-            <X className="w-5 h-5 text-black/70" />
+            <X className="w-5 h-5 text-fifth/70" />
           </button>
         </div>
         
         {/* Status display */}
-        <div className="p-4 border-b border-black bg-canvas">
-          <div className="flex flex-col md:flex-row md:justify-between">
-            <div>
-              <h3 className="text-black font-semibold">
+        <div className="px-3 py-2 border-b border-secondary bg-canvas">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+            <div className="text-center md:text-left">
+              <h3 className="text-fifth font-medium">
                 {formatDate(show.show_date)} — {show.show_subvenue}
               </h3>
-              <p className="text-black/70 text-sm">
+              <p className="text-fifth/70 font-light text-sm">
                 {show.show_venue_location}
               </p>
             </div>
             {viewMode && show.show_scored && submissionDetails ? (
-              <div className="mt-2 md:mt-0 flex flex-col items-center md:items-end">
-                {/* Center the score on mobile, right-align on desktop */}
-                <h2 className="text-base font-mohr bg-secondary text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+              <div className="mt-2 md:mt-0 flex justify-center md:justify-end">
+                <h2 className="text-base font-semibold bg-green-600 text-primary inline-block px-3 py-1 rounded-lg border border-secondary">
                   {submissionDetails.totalScore} points
                 </h2>
-                {/* Move penalty info to footer */}
               </div>
             ) : viewMode && show.isSelectionClosed && existingPicks && existingPicks.length > 0 ? (
-              <div className="mt-2 md:mt-0 flex items-center justify-center md:justify-end w-full md:w-auto">
-                <span className="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm font-medium">
+              <div className="mt-2 md:mt-0 flex justify-center md:justify-end">
+                <span className="px-3 py-1.5 bg-blue-600 text-primary rounded-md text-sm font-medium">
                   Awaiting results
                 </span>
               </div>
             ) : (
-              <div className="mt-2 md:mt-0 justify-center md:justify-start">
+              <div className="mt-2 md:mt-0 flex justify-center md:justify-end">
                 {show.isSelectionClosed ? (
                   <span className="px-2 py-1 bg-red-500/20 text-red-700 rounded-md text-xs border border-red-500/30">
                     Picks closed
@@ -1828,7 +1853,7 @@ export function SongSelectionModal({
         </div>
         
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-3">
           {loading ? (
             <div className="text-center py-8">
               <div className="flex items-center justify-center space-x-2">
@@ -1840,7 +1865,7 @@ export function SongSelectionModal({
             </div>
           ) : success ? (
             <div className="text-center py-8">
-              <div className="bg-green-500/20 text-black px-4 py-3 rounded-lg">
+              <div className="bg-green-500/20 text-fifth px-4 py-3 rounded-lg">
                 Your song selections have been {isEditing ? 'updated' : 'submitted'} successfully!
               </div>
             </div>
@@ -1855,7 +1880,7 @@ export function SongSelectionModal({
                     <select
                       value={selectedSong}
                       onChange={(e) => setSelectedSong(e.target.value)}
-                      className="w-full px-2 py-2 bg-white border border-black rounded-md text-black font-semibold focus:outline-none focus:ring-2 focus:ring-[#f9ae37] appearance-none"
+                      className="w-full px-2 py-2 bg-canvas border border-secondary rounded-md text-fifth font-medium focus:outline-none focus:ring-2 focus:ring-tertiary appearance-none"
                     >
                       <option value="">Select a song...</option>
                       
@@ -1885,7 +1910,7 @@ export function SongSelectionModal({
                     <button
                       onClick={handleAddSong}
                       disabled={!selectedSong}
-                      className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-semibold rounded-md transition-colors disabled:bg-[#f9ae37]/50 disabled:cursor-not-allowed flex items-center gap-2 border border-black"
+                      className="px-4 py-2 bg-tertiary hover:bg-tertiary/40 text-fifth font-semibold rounded-md transition-colors disabled:bg-[#f9ae37]/50 disabled:cursor-not-allowed flex items-center gap-2 border border-secondary"
                     >
                       <Plus className="w-4 h-4" />
                       <span className="md:inline hidden">Add Song</span>
@@ -1899,7 +1924,7 @@ export function SongSelectionModal({
                       <button
                         onClick={handleAddSetBreak}
                         disabled={!canAddSetBreak()}
-                        className="px-3 py-1 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
+                        className="px-3 py-1 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-fifth font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-fifth/50 disabled:cursor-not-allowed text-sm border border-secondary"
                       >
                         Add Set Break
                       </button>
@@ -1907,7 +1932,7 @@ export function SongSelectionModal({
                       <button
                         onClick={handleAddEncoreBreak}
                         disabled={!canAddEncoreBreak()}
-                        className="px-3 py-1 bg-red-400 hover:bg-red-400/80 text-black font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-black/50 disabled:cursor-not-allowed text-sm border border-black"
+                        className="px-3 py-1 bg-red-400 hover:bg-red-400/80 text-fifth font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-fifth/50 disabled:cursor-not-allowed text-sm border border-secondary"
                       >
                         Add Encore Break
                       </button>
@@ -1916,7 +1941,7 @@ export function SongSelectionModal({
                     <div className="flex gap-3">
                       <button
                         onClick={handleAddNewOriginalSong}
-                        className="px-3 py-1 bg-green-400 hover:bg-green-400/80 text-black font-medium rounded-md transition-colors border border-black text-sm flex items-center gap-1"
+                        className="px-3 py-1 bg-green-400 hover:bg-green-400/80 text-fifth font-medium rounded-md transition-colors border border-secondary text-sm flex items-center gap-1"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span className="md:inline hidden">New Original Song</span>
@@ -1925,7 +1950,7 @@ export function SongSelectionModal({
                       
                       <button
                         onClick={handleAddNewCoverSong}
-                        className="px-3 py-1 bg-blue-400 hover:bg-blue-400/80 text-black font-medium rounded-md transition-colors border border-black text-sm flex items-center gap-1"
+                        className="px-3 py-1 bg-blue-400 hover:bg-blue-400/80 text-fifth font-medium rounded-md transition-colors border border-secondary text-sm flex items-center gap-1"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span className="md:inline hidden">New Cover Song</span>
@@ -1945,11 +1970,11 @@ export function SongSelectionModal({
               {/* Selected songs list */}
               <div>
                 {songPicks.length === 0 ? (
-                  <div className="text-[#fce7ca]/70 py-4 text-center text-sm">
+                  <div className="text-fifth font-light py-4 text-center text-sm">
                     No songs selected yet. Add songs above to begin.
                   </div>
                 ) : (
-                  <div className="space-y-5">
+                  <div className="space-y-1">
                     {viewMode && show.show_scored ? (
                       <>
                         {/* Mobile view: Toggle switch */}
@@ -1960,14 +1985,14 @@ export function SongSelectionModal({
                         {/* Desktop view: Two column layout */}
                         <div className="hidden md:block">
                           {getAllSets().map(setId => (
-                            <div key={setId} className="border border-black rounded-lg overflow-hidden mb-5">
+                            <div key={setId} className="border border-secondary rounded-lg overflow-hidden mb-5">
                               <div className="flex items-center px-3 py-2 bg-black">
-                                <h4 className="text-base font-medium text-white flex-1">
+                                <h4 className="text-base font-medium text-primary flex-1">
                                   {setId.startsWith('E') ? 
                                     `${setId === 'E1' ? 'Encore' : setId === 'E2' ? '2nd Encore' : '3rd Encore'} Selections` : 
                                     `Set ${setId} Selections`}
                                 </h4>
-                                <h4 className="text-base font-medium text-white flex-1 pl-6">
+                                <h4 className="text-base font-medium text-primary flex-1 pl-6">
                                   {setId.startsWith('E') ? 
                                     `Actual ${setId === 'E1' ? 'Encore' : setId === 'E2' ? '2nd Encore' : '3rd Encore'}` : 
                                     `Actual Set ${setId}`}
@@ -1977,15 +2002,15 @@ export function SongSelectionModal({
                               <div className="p-2 bg-canvas">
                                 <div className="grid grid-cols-2 gap-0">
                                   {/* Left column: User's selections */}
-                                  <div className="space-y-0.5 pr-4 border-r border-black/30">
+                                  <div className="space-y-0.5 pr-3 border-r border-secondary">
                                     {getSongsForSet(setId).length > 0 ? (
                                       getSongsForSet(setId).map((pick, index) => (
                                         <div 
                                           key={pick.id} 
-                                          className="flex justify-between items-center rounded-md px-3 text-black hover:bg-black/10 transition-colors">
+                                          className="flex justify-between items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                                           <div className="flex items-center gap-3">
                                             <span 
-                                              className="text-white text-center rounded text-sm font-semibold w-8 h-6 flex items-center justify-center"
+                                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
                                               style={{ 
                                                 backgroundColor: getPlacementColor(pick.placement) 
                                               }}
@@ -1993,8 +2018,8 @@ export function SongSelectionModal({
                                               {index + 1}
                                             </span>
                                             <div className="flex-1 flex flex-col justify-center">
-                                              <span className="break-words pr-2 font-semibold text-sm">
-                                                {pick.song}
+                                              <span className="break-words pr-2 font-trad text-[1.125rem] pb-1 leading-[1rem] text-fifth">
+                                                {cleanSongName(pick.song)}
                                               </span>
                                             </div>
                                           </div>
@@ -2008,22 +2033,22 @@ export function SongSelectionModal({
                                         </div>
                                       ))
                                     ) : (
-                                      <div className="text-center text-black text-sm italic">
+                                      <div className="text-center text-fifth text-sm italic">
                                         No songs picked for this set
                                       </div>
                                     )}
                                   </div>
                                   
                                   {/* Right column: Actual setlist */}
-                                  <div className="space-y-0.5 pl-4">
+                                  <div className="space-y-0.5 pl-3">
                                     {getSongsForActualSet(setId).length > 0 ? (
                                       getSongsForActualSet(setId).map((entry, index) => (
                                         <div 
                                           key={entry.entry_id} 
-                                          className="flex items-center rounded-md px-3 text-[#fce7ca]/90 hover:bg-white/5 transition-colors">
+                                          className="flex items-center rounded-md text-[#fce7ca]/90 hover:bg-white/5 transition-colors">
                                           <div className="flex items-center gap-3">
                                             <span 
-                                              className="text-white text-center rounded text-sm font-semibold w-8 h-6 flex items-center justify-center"
+                                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
                                               style={{ 
                                                 backgroundColor: getPlacementColor(entry.entry_placement) 
                                               }}
@@ -2031,15 +2056,15 @@ export function SongSelectionModal({
                                               {index + 1}
                                             </span>
                                             <div className="flex-1 flex flex-col justify-center">
-                                              <span className="break-words pr-2 font-semibold text-black text-sm">
-                                                {entry.entry_song}
+                                              <span className="break-words pr-2 font-trad text-[1.125rem] pb-1 leading-[1rem] text-fifth">
+                                                {cleanSongName(entry.entry_song)}
                                               </span>
                                             </div>
                                           </div>
                                         </div>
                                       ))
                                     ) : (
-                                      <div className="text-center text-black text-sm italic">
+                                      <div className="text-center text-fifth text-sm italic">
                                         No songs played in this set
                                       </div>
                                     )}
@@ -2053,9 +2078,9 @@ export function SongSelectionModal({
                         {/* Mobile view: Single column based on toggle state */}
                         <div className="md:hidden">
                           {getAllSets().map(setId => (
-                            <div key={setId} className="border border-black rounded-lg overflow-hidden mb-5">
+                            <div key={setId} className="border border-secondary rounded-lg overflow-hidden mb-5">
                               <div className="flex items-center px-3 py-2 bg-black">
-                                <h4 className="text-base font-medium text-white flex-1">
+                                <h4 className="text-base font-medium text-primary flex-1">
                                   {setId.startsWith('E') ? 
                                     `${getSetDisplayName(setId)} ${!showActualSetlist ? 'Selections' : ''}` : 
                                     `Set ${setId} ${!showActualSetlist ? 'Selections' : ''}`}
@@ -2070,17 +2095,17 @@ export function SongSelectionModal({
                                       getSongsForSet(setId).map((pick, index) => (
                                         <div 
                                           key={pick.id} 
-                                          className="flex justify-between items-center rounded-md px-3 text-black hover:bg-black/5 transition-colors">
+                                          className="flex justify-between items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                                           <div className="flex items-center gap-3">
                                             <span 
-                                              className="text-white text-center rounded text-sm font-semibold w-8 h-6 flex items-center justify-center"
+                                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
                                               style={{ backgroundColor: getPlacementColor(pick.placement) }}
                                             >
                                               {index + 1}
                                             </span>
                                             <div className="flex-1 flex flex-col justify-center">
-                                              <span className="break-words pr-2 font-semibold text-sm">
-                                                {pick.song}
+                                              <span className="break-words pr-2 font-trad text-[1.25rem] pb-1 leading-[1rem] text-sm">
+                                                {cleanSongName(pick.song)}
                                               </span>
                                             </div>
                                           </div>
@@ -2094,7 +2119,7 @@ export function SongSelectionModal({
                                         </div>
                                       ))
                                     ) : (
-                                      <div className="text-center text-black text-sm italic">
+                                      <div className="text-center text-fifth text-sm italic">
                                         No songs picked for this set
                                       </div>
                                     )}
@@ -2106,24 +2131,24 @@ export function SongSelectionModal({
                                       getSongsForActualSet(setId).map((entry, index) => (
                                         <div 
                                           key={entry.entry_id} 
-                                          className="flex items-center rounded-md px-3 text-black hover:bg-black/5 transition-colors">
+                                          className="flex items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                                           <div className="flex items-center gap-3">
                                             <span 
-                                              className="text-white text-center rounded text-sm font-semibold w-8 h-6 flex items-center justify-center"
+                                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
                                               style={{ backgroundColor: getPlacementColor(entry.entry_placement) }}
                                             >
                                               {index + 1}
                                             </span>
                                             <div className="flex-1 flex flex-col justify-center">
-                                              <span className="break-words pr-2 font-semibold text-sm">
-                                                {entry.entry_song}
+                                              <span className="break-words pr-2 font-trad text-[1.25rem] pb-1 leading-[1rem] text-sm">
+                                                {cleanSongName(entry.entry_song)}
                                               </span>
                                             </div>
                                           </div>
                                         </div>
                                       ))
                                     ) : (
-                                      <div className="text-center text-black text-sm italic">
+                                      <div className="text-center text-fifth text-sm italic">
                                         No songs in this set
                                       </div>
                                     )}
@@ -2137,9 +2162,9 @@ export function SongSelectionModal({
                     ) : (
                       // Regular view for non-scored or edit mode
                       getUniqueSets().map(setId => (
-                        <div key={setId} className="border border-black rounded-lg overflow-hidden">
+                        <div key={setId} className="border border-secondary rounded-lg overflow-hidden">
                           <div className="flex justify-between items-center px-3 py-2 bg-black">
-                            <h4 className="text-base font-medium text-white">
+                            <h4 className="text-base font-medium text-primary">
                               {getSetDisplayName(setId)}
                             </h4>
                             {!viewMode && (
@@ -2148,7 +2173,7 @@ export function SongSelectionModal({
                                   e.stopPropagation();
                                   handleRemoveSet(setId);
                                 }}
-                                className="bg-red-600 text-white hover:bg-red-600/80 p-1.5 rounded-md"
+                                className="bg-red-600 text-primary hover:bg-red-600/80 p-1.5 rounded-md"
                                 title="Remove this set"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -2160,10 +2185,10 @@ export function SongSelectionModal({
                           {getSongsForSet(setId).map((pick, index) => (
                             <div 
                               key={pick.id} 
-                              className="flex justify-between items-center rounded-md px-3 text-black hover:bg-black/5 transition-colors">
+                              className="flex justify-between items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                               <div className="flex items-center gap-3">
                                 <span 
-                                  className="text-xs text-white/90 px-2 py-0.5 rounded flex items-center font-semibold justify-center min-w-[1.5rem]"
+                                  className="text-xs text-primary px-2 py-0.5 rounded flex items-center font-normal justify-center min-w-[1.5rem]"
                                   style={{ 
                                     backgroundColor: getPlacementColor(pick.placement) 
                                   }}
@@ -2171,12 +2196,12 @@ export function SongSelectionModal({
                                   {index + 1}
                                 </span>
                                 <div className="flex flex-col justify-center">
-                                  <span className="break-words pr-2 font-semibold text-sm">
-                                    {pick.song}
+                                  <span className="break-words pr-2 font-trad text-[1.125rem] pb-1 leading-[1rem]">
+                                    {cleanSongName(pick.song)}
                                   </span>
                                   {/* Only show placement labels if not in view mode or if the show isn't closed */}
                                   {pick.placement && (!viewMode || !show.isSelectionClosed) && (
-                                    <span className="text-xs text-tertiary">
+                                    <span className="text-xs text-fourth font-medium">
                                       {pick.placement.startsWith('Main Set') ? '' : 
                                        pick.placement.startsWith('Encore') ? '' : 
                                        pick.placement}
@@ -2192,7 +2217,7 @@ export function SongSelectionModal({
                                       e.stopPropagation(); // Prevent event bubbling
                                       moveSongUp(pick.id);
                                     }}
-                                    className="text-black bg-[#f9ae37] hover:bg-[#f9ae37]/50 p-1 mr-0.5 rounded border border-black"
+                                    className="text-fifth bg-tertiary hover:bg-tertiary/40 p-1 mr-0.5 rounded border border-secondary"
                                     title="Move up"
                                   >
                                     <ChevronUp className="w-4 h-4" />
@@ -2202,7 +2227,7 @@ export function SongSelectionModal({
                                       e.stopPropagation(); // Prevent event bubbling
                                       moveSongDown(pick.id);
                                     }}
-                                    className="text-black bg-[#f9ae37] hover:bg-[#f9ae37]/50 p-1 mr-0.5 rounded border border-black"
+                                    className="text-fifth bg-tertiary hover:bg-tertiary/40 p-1 mr-0.5 rounded border border-secondary"
                                     title="Move down"
                                   >
                                     <ChevronDown className="w-4 h-4" />
@@ -2215,7 +2240,7 @@ export function SongSelectionModal({
                                         handleRemoveSong(index);
                                       }
                                     }}
-                                    className="text-white bg-red-600 hover:bg-red-600/50 p-1 mr-0.5 rounded border border-black"
+                                    className="text-primary bg-red-600 hover:bg-red-600/50 p-1 mr-0.5 rounded border border-secondary"
                                     title="Remove song"
                                   >
                                     <X className="w-4 h-4" />
@@ -2248,9 +2273,9 @@ export function SongSelectionModal({
         
         {/* Preview section */}
         {showPreview && previewImageUrl && (
-          <div className="p-4 bg-[#0e151b] border-t border-white/10">
+          <div className="p-3 bg-[#0e151b] border-t border-white/10">
             <div className="flex flex-col items-center">
-              <h3 className="text-white font-semibold mb-2">Image Preview</h3>
+              <h3 className="text-primary font-semibold mb-2">Image Preview</h3>
               <div className="border border-white/20 rounded-lg overflow-hidden mb-3 max-w-full">
                 <img 
                   src={previewImageUrl} 
@@ -2266,24 +2291,24 @@ export function SongSelectionModal({
         )}
         
         {/* Footer actions */}
-        <div className="p-4 border-t bg-canvas border-black rounded-b-lg">
+        <div className="p-3 border-t bg-canvas border-secondary rounded-b-lg">
           {viewMode ? (
             <div className="w-full flex flex-col items-center">
               {/* Show raw points and penalties for scored shows */}
               {viewMode && show.show_scored && (
                 <div className="w-full text-center mb-3">
                   {/* Raw score display */}
-                  <div className="text-sm text-black font-bold">
-                    Selection score: <span className="font-semibold text-white bg-green-600 rounded-lg py-1 px-1.5 ml-1.5">{rawPointsTotal} points</span>
+                  <div className="text-sm text-fifth font-semibold">
+                    Selection score: <span className="font-medium text-primary bg-green-600 rounded-lg py-1 px-1.5 ml-1.5">{rawPointsTotal} points</span>
                   </div>
                   
                   {/* Penalty information - now positioned below raw score */}
                   {submissionDetails && submissionDetails.songsPicked > submissionDetails.songsPlayed && (
-                    <div className="text-xs text-black font-bold mt-2">
+                    <div className="text-xs text-fifth font-semibold mt-2">
                       {` ${submissionDetails.songsPicked - submissionDetails.songsPlayed === 1 
                         ? "1 extra song picked" 
                         : `${submissionDetails.songsPicked - submissionDetails.songsPlayed} extra songs picked`}:`}
-                      <span className="font-bold text-white bg-red-600 rounded-lg py-1 px-1.5 ml-1.5">
+                      <span className="font-medium text-primary bg-red-600 rounded-lg py-1 px-1.5 ml-1.5">
                         {`-${(submissionDetails.songsPicked - submissionDetails.songsPlayed) * 3} points`}
                       </span>
                     </div>
@@ -2296,38 +2321,10 @@ export function SongSelectionModal({
                 {/* Close button */}
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-600/80 text-white flex items-center gap-2 font-medium rounded-md transition-colors border border-black"
+                  className="px-3 py-1 bg-red-600 hover:bg-red-600/80 text-primary flex items-center gap-2 font-medium rounded-md transition-colors border border-secondary"
                 >
                   <X className="w-4 h-4" />
                   <span>Close</span>
-                </button>
-                
-                {/* Share button - now uses clipboard */}
-                <button
-                  onClick={copyImageToClipboard}
-                  disabled={isGeneratingImage || clipboardSuccess || songPicks.length === 0}
-                  className={`px-4 py-2 font-medium rounded-md transition-colors flex border border-black items-center gap-2 ${
-                    clipboardSuccess 
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-tertiary/50 disabled:cursor-not-allowed'
-                  }`}
-                >
-                  {isGeneratingImage ? (
-                    <>
-                      <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                      <span>Generating...</span>
-                    </>
-                  ) : clipboardSuccess ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      <span>Copied to clipboard!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Share className="w-4 h-4" />
-                      <span>Share My Picks</span>
-                    </>
-                  )}
                 </button>
               </div>
               
@@ -2343,7 +2340,7 @@ export function SongSelectionModal({
               {/* Mobile view: stacked layout */}
               <div className="block md:hidden w-full">
                 <div className="flex justify-center mb-3">
-                  <div className="text-black font-semibold text-sm">
+                  <div className="text-fifth font-semibold text-sm">
                     {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
                   </div>
                 </div>
@@ -2357,7 +2354,7 @@ export function SongSelectionModal({
                         setNextSetNum(1);
                         setError(null);
                       }}
-                      className="px-3 py-2 bg-red-600 border border-black hover:bg-red-700 text-white font-medium rounded-md transition-colors flex items-center gap-1"
+                      className="px-3 py-2 bg-red-600 border border-secondary hover:bg-red-700 text-primary font-medium rounded-md transition-colors flex items-center gap-1"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span>Clear</span>
@@ -2369,10 +2366,10 @@ export function SongSelectionModal({
                     <button
                       onClick={copyImageToClipboard}
                       disabled={isGeneratingImage || clipboardSuccess}
-                      className={`px-3 py-2 font-medium rounded-md transition-colors border border-black flex items-center gap-1 ${
+                      className={`px-3 py-2 font-medium rounded-md transition-colors border border-secondary flex items-center gap-1 ${
                         clipboardSuccess 
-                          ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-black/50 disabled:cursor-not-allowed'
+                          ? 'bg-green-600 hover:bg-green-700 text-primary' 
+                          : 'bg-blue-600 hover:bg-blue-600/80 text-primary disabled:bg-black/50 disabled:cursor-not-allowed'
                       }`}
                     >
                       {isGeneratingImage ? (
@@ -2397,7 +2394,7 @@ export function SongSelectionModal({
                   <button
                     onClick={handleSubmit}
                     disabled={songPicks.length === 0 || submitting || success}
-                    className="px-3 py-2 bg-green-600 border border-black hover:bg-green-600/80 text-white font-medium rounded-md transition-colors disabled:bg-black/50 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="px-3 py-2 bg-green-600 border border-secondary hover:bg-green-600/80 text-primary font-medium rounded-md transition-colors disabled:bg-black/50 disabled:cursor-not-allowed flex items-center gap-1"
                   >
                     {submitting ? (
                       <>
@@ -2417,8 +2414,8 @@ export function SongSelectionModal({
               
               {/* Desktop view: remains the same */}
               <div className="hidden md:flex md:justify-between md:items-center">
-                <div className="flex items-center gap-4">
-                  <div className="text-black font-semibold text-sm">
+                <div className="flex items-center gap-3">
+                  <div className="text-fifth font-semibold text-sm">
                     {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
                   </div>
                   {songPicks.length > 0 && (
@@ -2430,7 +2427,7 @@ export function SongSelectionModal({
                         setNextSetNum(1);
                         setError(null);
                       }}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white border border-black font-medium rounded-md transition-colors flex items-center gap-2"
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-primary border border-secondary font-medium rounded-md transition-colors flex items-center gap-2"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span>Clear Selections</span>
@@ -2443,10 +2440,10 @@ export function SongSelectionModal({
                     <button
                       onClick={copyImageToClipboard}
                       disabled={isGeneratingImage || clipboardSuccess}
-                      className={`px-3 py-2 font-medium rounded-md border border-black transition-colors flex items-center gap-1 ${
+                      className={`px-3 py-2 font-medium rounded-md border border-secondary transition-colors flex items-center gap-1 ${
                         clipboardSuccess 
-                          ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'bg-blue-600 hover:bg-blue-600/80 text-white disabled:bg-black/50 disabled:cursor-not-allowed'
+                          ? 'bg-green-600 hover:bg-green-700 text-primary' 
+                          : 'bg-blue-600 hover:bg-blue-600/80 text-primary disabled:bg-black/50 disabled:cursor-not-allowed'
                       }`}
                     >
                       {isGeneratingImage ? (
@@ -2470,7 +2467,7 @@ export function SongSelectionModal({
                   <button
                     onClick={handleSubmit}
                     disabled={songPicks.length === 0 || submitting || success}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-600/80 border border-black text-white font-medium rounded-md transition-colors disabled:bg-green-600/50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-2 bg-green-600 hover:bg-green-600/80 border border-secondary text-primary font-medium rounded-md transition-colors disabled:bg-green-600/50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {submitting ? (
                       <>

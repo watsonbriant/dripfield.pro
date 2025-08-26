@@ -102,7 +102,7 @@ export function SongSearch({ className = '' }: SongSearchProps) {
       <div className="md:hidden">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors border border-black"
+          className="p-2 rounded-md bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
         >
           <Search className="w-6 h-6" />
         </button>
@@ -112,13 +112,13 @@ export function SongSearch({ className = '' }: SongSearchProps) {
           title="Select Song"
         >
           <div className="space-y-0">
-            <div className="sticky top-0 bg-primary pb-4">
+            <div className="sticky -top-4 bg-primary py-4">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search songs..."
-                className="w-full px-4 py-2 rounded-md border border-black bg-canvas text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e]"
+                className="w-full px-4 py-2 rounded-md border border-secondary bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
               />
             </div>
             <div className="divide-y divide-black/10">
@@ -131,13 +131,13 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                     setSearchTerm('');
                     navigate(`/song/${song.song_id}`);
                   }}
-                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-black"
+                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-medium text-fifth"
                 >
                   {song.song}
                 </button>
               ))}
               {filteredSongs.length === 0 && (
-                <div className="px-4 py-2 text-sm text-black/60 italic">
+                <div className="px-4 py-2 text-sm text-fifth/60 italic">
                   No songs found
                 </div>
               )}
@@ -148,14 +148,14 @@ export function SongSearch({ className = '' }: SongSearchProps) {
       <div className="hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr whitespace-nowrap min-w-[157px]"
+          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
         >
-          {selectedSong || 'Search Songs'}
+          {selectedSong || 'Search'}
           <ChevronDown className="w-4 h-4" />
         </button>
       </div>
       {isDropdownOpen && (
-        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
+        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto ${
           window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-64 max-h-96'
         }`}>
           <div className="p-2">
@@ -165,9 +165,9 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search songs..."
-                className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-black text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] placeholder-black/60"
+                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-fifth text-sm focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
             </div>
           </div>
           <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
@@ -180,13 +180,13 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                   setSearchTerm('');
                   navigate(`/song/${song.song_id}`);
                 }}
-                className="w-full text-left px-4 py-1 text-sm text-black font-semibold hover:bg-canvas transition-colors"
+                className="w-full text-left px-4 py-1 text-sm text-fifth font-medium leading-[1rem] hover:bg-canvas transition-colors"
               >
                 {song.song}
               </button>
             ))}
             {filteredSongs.length === 0 && (
-              <div className="px-4 py-2 text-sm text-black/60 italic">
+              <div className="px-4 py-2 text-sm text-fifth/60 italic">
                 No songs found
               </div>
             )}

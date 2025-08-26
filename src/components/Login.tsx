@@ -36,16 +36,16 @@ export const Login: React.FC = () => {
   
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="mt-8 max-w-md mx-auto bg-primary border border-black rounded-lg p-6">
-        <h1 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0.5 rounded-full border border-black mb-6">Sign in to your account</h1>
+      <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg p-3">
+        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-3">Sign in to your account</h1>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2">
           {error && (
             <p className="mt-2 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300">{error}</p>
           )}
           
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-fifth mb-1">
               Email address
             </label>
             <input
@@ -56,13 +56,13 @@ export const Login: React.FC = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37] text-sm"
+              className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
               placeholder="ted@goosetheband.com"
             />
           </div>
           
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-fifth mb-1">
               Password
             </label>
             <input
@@ -73,13 +73,13 @@ export const Login: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37] text-sm"
+              className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
               placeholder="********"
             />
           </div>
           
           <div className="text-sm">
-            <Link to="/reset-password" className="text-black font-semibold hover:text-[#f9ae37]">
+            <Link to="/reset-password" className="text-fifth font-medium hover:underline">
               Forgot your password?
             </Link>
           </div>
@@ -87,12 +87,12 @@ export const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading || authSuccess}
-            className={`w-full px-4 py-2 rounded-full font-medium transition-colors border border-black ${
+            className={`w-full px-3 py-1.5 rounded-lg font-medium transition-colors border border-secondary ${
               authSuccess 
-                ? 'bg-green-500 text-black cursor-not-allowed'
+                ? 'bg-green-500 text-fifth cursor-not-allowed'
                 : loading
-                ? 'bg-[#f9ae37]/50 text-black cursor-not-allowed'
-                : 'bg-[#f9ae37] text-black hover:bg-[#f9ae37]/80'
+                ? 'bg-tertiary/50 text-fifth cursor-not-allowed'
+                : 'bg-tertiary text-fifth hover:bg-tertiary/80'
             }`}
           >
             {loading 
@@ -103,9 +103,9 @@ export const Login: React.FC = () => {
           </button>
           
           <div className="mt-4 text-center">
-            <p className="text-black/70 text-sm">
+            <p className="text-fifth/70 text-sm font-light">
               Don't have an account?{' '}
-              <Link to="/signup" className="font-semibold text-black hover:text-[#f9ae37]">
+              <Link to="/signup" className="font-medium text-fifth hover:underline">
                 Sign up
               </Link>
             </p>

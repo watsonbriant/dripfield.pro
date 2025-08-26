@@ -67,7 +67,7 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
       <div className="md:hidden">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors border border-black"
+          className="p-2 rounded-md bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
         >
           <Search className="w-6 h-6" />
         </button>
@@ -77,13 +77,13 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
           title="Select Guest"
         >
           <div className="space-y-0">
-            <div className="sticky top-0 bg-primary pb-4">
+            <div className="sticky -top-4 bg-primary pb-4">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search guests..."
-                className="w-full px-4 py-2 rounded-md border border-black bg-canvas text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e]"
+                className="w-full px-4 py-2 rounded-md border border-secondary bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
               />
             </div>
             <div className="divide-y divide-black/10">
@@ -96,16 +96,16 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
                     setSearchTerm('');
                     navigate(`/guest/${guest.guest_id}`);
                   }}
-                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-black"
+                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-fifth"
                 >
                   {guest.guest}
                   {guest.guest_instrument && (
-                    <span className="text-black/70 ml-2">({guest.guest_instrument})</span>
+                    <span className="text-fifth/70 ml-2">({guest.guest_instrument})</span>
                   )}
                 </button>
               ))}
               {filteredGuests.length === 0 && (
-                <div className="px-4 py-2 text-sm text-black/60 italic">
+                <div className="px-4 py-2 text-sm text-fifth/60 italic">
                   No guests found
                 </div>
               )}
@@ -116,14 +116,14 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
       <div className="hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
+          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
         >
-          {selectedGuest || 'Search Guests'}
+          {selectedGuest || 'Search'}
           <ChevronDown className="w-4 h-4" />
         </button>
       </div>
       {isDropdownOpen && (
-        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
+        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto ${
           window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-96 max-h-96'
         }`}>
           <div className="p-2">
@@ -133,9 +133,9 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search guests..."
-                className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-black text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] placeholder-black/60"
+                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-fifth text-sm focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
             </div>
           </div>
           <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
@@ -148,16 +148,16 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
                   setSearchTerm('');
                   navigate(`/guest/${guest.guest_id}`);
                 }}
-                className="w-full text-left px-4 py-1 text-sm text-black font-semibold hover:bg-canvas transition-colors"
+                className="w-full text-left px-4 py-1 text-sm text-fifth leading-[1rem] font-medium hover:bg-canvas transition-colors"
               >
                 {guest.guest}
                 {guest.guest_instrument && (
-                  <span className="text-black/70 ml-2">({guest.guest_instrument})</span>
+                  <span className="text-fifth/90 text-xs font-light ml-2">({guest.guest_instrument})</span>
                 )}
               </button>
             ))}
             {filteredGuests.length === 0 && (
-              <div className="px-4 py-2 text-sm text-black/60 italic">
+              <div className="px-4 py-2 text-sm text-fifth/60 italic">
                 No guests found
               </div>
             )}

@@ -49,6 +49,18 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
   const [sortColumn, setSortColumn] = useState<string>('show_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
+  // Text replacement function from Tours component
+  const cleanSongName = (songName: string): string => {
+    return songName
+      .replace(/\[/g, '(')
+      .replace(/\]/g, ')')
+      .replace(/ñ/g, 'n')
+      .replace(/ü/g, 'u')
+      .replace(/–/g, '-')
+      .replace(/…/g, '...')
+      .replace(/∆/g, 'a');
+  };
+
   const shouldHighlightForSong = (showId: string) => {
     if (!selectedSong || !songShowMap[selectedSong]) return false;
     return songShowMap[selectedSong].includes(showId);
@@ -117,9 +129,9 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
     }
     
     return sortDirection === 'asc' ? (
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" />
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-fifth" />
     ) : (
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-fifth" />
     );
   };
 
@@ -136,16 +148,16 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
 
   const renderTimelineView = () => (
     <div className="px-0">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex justify-center">
         <div className="flex flex-row min-w-max">
           {years.map((year, index) => (
             <div 
               key={year} 
               className={`w-16 px-1 ${
-                index !== years.length - 1 ? 'border-r border-black/10' : ''
+                index !== years.length - 1 ? 'border-r border-secondary' : ''
               }`}
             >
-              <div className="text-black font-semibold mb-2 text-center">
+              <div className="text-fifth text-sm font-medium mb-2 text-center bg-secondary/50 rounded-lg">
                 {year}
               </div>
               <div className="space-y-1">
@@ -168,10 +180,10 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                       }}
                       onMouseLeave={() => setHoveredPerformance(null)}
                       style={{
-                        backgroundColor: isHighlightedForSong ? '#f9ae37' : 'transparent'
+                        backgroundColor: isHighlightedForSong ? '#8ec1b6' : 'transparent'
                       }}
-                      className={`w-full text-xs ${isHighlightedForSong ? 'text-black' : 'text-black'} hover:underline transition-colors text-center block px-0.5 font-semibold rounded ${
-                        isHighlighted ? 'border border-black' : ''
+                      className={`w-full text-xs ${isHighlightedForSong ? 'text-fifth' : 'text-fifth'} hover:underline transition-colors text-center block px-0.5 font-medium rounded ${
+                        isHighlighted ? 'border border-fifth/50' : ''
                       } ${
                         (selectedGroup && !isHighlighted) || (selectedSong && !isHighlightedForSong) ? 'opacity-10' : 'opacity-100'
                       }`}
@@ -235,9 +247,9 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
       <div className="overflow-x-auto">
         <table className="w-full border-collapse min-w-max">
           <thead>
-            <tr className="bg-canvas border-y border-black/10">
+            <tr className="bg-canvas border-y border-secondary">
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_date')}
               >
                 <div className="flex items-center gap-1">
@@ -246,7 +258,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_group')}
               >
                 <div className="flex items-center gap-1">
@@ -255,7 +267,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_tour')}
               >
                 <div className="flex items-center gap-1">
@@ -264,7 +276,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_venue_location')}
               >
                 <div className="flex items-center gap-1">
@@ -284,7 +296,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                   key={`${perf.show_id}-${index}`}
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-black/10 transition-colors text-xs ${
+                  } hover:bg-tertiary/40 transition-colors text-xs ${
                     isHighlighted ? 'border border-[#f9ae37] bg-[#f9ae37]/10' : ''
                   } ${
                     isHighlightedForSong ? 'bg-[#f9ae37]/30' : ''
@@ -292,11 +304,11 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                     (selectedGroup && !isHighlighted) || (selectedSong && !isHighlightedForSong) ? 'opacity-30' : 'opacity-100'
                   }`}
                 >
-                  <td className="px-4 py-1 text-black whitespace-nowrap">
-                    <span className="font-semibold">
+                  <td className="px-4 py-1 text-fifth whitespace-nowrap">
+                    <span className="font-medium">
                       <button
                         onClick={() => navigate(`/setlist/${perf.show_id}`)}
-                        className="hover:text-[#a9682e] transition-colors table-link"
+                        className="hover:underline transition-colors table-link"
                       >
                         {formatInTimeZone(
                           new Date(perf.show_date),
@@ -306,8 +318,8 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                       </button>
                     </span>
                   </td>
-                  <td className="px-4 py-1 text-black whitespace-nowrap">{perf.show_group}</td>
-                  <td className="px-4 py-1 text-black whitespace-nowrap">
+                  <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
+                  <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
                     {perf.show_tour ? (
                       <button
                         onClick={() => {
@@ -315,7 +327,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                             navigate(`/tours/${perf.tour_id}`);
                           }
                         }}
-                        className="hover:text-[#a9682e] hover:underline transition-colors"
+                        className="hover:underline transition-colors"
                       >
                         {perf.show_tour}
                       </button>
@@ -324,7 +336,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                     )}
                   </td>
                   <td 
-                    className="px-4 py-1 text-black whitespace-nowrap relative"
+                    className="px-4 py-1 text-fifth font-light whitespace-nowrap relative"
                     onMouseEnter={(e) => {
                       if (perf.show_subvenue) {
                         setHoveredPerformance({
@@ -344,13 +356,13 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                   >
                     <button
                       onClick={() => navigateToVenue(perf)}
-                      className="hover:text-[#a9682e] hover:underline transition-colors"
+                      className="hover:underline transition-colors"
                     >
                       {perf.show_venue_location}
                     </button>
                     {hoveredPerformance?.show_id === perf.show_id && (
                     <div 
-                      className="fixed bg-secondary font-semibold text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+                      className="fixed bg-tertiary font-medium text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
                       style={{
                           left: `${mousePosition.x + 10}px`,
                           top: `${mousePosition.y - 10}px`,
@@ -375,20 +387,20 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
   return (
     <>
       <style>{tooltipStyles}</style>
-      <div className="bg-primary border border-black rounded-lg p-4">
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Performances</h2>
+          <div className="text-fifth text-base font-medium">Performances</div>
           
           {/* Selected filters indicators */}
           {(selectedGroup || selectedSong) && (
-            <div className="text-xs text-black items-end tooltip-bubble">
+            <div className="flex items-center text-xs text-fifth tooltip-bubble">
               {selectedSong && (
-                <span className="font-semibold text-black border border-black bg-[#f9ae37] px-1 py-0.5 rounded mr-2">
-                  {selectedSong}
+                <span className="font-trad text-sm text-fifth border border-secondary bg-tertiary leading-[1rem] px-1 pb-0.5 rounded mr-2">
+                  {cleanSongName(selectedSong)}
                 </span>
               )}
               {selectedGroup && (
-                <span className="font-semibold text-black border border-black bg-[#f9ae37] px-1 py-0.5 rounded">
+                <span className="font-medium text-fifth border border-secondary bg-tertiary leading-[1rem] px-1 py-0.5 rounded">
                   {selectedGroup}
                 </span>
               )}
@@ -408,7 +420,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
-                className={`lucide lucide-columns-3 ${viewMode === 'timeline' ? 'text-black' : 'text-black/60'}`}
+                className={`lucide lucide-columns-3 ${viewMode === 'timeline' ? 'text-fifth' : 'text-secondary'}`}
               >
                 <rect width="18" height="18" x="3" y="3" rx="2" />
                 <path d="M9 3v18" />
@@ -419,10 +431,10 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                 role="switch"
                 aria-checked={viewMode === 'table'}
                 onClick={() => setViewMode(viewMode === 'timeline' ? 'table' : 'timeline')}
-                className="relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#a9682e]/50 bg-canvas border border-black"
+                className="relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary bg-canvas border border-secondary"
               >
                 <span
-                  className={`absolute h-4 w-4 rounded-full bg-[#f9ae37] transition-transform duration-200 ${
+                  className={`absolute h-4 w-4 rounded-full bg-tertiary transition-transform duration-200 ${
                     viewMode === 'table' ? 'left-7' : 'left-1'
                   }`}
                 />
@@ -438,7 +450,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
-                className={`lucide lucide-rows-3 ${viewMode === 'table' ? 'text-black' : 'text-black/60'}`}
+                className={`lucide lucide-rows-3 ${viewMode === 'table' ? 'text-fifth' : 'text-secondary'}`}
               >
                 <rect width="18" height="18" x="3" y="3" rx="2" />
                 <path d="M3 9h18" />
@@ -453,7 +465,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
         {/* Tooltip */}
         {viewMode === 'timeline' && hoveredPerformance && (
           <div 
-            className="fixed bg-secondary text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+            className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
             style={{
               left: `${mousePosition.x + 10}px`,
               top: `${mousePosition.y - 10}px`,
@@ -465,21 +477,21 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
             <div className="space-y-0.5">
               {/* Date */}
               <div className="hang">
-                <strong>
+                <span className='font-medium'>
                   {formatInTimeZone(
                     new Date(`${hoveredPerformance.fullData.show_date}T12:00:00Z`),
                     'UTC',
                     'MM.dd.yy'
                   )}
-                </strong>
+                </span>
               </div>
               {/* Group and tour */}
-              <div className="hang">
-                <strong>{hoveredPerformance.fullData.show_group}</strong>
+              <div className="hang font-light">
+                <span className='font-medium'>{hoveredPerformance.fullData.show_group}</span>
                 {hoveredPerformance.fullData.show_tour && ` (${hoveredPerformance.fullData.show_tour})`}
               </div>
               {/* Venue */}
-              <div className="hang">
+              <div className="hang font-light">
                 {hoveredPerformance.fullData.show_subvenue} 
                 {hoveredPerformance.fullData.show_venue_location && ` (${hoveredPerformance.fullData.show_venue_location})`}
               </div>

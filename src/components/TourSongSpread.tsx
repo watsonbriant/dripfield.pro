@@ -135,15 +135,15 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
   const maxCount = Math.max(...Object.values(categoryData.counts));
 
   return (
-    <div className="bg-primary border border-black rounded-lg p-3">
-      <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+    <div className="bg-primary border border-secondary rounded-lg p-3">
+      <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary mb-2">
         Song Spread
       </h2>
       <div className="space-y-1.5">
         {sortedCategories.map(({ category, count, songs, artwork }) => (
           <div key={category}>
             <div 
-              className="text-black text-sm font-semibold cursor-pointer"
+              className="text-fifth text-sm font-medium cursor-pointer"
               onMouseEnter={(e) => {
                 setHoveredCategory(category);
                 setMousePosition({ x: e.clientX, y: e.clientY });
@@ -167,7 +167,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               onMouseLeave={() => setHoveredCategory(null)}
             >
               <div 
-                className="h-full bg-[#f9ae37] rounded border border-black relative flex items-center"
+                className="h-full bg-secondary rounded border border-secondary relative flex items-center"
                 style={{ 
                   width: `${(count / maxCount) * 100}%`,
                   minWidth: '48px'
@@ -185,13 +185,13 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                   />
                 )}
                 <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                  <span className="text-black text-sm font-semibold">{count}</span>
+                  <span className="text-fifth text-sm font-semibold">{count}</span>
                 </div>
               </div>
             </div>
             {hoveredCategory === category && (
               <div 
-                className="fixed bg-secondary text-black px-3 py-1 rounded border border-black shadow-lg min-w-max z-[9999] text-xs"
+                className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-xs"
                 style={{
                   left: `${mousePosition.x + 10}px`,
                   top: `${mousePosition.y - 10}px`
@@ -199,7 +199,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               >
                 {songs.map((song, index) => (
                   <div key={index}>
-                    <span className="font-semibold">{song.song}</span>
+                    <span className="font-medium">{song.song}</span>
                     {song.artist && <>&nbsp;&nbsp;[{song.artist}]</>}
                     &nbsp;&nbsp;[{song.playCount}]
                   </div>

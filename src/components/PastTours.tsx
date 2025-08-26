@@ -194,9 +194,9 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
 
   if (loading) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+      <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+          <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
             <ListStart className="w-5 h-5 mr-2" />
             <span>Past Tours</span>
           </h2>
@@ -207,7 +207,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading past tours...</p>
+          <p className="text-fifth mt-4">Loading past tours...</p>
         </div>
       </div>
     );
@@ -215,24 +215,24 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
 
   if (pastTours.length === 0) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+      <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+          <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
             <ListStart className="w-5 h-5 mr-2" />
             <span>Past Tours</span>
           </h2>
         </div>
         <div className="text-center py-6">
-          <p className="text-black">No past tours found.</p>
+          <p className="text-fifth">No past tours found.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+    <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
       <div className="flex items-center gap-2 mb-4">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+        <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
           <ListStart className="w-5 h-5 mr-2" />
           <span>Past Tours</span>
         </h2>
@@ -241,47 +241,47 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse min-w-max">
           <thead>
-            <tr className="bg-canvas border-y border-black/10">
-              <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap w-1/3">Tour</th>
-              <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-20">Players</th>
-              <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap w-20">Shows</th>
-              <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Winner(s)</th>
+            <tr className="bg-canvas border-y border-secondary/10">
+              <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap w-1/3">Tour</th>
+              <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-20">Players</th>
+              <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-20">Shows</th>
+              <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Winner(s)</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-black/5">
             {pastTours.map((tour) => (
               <tr 
                 key={tour.tour}
-                className="bg-canvas hover:bg-black/10 transition-colors text-xs"
+                className="bg-canvas hover:bg-tertiary/40 transition-colors text-xs"
               >
-                <td className="px-4 py-0.5 text-black whitespace-nowrap font-semibold">
+                <td className="px-4 py-0.5 text-fifth whitespace-nowrap font-medium">
                 <Link 
                   to={`/setlistgame/tour/${tour.tour_id}`}
-                  className="hover:text-[#a9682e] transition-colors table-link"
+                  className="hover:underline transition-colors table-link"
                 >
                   {tour.tour}
                 </Link>
                 </td>
-                <td className="px-4 py-0.5 text-center text-black/70 whitespace-nowrap">
+                <td className="px-4 py-0.5 text-center font-light text-fifth whitespace-nowrap">
                   {tour.playerCount}
                 </td>
-                <td className="px-4 py-0.5 text-center text-black/70 whitespace-nowrap">
+                <td className="px-4 py-0.5 text-center font-light text-fifth whitespace-nowrap">
                   {tour.showCount}
                 </td>
-                <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                   {tour.winners.length > 0 ? (
                     <div className="flex items-center">
-                      <span className="text-[#a9682e] font-bold">
+                      <span className="text-fourth font-medium">
                         {tour.winners.map((winner, idx) => (
                           <span key={winner.username}>
-                            {winner.username} <span className="font-normal">({winner.score})</span>
+                            {winner.username}&nbsp;&nbsp;<span className="font-light">({winner.score})</span>
                             {idx < tour.winners.length - 1 ? ', ' : ''}
                           </span>
                         ))}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-black/50 italic">No scores</span>
+                    <span className="text-fifth/50 italic">No scores</span>
                   )}
                 </td>
               </tr>

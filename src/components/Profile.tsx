@@ -28,7 +28,7 @@ export const Profile: React.FC = () => {
   const [isManagingShows, setIsManagingShows] = useState(false);
   const [shareButtonText, setShareButtonText] = useState(window.innerWidth < 768 ? 'Share' : 'Share My Stats');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [shareButtonColor, setShareButtonColor] = useState('bg-[#f9ae37]');
+  const [shareButtonColor, setShareButtonColor] = useState('bg-tertiary');
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const indicatorRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -115,7 +115,7 @@ export const Profile: React.FC = () => {
         // Reset button after 2 seconds
         setTimeout(() => {
           setShareButtonText(isMobile ? 'Share' : 'Share My Stats');
-          setShareButtonColor('bg-[#f9ae37]');
+          setShareButtonColor('bg-tertiary');
         }, 2000);
       } catch (err) {
         console.error('Failed to copy to clipboard:', err);
@@ -175,8 +175,7 @@ export const Profile: React.FC = () => {
       case 'Overview':
         return (
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Profile Overview</h3>
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4">
               <OverviewChart userId={user.id} />
               <UserStats userId={user.id} />
             </div>
@@ -187,7 +186,7 @@ export const Profile: React.FC = () => {
           <div>
             <AttendedShows userId={user.id} readOnly={false} onManagingToggle={handleShowManagementToggle} />
             {!isManagingShows && (
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-4">
                 <div className="lg:col-span-2">
                   <AttendedByGroupChart userId={user.id} />
                 </div>
@@ -202,7 +201,7 @@ export const Profile: React.FC = () => {
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Songs You've Seen</h3>
+              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Songs You've Seen</h3>
               <UserSongToggleSwitch
                 isRight={showSongMatrix}
                 onToggle={setShowSongMatrix}
@@ -222,14 +221,14 @@ export const Profile: React.FC = () => {
       case 'Slots':
         return (
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">My Slots</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">My Slots</h3>
             <UserSlots userId={user.id} />
           </div>
         );
       case 'Guests':
         return (
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Guests You've Seen</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Guests You've Seen</h3>
             <UserGuests userId={user.id} />
           </div>
         );
@@ -246,12 +245,12 @@ export const Profile: React.FC = () => {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="flex flex-row justify-between items-center mt-2">
+      <div className="flex flex-row justify-between items-center">
         <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">My Stats</h2>
+          <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">My Stats</h2>
           <button
             onClick={handleShareStats}
-            className={`flex items-center gap-1 px-3 py-1 rounded-full ${shareButtonColor} text-black font-semibold transition-colors duration-200 hover:opacity-90 border border-black`}
+            className={`flex items-center gap-1 px-3 py-1 rounded-lg ${shareButtonColor} text-fifth font-semibold transition-colors duration-200 hover:opacity-90 border border-secondary`}
           >
             <Link2 className="w-4 h-4" />
             <span>{shareButtonText}</span>
@@ -262,14 +261,14 @@ export const Profile: React.FC = () => {
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f9ae37] text-black font-semibold border border-black"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-secondary"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-4 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-4 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -277,8 +276,8 @@ export const Profile: React.FC = () => {
                     setActiveTab(tab);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm text-black hover:bg-canvas transition-colors ${
-                    activeTab === tab ? 'bg-canvas font-semibold' : ''
+                  className={`w-full text-left px-4 py-0.5 text-sm font-light text-fifth hover:bg-canvas transition-colors ${
+                    activeTab === tab ? 'bg-canvas font-medium' : ''
                   }`}
                 >
                   {tab}
@@ -290,17 +289,17 @@ export const Profile: React.FC = () => {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-primary px-1 py-1 rounded-full border border-black">
+          <div className="bg-primary px-1 py-1 rounded-lg border border-secondary">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
                   key={tab}
                   ref={el => tabsRef.current[index] = el}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-1 px-3 font-semibold relative z-10 text-sm transition-colors duration-200 ${
+                  className={`py-1 px-3 font-medium relative z-10 text-sm transition-colors duration-200 ${
                     activeTab === tab
-                      ? 'text-black'
-                      : 'text-black/60 hover:text-black/90'
+                      ? 'text-fifth'
+                      : 'text-fifth hover:underline'
                   }`}
                 >
                   {tab}
@@ -310,7 +309,7 @@ export const Profile: React.FC = () => {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-[#f9ae37] rounded-full top-0 transition-all duration-300 ease-in-out border border-black"
+                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-secondary"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>
@@ -319,7 +318,7 @@ export const Profile: React.FC = () => {
       </div>
       
       {/* Tab content */}
-      <div className="mt-8">
+      <div className="mt-4">
         <div>
           {renderTabContent()}
         </div>

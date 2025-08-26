@@ -93,8 +93,8 @@ export const Signup: React.FC = () => {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="mt-8 max-w-md mx-auto bg-primary border border-black rounded-lg p-6">
-        <h1 className="text-2xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0.5 rounded-full border border-black mb-6">Create a New Account</h1>
+      <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg p-3">
+        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-3">Create a New Account</h1>
 
         {message ? (
           <div className="p-4 bg-green-100 rounded-lg border border-green-300 mb-4">
@@ -102,7 +102,7 @@ export const Signup: React.FC = () => {
             <div className="mt-4">
               <Link
                 to="/login"
-                className="w-full px-4 py-2 text-black rounded-full font-medium transition-colors bg-[#f9ae37] hover:bg-[#f9ae37]/80 flex justify-center border border-black"
+                className="w-full px-4 py-2 text-fifth rounded-full font-medium transition-colors bg-[#f9ae37] hover:bg-[#f9ae37]/80 flex justify-center border border-secondary"
               >
                 Back to Login
               </Link>
@@ -115,7 +115,7 @@ export const Signup: React.FC = () => {
             )}
             
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-fifth mb-1">
                 Email Address
               </label>
               <input
@@ -126,13 +126,13 @@ export const Signup: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37] text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Enter email"
               />
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-fifth mb-1">
                 Username
               </label>
               <input
@@ -143,15 +143,15 @@ export const Signup: React.FC = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value.slice(0, 16))}
-                className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37] text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Choose a username"
                 maxLength={16}
               />
-              <p className="text-xs text-black/50 mt-1">(maximum 16 characters)</p>
+              <p className="text-xs text-fifth/50 mt-1">(maximum 16 characters)</p>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-fifth mb-1">
                 Password
               </label>
               <input
@@ -162,13 +162,13 @@ export const Signup: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37] text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Create password"
               />
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-fifth mb-1">
                 Confirm Password
               </label>
               <input
@@ -179,7 +179,7 @@ export const Signup: React.FC = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37] text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Confirm password"
               />
             </div>
@@ -187,19 +187,19 @@ export const Signup: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full px-4 py-2 text-black rounded-full font-medium transition-colors border border-black ${
+              className={`w-full px-3 py-1.5 text-fifth rounded-lg font-medium transition-colors border border-secondary ${
                 loading
-                ? 'bg-[#f9ae37]/50 cursor-not-allowed'
-                : 'bg-[#f9ae37] hover:bg-[#f9ae37]/80'
+                ? 'bg-tertiary/50 cursor-not-allowed'
+                : 'bg-tertiary hover:bg-tertiary/80'
               }`}
             >
               {loading ? 'Creating account...' : 'Sign up'}
             </button>
             
             <div className="mt-4 text-center">
-              <p className="text-black/70 text-sm">
+              <p className="text-fifth/70 font-light text-sm">
                 Already have an account?{' '}
-                <Link to="/login" className="font-semibold text-black hover:text-[#f9ae37]">
+                <Link to="/login" className="font-medium text-fifth hover:underline">
                   Login
                 </Link>
               </p>

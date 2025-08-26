@@ -923,18 +923,28 @@ export function SetlistGame() {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
-        <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
-          <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Echo of a Show</h1>
-          <h2 className="text-sm font-semibold text-black mt-1">A Setlist Game for Goose the Band</h2>
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
+        <div className="flex flex-col items-center lg:flex-row lg:items-center lg:space-x-2 mb-4 lg:mb-0">
+          <div className="flex items-center space-x-2 mb-1 lg:mb-0">
+            <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">Echo of a Show</h1>
+            <div className="hidden lg:block bg-secondary text-fifth text-xs font-medium px-2 py-1 rounded-lg border border-secondary">
+              A Setlist Game for Goose the Band
+            </div>
+          </div>
+          {/* Mobile version - show below the main heading */}
+          <div className="lg:hidden">
+            <div className="bg-secondary text-fifth text-xs font-medium px-2 py-1 rounded-lg border border-secondary inline-block">
+              A Setlist Game for Goose the Band
+            </div>
+          </div>
         </div>
 
-        <div className="flex gap-3 justify-center md:justify-start">
+        <div className="flex gap-3 justify-center lg:justify-start">
           <a
             href="https://bsky.app/profile/echoofashow.bsky.social"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-black hover:text-[#a9682e] transition-colors"
+            className="text-fifth hover:text-[#a9682e] transition-colors"
           >
             <FontAwesomeIcon
               icon={faBluesky}
@@ -946,7 +956,7 @@ export function SetlistGame() {
             href="https://x.com/echoofashow"
             target="_blank"
             rel="noopener noreferrer"
-            className="mr-4 text-black hover:text-[#a9682e] transition-colors"
+            className="mr-4 text-fifth hover:text-[#a9682e] transition-colors"
           >
             <FontAwesomeIcon
               icon={faXTwitter}
@@ -957,7 +967,7 @@ export function SetlistGame() {
           {/* How to Play Button - visible to everyone */}
           <button
             onClick={() => setShowRulesModal(true)}
-            className="px-3 py-1.5 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-semibold rounded-md transition-colors flex items-center gap-1 text-sm border border-black"
+            className="px-3 py-1.5 bg-tertiary hover:bg-primary text-fifth font-medium rounded-lg transition-colors flex items-center gap-1 text-sm border border-secondary"
           >
             <HelpCircle className="w-4 h-4" />
             <span>How to Play</span>
@@ -967,7 +977,7 @@ export function SetlistGame() {
           {isAdminUser && (
             <button
               onClick={() => setShowScoringModal(true)}
-              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors text-sm border border-black"
+              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-primary font-medium rounded-lg transition-colors text-sm border border-secondary"
             >
               Score Show
             </button>
@@ -976,27 +986,27 @@ export function SetlistGame() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading setlist games...</p>
+          <p className="text-fifth mt-4">Loading setlist games...</p>
         </div>
       ) : (
         <div className="space-y-6">
           {!user && (
-            <div className="bg-primary border border-black rounded-lg p-3">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">How To Play</h2>
-              <div className="p-3 bg-[#f9ae37]/20 rounded border border-[#f9ae37]/40">
-                <p className="text-black font-medium text-sm">
+            <div className="bg-primary border border-secondary rounded-lg p-3">
+              <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap mb-3">How To Play</h2>
+              <div className="p-3 bg-tertiary/20 rounded border border-tertiary">
+                <p className="text-fifth font-light text-sm">
                   You need to be logged in to participate in Echo of a Show.{' '}
-                  <Link to="/login" className="text-[#a9682e] hover:underline">
+                  <Link to="/login" className="font-medium hover:underline">
                     Log in
                   </Link>
                   {' '}or{' '}
-                  <Link to="/signup" className="text-[#a9682e] hover:underline">
+                  <Link to="/signup" className="font-medium hover:underline">
                     sign up
                   </Link>
                   {' '}to start playing!
@@ -1005,37 +1015,37 @@ export function SetlistGame() {
             </div>
           )}
 
-          <div className="bg-primary border border-black rounded-lg p-3 mt-6">
+          <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
             <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-flex items-center px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+              <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
                 <ListMusic className="w-5 h-5 mr-2" />
                 <span>Active League</span>
               </h2>
-              <span className="px-3 py-1 text-sm font-medium rounded-full bg-secondary text-black border border-black">
+              <span className="px-3 py-1 text-sm font-medium rounded-full bg-secondary text-fifth border border-secondary">
                 {activeLeague}
               </span>
             </div>
 
             {gameShows.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-black">No active games found in this league.</p>
+                <p className="text-fifth">No active games found in this league.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse min-w-max">
                   <thead>
-                    <tr className="bg-canvas border-y border-black/10">
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Date</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Venue</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Location</th>
-                      <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Detail</th>
-                      <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Status</th>
-                      <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Players</th>
+                    <tr className="bg-canvas border-y border-secondary/10">
+                      <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Date</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Venue</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Location</th>
+                      <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Detail</th>
+                      <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Status</th>
+                      <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Players</th>
                       {/* Conditionally render Score column */}
                       {user && (
-                        <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Score</th>
+                        <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Score</th>
                       )}
-                      <th className="px-4 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Picks</th>
+                      <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Picks</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-black/5">
@@ -1068,14 +1078,14 @@ export function SetlistGame() {
                       return (
                         <tr
                           key={show.show_id}
-                          className={`${bgColor} hover:bg-black/10 transition-colors text-xs`}
+                          className={`${bgColor} hover:bg-tertiary/40 transition-colors text-xs`}
                         >
-                          <td className="px-4 py-0.5 text-black whitespace-nowrap">
-                            <span className="font-semibold">
+                          <td className="px-4 py-0.5 text-fifth whitespace-nowrap text-center">
+                            <span className="font-medium">
                               {user ? (
                                 <Link
                                   to={`/setlistgame/${show.show_id}`}
-                                  className="hover:text-[#a9682e] transition-colors table-link"
+                                  className="hover:underline transition-colors table-link"
                                 >
                                   {show.show_date
                                     .split('-')
@@ -1094,16 +1104,16 @@ export function SetlistGame() {
                               )}
                             </span>
                           </td>
-                          <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                          <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                             {show.show_subvenue}
                           </td>
-                          <td className="px-4 py-0.5 text-black/70 whitespace-nowrap">
+                          <td className="px-4 py-0.5 text-fifth/70 font-light whitespace-nowrap">
                             {show.show_venue_location}
                           </td>
-                          <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                          <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                             {show.show_detail || ''}
                           </td>
-                          <td className="px-4 py-0.5 whitespace-nowrap text-center">
+                          <td className="px-4 py-0.5 whitespace-nowrap font-light text-center">
                             {show.show_scored ? (
                               <span className="px-2 py-1 bg-blue-500/20 text-blue-700 rounded-md text-xs border border-blue-500/30">
                                 Scored
@@ -1122,8 +1132,8 @@ export function SetlistGame() {
                               </span>
                             )}
                           </td>
-                          <td className="px-4 py-0.5 text-center">
-                            <span className="text-black/70 text-xs">
+                          <td className="px-4 py-0.5 font-light text-center">
+                            <span className="text-fifth/70 text-xs">
                               {show.playerCount !== undefined ? show.playerCount : '-'}
                             </span>
                           </td>
@@ -1131,7 +1141,7 @@ export function SetlistGame() {
                           {user && (
                             <td className="px-4 py-0.5 text-center">
                               {user && show.score !== undefined && show.show_scored ? (
-                                <span className="text-[#a9682e] font-bold">
+                                <span className="text-fourth font-medium">
                                   {show.score}
                                 </span>
                               ) : (
@@ -1143,7 +1153,7 @@ export function SetlistGame() {
                             {show.show_scored ? (
                               user && show.submission_id ? (
                                 <button
-                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors inline-block border border-blue-800"
+                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-600/70 text-primary text-xs font-medium rounded transition-colors inline-block border border-blue-800"
                                   onClick={() => handleViewSubmission(show)}
                                 >
                                   View Results
@@ -1156,14 +1166,14 @@ export function SetlistGame() {
                             ) : show.isSelectionClosed ? (
                               user && show.submission_id ? (
                                 <button
-                                  className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-medium rounded transition-colors inline-block border border-gray-800"
+                                  className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-primary text-xs font-medium rounded transition-colors inline-block border border-gray-800"
                                   onClick={() => handleViewSubmission(show)}
                                 >
                                   View Picks
                                 </button>
                               ) : (
                                 <button
-                                  className="px-3 py-1 bg-gray-200 text-gray-500 text-xs font-medium rounded cursor-not-allowed inline-block border border-gray-300"
+                                  className="px-3 py-1 bg-gray-300 text-gray-500 text-xs font-medium rounded cursor-not-allowed inline-block border border-gray-300"
                                   disabled
                                 >
                                   Closed
@@ -1172,7 +1182,7 @@ export function SetlistGame() {
                             ) : (
                               user ? (
                                 <button
-                                  className="px-3 py-1 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black text-xs font-medium rounded transition-colors inline-block border border-black"
+                                  className="px-3 py-1 bg-tertiary hover:bg-tertiary/70 text-fifth text-xs font-medium rounded transition-colors inline-block border border-secondary"
                                   onClick={() => handleSelectSongs(show)}
                                 >
                                   {show.submission_id ? 'Edit Picks' : 'Make Picks'}
@@ -1180,7 +1190,7 @@ export function SetlistGame() {
                               ) : (
                                 <Link
                                   to="/login"
-                                  className="px-3 py-1 bg-[#f9ae37]/50 hover:bg-[#f9ae37]/70 text-black text-xs font-medium rounded transition-colors inline-block border border-black/30"
+                                  className="px-3 py-1 bg-tertiary hover:bg-tertiary/70 text-fifth text-xs font-medium rounded transition-colors inline-block border border-secondary/30"
                                 >
                                   Login to Play
                                 </Link>
@@ -1221,14 +1231,14 @@ export function SetlistGame() {
             className="fixed inset-0 bg-black/50 z-50"
             onClick={() => setShowScoringModal(false)}
           />
-          <div className="fixed inset-x-4 inset-y-auto top-1/4 md:inset-x-auto md:left-1/2 md:top-1/3 md:transform md:-translate-x-1/2 z-50 bg-primary rounded-lg border border-black shadow-xl md:w-[500px] p-4">
+          <div className="fixed inset-x-4 inset-y-auto top-1/4 md:inset-x-auto md:left-1/2 md:top-1/3 md:transform md:-translate-x-1/2 z-50 bg-primary rounded-lg border border-secondary shadow-xl md:w-[500px] p-3">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">Score Setlist Game</h3>
+              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">Score Setlist Game</h3>
               <button
                 onClick={() => setShowScoringModal(false)}
-                className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
+                className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
               >
-                <X className="w-5 h-5 text-black" />
+                <X className="w-5 h-5 text-fifth" />
               </button>
             </div>
 
@@ -1243,7 +1253,7 @@ export function SetlistGame() {
               </div>
             ) : (
               <>
-                <p className="text-black mb-4">
+                <p className="text-fifth mb-4 font-light">
                   Select a show to score all submissions for:
                 </p>
 
@@ -1251,7 +1261,7 @@ export function SetlistGame() {
                   <select
                     value={selectedShowToScore || ''}
                     onChange={(e) => setSelectedShowToScore(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-black rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#f9ae37] appearance-none"
+                    className="w-full px-3 py-2 bg-white border border-secondary rounded-md text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary appearance-none"
                   >
                     <option value="">Select a show...</option>
                     {gameShows.map((show) => (
@@ -1261,25 +1271,25 @@ export function SetlistGame() {
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <ChevronDown className="w-5 h-5 text-black/50" />
+                    <ChevronDown className="w-5 h-5 text-fifth/50" />
                   </div>
                 </div>
 
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setShowScoringModal(false)}
-                    className="px-4 py-2 bg-red-500 hover:bg-red-700 text-black font-medium rounded-md transition-colors border border-black"
+                    className="px-4 py-1 bg-red-500 hover:bg-primary text-fifth font-medium rounded-md transition-colors border border-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleScoreSubmissions}
                     disabled={!selectedShowToScore || isScoring}
-                    className="px-4 py-2 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-black font-medium rounded-md transition-colors disabled:bg-[#f9ae37]/50 disabled:cursor-not-allowed flex items-center gap-2 border border-black"
+                    className="px-4 py-1 bg-green-500 hover:bg-primary text-fifth font-medium rounded-md transition-colors disabled:bg-green-500/50 disabled:cursor-not-allowed flex items-center gap-2 border border-secondary"
                   >
                     {isScoring ? (
                       <>
-                        <div className="w-4 h-4 rounded-full border-2 border-black/20 border-t-black animate-spin"></div>
+                        <div className="w-4 h-4 rounded-full border-2 border-secondary/20 border-t-black animate-spin"></div>
                         <span>Scoring...</span>
                       </>
                     ) : (

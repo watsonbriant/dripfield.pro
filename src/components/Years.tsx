@@ -113,8 +113,8 @@ export function Years() {
       return null;
     }
     return sortDirection === 'asc' ? 
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" /> : 
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-fifth" /> : 
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-fifth" />;
   };
 
   const sortData = (data: Show[]) => {
@@ -508,12 +508,12 @@ export function Years() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black">Years</h1>
+        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Years</h1>
         <div className="relative" ref={dropdownRef}>
           <div className="md:hidden">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-lg bg-[#f9ae37] text-black hover:bg-[#fce7ca]/90 transition-colors border border-black"
+              className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
             >
               <Search className="w-6 h-6" />
             </button>
@@ -533,9 +533,9 @@ export function Years() {
                         navigate(`/years/${year.year_id}`);
                         setIsModalOpen(false);
                       }}
-                      className="w-full text-center px-3 pt-2 pb-1 text-lg rounded-full hover:bg-tertiary bg-[#f9ae37] transition-colors font-mohr border border-black"
+                      className="w-full text-center px-3 py-1 text-lg rounded-lg hover:bg-primary bg-tertiary transition-colors font-semibold border border-secondary"
                     >
-                      <span className="text-black">{year.year}</span>
+                      <span className="text-fifth">{year.year}</span>
                     </button>
                   ))}
                 </div>
@@ -545,7 +545,7 @@ export function Years() {
           <div className="hidden md:block">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 pt-2 pb-1.5 rounded-lg border border-black hover:bg-tertiary transition-colors text-base font-mohr"
+              className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
             >
               {currentYear}
               <ChevronDown className="w-4 h-4" />
@@ -554,7 +554,7 @@ export function Years() {
           {isDropdownOpen && (
           <div 
             ref={dropdownListRef}
-            className={`absolute py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto ${
+            className={`absolute py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto ${
               window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-24 max-h-96'
             }`}
           >
@@ -567,8 +567,8 @@ export function Years() {
                     navigate(`/years/${year.year_id}`);
                     setIsDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
-                    currentYear === year.year ? 'bg-[#f9ae37]' : ''
+                  className={`w-full text-left px-4 py-1 text-sm font-medium hover:bg-secondary transition-colors ${
+                    currentYear === year.year ? 'bg-tertiary' : ''
                   }`}
                 >
                   {year.year}
@@ -582,17 +582,17 @@ export function Years() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-4 mb-8">
         <div className="col-span-1 overflow-x-auto">
           {loading ? (
-            <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
+            <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-                <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-                <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
               </div>
-              <p className="text-black mt-4">Loading shows...</p>
+              <p className="text-fifth mt-4">Loading shows...</p>
             </div>
           ) : filteredShows.length === 0 ? (
-            <div className="text-center py-12 bg-primary border border-black rounded-lg p-3">
-              <p className="text-black">
+            <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+              <p className="text-fifth">
                 {shows.length === 0 
                   ? `No shows found for ${currentYear}` 
                   : `No shows match the selected filters. ${" "}
@@ -606,15 +606,15 @@ export function Years() {
               </p>
             </div>
           ) : (
-            <div className="bg-primary border border-black rounded-lg p-3">
+            <div className="bg-primary border border-secondary rounded-lg p-3">
               <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+                <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
                   {currentYear} Shows
                 </h2>
                 {selectedGroups.length > 0 && (
                   <button
                     onClick={clearGroupFilters}
-                    className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-black hover:bg-red-600 transition-colors text-xs font-semibold"
+                    className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-secondary hover:bg-red-600 transition-colors text-xs font-semibold"
                   >
                     Clear Filters
                   </button>
@@ -626,7 +626,7 @@ export function Years() {
                     <tr className="bg-canvas border-y border-white/10">
                       <th className="w-1 px-0 py-1"></th>
                       <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_date')}
                       >
                         <div className="flex items-center gap-1">
@@ -635,17 +635,17 @@ export function Years() {
                         </div>
                       </th>
                       {user && (
-                        <th className="w-8 px-1 py-1 text-center text-s font-semibold text-black">
-                          <Check size={16} className="text-black" strokeWidth={4} />
+                        <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
+                          <Check size={16} className="text-fifth" strokeWidth={4} />
                         </th>
                       )}
-                      <th className="w-8 px-1 py-1 text-center align-middle text-s font-semibold text-black">
+                      <th className="w-8 px-1 py-1 text-center align-middle text-s font-semibold text-fifth">
                         <div className="flex justify-center items-center">
-                          <FileMusic size={16} className="text-black" strokeWidth={2} />
+                          <FileMusic size={16} className="text-fifth" strokeWidth={2} />
                         </div>
                       </th>
                       <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_group')}
                       >
                         <div className="flex items-center gap-1">
@@ -654,7 +654,7 @@ export function Years() {
                         </div>
                       </th>
                       <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_subvenue')}
                       >
                         <div className="flex items-center gap-1">
@@ -663,7 +663,7 @@ export function Years() {
                         </div>
                       </th>
                       <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_venue_location')}
                       >
                         <div className="flex items-center gap-1">
@@ -671,18 +671,18 @@ export function Years() {
                           {getSortIcon('show_venue_location')}
                         </div>
                       </th>
-                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-black">
+                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
                         <div className="flex justify-center items-center">
-                          <Users size={16} className="text-black" strokeWidth={2} />
+                          <Users size={16} className="text-fifth" strokeWidth={2} />
                         </div>
                       </th>
-                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-black">
+                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
                         <div className="flex justify-center items-center">
                           <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" />
                         </div>
                       </th>
                       <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                         onClick={() => handleSort('show_detail')}
                       >
                         <div className="flex items-center gap-1">
@@ -698,7 +698,7 @@ export function Years() {
                         key={show.show_id}
                         className={`${
                           index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                        } hover:bg-black/10 transition-colors text-xs`}
+                        } hover:bg-tertiary/40 transition-colors text-xs`}
                       >
                         <td 
                           style={{ 
@@ -717,21 +717,21 @@ export function Years() {
                         >
                           {hoveredTour === show.show_tour && (
                             <div 
-                              className="fixed bg-secondary text-black px-3 py-1 rounded border border-black min-w-max z-[9999]"
+                              className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
                               }}
                             >
-                              <div className="font-semibold">{show.show_tour}</div>
+                              <div className="font-medium">{show.show_tour}</div>
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-0.5 text-black whitespace-nowrap">
-                          <span className="font-semibold">
+                        <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                          <span className="font-medium">
                             <button
                               onClick={() => navigate(`/setlist/${show.show_id}`)}
-                              className="hover:text-[#a9682e] transition-colors table-link"
+                              className="transition-colors table-link"
                             >
                               {show.show_date
                                 .split('-')
@@ -745,7 +745,7 @@ export function Years() {
                           <td className="w-8 text-center">
                             {show.attended && (
                               <div className="flex justify-center items-center h-full">
-                                <div className="rounded-full p-0.5 bg-green-600">
+                                <div className="rounded-lg p-0.5 bg-green-600">
                                   <Check size={12} className="text-white" strokeWidth={3} />
                                 </div>
                               </div>
@@ -760,26 +760,26 @@ export function Years() {
                                   // Navigate with a state parameter to open the modal
                                   navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
                                 }}
-                                className="hover:text-[#a9682e] hover:bg-[#f9ae37] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                                className="hover:text-fifth hover:bg-tertiary hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
                               >
-                                <FileMusic size={14.5} className="text-black" strokeWidth={2} />
+                                <FileMusic size={14.5} className="text-fifth" strokeWidth={2} />
                               </button>
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_group}</td>
-                        <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
+                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                           <button
                             onClick={() => navigateToVenue(show)}
-                            className="hover:text-[#a9682e] hover:underline transition-colors"
+                            className="hover:underline transition-colors"
                           >
                             {show.show_subvenue}
                           </button>
                         </td>
-                        <td className="px-4 py-0.5 text-black whitespace-nowrap">{show.show_venue_location}</td>
-                        <td className="w-8 text-center text-black">
+                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_venue_location}</td>
+                        <td className="w-8 text-center text-fifth">
                           {attendeeCounts[show.show_id] > 0 && (
-                            <span className="text-xs font-semibold">{attendeeCounts[show.show_id]}</span>
+                            <span className="text-xs font-medium">{attendeeCounts[show.show_id]}</span>
                           )}
                         </td>
                         <td className="w-8 text-center align-middle">
@@ -794,7 +794,7 @@ export function Years() {
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                           {show.show_detail && show.show_detail}
                           {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
                           {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
@@ -810,32 +810,32 @@ export function Years() {
         
         <div className="col-span-1 lg:order-last">
           {/* Tours Container */}
-          <div className="bg-primary border border-black rounded-lg p-3 w-full mb-4">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-2">
+          <div className="bg-primary border border-secondary rounded-lg p-3 w-full mb-4">
+            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
               {currentYear} Tours
             </h2>
             <div className="space-y-1.5">
               {loading ? (
                 <div className="text-center py-4">
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse"></div>
-                    <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-                    <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
                   </div>
                 </div>
               ) : tours.length === 0 ? (
-                <p className="text-black text-xs text-center py-2">No tours found</p>
+                <p className="text-fifth text-xs text-center py-2">No tours found</p>
               ) : (
                 tours.map((tour) => (
-                  <div key={tour.tour_count} className="text-black text-xs flex items-center gap-2">
+                  <div key={tour.tour_count} className="text-fifth text-xs flex items-center gap-2">
                     <div 
-                      className="w-5 h-5 rounded flex-shrink-0 border border-black"
+                      className="w-5 h-5 rounded flex-shrink-0 border border-secondary"
                       style={{ backgroundColor: tour.color }}
                     />
                     <div>
                       <button 
                         onClick={() => navigate(`/tours/${tour.tour_id}`)}
-                        className="hover:text-[#a9682e] transition-colors font-semibold"
+                        className="hover:underline transition-colors font-semibold"
                       >
                         {tour.tour_count.split(' (')[0]}
                       </button>
@@ -848,15 +848,15 @@ export function Years() {
           </div>
           
           {/* Group Filter Container */}
-          <div className="bg-primary border border-black rounded-lg p-3 w-full">
+          <div className="bg-primary border border-secondary rounded-lg p-3 w-full">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+              <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
                 Filter by Group
               </h2>
               {selectedGroups.length > 0 && (
                 <button
                   onClick={clearGroupFilters}
-                  className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-black hover:bg-red-600 transition-colors text-xs font-semibold"
+                  className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-secondary hover:bg-red-600 transition-colors text-xs font-semibold"
                 >
                   <span>Clear</span>
                   <Filter className="w-3 h-3" />
@@ -867,13 +867,13 @@ export function Years() {
               {loading ? (
                 <div className="text-center py-4">
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse"></div>
-                    <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-                    <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
                   </div>
                 </div>
               ) : groups.length === 0 ? (
-                <p className="text-black text-xs text-center py-2">No groups found</p>
+                <p className="text-fifth text-xs text-center py-2">No groups found</p>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {groups.map((groupData) => (
@@ -882,8 +882,8 @@ export function Years() {
                       onClick={() => toggleGroupSelection(groupData.group)}
                       className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
                         selectedGroups.includes(groupData.group)
-                          ? 'bg-[#f9ae37] text-black border border-black'
-                          : 'bg-canvas text-black hover:text-[#a9682e] border border-black'
+                          ? 'bg-tertiary text-fifth hover:underline border border-secondary'
+                          : 'bg-canvas text-fifth hover:underline border border-secondary'
                       }`}
                     >
                       {groupData.group} ({groupData.count})

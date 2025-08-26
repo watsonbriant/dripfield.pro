@@ -42,7 +42,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#8ec1b6" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -51,7 +51,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-black">
+      <div className="absolute text-lg font-bold text-fifth">
         {Math.round(value)}%
       </div>
     </div>
@@ -157,22 +157,67 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           return;
         }
 
-        // Extract show IDs
-        const showIds = allAttendedShows.map(record => record.show_id);
-        
-        // Count total shows
-        setShowsCount(showIds.length);
+        // Get all show IDs first to fetch show details for filtering
+        const allShowIds = allAttendedShows.map(record => record.show_id);
+
+        // Split all show IDs into chunks for processing
+        const allShowIdChunks = [];
+        const chunkSize = 200;
+
+        for (let i = 0; i < allShowIds.length; i += chunkSize) {
+          allShowIdChunks.push(allShowIds.slice(i, i + chunkSize));
+        }
+
         setLoadingProgress(25);
+
+        // Get show details to filter for Goose shows with canonid
+        let allShowDetailsForFilter = [];
+
+        for (let i = 0; i < allShowIdChunks.length; i++) {
+          const currentChunk = allShowIdChunks[i];
+          page = 0;
+          hasMore = true;
+          
+          while (hasMore) {
+            const { data, error } = await supabase
+              .from('shows')
+              .select('show_id, show_group, show_canonid')
+              .in('show_id', currentChunk)
+              .range(page * pageSize, (page + 1) * pageSize - 1);
+            
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+              allShowDetailsForFilter = [...allShowDetailsForFilter, ...data];
+              page++;
+              hasMore = data.length === pageSize;
+            } else {
+              hasMore = false;
+            }
+          }
+        }
+
+        // Filter for Goose shows with canonid
+        const filteredShows = allShowDetailsForFilter.filter(show => 
+          show.show_group === 'Goose' && show.show_canonid
+        );
+
+        // Extract the filtered show IDs
+        const showIds = filteredShows.map(show => show.show_id);
+
+        // Update the show count to use filtered shows
+        setShowsCount(showIds.length);
+        
+        setLoadingProgress(35);
 
         // Split showIds into chunks for processing
         const showIdChunks = [];
-        const chunkSize = 200; // Supabase has limits on IN clause size
         
         for (let i = 0; i < showIds.length; i += chunkSize) {
           showIdChunks.push(showIds.slice(i, i + chunkSize));
         }
         
-        setLoadingProgress(30);
+        setLoadingProgress(40);
 
         // Count unique venues with pagination and chunking
         let allVenueData = [];
@@ -203,11 +248,11 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
               allVenueData = [...allVenueData, ...data];
               page++;
               
-              // Update progress based on pagination and chunks (30-50%)
+              // Update progress based on pagination and chunks (40-60%)
               const progressPerChunk = 20 / showIdChunks.length;
               const chunkProgress = (i / showIdChunks.length) * 20;
               const pageProgress = (page * progressPerChunk) / Math.ceil(currentChunk.length / pageSize);
-              setLoadingProgress(Math.min(50, 30 + chunkProgress + pageProgress));
+              setLoadingProgress(Math.min(60, 40 + chunkProgress + pageProgress));
               
               // If we got fewer records than the page size, we're done with this chunk
               hasMore = data.length === pageSize;
@@ -226,7 +271,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
         });
         
         setVenuesCount(uniqueVenues.size);
-        setLoadingProgress(55);
+        setLoadingProgress(65);
         
         // Count unique songs with pagination and chunking
         let allSongData = [];
@@ -250,11 +295,11 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
               allSongData = [...allSongData, ...data];
               page++;
               
-              // Update progress based on pagination and chunks (55-75%)
+              // Update progress based on pagination and chunks (65-85%)
               const progressPerChunk = 20 / showIdChunks.length;
               const chunkProgress = (i / showIdChunks.length) * 20;
               const pageProgress = (page * progressPerChunk) / Math.ceil(currentChunk.length / pageSize);
-              setLoadingProgress(Math.min(75, 55 + chunkProgress + pageProgress));
+              setLoadingProgress(Math.min(85, 65 + chunkProgress + pageProgress));
               
               // If we got fewer records than the page size, we're done with this chunk
               hasMore = data.length === pageSize;
@@ -273,7 +318,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
         });
         
         setsongsCount(uniqueSongs.size);
-        setLoadingProgress(80);
+        setLoadingProgress(90);
 
         // Get tour counts with pagination and chunking
         let allTourData = [];
@@ -305,11 +350,11 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
               allTourData = [...allTourData, ...data];
               page++;
               
-              // Update progress based on pagination and chunks (80-95%)
-              const progressPerChunk = 15 / showIdChunks.length;
-              const chunkProgress = (i / showIdChunks.length) * 15;
+              // Update progress based on pagination and chunks (90-100%)
+              const progressPerChunk = 10 / showIdChunks.length;
+              const chunkProgress = (i / showIdChunks.length) * 10;
               const pageProgress = (page * progressPerChunk) / Math.ceil(currentChunk.length / pageSize);
-              setLoadingProgress(Math.min(95, 80 + chunkProgress + pageProgress));
+              setLoadingProgress(Math.min(100, 90 + chunkProgress + pageProgress));
               
               // If we got fewer records than the page size, we're done with this chunk
               hasMore = data.length === pageSize;
@@ -424,32 +469,32 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
   };
 
   return (
-    <div className="bg-primary p-4 rounded-lg border border-black">
-      <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-1.5">{getTitle()}</h3>
+    <div className="bg-primary p-3 rounded-lg border border-secondary">
+      <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">{getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
-          <p className="text-black mt-4">{getLoadingMessage()}</p>
+          <p className="text-fifth mt-4">{getLoadingMessage()}</p>
         </div>
       ) : (
         <div className="md:space-y-2">
           {/* Desktop view - cards */}
           <div className="hidden md:grid grid-cols-3 gap-4">
-            <div className="bg-canvas p-3 rounded-md relative border border-black">
-              <div className="text-black text-sm font-semibold">{getShowsLabel()}</div>
-              <div className="text-2xl font-bold text-black mt-1">{showsCount}</div>
-              <Calendar className="h-5 w-5 text-[#a9682e] absolute bottom-2 right-2" />
+            <div className="bg-canvas p-3 rounded-md relative border border-secondary">
+              <div className="text-fifth text-sm font-medium">{getShowsLabel()}</div>
+              <div className="text-2xl font-semibold text-fifth mt-1">{showsCount}</div>
+              <Calendar className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
             </div>
-            <div className="bg-canvas p-3 rounded-md relative border border-black">
-              <div className="text-black text-sm font-semibold">{getVenuesLabel()}</div>
-              <div className="text-2xl font-bold text-black mt-1">{venuesCount}</div>
-              <Building2 className="h-5 w-5 text-[#a9682e] absolute bottom-2 right-2" />
+            <div className="bg-canvas p-3 rounded-md relative border border-secondary">
+              <div className="text-fifth text-sm font-medium">{getVenuesLabel()}</div>
+              <div className="text-2xl font-semibold text-fifth mt-1">{venuesCount}</div>
+              <Building2 className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
             </div>
-            <div className="bg-canvas p-3 rounded-md relative border border-black">
-              <div className="text-black text-sm font-semibold">{getSongsLabel()}</div>
-              <div className="text-2xl font-bold text-black mt-1">{songsCount}</div>
-              <Music className="h-5 w-5 text-[#a9682e] absolute bottom-2 right-2" />
+            <div className="bg-canvas p-3 rounded-md relative border border-secondary">
+              <div className="text-fifth text-sm font-medium">{getSongsLabel()}</div>
+              <div className="text-2xl font-semibold text-fifth mt-1">{songsCount}</div>
+              <Music className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
             </div>
           </div>
           
@@ -457,28 +502,28 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           <div className="md:hidden">
             <ul className="space-y-2 text-sm mb-4">
               <li className="flex items-center">
-                <Calendar className="h-4 w-4 text-[#a9682e] mr-2" />
-                <span className="text-black font-bold">{showsCount}</span>
-                <span className="text-black font-medium ml-2">{getShowsLabel()}</span>
+                <Calendar className="h-4 w-4 text-fourth mr-2" />
+                <span className="text-fifth font-semibold">{showsCount}</span>
+                <span className="text-fifth font-light ml-2">{getShowsLabel()}</span>
               </li>
               <li className="flex items-center">
-                <Building2 className="h-4 w-4 text-[#a9682e] mr-2" />
-                <span className="text-black font-bold">{venuesCount}</span>
-                <span className="text-black font-medium ml-2">{getVenuesLabel()}</span>
+                <Building2 className="h-4 w-4 text-fourth mr-2" />
+                <span className="text-fifth font-semibold">{venuesCount}</span>
+                <span className="text-fifth font-light ml-2">{getVenuesLabel()}</span>
               </li>
               <li className="flex items-center">
-                <Music className="h-4 w-4 text-[#a9682e] mr-2" />
-                <span className="text-black font-bold">{songsCount}</span>
-                <span className="text-black font-medium ml-2">{getSongsLabel()}</span>
+                <Music className="h-4 w-4 text-fourth mr-2" />
+                <span className="text-fifth font-semibold">{songsCount}</span>
+                <span className="text-fifth font-light ml-2">{getSongsLabel()}</span>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-1.5 mt-3">{getToursLabel()}</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2 mt-2">{getToursLabel()}</h3>
             <div className="space-y-1 max-h-64 overflow-y-auto pr-2">
               {tourCounts.length === 0 ? (
-                <p className="text-black/60 italic">{getNoToursMessage()}</p>
+                <p className="text-fifth/60 italic">{getNoToursMessage()}</p>
               ) : (
                 <ul className="space-y-1 text-sm">
                   {tourCounts.map((tour) => (
@@ -488,11 +533,11 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
                     >
                       <button 
                         onClick={() => navigate(`/tours/${tour.tour_id}`)}
-                        className="text-black hover:text-[#a9682e] hover:underline font-semibold"
+                        className="text-fifth hover:text-fourth hover:underline font-medium"
                       >
                         {tour.tour}
                       </button>
-                      <span className="text-black/90 ml-2">({tour.count})</span>
+                      <span className="text-fifth/90 ml-2 font-light">({tour.count})</span>
                     </li>
                   ))}
                 </ul>

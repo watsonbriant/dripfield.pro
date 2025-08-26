@@ -119,13 +119,13 @@ export const UserMenu: React.FC = () => {
             e.preventDefault();
             window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
           }}
-          className={`relative px-3 pt-1 pb-0.5 text-sm font-mohr text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2 hidden md:block`}
+          className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2 hidden md:block`}
         >
           Donate
         </Link>
         <Link
           to="/login"
-          className={`relative px-3 pt-1 pb-0.5 ${isMobile ? 'text-sm' : 'text-lg'} font-mohr text-black bg-[#f9ae37] hover:bg-tertiary/80 rounded-full transition-colors border border-black`}
+          className={`relative px-3 pt-1 pb-1.5 ${isMobile ? 'text-sm' : 'text-xl'} font-trad text-fifth bg-tertiary hover:bg-tertiary/80 rounded-lg transition-colors border border-black`}
           onClick={(e) => {
             // Only show sparkle on non-mobile
             if (!isMobile) {
@@ -173,21 +173,21 @@ export const UserMenu: React.FC = () => {
           e.preventDefault();
           window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
         }}
-        className={`relative px-3 pt-1 pb-0.5 text-sm font-mohr text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black mr-2 hidden md:block`}
+        className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-lg transition-colors border border-black mr-2 hidden md:block`}
       >
         Donate
       </Link>
       <div className="relative" ref={menuRef}>
         <button
           type="button"
-          className="mt-0.5 relative inline-flex items-center gap-1 px-3 pt-1 pb-0.5 rounded-full bg-[#f9ae37] text-black font-mohr hover:bg-tertiary/80 transition-colors focus:outline-none border border-black"
+          className="mt-0.5 relative inline-flex items-center gap-1 px-3 pt-1 pb-1.5 rounded-lg bg-tertiary text-fifth font-trad hover:bg-primary transition-colors focus:outline-none border border-black"
           onClick={handleButtonClick}
         >
           {/* Show User icon on mobile, username on desktop */}
           <span className="md:hidden">
             <User className="w-5 h-5" />
           </span>
-          <span className="hidden md:inline text-lg truncate max-w-[120px]">
+          <span className="hidden md:inline text-xl truncate max-w-[120px]">
             Profile
           </span>
           <ChevronDown className="w-4 h-4" />
@@ -207,26 +207,26 @@ export const UserMenu: React.FC = () => {
         </button>
         
         {isOpen && (
-          <div className="absolute right-0 mt-2 bg-[#fce7ca] border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-48 font-mohr">
-            <div className="w-full text-left px-4 py-1 text-base leading-tight bg-[#f9ae37] font-sans font-normal border-b border-black">
-              Welcome, <span className="font-bold">{username || displayText}</span>!
+          <div className="absolute right-0 mt-2 bg-secondary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-48 font-medium">
+            <div className="w-full text-left px-4 py-1 text-base leading-tight bg-tertiary font-sans font-normal border-b border-black">
+              <span className="font-trad text-xl">{username || displayText}</span>
             </div>
             <Link
               to="/profile"
-              className="w-full text-left px-4 pt-1 pb-0.5 text-base hover:bg-surface-secondary hover:underline transition-colors block"
+              className="w-full text-left px-4 pt-1 pb-0.5 text-[.875rem] leading-[1.125rem] hover:bg-surface-secondary hover:underline transition-colors block"
               onClick={() => setIsOpen(false)}
             >
               My Stats
             </Link>
             <Link
               to="/settings"
-              className="w-full text-left px-4 py-0.5 text-base hover:bg-surface-secondary hover:underline transition-colors block"
+              className="w-full text-left px-4 pt-1 pb-0.5 text-[.875rem] leading-[1.125rem] hover:bg-surface-secondary hover:underline transition-colors block"
               onClick={() => setIsOpen(false)}
             >
               Settings
             </Link>
             <button
-              className="w-full text-left px-4 pt-0.5 pb-1 text-base hover:bg-surface-secondary hover:underline transition-colors"
+              className="w-full text-left px-4 pt-1 pb-0.5 text-[.875rem] leading-[1.125rem] hover:bg-surface-secondary hover:underline transition-colors block"
               onClick={handleSignOut}
             >
               Sign Out

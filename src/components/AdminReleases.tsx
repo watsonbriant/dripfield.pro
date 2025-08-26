@@ -88,8 +88,8 @@ export function AdminReleases() {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-3 lg:mb-0">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-2">
+        <h2 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
           Manage Releases
         </h2>
         
@@ -101,13 +101,13 @@ export function AdminReleases() {
               placeholder="Search releases..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1 bg-canvas text-black border border-black rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
+              className="pl-8 pr-3 py-1 bg-canvas text-fifth border font-light border-secondary rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
             />
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-black/50 w-4 h-4" />
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-fifth/50 w-4 h-4" />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black/50 hover:text-black p-0.5"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-fifth/50 hover:text-fifth p-0.5"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -117,7 +117,7 @@ export function AdminReleases() {
           {/* Add new button */}
           <button
             onClick={handleAddNew}
-            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white border border-black rounded-lg text-sm hover:bg-green-600/80 transition-colors"
+            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-primary border border-secondary rounded-lg text-sm hover:bg-green-600/80 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Add Release</span>
@@ -125,7 +125,7 @@ export function AdminReleases() {
         </div>
       </div>
 
-      <div className="mb-3 text-black text-xs lg:text-sm">
+      <div className="mb-2 font-light text-fifth text-xs lg:text-sm">
         Click on any release to view and edit its details.
       </div>
 
@@ -136,20 +136,20 @@ export function AdminReleases() {
             <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading releases...</p>
+          <p className="text-fifth mt-4">Loading releases...</p>
         </div>
       ) : (
         <div className="overflow-x-auto relative">
           <table className="w-full border-collapse min-w-max">
             <thead>
               <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
+                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">
                   Display Name
                 </th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
+                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">
                   Service
                 </th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap">
+                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">
                   Release
                 </th>
               </tr>
@@ -157,7 +157,7 @@ export function AdminReleases() {
             <tbody className="divide-y divide-white/5">
               {filteredReleases.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-4 py-4 text-center text-black">
+                  <td colSpan={3} className="px-4 py-4 text-center text-fifth">
                     {searchQuery ? 'No releases matching your search' : 'No releases found'}
                   </td>
                 </tr>
@@ -167,18 +167,18 @@ export function AdminReleases() {
                     key={release.release_id}
                     className={`${
                       index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                    } hover:bg-black/10 transition-colors text-xs cursor-pointer`}
+                    } hover:bg-tertiary/40 transition-colors text-xs cursor-pointer`}
                     onClick={() => handleReleaseClick(release)}
                   >
-                    <td className="px-4 py-1 text-black">
-                      <span className="font-semibold hover:text-[#a9682e] transition-colors">
+                    <td className="px-4 py-1 text-fifth">
+                      <span className="font-medium hover:underline transition-colors">
                         {release.release_displayname}
                       </span>
                     </td>
-                    <td className="px-4 py-1 text-black">
+                    <td className="px-4 py-1 font-light text-fifth">
                       {release.release_service || '-'}
                     </td>
-                    <td className="px-4 py-1 text-black">
+                    <td className="px-4 py-1 font-light text-fifth">
                       {release.release}
                     </td>
                   </tr>

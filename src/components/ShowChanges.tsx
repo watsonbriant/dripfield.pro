@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { MoveVertical, RefreshCw, Plus, ArrowDownUp, Minus, FileMusic, X, SquareCheckBig } from 'lucide-react';
+import { MoveVertical, RefreshCw, Plus, ArrowDownUp, MoveRight, Minus, FileMusic, X, SquareCheckBig } from 'lucide-react';
 import SetlistDisplay from './SetlistDisplay';
 import { useNavigate } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -42,24 +42,52 @@ interface ShowChangesProps {
 }
 
 const getChangeIcon = (changeType: string) => {
-    const iconProps = { className: "w-3 h-3 text-white" };
-
+    const strokeWidth = 2.5;
+    
     switch (changeType) {
         case 'move':
-            return { icon: <MoveVertical {...iconProps} />, bgColor: 'bg-yellow-600' };
+            return { icon: <MoveVertical className="w-4 h-4 text-yellow-600" strokeWidth={strokeWidth} /> };
         case 'replace':
-            return { icon: <RefreshCw {...iconProps} />, bgColor: 'bg-orange-600' };
+            return { icon: <RefreshCw className="w-4 h-4 text-orange-600" strokeWidth={strokeWidth} /> };
         case 'add':
-            return { icon: <Plus {...iconProps} />, bgColor: 'bg-green-600' };
+            return { icon: <Plus className="w-4 h-4 text-green-600" strokeWidth={strokeWidth} /> };
         case 'swap':
-            return { icon: <ArrowDownUp {...iconProps} />, bgColor: 'bg-yellow-600' };
+            return { icon: <ArrowDownUp className="w-4 h-4 text-yellow-600" strokeWidth={strokeWidth} /> };
         case 'cut':
-            return { icon: <Minus {...iconProps} />, bgColor: 'bg-red-600' };
+            return { icon: <Minus className="w-4 h-4 text-red-600" strokeWidth={strokeWidth} /> };
         case 'pick':
-            return { icon: <SquareCheckBig {...iconProps} />, bgColor: 'bg-green-600' };
+            return { icon: <SquareCheckBig className="w-4 h-4 text-green-600" strokeWidth={strokeWidth} /> };
         default:
-            return { icon: null, bgColor: 'bg-gray-600' };
+            return { icon: null };
     }
+};
+
+// Helper function to render change text with arrow replacement
+const renderChangeText = (changeHtml: string) => {
+    // First, we need to parse the HTML string to handle any existing HTML tags
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = changeHtml;
+    const textContent = tempDiv.innerHTML;
+    
+    // Split by arrow and reconstruct with React components
+    if (textContent.includes('→')) {
+        const parts = textContent.split('→');
+        return (
+            <>
+                {parts.map((part, index) => (
+                    <React.Fragment key={index}>
+                        <span dangerouslySetInnerHTML={{ __html: part.trim() }} />
+                        {index < parts.length - 1 && (
+                            <MoveRight className="inline-block mx-1 text-red-600" size={16} />
+                        )}
+                    </React.Fragment>
+                ))}
+            </>
+        );
+    }
+    
+    // If no arrows, return the original HTML
+    return <span dangerouslySetInnerHTML={{ __html: changeHtml }} />;
 };
 
 export default function ShowChanges({ showId, className = '', openModal, setOpenModal }: ShowChangesProps) {
@@ -194,44 +222,43 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
 
     return (
         <>
-            <div className={`bg-primary border border-black rounded-lg p-3 text-sm ${className}`}>
+            <div className={`bg-primary border border-secondary rounded-lg p-3 text-sm ${className}`}>
                 <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-lg font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+                    <h2 className="text-lg font-medium text-fifth mb-2">
                         Setlist Changes
                     </h2>
                     {setlistUrl && (
                         <button
                             onClick={handleOpenModal}
-                            className="bg-secondary hover:bg-[#f9ae37] border border-black rounded-lg p-1.5 transition-colors"
+                            className="bg-tertiary hover:bg-primary border border-secondary rounded p-1.5 transition-colors"
                         >
                             <FileMusic
-                                className="h-5 w-5 text-black"
+                                className="h-5 w-5 text-fifth"
                             />
                         </button>
                     )}
                 </div>
 
                 {changes.length === 0 ? (
-                    <div className="text-black">
+                    <div className="text-fifth">
                         No changes from original setlist.
                     </div>
                 ) : (
                     <div className="space-y-1">
-                        {changes.map((change) => {
-                            const { icon, bgColor } = getChangeIcon(change.change_type);
+                        {changes.map((change, index) => {
+                            const { icon } = getChangeIcon(change.change_type);
 
                             return (
                                 <div
                                     key={change.show_change_uuid}
-                                    className="flex items-center gap-2"
+                                    className={`flex items-center gap-2 ${index !== 0 ? 'pt-1 border-t border-[#d8d7d7]' : ''}`}
                                 >
-                                    <div className={`${bgColor} rounded-full p-1 flex-shrink-0 border border-black`}>
+                                    <div className="flex-shrink-0">
                                         {icon}
                                     </div>
-                                    <div
-                                        className="text-black [&_a]:text-black hover:[&_a]:text-black/50 [&_a]:font-bold"
-                                        dangerouslySetInnerHTML={{ __html: change.change }}
-                                    />
+                                    <div className="text-fifth font-light [&_a]:font-medium text-xs">
+                                        {renderChangeText(change.change)}
+                                    </div>
                                 </div>
                             );
                         })}
@@ -256,64 +283,66 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                         onClick={handleCloseModal}
                     >
                         <div
-                            className="relative bg-primary rounded-lg overflow-hidden border-2 border-black my-8 max-h-[90vh] overflow-y-auto"
+                            className="relative bg-primary rounded-lg overflow-hidden border-2 border-secondary my-8 max-h-[90vh] overflow-y-auto"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex flex-col md:flex-row">
                                 {/* Left side - Setlist Scan */}
-                                <div className="p-4 bg-secondary border-b-2 md:border-b-0 md:border-r-2 border-black flex flex-col items-center">
-                                    <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">Setlist Scan</h2>
-                                    <div className="p-2 rounded flex justify-center">
+                                <div className="p-4 bg-primary border-b-2 md:border-b-0 md:border-r-2 border-secondary flex flex-col items-center">
+                                    <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary">Setlist Scan</h2>
+                                    <div className="pt-4 rounded flex justify-center">
                                         <img
                                             src={setlistUrl}
                                             alt="Setlist"
-                                            className="rounded-lg max-h-[500px] md:max-h-[500px] object-contain border border-black"
+                                            className="rounded-lg max-h-[500px] md:max-h-[500px] object-contain border border-secondary"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Right side - Actual Setlist (only show if there are changes) */}
 
-                                <div className="w-full md:w-[400px] p-4 bg-canvas flex flex-col">
+                                <div className="w-full md:w-[400px] p-3 bg-canvas flex flex-col">
                                     <div className="flex justify-center mb-4">
-                                        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">Actual Setlist</h2>
+                                        <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary">Actual Setlist</h2>
                                     </div>
 
                                     {/* Show details */}
-                                    <div className="text-black mb-2">
-                                        <div className="font-bold text-lg">{showData.show_group}</div>
-                                        <div className="font-semibold">{formatInTimeZone(new Date(showData.show_date), 'UTC', 'MMMM d, yyyy')}</div>
-                                        <div>{showData.show_subvenue}</div>
-                                        <div className="mb-2">{showData.show_venue_location}</div>
+                                    <div className="text-fifth mb-2">
+                                        <div className="font-medium text-lg">{showData.show_group}</div>
+                                        <div className="font-medium">{formatInTimeZone(new Date(showData.show_date), 'UTC', 'MMMM d, yyyy')}</div>
+                                        <div className="font-normal">{showData.show_subvenue}</div>
+                                        <div className="font-light mb-2">{showData.show_venue_location}</div>
                                     </div>
 
                                     {/* Setlist */}
-                                    <div className="bg-primary p-4 rounded-lg border border-black mb-4">
+                                    <div className="bg-primary p-3 rounded-lg border border-secondary mb-4">
                                         <SetlistDisplay setlist={setlist} navigate={navigate} />
                                     </div>
 
                                     {/* Set Changes */}
-                                        <div className="mt-2 bg-primary p-3 rounded-lg border border-black">
-                                            <h2 className="text-base font-mohr bg-[#f9ae37] text-black inline-block px-2 pt-1.5 pb-0.5 rounded-full border border-black mb-2">
-                                                Setlist Changes
-                                            </h2>
+                                    <div className="flex justify-center mb-2 mt-2">
+                                        <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary">Setlist Changes</h2>
+                                    </div>
+                                        <div className="mt-2 bg-primary p-3 rounded-lg border border-secondary">
                                             {changes.length === 0 ? (
-                                                <div className="text-black text-xs">
+                                                <div className="text-fifth text-xs">
                                                     No changes from original setlist.
                                                 </div>
                                             ) : (
                                                 <div className="space-y-1">
-                                                    {changes.map((change) => {
-                                                        const { icon, bgColor } = getChangeIcon(change.change_type);
+                                                    {changes.map((change, index) => {
+                                                        const { icon } = getChangeIcon(change.change_type);
                                                         return (
-                                                            <div key={change.show_change_uuid} className="flex items-center gap-2">
-                                                                <div className={`${bgColor} rounded-full p-1 flex-shrink-0 border border-black`}>
+                                                            <div 
+                                                                key={change.show_change_uuid} 
+                                                                className={`flex items-center gap-2 ${index !== 0 ? 'pt-1 border-t border-[#d8d7d7]' : ''}`}
+                                                            >
+                                                                <div className="flex-shrink-0">
                                                                     {icon}
                                                                 </div>
-                                                                <div
-                                                                    className="text-black text-xs [&_a:hover]:text-[#a9682e]/80 [&_a]:font-semibold"
-                                                                    dangerouslySetInnerHTML={{ __html: change.change }}
-                                                                />
+                                                                <div className="text-fifth text-xs [&_a]:font-medium font-light">
+                                                                    {renderChangeText(change.change)}
+                                                                </div>
                                                             </div>
                                                         );
                                                     })}
@@ -327,9 +356,9 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                             {/* Close button */}
                             <button
                                 onClick={handleCloseModal}
-                                className="absolute top-2 right-2 bg-[#f9ae37] hover:bg-tertiary border border-black rounded-full p-2 transition-colors"
+                                className="absolute top-2 right-2 bg-[#f9ae37] hover:bg-tertiary border border-secondary rounded-full p-2 transition-colors"
                             >
-                                <X className="w-5 h-5 text-black" />
+                                <X className="w-5 h-5 text-fifth" />
                             </button>
                         </div>
                     </div>

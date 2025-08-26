@@ -148,14 +148,14 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
   if (!shouldShowLength && !shouldShowRarity) return null;
 
   return (
-    <div className="bg-primary border border-black rounded-lg p-4 mb-6">
+    <div className="bg-primary border border-secondary rounded-lg p-3 mb-6">
       {shouldShowLength && (
         <div>
           <div className="flex justify-between items-center mb-1">
-            <h2 className="text-lg font-semibold text-black">Show Length</h2>
-            <Clock className="text-black w-[1rem] h-[1rem]" />
+            <h2 className="text-lg font-medium text-fifth">Show Length</h2>
+            <Clock className="text-fifth w-[1rem] h-[1rem]" />
           </div>
-          <p className="text-black text-xs">
+          <p className="text-fifth font-light text-xs">
             {totalLength || 'The length of this show is unknown.'}
           </p>
         </div>
@@ -165,24 +165,24 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
         <div className={shouldShowLength ? "mt-4" : ""}>
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <h2 className="text-lg font-semibold text-black">Show Rarity</h2>
+              <h2 className="text-lg font-medium text-fifth">Show Rarity</h2>
               {rarityStats && (
                 <span
-                  className="text-white text-sm font-medium px-2 py-0.5 rounded-md inline-block ml-3"
+                  className="text-primary text-sm font-normal px-2 py-0.5 rounded-md inline-block ml-3"
                   style={{
                     backgroundColor: getRarityColor(rarityStats.percentage + '%'),
-                    border: '1px solid black'
+                    border: '1px solid #b4b2b2'
                   }}
                 >
                   {rarityStats.percentage}%
                 </span>
               )}
             </div>
-            <Flame className="text-black w-[1rem] h-[1rem]" />
+            <Flame className="text-fifth w-[1rem] h-[1rem]" />
           </div>
           {!rarityStats && (
-            <p className="text-black text-sm">
-              Error calculating show rarity
+            <p className="text-fifth text-sm">
+              &nbsp;
             </p>
           )}
         </div>

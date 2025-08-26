@@ -24,6 +24,17 @@ interface TopSlotsCarouselProps {
   tourId?: string; // Added tourId prop
 }
 
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
+
 const TopSlotsCarousel = ({ 
   slots, 
   isMobile = false, 
@@ -111,13 +122,13 @@ const TopSlotsCarousel = ({
     const headerBgColor = getHeaderBgColor(slot.title, index);
     
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
-        <h2 
-          className="text-lg font-mohr text-white inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-1.5"
+      <div className="bg-primary border border-secondary rounded-lg p-3">
+        <h3 
+          className="text-lg font-semibold text-primary mb-1 rounded-lg border border-secondary inline-block px-3"
           style={{ backgroundColor: headerBgColor }}
         >
           {`Top ${slot.title}`}
-        </h2>
+        </h3>
         <div className={`${isLoading ? 'opacity-20' : ''} transition-opacity duration-300`}>
           <div className="overflow-y-auto max-h-64">
             <table className="w-full border-collapse">
@@ -125,21 +136,21 @@ const TopSlotsCarousel = ({
                 {slot.data.map((item, itemIndex) => (
                   <tr
                     key={itemIndex}
-                    className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
+                    className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}
                   >
-                    <td className="pl-4 text-black">
+                    <td className="pl-4 text-fifth">
                       <div className="flex items-center justify-between">
-                        <span 
-                          className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
+                        <button
                           onClick={() => handleSongClick(item.left)}
+                          className="font-trad text-fifth text-[1rem] leading-[1rem] pb-0.5 hover:underline cursor-pointer text-left"
                         >
-                          {item.left}
-                        </span>
+                          {cleanSongName(item.left)}
+                        </button>
                         {item.artwork && (
                           <img
                             src={item.artwork}
                             alt={`${item.left} artwork`}
-                            className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                            className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
                             onError={(e) => {
                               // Hide the image if it fails to load
                               (e.target as HTMLImageElement).style.display = 'none';
@@ -148,7 +159,7 @@ const TopSlotsCarousel = ({
                         )}
                       </div>
                     </td>
-                    <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                    <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                       {typeof item.right === 'number' ? `${item.right}` : item.right}
                     </td>
                   </tr>
@@ -165,9 +176,9 @@ const TopSlotsCarousel = ({
     <>
       {/* Mobile view - shown when isMobile is true or screen is smaller than md */}
       <div className={`${!isMobile ? "md:hidden" : ""}`}>
-        <div className="bg-primary border border-black rounded-lg p-3">
+        <div className="bg-primary border border-secondary rounded-lg p-3">
           <div className="flex justify-between items-center mb-1.5">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">
               Top Slots
             </h2>
             
@@ -176,7 +187,7 @@ const TopSlotsCarousel = ({
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 text-white px-4 pt-2 pb-1.5 rounded-lg border border-black hover:opacity-90 transition-colors text-base font-mohr"
+                  className="flex items-center gap-2 text-primary px-3 py-1 rounded-lg border border-secondary hover:opacity-90 transition-colors text-base font-semibold"
                   style={{ backgroundColor: getHeaderBgColor(currentTitle, safeCurrentIndex) }}
                 >
                   {currentTitle}
@@ -184,7 +195,7 @@ const TopSlotsCarousel = ({
                 </button>
                 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 overflow-y-auto w-48">
+                  <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto w-48">
                     {slotsWithData.map((slot, index) => (
                       <button
                         key={index}
@@ -192,7 +203,7 @@ const TopSlotsCarousel = ({
                           setCurrentSlideIndex(index);
                           setIsDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
+                        className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-tertiary/40 transition-colors ${
                           index === safeCurrentIndex ? 'bg-[#f9ae37]' : ''
                         }`}
                       >
@@ -213,21 +224,21 @@ const TopSlotsCarousel = ({
                   {currentSlide.data.map((item, itemIndex) => (
                     <tr
                       key={itemIndex}
-                      className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10 transition-colors text-xs`}
+                      className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}
                     >
-                      <td className="pl-4 text-black">
+                      <td className="pl-4 text-fifth">
                         <div className="flex items-center justify-between">
-                          <span 
-                            className="text-black cursor-pointer hover:text-[#a9682e] hover:underline font-semibold"
+                          <button
                             onClick={() => handleSongClick(item.left)}
+                            className="font-trad text-fifth text-[1rem] leading-[1rem] pb-0.5 hover:underline cursor-pointer text-left"
                           >
-                            {item.left}
-                          </span>
+                            {cleanSongName(item.left)}
+                          </button>
                           {item.artwork && (
                             <img
                               src={item.artwork}
                               alt={`${item.left} artwork`}
-                              className="w-5 h-5 rounded-full object-cover border border-black/20 ml-3"
+                              className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
                               onError={(e) => {
                                 // Hide the image if it fails to load
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -236,7 +247,7 @@ const TopSlotsCarousel = ({
                           )}
                         </div>
                       </td>
-                      <td className="pr-2 w-[40px] py-0.5 text-center font-semibold text-black">
+                      <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
                         {typeof item.right === 'number' ? `${item.right}` : item.right}
                       </td>
                     </tr>

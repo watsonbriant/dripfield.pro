@@ -312,20 +312,20 @@ export const AdminSetlist: React.FC = () => {
   return (
     <div>
       {/* Header with right-aligned dropdown */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Setlist Management</h3>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Setlist Management</h3>
         
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 bg-[#f9ae37] text-black px-4 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
+            className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
           >
             Select Show
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 py-1 bg-primary border border-black rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
+            <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
               <div className="p-2">
                 <div className="relative">
                   <input
@@ -333,16 +333,16 @@ export const AdminSetlist: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search shows..."
-                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                   />
-                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                 </div>
               </div>
               <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
                 {loading && loadingProgress < 100 ? (
                   <div className="flex flex-col justify-center items-center p-4 h-16">
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
-                    <p className="text-xs text-black/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
+                    <div className="animate-spin rounded-lg h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
+                    <p className="text-xs text-fifth/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
                   </div>
                 ) : (
                   <>
@@ -350,9 +350,9 @@ export const AdminSetlist: React.FC = () => {
                       <button
                         key={show.show_id}
                         onClick={() => handleShowSelect(show)}
-                        className="w-full text-left px-2 py-1 text-sm text-black hover:bg-canvas transition-colors"
+                        className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-canvas transition-colors"
                       >
-                        <span className="font-semibold">
+                        <span className="font-medium">
                           {formatDate(show.show_date)}
                         </span>
                           {show.show_canonid ? ` [${show.show_canonid}]` : ''} 
@@ -360,7 +360,7 @@ export const AdminSetlist: React.FC = () => {
                       </button>
                     ))}
                     {filteredShows.length === 0 && !loading && (
-                      <div className="px-2 py-1 text-sm text-black/60 italic">
+                      <div className="px-2 py-1 text-sm text-fifth/60 italic">
                         No shows found
                       </div>
                     )}
@@ -375,13 +375,13 @@ export const AdminSetlist: React.FC = () => {
       {/* Selected show display */}
       {selectedShow && (
         <div>
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-2 flex items-center justify-between">
             <div>
-              <h4 className="text-lg text-black font-semibold">
+              <h4 className="text-lg text-fifth font-medium">
                 {formatDate(selectedShow.show_date)}
                 &nbsp;[{selectedShow.show_group}]
               </h4>
-              <div className="text-sm text-black/70 mt-1">
+              <div className="text-sm text-fifth/70 font-light">
                 {selectedShow.show_subvenue} — {selectedShow.show_venue_location}
               </div>
             </div>
@@ -389,7 +389,7 @@ export const AdminSetlist: React.FC = () => {
             {/* Add New Entry Button - similar to the Add New Song button in AdminSong */}
             <button
               onClick={handleCreateNewEntry}
-              className="flex items-center gap-2 bg-[#f9ae37] text-black px-1.5 py-1.5 rounded-md border border-black hover:bg-[#e29d26] transition-colors text-sm whitespace-nowrap font-semibold"
+              className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-primary"
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -397,7 +397,7 @@ export const AdminSetlist: React.FC = () => {
           
           {loading ? (
             <div className="flex justify-center items-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#f9ae37]"></div>
+              <div className="animate-spin rounded-lg h-8 w-8 border-t-2 border-b-2 border-fourth"></div>
             </div>
           ) : (
             <>
@@ -405,15 +405,15 @@ export const AdminSetlist: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse min-w-max">
                     <thead>
-                      <tr className="bg-canvas border-y border-black/10">
-                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">S</th>
-                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">#</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Song</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Short</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">&gt;</th>
-                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Placement</th>
-                        <th className="px-2 py-1 text-center text-s font-semibold text-black whitespace-nowrap">Length</th>
-                        <th className="px-2 py-1 text-left text-s font-semibold text-black whitespace-nowrap">Notes</th>
+                      <tr className="bg-canvas border-y border-secondary/10">
+                        <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap">S</th>
+                        <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap">#</th>
+                        <th className="px-2 py-1 text-left text-s font-medium text-fifth whitespace-nowrap">Song</th>
+                        <th className="px-2 py-1 text-left text-s font-medium text-fifth whitespace-nowrap">Short</th>
+                        <th className="px-2 py-1 text-left text-s font-medium text-fifth whitespace-nowrap">&gt;</th>
+                        <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap">Placement</th>
+                        <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap">Length</th>
+                        <th className="px-2 py-1 text-left text-s font-medium text-fifth whitespace-nowrap">Notes</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-black/5">
@@ -422,21 +422,21 @@ export const AdminSetlist: React.FC = () => {
                           key={entry.entry_id} 
                           className={`${
                             index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                          } hover:bg-black/10 transition-colors text-xs cursor-pointer`}
+                          } hover:bg-tertiary/40 transition-colors text-xs cursor-pointer`}
                           onClick={() => handleEntrySelect(entry)}
                         >
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap text-center">{entry.entry_set}</td>
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap text-center">{entry.entry_setnum}</td>
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap font-semibold">{entry.entry_song}</td>
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
+                          <td className="px-2 py-0.5 font-light text-fifth whitespace-nowrap text-center">{entry.entry_set}</td>
+                          <td className="px-2 py-0.5 font-light text-fifth whitespace-nowrap text-center">{entry.entry_setnum}</td>
+                          <td className="px-2 py-0.5 text-fifth whitespace-nowrap font-medium">{entry.entry_song}</td>
+                          <td className="px-2 py-0.5 font-light text-fifth whitespace-nowrap">
                             {entry.entry_short || ""}
                           </td>
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
+                          <td className="px-2 py-0.5 font-light text-fifth whitespace-nowrap">
                             {entry.entry_segue || ""}
                           </td>
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
+                          <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
                             <div 
-                              className="px-2 py-0.5 rounded-md text-center font-semibold"
+                              className="px-2 py-0.5 rounded-md text-center font-medium"
                               style={{ 
                                 backgroundColor: getPlacementColor(entry.entry_placement),
                                 color: getPlacementColor(entry.entry_placement) !== 'transparent' ? 'white' : 'black'
@@ -445,8 +445,8 @@ export const AdminSetlist: React.FC = () => {
                               {entry.entry_placement || ""}
                             </div>
                           </td>
-                          <td className="px-2 py-0.5 text-black text-center whitespace-nowrap">{formatTimeDisplay(entry.entry_length)}</td>
-                          <td className="px-2 py-0.5 text-black whitespace-nowrap">
+                          <td className="px-2 py-0.5 font-light text-fifth text-center whitespace-nowrap">{formatTimeDisplay(entry.entry_length)}</td>
+                          <td className="px-2 py-0.5 font-light text-fifth whitespace-nowrap">
                             {entry.entry_coachnotes || ""}
                           </td>
                         </tr>
@@ -455,8 +455,8 @@ export const AdminSetlist: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <div className="border border-black rounded-lg p-6 text-center">
-                  <p className="text-black/70">No setlist entries found for this show.</p>
+                <div className="border border-secondary rounded-lg p-6 text-center">
+                  <p className="text-fifth/70">No setlist entries found for this show.</p>
                 </div>
               )}
             </>
@@ -466,16 +466,16 @@ export const AdminSetlist: React.FC = () => {
 
       {/* Show message when no show is selected */}
       {!selectedShow && !loading && (
-        <div className="border border-black rounded-lg p-6 text-center">
-          <p className="text-black/70">Select a show to view its setlist.</p>
+        <div className="border border-secondary rounded-lg p-6 text-center">
+          <p className="text-fifth/70">Select a show to view its setlist.</p>
         </div>
       )}
 
       {/* Show loading indicator for initial data fetch */}
       {loading && loadingProgress < 100 && !selectedShow && (
         <div className="flex flex-col justify-center items-center h-56">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#f9ae37]"></div>
-          <p className="text-black/70 mt-4">Loading shows ({Math.round(loadingProgress)}%)</p>
+          <div className="animate-spin rounded-lg h-8 w-8 border-t-2 border-b-2 border-[#f9ae37]"></div>
+          <p className="text-fifth/70 mt-4">Loading shows ({Math.round(loadingProgress)}%)</p>
         </div>
       )}
 

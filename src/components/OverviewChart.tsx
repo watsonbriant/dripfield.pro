@@ -24,7 +24,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#3c3545" 
+          stroke="#fdfdfd" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -33,7 +33,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#fce7ca" 
+          stroke="#8e6c7a" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -42,7 +42,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-[#fce7ca]">
+      <div className="absolute text-lg font-semibold text-fifth">
         {Math.round(value)}%
       </div>
     </div>
@@ -287,25 +287,25 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
 
   if (loading) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
-          <p className="text-black mt-4">{getLoadingMessage()}</p>
+          <p className="text-fifth mt-4">{getLoadingMessage()}</p>
         </div>
       </div>
     );
   }
 
   if (showData.length === 0) {
-    return <div className="text-center text-black py-10 bg-primary p-4 rounded-lg border border-black">
+    return <div className="text-center text-fifth py-10 bg-primary p-4 rounded-lg border border-secondary">
       {getEmptyStateMessage()}
     </div>;
   }
   
   // Filter out years with no shows if needed
   return (
-    <div className="bg-primary p-3 rounded-lg border border-black">
-      <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">{getChartTitle()}</h3>
+    <div className="bg-primary p-3 rounded-lg border border-secondary">
+      <h3 className="text-lg font-medium bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">{getChartTitle()}</h3>
       <div className="overflow-x-auto">
         <div className="h-80 min-w-[768px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -332,8 +332,8 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#fce7ca', 
-                  borderColor: '#000',
+                  backgroundColor: '#e7e7e7', 
+                  borderColor: '#e7e7e7',
                   color: '#000',
                   fontSize: '12px',
                   fontWeight: 600,
@@ -357,16 +357,16 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
                 type="linear" 
                 dataKey="gooseCount" 
                 name="Goose" 
-                stroke="#ec742e" 
-                fill="#ec742e" 
-                fillOpacity={0.6}
+                stroke="#4c9381" 
+                fill="#8ec1b6" 
+                fillOpacity={1.0}
               />
               <Area 
                 type="linear" 
                 dataKey="otherCount" 
                 name="Other" 
-                stroke="#7C2128" 
-                fill="#7C2128"
+                stroke="#8e6c7a" 
+                fill="#8e6c7a"
                 fillOpacity={0.6}
               />
             </AreaChart>

@@ -63,8 +63,8 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
       return null;
     }
     return sortDirection === 'asc' ? 
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" /> : 
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-fifth" /> : 
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-fifth" />;
   };
 
   // Function to fetch all available years
@@ -233,34 +233,34 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
   const filteredShows = getFilteredAndSortedShows();
 
   return (
-    <div className="bg-primary border border-black rounded-lg p-3 max-w-[1280px] mx-auto">
-      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4">
-        <div className="flex items-center gap-3 mb-3 lg:mb-0">
+    <div className="bg-primary border border-secondary rounded-lg p-3 max-w-[1280px] mx-auto">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-2">
+        <div className="flex items-center gap-3 mb-2 lg:mb-0">
           <button
             onClick={onClose}
-            className="p-1.5 text-black bg-[#f9ae37] hover:bg-[#f9ae37]/80 transition-colors border border-black rounded-lg"
+            className="p-1.5 text-fifth bg-tertiary hover:bg-tertiary/70 transition-colors border border-secondary rounded-lg"
             aria-label="Back to attended shows"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Manage Attended Shows</h2>
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Manage Attended Shows</h2>
         </div>
         
-        <div className="flex gap-3 mt-2 lg:mt-0 w-full lg:w-auto lg:justify-end">
+        <div className="flex gap-3 mt-1 lg:mt-0 w-full lg:w-auto lg:justify-end">
           {/* Search input - 2/3 width on mobile */}
-          <div className="relative w-2/3 lg:w-auto">
+          <div className="relative w-3/4 lg:w-auto">
             <input
               type="text"
               placeholder="Search shows..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1 bg-canvas text-black border border-black rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
+              className="pl-8 pr-3 py-1.5 text-xs bg-canvas text-fifth border border-secondary rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
             />
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-black/50 w-4 h-4" />
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-fifth/50 w-4 h-4" />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black/50 hover:text-black p-0.5"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-fifth/50 hover:text-fifth p-0.5"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -268,17 +268,17 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
           </div>
           
           {/* Year filter dropdown - 1/3 width on mobile */}
-          <div className="relative w-1/3 lg:w-auto" ref={dropdownRef}>
+          <div className="relative w-1/4 lg:w-auto" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-1 px-3 py-1 bg-canvas font-semibold text-black border border-black rounded-lg text-sm hover:bg-canvas/80 transition-colors w-full justify-between"
+              className="flex items-center gap-1 px-3 py-1 bg-canvas font-medium text-fifth border border-secondary rounded-lg text-sm hover:bg-canvas/80 transition-colors w-full justify-between"
             >
               <span>{yearFilter || 'Select Year'}</span>
               <ChevronDown className="w-4 h-4" />
             </button>
             
             {dropdownOpen && (
-              <div className="absolute right-0 mt-1 max-h-64 overflow-y-auto bg-canvas border border-black rounded-lg shadow-lg z-10 w-full lg:w-32">
+              <div className="absolute right-0 mt-1 max-h-64 overflow-y-auto bg-canvas border border-secondary rounded-lg shadow-lg z-10 w-full lg:w-32">
                 {years.map((year) => (
                   <button
                     key={year}
@@ -286,10 +286,10 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
                       setYearFilter(year);
                       setDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-1.5 text-sm ${
+                    className={`w-full text-left px-4 py-1 text-sm ${
                       yearFilter === year
-                        ? 'bg-[#f9ae37] text-black'
-                        : 'text-black hover:bg-black/10'
+                        ? 'bg-tertiary text-fifth font-medium'
+                        : 'text-fifth hover:bg-black/10'
                     } transition-colors`}
                   >
                     {year}
@@ -301,29 +301,29 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
         </div>
       </div>
 
-      <div className="mb-3 text-black text-xs lg:text-sm">
+      <div className="mb-3 text-fifth text-xs font-light lg:text-sm">
         Check the boxes next to shows you've attended to add them to your list. Uncheck to remove them.
       </div>
 
       {loading ? (
         <div className="text-center py-12">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse delay-300"></div>
           </div>
-          <p className="text-black mt-4">Loading shows...</p>
+          <p className="text-fifth mt-4">Loading shows...</p>
         </div>
       ) : (
         <div className="overflow-x-auto relative">
           <table className="w-full border-collapse min-w-max">
             <thead>
               <tr className="bg-canvas border-y border-white/10">
-                <th className="px-2 py-2 text-center text-s font-semibold text-black">
-                  <Check size={16} className="text-black" strokeWidth={2.5} />
+                <th className="px-2 py-2 text-center text-s font-semibold text-fifth">
+                  <Check size={16} className="text-fifth" strokeWidth={2.5} />
                 </th>
                 <th 
-                  className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                  className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                   onClick={() => handleSort('show_date')}
                 >
                   <div className="flex items-center gap-1">
@@ -332,7 +332,7 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                  className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                   onClick={() => handleSort('show_group')}
                 >
                   <div className="flex items-center gap-1">
@@ -341,7 +341,7 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                  className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                   onClick={() => handleSort('show_subvenue')}
                 >
                   <div className="flex items-center gap-1">
@@ -350,7 +350,7 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/10"
+                  className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                   onClick={() => handleSort('show_venue_location')}
                 >
                   <div className="flex items-center gap-1">
@@ -359,7 +359,7 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-1 text-left text-s font-semibold text-black whitespace-nowrap"
+                  className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap"
                 >
                   Detail
                 </th>
@@ -368,7 +368,7 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
             <tbody className="divide-y divide-white/5">
               {filteredShows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-4 text-center text-black">
+                  <td colSpan={6} className="px-4 py-4 text-center text-fifth">
                     {searchQuery ? 'No shows matching your search' : 'No shows found for this year'}
                   </td>
                 </tr>
@@ -378,47 +378,47 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
                     key={show.show_id}
                     className={`${
                       index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                    } hover:bg-black/10 transition-colors text-xs`}
+                    } hover:bg-tertiary/40 transition-colors text-xs`}
                   >
                     <td className="text-center">
                       <button
                         onClick={() => handleAttendanceToggle(show)}
                         className={`p-0.5 rounded-md transition-all ${
                           show.attended
-                            ? 'bg-green-600 hover:bg-red-600 text-white'
-                            : 'text-black border-black/80 hover:bg-green-600 hover:text-white'
+                            ? 'bg-green-600 hover:bg-red-600 text-primary'
+                            : 'text-primary border-secondary/80 hover:bg-green-600 hover:text-primary'
                         }`}
                         title={show.attended ? "Remove from attended shows" : "Mark as attended"}
                       >
-                        <Check size={14} className={show.attended ? "text-white" : "text-black/60"} />
+                        <Check size={14} className={show.attended ? "text-primary" : "text-fifth/60"} />
                       </button>
                     </td>
-                    <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                    <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                       <button
                         onClick={() => navigate(`/setlist/${show.show_id}`)}
-                        className="font-semibold hover:text-[#a9682e] transition-colors table-link"
+                        className="font-medium hover:underline transition-colors table-link"
                       >
                         {formatDate(show.show_date)}
                       </button>
                     </td>
-                    <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                    <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                       {show.show_group}
                     </td>
-                    <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                    <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                       <button
                         onClick={() => navigate(`/venue/${encodeURIComponent(show.show_subvenue_venue)}`)}
-                        className="hover:text-[#a9682e] hover:underline transition-colors"
+                        className="hover:underline transition-colors"
                       >
                         {show.show_subvenue}
                       </button>
                     </td>
-                    <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                    <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                       {show.show_venue_location}
                     </td>
-                    <td className="px-4 py-0.5 text-black whitespace-nowrap">
+                    <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                       {show.show_detail || (show.show_alert && 
-                        <span className="text-[#a9682e]">
-                          <strong>[{show.show_alert}]</strong>
+                        <span className="text-red-600 font-medium">
+                          [{show.show_alert}]
                         </span>
                       )}
                     </td>

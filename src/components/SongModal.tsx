@@ -163,51 +163,51 @@ const SongModal: React.FC<SongModalProps> = ({
         className="fixed inset-0 bg-black/50 z-50"
         onClick={onClose}
       />
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-2xl md:w-full z-50 bg-primary rounded-lg border border-black shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-black/10">
-          <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black">
+      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-2xl md:w-full z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
+        <div className="flex items-center justify-between p-3">
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
             {isNewSong ? 'Add New Song' : 'Edit Song'}
           </h2>
           <div className="flex gap-2">
             <button
               onClick={handleSaveChanges}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-black bg-[#f9ae37] hover:bg-tertiary/90 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/80 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
             >
-              <Save className="w-4 h-4 text-black" />
-              <span className="text-black">Save</span>
+              <Save className="w-4 h-4 text-fifth" />
+              <span className="text-fifth">Save</span>
             </button>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-tertiary rounded-lg border border-black bg-red-500 transition-colors"
+              className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
             >
-              <X className="w-5 h-5 text-black" />
+              <X className="w-5 h-5 text-fifth" />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex-1 overflow-y-auto px-3 pb-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-black">Song Title</label>
+              <label className="block text-sm font-medium text-fifth">Song Title</label>
               <input
                 type="text"
                 name="song"
                 value={editedSong?.song || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="Enter song title"
                 required
               />
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-black">Category</label>
+              <label className="block text-sm font-medium text-fifth">Category</label>
               <select
                 name="song_category"
                 value={editedSong?.song_category || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               >
                 <option value="">-- Select Category --</option>
                 {categories.map((cat) => (
@@ -219,12 +219,12 @@ const SongModal: React.FC<SongModalProps> = ({
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-black">Original Artist</label>
+              <label className="block text-sm font-medium text-fifth">Original Artist</label>
               <select
                 name="song_originalartist"
                 value={editedSong?.song_originalartist || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               >
                 <option value="">-- Select Artist --</option>
                 {artists.map((artist) => (
@@ -236,25 +236,25 @@ const SongModal: React.FC<SongModalProps> = ({
             </div>
             
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-black">Category Order</label>
+              <label className="block text-sm font-medium text-fifth">Category Order</label>
               <input
                 type="number"
                 name="song_categoryorder"
                 value={editedSong?.song_categoryorder === null ? '' : editedSong?.song_categoryorder}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="Enter order number"
               />
             </div>
             
             <div className="space-y-2 md:col-span-2">
-              <label className="block text-sm font-semibold text-black">Coach's Notes</label>
+              <label className="block text-sm font-medium text-fifth">Coach's Notes</label>
               <textarea
                 name="song_coachnotes"
                 value={editedSong?.song_coachnotes || ''}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-3 py-2 rounded-lg border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="Add notes here..."
               />
             </div>

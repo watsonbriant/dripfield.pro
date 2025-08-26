@@ -145,22 +145,22 @@ export function Submit() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-primary border border-black rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-2">Submit Information</h2>
-        <p className="text-black mb-4">
+      <div className="bg-primary border border-secondary rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Submit Information</h2>
+        <p className="text-fifth mb-4 font-light">
           Use this form to submit corrections, new information, or report issues with the site.
         </p>
 
         {submitSuccess ? (
-          <div className="bg-green-600/20 border border-green-500/50 text-green-800 p-4 rounded-md mb-6">
+          <div className="bg-green-600/10 border border-green-500/50 text-green-800 p-4 rounded-md mb-6">
             <p className="font-medium">Thank you for your submission!</p>
-            <p className="text-sm mt-1">We have received your information and will review it soon.</p>
+            <p className="text-sm font-light mt-1">We have received your information and will review it soon.</p>
             <button
               onClick={() => {
                 setSubmitSuccess(false);
                 setSelectedFile(null);
               }}
-              className="mt-3 px-4 py-2 bg-[#f9ae37] hover:bg-[#e29d26] text-black font-medium rounded-md transition-colors border border-black"
+              className="mt-3 px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-secondary"
             >
               Submit Another
             </button>
@@ -174,7 +174,7 @@ export function Submit() {
             )}
 
             <div>
-              <label htmlFor="submissionType" className="block text-sm font-semibold text-black mb-1">
+              <label htmlFor="submissionType" className="block text-sm font-medium text-fifth mb-1">
                 Submission Type <span className="text-red-600">*</span>
               </label>
               <select
@@ -183,7 +183,7 @@ export function Submit() {
                 value={formData.submissionType}
                 onChange={handleChange}
                 required
-                className="w-full px-2 py-2 bg-canvas border border-black rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 bg-canvas border border-secondary rounded-md text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               >
                 <option value="">&mdash;</option>
                 {submissionTypes.map((type) => (
@@ -195,7 +195,7 @@ export function Submit() {
             </div>
 
             <div>
-              <label htmlFor="contactEmail" className="block text-sm font-semibold text-black mb-1">
+              <label htmlFor="contactEmail" className="block text-sm font-medium text-fifth mb-1">
                 Contact Email <span className="text-red-600">*</span>
               </label>
               <input
@@ -205,13 +205,13 @@ export function Submit() {
                 value={formData.contactEmail}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-3 py-2 bg-canvas font-light border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="ted@dripfield.pro"
               />
             </div>
 
             <div>
-              <label htmlFor="details" className="block text-sm font-semibold text-black mb-1">
+              <label htmlFor="details" className="block text-sm font-medium text-fifth mb-1">
                 Details <span className="text-red-600">*</span>
               </label>
               <textarea
@@ -221,13 +221,13 @@ export function Submit() {
                 onChange={handleChange}
                 required
                 rows={6}
-                className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-3 py-2 bg-canvas font-light border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="Please provide as much detail as possible about your submission..."
               />
             </div>
 
             <div>
-              <label htmlFor="file" className="block text-sm font-semibold text-black mb-1">
+              <label htmlFor="file" className="block text-sm font-medium text-fifth mb-1">
                 Attach File (Optional)
               </label>
               <input
@@ -235,21 +235,21 @@ export function Submit() {
                 id="file"
                 onChange={handleFileChange}
                 accept="*/*"
-                className="w-full px-3 py-2 bg-canvas border border-black rounded-md text-black text-sm file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f9ae37] file:text-black hover:file:bg-[#e29d26]"
+                className="w-full px-3 py-2 bg-canvas border border-secondary rounded-md text-fifth text-sm file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-tertiary file:text-fifth hover:file:bg-tertiary/80"
               />
               {selectedFile && (
-                <p className="mt-1 text-sm text-black/70">
+                <p className="mt-1 text-sm text-fifth/70">
                   Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                 </p>
               )}
               {fileError && (
                 <p className="mt-1 text-sm text-red-600">{fileError}</p>
               )}
-              <p className="mt-1 text-xs text-black/60">Maximum file size: 50MB.</p>
+              <p className="mt-1 text-xs text-fifth/60 font-light">Maximum file size: 50MB.</p>
             </div>
 
             <div>
-              <label htmlFor="confirmationCode" className="block text-sm font-semibold text-black mb-1">
+              <label htmlFor="confirmationCode" className="block text-sm font-medium text-fifth mb-1">
                 Confirmation Code <span className="text-red-600">*</span>
               </label>
               <div className="flex items-center">
@@ -260,10 +260,10 @@ export function Submit() {
                   value={formData.confirmationCode}
                   onChange={handleChange}
                   required
-                  className={`px-3 py-2 bg-canvas border ${confirmationError ? 'border-red-600' : 'border-black'} rounded-md text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-[#a9682e] w-24 text-sm`}
+                  className={`px-3 py-2 bg-canvas font-light border ${confirmationError ? 'border-red-600' : 'border-secondary'} rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary w-24 text-sm`}
                   placeholder="&mdash;"
                 />
-                <span className={`ml-3 text-sm ${confirmationError ? 'text-red-600' : 'text-black/70'}`}>
+                <span className={`ml-3 font-light text-sm ${confirmationError ? 'text-red-600' : 'text-fifth/70'}`}>
                   {confirmationError ? 'Incorrect code. Please enter 726.' : 'Type the number 726 here.'}
                 </span>
               </div>
@@ -273,7 +273,7 @@ export function Submit() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2 bg-[#f9ae37] hover:bg-[#e29d26] text-black font-medium rounded-md transition-colors disabled:opacity-50 disabled:pointer-events-none border border-black"
+                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-fifth font-medium rounded-md transition-colors disabled:opacity-50 disabled:pointer-events-none border border-secondary"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>

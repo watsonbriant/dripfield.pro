@@ -199,24 +199,24 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
     }
     
     return sortDirection === 'asc' ? (
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" />
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-fifth" />
     ) : (
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-fifth" />
     );
   };
 
   const renderTimelineView = () => (
     <div className="px-0">
-      <div className="overflow-x-auto">
-        <div className="flex flex-row min-w-max">
+      <div className="overflow-x-auto flex justify-center">
+        <div className="flex flex-row min-w-max mx-auto">
           {years.map((year, index) => (
             <div 
               key={year} 
               className={`w-16 px-1 ${
-                index !== years.length - 1 ? 'border-r border-black/10' : ''
+                index !== years.length - 1 ? 'border-r border-secondary' : ''
               }`}
             >
-              <div className="text-black font-semibold mb-2 text-center">
+              <div className="text-fifth text-sm font-medium mb-2 text-center bg-secondary/50 rounded-lg">
                 {year}
               </div>
               <div className="space-y-1">
@@ -250,7 +250,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                       style={{
                         backgroundColor: placementColors[perf.entry_placement] || 'transparent'
                       }}
-                      className={`w-full text-xs ${placementColors[perf.entry_placement] ? 'text-white' : 'text-black'} hover:underline transition-colors text-center block px-0.5 font-semibold rounded ${
+                      className={`w-full text-xs ${placementColors[perf.entry_placement] ? 'text-primary' : 'text-fifth'} hover:underline transition-colors text-center block px-0.5 font-medium rounded ${
                         isHighlighted ? '' : ''
                       } ${
                         selectedGroup && !isHighlighted ? 'opacity-10' : 'opacity-100'
@@ -350,9 +350,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
       <div className="overflow-x-auto">
         <table className="w-full border-collapse min-w-max">
           <thead>
-            <tr className="bg-canvas border-y border-black/10">
+            <tr className="bg-canvas border-y border-secondary">
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_date')}
               >
                 <div className="flex items-center gap-1">
@@ -361,7 +361,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_group')}
               >
                 <div className="flex items-center gap-1">
@@ -370,7 +370,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_venue_location')}
               >
                 <div className="flex items-center gap-1">
@@ -379,7 +379,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('entry_song')}
               >
                 <div className="flex items-center gap-1">
@@ -388,7 +388,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('entry_length')}
               >
                 <div className="flex items-center gap-1">
@@ -397,7 +397,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 </div>
               </th>
               <th 
-                className="px-4 py-2 text-left text-s font-semibold text-black whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('entry_coachnotes')}
               >
                 <div className="flex items-center gap-1">
@@ -416,14 +416,14 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                   key={`${perf.show_id}-${index}`}
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-black/10 transition-colors text-xs ${
+                  } hover:bg-tertiary/40 transition-colors text-xs ${
                     isHighlighted ? 'border border-[#f9ae37] bg-[#f9ae37]/10' : ''
                   } ${
                     selectedGroup && !isHighlighted ? 'opacity-30' : 'opacity-100'
                   }`}
                 >
                   <td 
-                    className="px-4 py-1 text-black whitespace-nowrap"
+                    className="px-4 py-1 text-fifth whitespace-nowrap"
                     style={{
                       boxShadow: placementColors[perf.entry_placement] 
                         ? `inset -4px 0 0 ${placementColors[perf.entry_placement]}` 
@@ -431,10 +431,10 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                       paddingRight: placementColors[perf.entry_placement] ? '8px' : '4px'
                     }}
                   >
-                    <span className="font-semibold">
+                    <span className="font-medium">
                       <button
                         onClick={() => navigate(`/setlist/${perf.show_id}`)}
-                        className="hover:text-[#a9682e] transition-colors table-link"
+                        className="hover:underline transition-colors table-link"
                       >
                         {formatInTimeZone(
                           new Date(perf.show_date),
@@ -444,9 +444,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                       </button>
                     </span>
                   </td>
-                  <td className="px-4 py-1 text-black whitespace-nowrap">{perf.show_group}</td>
+                  <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
                   <td 
-                    className="px-4 py-1 text-black whitespace-nowrap relative"
+                    className="px-4 py-1 text-fifth whitespace-nowrap font-light relative"
                     onMouseEnter={(e) => {
                       if (perf.show_subvenue) {
                         setHoveredPerformance({
@@ -467,13 +467,13 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                   >
                     <button
                       onClick={() => navigateToVenue(perf)}
-                      className="hover:text-[#a9682e] hover:underline transition-colors"
+                      className="hover:underline transition-colors"
                     >
                       {perf.show_venue_location}
                     </button>
                     {hoveredPerformance?.show_id === perf.show_id && (
                     <div 
-                      className="fixed bg-secondary text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+                      className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
                       style={{
                           left: `${mousePosition.x + 10}px`,
                           top: `${mousePosition.y - 10}px`,
@@ -486,10 +486,10 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                       </div>
                     )}
                   </td>
-                  <td className="px-4 py-1 text-black">
+                  <td className="px-4 py-1 text-fifth">
                     {/* Check if entry_song exists and is not just ">" */}
                     {(perf.entry_song && perf.entry_song !== '>') ? (
-                      <span className="font-semibold">
+                      <span className="font-medium">
                         <span className="mr-2">{perf.entry_song}</span>
                         {perf.entry_short && <span className="text-red-600 mr-2">[{perf.entry_short}]</span>}
                         {perf.entry_segue && <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />}
@@ -503,10 +503,10 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                       </button>
                     )}
                   </td>
-                  <td className="px-4 py-1 text-black whitespace-nowrap">
+                  <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
                     {perf.entry_length ? formatLength(perf.entry_length) : ''}
                   </td>
-                  <td className="px-4 py-1 text-black">
+                  <td className="px-4 py-1 text-fifth font-light">
                     {perf.entry_coachnotes ? (
                       <div dangerouslySetInnerHTML={{ __html: perf.entry_coachnotes }} />
                     ) : ''}
@@ -523,19 +523,19 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
   return (
     <>
       <style>{tooltipStyles}</style>
-      <div className="bg-primary border border-black rounded-lg p-4">
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">Performances</h2>
+            <div className="text-fifth text-base font-medium">Performances</div>
             
             {/* Add My Shows pill */}
             {user && (
               <button
                 onClick={() => setShowOnlyAttended(!showOnlyAttended)}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full border border-black text-sm font-semibold transition-colors ${
+                className={`flex items-center gap-2 px-3 py-1 rounded-full border border-secondary text-sm font-medium transition-colors ${
                   showOnlyAttended 
-                    ? 'bg-secondary text-black hover:bg-secondary/50' 
-                    : 'bg-secondary text-black hover:bg-secondary/50'
+                    ? 'bg-canvas text-fifth hover:bg-secondary/50' 
+                    : 'bg-canvas text-fifth hover:bg-secondary/50'
                 } ${loadingAttended ? 'opacity-50 cursor-wait' : ''}`}
                 disabled={loadingAttended}
               >
@@ -547,13 +547,13 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                     className="sr-only"
                     onClick={(e) => e.stopPropagation()}
                   />
-                  <div className={`w-4 h-4 rounded border border-black transition-all duration-200 flex items-center justify-center ${
+                  <div className={`w-4 h-4 rounded border border-secondary transition-all duration-200 flex items-center justify-center ${
                     showOnlyAttended ? 'bg-green-600' : 'bg-red-600'
                   }`}>
                     {showOnlyAttended ? (
                       // Checkmark when active
                       <svg 
-                        className="w-3 h-3 text-black" 
+                        className="w-3 h-3 text-fifth" 
                         viewBox="0 0 20 20" 
                         fill="currentColor"
                       >
@@ -566,7 +566,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                     ) : (
                       // X when inactive
                       <svg 
-                        className="w-3 h-3 text-black" 
+                        className="w-3 h-3 text-fifth" 
                         viewBox="0 0 20 20" 
                         fill="currentColor"
                       >
@@ -586,8 +586,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
           
           {/* Add selectedGroup indicator if present */}
           {selectedGroup && (
-            <div className="text-xs text-black items-end tooltip-bubble">
-              <span className="font-semibold text-black border border-black bg-[#f9ae37] px-1 py-0.5 rounded">
+            <div className="text-xs text-fifth items-end tooltip-bubble">
+              <span className="font-medium text-fifth border border-secondary bg-tertiary px-1 py-0.5 rounded">
                 {selectedGroup}
               </span>
             </div>
@@ -606,7 +606,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
-                className={`lucide lucide-columns-3 ${viewMode === 'timeline' ? 'text-black' : 'text-black/60'}`}
+                className={`lucide lucide-columns-3 ${viewMode === 'timeline' ? 'text-fifth' : 'text-secondary'}`}
               >
                 <rect width="18" height="18" x="3" y="3" rx="2" />
                 <path d="M9 3v18" />
@@ -617,10 +617,10 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 role="switch"
                 aria-checked={viewMode === 'table'}
                 onClick={() => setViewMode(viewMode === 'timeline' ? 'table' : 'timeline')}
-                className="relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#a9682e]/50 bg-canvas border border-black"
+                className="relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary bg-canvas border border-secondary"
               >
                 <span
-                  className={`absolute h-4 w-4 rounded-full bg-[#f9ae37] transition-transform duration-200 ${
+                  className={`absolute h-4 w-4 rounded-full bg-tertiary transition-transform duration-200 ${
                     viewMode === 'table' ? 'left-7' : 'left-1'
                   }`}
                 />
@@ -636,7 +636,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
-                className={`lucide lucide-rows-3 ${viewMode === 'table' ? 'text-black' : 'text-black/60'}`}
+                className={`lucide lucide-rows-3 ${viewMode === 'table' ? 'text-fifth' : 'text-secondary'}`}
               >
                 <rect width="18" height="18" x="3" y="3" rx="2" />
                 <path d="M3 9h18" />
@@ -651,7 +651,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
         {/* Tooltip (only shown in timeline view) */}
         {viewMode === 'timeline' && hoveredPerformance && (
           <div 
-            className="fixed bg-secondary text-black px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-black"
+            className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] font-light text-xs tooltip-bubble border border-secondary"
             style={{
               left: `${mousePosition.x + 10}px`,
               top: `${mousePosition.y - 10}px`,
@@ -660,23 +660,21 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               whiteSpace: 'normal'
             }}
           >
-            <div className="space-y-0.5">
+            <div>
               {/* Date and short */}
-              <div className="hang">
-                <strong>
-                  {formatInTimeZone(
-                    new Date(hoveredPerformance.fullData.show_date),
-                    'UTC',
-                    'MM.dd.yy'
-                  )}
-                  {hoveredPerformance.fullData.entry_short && (
-                    <span className="text-red-700 ml-1">&nbsp;&nbsp;[{hoveredPerformance.fullData.entry_short}]</span>
-                  )}
-                </strong>
+              <div className="hang font-medium">
+                {formatInTimeZone(
+                  new Date(hoveredPerformance.fullData.show_date),
+                  'UTC',
+                  'MM.dd.yy'
+                )}
+                {hoveredPerformance.fullData.entry_short && (
+                  <span className="text-red-700 ml-1">&nbsp;&nbsp;[{hoveredPerformance.fullData.entry_short}]</span>
+                )}
               </div>
               {/* Group and tour */}
               <div className="hang">
-                <strong>{hoveredPerformance.fullData.show_group}</strong>
+                <span className='font-medium'>{hoveredPerformance.fullData.show_group}</span>
                 {hoveredPerformance.fullData.show_tour && ` (${hoveredPerformance.fullData.show_tour})`}
               </div>
               {/* Venue */}

@@ -132,24 +132,24 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[900px] mx-auto">
-      <h1 className="text-3xl font-mohr bg-[#f9ae37] text-black inline-block px-4 pt-1.5 pb-0 rounded-full border border-black mt-2">Settings</h1>
+    <div className="max-w-lg mx-auto">
+      <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Settings</h1>
       
       {/* Profile Section */}
-      <div className="mt-8 bg-primary border border-black rounded-lg p-6">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Your Profile</h2>
+      <div className="mt-8 bg-primary border border-secondary rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Your Profile</h2>
         
         {message && (
-          <p className="text-sm bg-green-100 text-green-800 px-3 py-2 rounded-full border border-green-300 mb-4">{message}</p>
+          <p className="text-sm bg-green-100 text-green-800 px-2 py-1.5 rounded-full border border-green-300 mb-4">{message}</p>
         )}
         
         {error && (
-          <p className="text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300 mb-4">{error}</p>
+          <p className="text-sm bg-red-100 text-red-800 px-2 py-1.5 rounded-full border border-red-300 mb-4">{error}</p>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-black mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-fifth mb-1">
               Email
             </label>
             <input
@@ -158,12 +158,12 @@ export const Settings: React.FC = () => {
               id="email"
               value={user?.email || ''}
               disabled
-              className="text-sm w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black/70 placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37] cursor-not-allowed"
+              className="text-sm w-full px-2 py-1.5 font-light rounded-lg border border-secondary/20 bg-canvas text-fifth/70 placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary cursor-not-allowed"
             />
           </div>
 
           <div>
-            <label htmlFor="username" className="block text-sm font-semibold text-black mb-2">
+            <label htmlFor="username" className="block text-sm font-medium text-fifth mb-1">
               Username
             </label>
             <input
@@ -172,15 +172,15 @@ export const Settings: React.FC = () => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value.slice(0, 16))}
-              className="text-sm w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37]"
+              className="text-sm w-full px-2 py-1.5 rounded-lg font-light border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="Set username (max 16 characters)"
               maxLength={16}
             />
-            <p className="text-xs text-black/50 mt-1">(maximum 16 characters)</p>
+            <p className="text-xs text-fifth/50 mt-1">(maximum 16 characters)</p>
           </div>
 
           <div>
-            <label htmlFor="website" className="block text-sm font-semibold text-black mb-2">
+            <label htmlFor="website" className="block text-sm font-medium text-fifth mb-1">
               Website
             </label>
             <input
@@ -189,22 +189,22 @@ export const Settings: React.FC = () => {
               id="website"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
-              className="text-sm w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37]"
+              className="text-sm w-full px-2 py-1.5 rounded-lg font-light border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="Your website URL"
             />
           </div>
         </div>
         
-        <div className="mt-6">
+        <div className="mt-3">
           <button
             type="button"
             onClick={updateProfile}
             disabled={profileLoading}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors border border-black ${
+            className={`px-2 py-1 rounded-lg text-sm font-medium transition-colors border border-secondary ${
               profileLoading
-              ? 'bg-[#f9ae37]/50 cursor-not-allowed'
-              : 'bg-[#f9ae37] hover:bg-[#f9ae37]/80'
-            } text-black`}
+              ? 'bg-tertiary/50 cursor-not-allowed'
+              : 'bg-tertiary hover:bg-tertiary/80'
+            } text-fifth`}
           >
             {profileLoading ? 'Saving...' : 'Save Profile'}
           </button>
@@ -212,12 +212,12 @@ export const Settings: React.FC = () => {
       </div>
       
       {/* Password Section */}
-      <div className="mt-8 bg-primary border border-black rounded-lg p-6">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">Update Password</h2>
+      <div className="mt-8 bg-primary border border-secondary rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Update Password</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-fifth mb-1">
               New Password
             </label>
             <input
@@ -228,12 +228,12 @@ export const Settings: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37]"
+              className="w-full px-2 py-1.5 rounded-lg text-sm border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="New password"
             />
           </div>
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-black mb-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-fifth mb-1">
               Confirm New Password
             </label>
             <input
@@ -244,18 +244,18 @@ export const Settings: React.FC = () => {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-black/20 bg-white/90 text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-[#f9ae37]"
+              className="w-full px-2 py-1.5 rounded-lg text-sm border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="Confirm new password"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors border border-black ${
+            className={`px-2 py-1 rounded-lg text-sm font-medium transition-colors border border-secondary ${
               loading
-              ? 'bg-[#f9ae37]/50 cursor-not-allowed'
-              : 'bg-[#f9ae37] hover:bg-[#f9ae37]/80'
-            } text-black`}
+              ? 'bg-tertiary/50 cursor-not-allowed'
+              : 'bg-tertiary hover:bg-tertiary/80'
+            } text-fifth`}
           >
             {loading ? 'Updating...' : 'Update Password'}
           </button>

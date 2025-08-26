@@ -38,6 +38,17 @@ interface Props {
   tourId?: string; // Add tourId prop
 }
 
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
+
 const TourSongStats: React.FC<Props> = ({ 
   shows, 
   songIdMap = {}, 
@@ -262,8 +273,8 @@ const TourSongStats: React.FC<Props> = ({
       return null;
     }
     return sortDirection === 'asc' ? 
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-black" /> : 
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-black" />;
+      <ArrowUp className="w-4 h-4 inline-block ml-1 text-fifth" /> : 
+      <ArrowDown className="w-4 h-4 inline-block ml-1 text-fifth" />;
   };
 
   const handleRowClick = (songName: string) => {
@@ -274,9 +285,9 @@ const TourSongStats: React.FC<Props> = ({
   };
 
   return (
-    <div className={`${!hideTitle ? "bg-primary border border-black rounded-lg p-3" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-black mb-4">
+        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-lg border border-secondary mb-4">
           {uniqueSongCount} Songs Played
         </h2>
       )}
@@ -285,7 +296,7 @@ const TourSongStats: React.FC<Props> = ({
           <thead>
             <tr className="bg-canvas border-y border-white/10">
               <th 
-                className="px-4 py-1 text-center text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('count')}
               >
                 <div className="text-center gap-1">
@@ -294,7 +305,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-left text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-4 py-1 text-left text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('song')}
               >
                 <div className="flex items-center gap-1">
@@ -303,7 +314,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-center text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('longest')}
               >
                 <div className="flex items-center justify-center gap-1">
@@ -312,7 +323,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-center text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('shortest')}
               >
                 <div className="flex items-center justify-center gap-1">
@@ -321,7 +332,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-left text-s font-semibold text-black cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-4 py-1 text-left text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('category')}
               >
                 <div className="flex items-center gap-1">
@@ -337,25 +348,25 @@ const TourSongStats: React.FC<Props> = ({
                 key={stat.song}
                 className={`${
                   index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                } hover:bg-black/10 transition-colors text-xs`}
+                } hover:bg-tertiary/40 transition-colors text-xs`}
               >
-                <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">{stat.count}</td>
+                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap text-center">{stat.count}</td>
                 <td 
-                  className="px-4 py-0.5 text-black whitespace-nowrap cursor-pointer"
+                  className="font-trad text-fifth text-[1rem] leading-[1rem] pb-1 pl-4  whitespace-nowrap cursor-pointer"
                   onClick={() => handleRowClick(stat.song)}
                 >
-                  <span className="font-semibold hover:text-[#a9682e] transition-colors table-link">
-                    {stat.song}
+                  <span className="font-medium transition-colors table-link">
+                    {cleanSongName(stat.song)}
                   </span>
                 </td>
-                <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">
+                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap text-center">
                   {stat.longest || ''}
                 </td>
-                <td className="px-4 py-0.5 text-black whitespace-nowrap text-center">
+                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap text-center">
                   {stat.shortest || ''}
                 </td>
                 <td 
-                  className="px-4 py-0.5 text-black whitespace-nowrap"
+                  className="px-4 py-0.5 text-fifth font-light whitespace-nowrap"
                 >
                   {stat.category}
                 </td>

@@ -8,6 +8,7 @@ interface TopSong {
   song: string;
   song_id: string;
   play_count: number;
+  category_artwork?: string;
 }
 
 interface LongestPerformance {
@@ -18,18 +19,21 @@ interface LongestPerformance {
   length: string;
   length_seconds: number;
   venue_location?: string;
+  category_artwork?: string;
 }
 
 interface SlotSong {
   song_name: string;
   song_id: string;
   times_played: number;
+  category_artwork?: string;
 }
 
 interface NotSeenSong {
   song: string;
   song_id: string;
   play_count: number;
+  category_artwork?: string;
 }
 
 interface StatData {
@@ -44,6 +48,17 @@ interface StatData {
   songIdKey?: string;
   bgColor?: string;
 }
+
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
 
 // CircularProgress component for reuse
 const CircularProgress = ({ value }: { value: number }) => {
@@ -60,7 +75,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#dad0bc" 
+          stroke="#fdfdfd" 
           strokeWidth="8"
         />
         {/* Progress circle */}
@@ -69,7 +84,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#8e6c7a" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -78,7 +93,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-black">
+      <div className="absolute text-lg font-semibold text-fifth">
         {Math.round(value)}%
       </div>
     </div>
@@ -295,7 +310,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
                 song_id,
                 song_category,
                 categories!inner(
-                  category_canonid
+                  category_canonid,
+                  category_artwork
                 )
               ),
               entry_show
@@ -361,7 +377,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
                 song: entry.entry_song,
                 song_id: songId,
                 shows: new Set([showId]),
-                category_canonid: entry.songs.categories.category_canonid
+                category_canonid: entry.songs.categories.category_canonid,
+                category_artwork: entry.songs.categories.category_artwork
               });
             } else {
               songShowCounts.get(songId).shows.add(showId);
@@ -375,7 +392,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           song: item.song,
           song_id: item.song_id,
           play_count: item.shows.size,
-          category_canonid: item.category_canonid
+          category_canonid: item.category_canonid,
+          category_artwork: item.category_artwork
         }))
         .sort((a: any, b: any) => {
           if (b.play_count !== a.play_count) {
@@ -413,7 +431,14 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             .select(`
               entry_song,
               entry_short,
-              songs!inner(song_id),
+              songs!inner(
+                song_id,
+                song_category,
+                categories!inner(
+                  category_canonid,
+                  category_artwork
+                )
+              ),
               entry_length,
               entry_show,
               shows!inner(
@@ -480,7 +505,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             show_id: entry.entry_show,
             venue_location: entry.shows.show_venue_location,
             length: entry.entry_length,
-            length_seconds: totalSeconds
+            length_seconds: totalSeconds,
+            category_artwork: entry.songs.categories.category_artwork
           };
         })
         .sort((a: any, b: any) => b.length_seconds - a.length_seconds)
@@ -514,7 +540,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
                 song_id,
                 song_category,
                 categories!inner(
-                  category_canonid
+                  category_canonid,
+                  category_artwork
                 )
               ),
               entry_show
@@ -551,7 +578,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             song_name: songName,
             song_id: entry.songs.song_id,
             times_played: 1,
-            category_canonid: entry.songs.categories.category_canonid
+            category_canonid: entry.songs.categories.category_canonid,
+            category_artwork: entry.songs.categories.category_artwork
           };
         } else {
           acc[songName].times_played++;
@@ -599,7 +627,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
                 song_id,
                 song_category,
                 categories!inner(
-                  category_canonid
+                  category_canonid,
+                  category_artwork
                 )
               ),
               entry_show
@@ -636,7 +665,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             song_name: songName,
             song_id: entry.songs.song_id,
             times_played: 1,
-            category_canonid: entry.songs.categories.category_canonid
+            category_canonid: entry.songs.categories.category_canonid,
+            category_artwork: entry.songs.categories.category_artwork
           };
         } else {
           acc[songName].times_played++;
@@ -684,7 +714,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
                 song_id,
                 song_category,
                 categories!inner(
-                  category_canonid
+                  category_canonid,
+                  category_artwork
                 )
               ),
               entry_show
@@ -721,7 +752,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             song_name: songName,
             song_id: entry.songs.song_id,
             times_played: 1,
-            category_canonid: entry.songs.categories.category_canonid
+            category_canonid: entry.songs.categories.category_canonid,
+            category_artwork: entry.songs.categories.category_artwork
           };
         } else {
           acc[songName].times_played++;
@@ -769,7 +801,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
                 song_id,
                 song_category,
                 categories!inner(
-                  category_canonid
+                  category_canonid,
+                  category_artwork
                 )
               ),
               entry_show
@@ -806,7 +839,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
             song_name: songName,
             song_id: entry.songs.song_id,
             times_played: 1,
-            category_canonid: entry.songs.categories.category_canonid
+            category_canonid: entry.songs.categories.category_canonid,
+            category_artwork: entry.songs.categories.category_artwork
           };
         } else {
           acc[songName].times_played++;
@@ -937,7 +971,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
               song_id,
               song_category,
               categories!inner(
-                category_canonid
+                category_canonid,
+                category_artwork
               )
             ),
             entry_show,
@@ -993,6 +1028,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           const songId = entry.songs.song_id;
           const songName = entry.entry_song;
           const categoryCanonId = entry.songs.categories.category_canonid;
+          const categoryArtwork = entry.songs.categories.category_artwork;
           
           if (validSongs.has(songName) && !countedSongsInShow.has(songId)) {
             countedSongsInShow.add(songId);
@@ -1002,7 +1038,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
                 song: songName,
                 song_id: songId,
                 shows: new Set([showId]),
-                category_canonid: categoryCanonId
+                category_canonid: categoryCanonId,
+                category_artwork: categoryArtwork
               };
             } else {
               allSongCounts[songId].shows.add(showId);
@@ -1018,7 +1055,8 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
           song: item.song,
           song_id: item.song_id,
           play_count: item.shows.size,
-          category_canonid: item.category_canonid
+          category_canonid: item.category_canonid,
+          category_artwork: item.category_artwork
         }))
         .sort((a: any, b: any) => {
           // Sort by play count (descending)
@@ -1080,9 +1118,9 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   const getStatBgColor = (type: string): string => {
     switch(type) {
       case 'topSongs':
-        return 'bg-[#f9ae37]'; // Use existing tertiary color
+        return 'bg-tertiary'; // Use existing tertiary color
       case 'longestPerformances':
-        return 'bg-[#f9ae37]'; // Burgundy
+        return 'bg-tertiary'; // Burgundy
       case 'notSeenSongs':
         return 'bg-[#CE1126]'; // Red
       case 'showOpeners':
@@ -1094,7 +1132,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
       case 'encoreSongs':
         return 'bg-[#7C2128]'; // Burgundy
       default:
-        return 'bg-[#f9ae37]'; // Default yellow
+        return 'bg-tertiary'; // Default yellow
     }
   };
 
@@ -1157,69 +1195,91 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
     };
     
     return (
-      <div className="bg-primary border border-black rounded-lg p-3 w-full h-full relative">
+      <div className="bg-primary border border-secondary rounded-lg p-3 w-full h-full relative">
         <div className="flex justify-between items-start">
-          <h3 className={`text-lg font-bold ${getStatBgColor(type)} ${
+          <h3 className={`text-lg font-semibold ${getStatBgColor(type)} ${
             type === 'showOpeners' || type === 'setOpeners' || type === 'setClosers' || type === 'encoreSongs' || type === 'notSeenSongs'
-              ? 'text-white' 
-              : 'text-black'
-          } inline-block px-3 pt-0.5 pb-0.5 rounded-full border border-black mb-2`}>
+              ? 'text-primary' 
+              : 'text-fifth'
+          } inline-block px-3 pt-0.5 pb-0.5 rounded-lg border border-secondary mb-2`}>
             {getPersonalizedTitle(title)}
           </h3>
           {!loading && data.length > 0 && showCopyButton && (
             <button
               onClick={handleCopy}
               className={`${
-                isCopied ? 'bg-green-600' : 'bg-secondary hover:bg-[#f9ae37]'
-              } border border-black rounded-lg p-1.5 transition-colors`}
+                isCopied ? 'bg-green-600' : 'bg-secondary hover:bg-tertiary'
+              } border border-secondary rounded-lg p-1.5 transition-colors`}
               title="Copy to clipboard"
             >
               {isCopied ? (
-                <Check className="w-4 h-4 text-white" />
+                <Check className="w-4 h-4 text-primary" />
               ) : (
-                <Copy className="w-4 h-4 text-black" />
+                <Copy className="w-4 h-4 text-fifth" />
               )}
             </button>
           )}
         </div>
         {loading ? (
           <div className="flex justify-center items-center h-40">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-black"></div>
+            <div className="animate-spin rounded-lg h-6 w-6 border-t-2 border-b-2 border-secondary"></div>
           </div>
         ) : data.length === 0 ? (
           <div className="text-center h-40 flex items-center justify-center">
-            <p className="text-black">No data available</p>
+            <p className="text-fifth">No data available</p>
           </div>
         ) : (
-          <div>
-            {data.map((item, index) => (
-              <div 
-                key={index} 
-                className={`flex justify-between items-start py-0.5 ${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-black/10`}
-              >
-                <div className="flex-1 pl-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => navigate(`/song/${item[songIdKey]}`)}
-                      className="text-black hover:text-[#a9682e] text-left font-semibold text-sm hover:underline"
-                    >
-                      {item[songNameKey]}
-                    </button>
-                    {showDate && item.show_date && (
-                      <button
-                        onClick={() => navigate(`/setlist/${item.show_id}`)}
-                        className="hover:underline text-xs text-black ml-2"
-                      >
-                        [{item.show_date}]
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div className="text-sm text-black font-semibold pr-2">
-                  {showLength ? formatTimeInterval(item.length) : item[countKey]}
-                </div>
-              </div>
-            ))}
+          <div className="relative">
+            <table className="w-full border-collapse">
+              <tbody className="divide-y divide-white/5">
+                {data.map((item, index) => (
+                  <tr
+                    key={index}
+                    className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                      } hover:bg-tertiary/40 transition-colors text-xs`}
+                  >
+                    <td className="pl-4 text-fifth">
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <div className="text-fifth text-[1rem] leading-[0.875rem] text-left items-center pb-0.5">
+                            <span 
+                              onClick={() => navigate(`/song/${item[songIdKey]}`)}
+                              className='font-trad hover:underline cursor-pointer'
+                            >
+                              {cleanSongName(item[songNameKey])}
+                            </span>
+                            {showDate && item.show_date && (
+                              <span 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/setlist/${item.show_id}`);
+                                }}
+                                className="hover:underline font-light text-xs text-fifth ml-2 cursor-pointer"
+                              >
+                                [{item.show_date}]
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {item.category_artwork && (
+                          <img
+                            src={item.category_artwork}
+                            alt={`${item[songNameKey]} artwork`}
+                            className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
+                    </td>
+                    <td className="pl-2 pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                      {showLength ? formatTimeInterval(item.length) : item[countKey]}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
@@ -1307,10 +1367,10 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   
   if (loading) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
-          <p className="text-black mt-4">{getLoadingMessage()}</p>
+          <p className="text-fifth mt-4">{getLoadingMessage()}</p>
         </div>
       </div>
     );
@@ -1319,9 +1379,9 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   // If no user ID found, show an appropriate message
   if (!effectiveUserId) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="text-center py-6">
-          <p className="text-black">No user data available.</p>
+          <p className="text-fifth">No user data available.</p>
         </div>
       </div>
     );
@@ -1338,9 +1398,9 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   
   if (hasNoData) {
     return (
-      <div className="bg-primary border border-black rounded-lg p-3">
+      <div className="bg-primary border border-secondary rounded-lg p-3">
         <div className="text-center py-6">
-          <p className="text-black">
+          <p className="text-fifth">
             {isOwnProfile 
               ? "No stats available. Start adding shows you've attended!" 
               : `${username ? username : "This user"} hasn't added any attended shows yet.`}
@@ -1352,7 +1412,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   
   return (
     <div className="mb-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-auto grid-flow-row">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-auto grid-flow-row">
         {statData.map((stat, index) => (
           <div key={`stat-${index}`} className="w-full h-auto">
             <StatBox

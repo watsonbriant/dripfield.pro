@@ -50,7 +50,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#8ec1b6" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -59,7 +59,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           className="transition-all duration-300 ease-in-out"
         />
       </svg>
-      <div className="absolute text-lg font-bold text-black">
+      <div className="absolute text-lg font-bold text-fifth">
         {Math.round(value)}%
       </div>
     </div>
@@ -644,24 +644,24 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
     
     return (
       <div className="mb-8">
-        <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black mb-4">{title}</h3>
+        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">{title}</h3>
         <div className={`grid grid-cols-1 ${
           sectionType === 'covers' 
             ? 'sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2' 
             : 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-        } gap-6`}>
+        } gap-4`}>
           {columns.map((columnCategories, columnIndex) => (
-            <div key={`${title}-column-${columnIndex}`} className="flex flex-col gap-6">
+            <div key={`${title}-column-${columnIndex}`} className="flex flex-col gap-4">
               {columnCategories.map(category => {
                 const categorySongs = songsByCategory[category.category] || [];
                 
                 return (
                   <div 
                     key={category.category} 
-                    className="bg-primary rounded-lg p-4 border border-black h-auto w-full relative"
+                    className="bg-primary rounded-lg p-3 border border-secondary h-auto w-full relative"
                   >
-                    <div className="flex items-center justify-between mb-1 pb-2 border-b border-black/20">
-                      <h4 className="text-lg font-semibold text-black">
+                    <div className="flex items-center justify-between mb-1 pb-2 border-b border-secondary/20">
+                      <h4 className="text-lg font-medium text-fifth">
                         {category.category || category.category}
                       </h4>
                       {category.category_artwork && (
@@ -669,7 +669,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
                           <img 
                             src={category.category_artwork} 
                             alt={`${category.category} artwork`}
-                            className="h-full object-contain rounded border border-black/10"
+                            className="h-full object-contain rounded border border-secondary/10"
                           />
                         </div>
                       )}
@@ -682,18 +682,18 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
                         return (
                           <li 
                             key={song.song_id} 
-                            className="text-xs hover:bg-black/5 transition-colors py-0.5 px-1 rounded cursor-pointer"
+                            className="text-xs hover:bg-tertiary/40 transition-colors py-0.5 px-1 rounded cursor-pointer"
                             onClick={() => navigate(`/song/${song.song_id}`)}
                           >
                             <span 
                               className={`${seen 
-                                ? 'font-bold hover:text-[#f9ae37] hover:underline transition-colors text-left text-xs text-[#a9682e]' 
-                                : 'text-black/70'}`}
+                                ? 'font-medium hover:underline transition-colors text-left text-xs text-fourth' 
+                                : 'font-light text-fifth/70'}`}
                             >
                               {song.song}
                             </span>
                             {seen && (
-                              <span className="ml-2 text-black font-semibold">({count})</span>
+                              <span className="ml-2 text-fifth font-medium">({count})</span>
                             )}
                           </li>
                         );
@@ -713,13 +713,13 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
     return (
       <div className="flex flex-col justify-center items-center h-56">
         <CircularProgress value={loadingProgress} />
-        <p className="text-black mt-4">{getLoadingMessage()}</p>
+        <p className="text-fifth mt-4">{getLoadingMessage()}</p>
       </div>
     );
   }
 
   return (
-    <div className="pb-8">
+    <div>
       {/* Section 1: Categories with canonid 1-98 */}
       {renderCategorySection(section1Columns, "Original Songs", 'original')}
       

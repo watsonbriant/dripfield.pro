@@ -88,6 +88,11 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   const [isGuestSectionExpanded, setIsGuestSectionExpanded] = useState(false);
   const [guestSearchTerm, setGuestSearchTerm] = useState('');
 
+  // Song search states
+  const [songSearchTerm, setSongSearchTerm] = useState('');
+  const [isSongDropdownOpen, setIsSongDropdownOpen] = useState(false);
+  const [selectedSongName, setSelectedSongName] = useState('');
+
   const [selectedNewSongOption, setSelectedNewSongOption] = useState<string>("N/A");
 
   // Add the updateStatistics function
@@ -101,6 +106,14 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
       console.error('Error calling update function:', error);
     }
   };
+
+  // Filtered songs based on search term
+  const filteredSongs = React.useMemo(() => {
+    if (!songSearchTerm) return songs;
+    return songs.filter(song => 
+      song.song.toLowerCase().includes(songSearchTerm.toLowerCase())
+    );
+  }, [songs, songSearchTerm]);
 
   // Load dropdown options on component mount
   useEffect(() => {
@@ -249,10 +262,16 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         };
         
         setEditedEntry(entryWithDefaults);
+        setSelectedSongName('');
+        setSongSearchTerm('');
         // For new entries, default to N/A
         setSelectedNewSongOption("N/A");
       } else {
         setEditedEntry(entry);
+        
+        // Set the selected song name for display
+        setSelectedSongName(entry.entry_song || '');
+        setSongSearchTerm('');
         
         // For existing entries, set the dropdown value based on the database value
         if (entry.entry_new === "New Original Song") {
@@ -324,6 +343,19 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         return [...prevSelected, guestId];
       }
     });
+  };
+
+  // Handle song selection
+  const handleSongSelection = (songName: string) => {
+    if (!editedEntry) return;
+    
+    setSelectedSongName(songName);
+    setEditedEntry({
+      ...editedEntry,
+      entry_song: songName
+    });
+    setIsSongDropdownOpen(false);
+    setSongSearchTerm('');
   };
   
   // State for delete confirmation
@@ -533,10 +565,10 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   if (!isOpen || !entry) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-primary border border-black rounded-lg p-4 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-mohr bg-[#f9ae37] text-black inline-block px-3 pt-1 pb-0.5 rounded-full border border-black">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
+      <div className="bg-primary border border-secondary rounded-lg p-3 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
             {isNewEntry ? 'Add Setlist Entry' : 'Edit Setlist Entry'}
           </h3>
           <div className="flex gap-2">
@@ -545,7 +577,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 <button
                   onClick={toggleEdit}
                   disabled={isSubmitting}
-                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-blue-500 text-primary text-fifth hover:bg-blue-500/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
                 >
                   {isEditing ? (
                     <>
@@ -599,11 +631,11 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                       }
                     }}
                     disabled={isSubmitting}
-                    className={`flex items-center justify-center w-10 h-10 rounded-md border ${
+                    className={`flex text-primary items-center justify-center w-10 h-10 rounded-md border ${
                       isDeleteConfirming 
-                        ? 'bg-green-500 hover:bg-green-600 border-black' 
-                        : 'bg-red-500 hover:bg-red-600 border-black'
-                    } text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                        ? 'bg-green-500 hover:bg-green-600 border-secondary' 
+                        : 'bg-red-500 hover:bg-red-600 border-secondary'
+                    } text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                     title={isDeleteConfirming ? "Confirm Delete" : "Delete"}
                   >
                     {isDeleteConfirming ? (
@@ -619,7 +651,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               <button
                 onClick={handleSaveChanges}
                 disabled={isSubmitting || !editedEntry?.entry_set || !editedEntry?.entry_song}
-                className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+                className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/80 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
               >
                 <Save className="w-5 h-5" />
                 {isSubmitting && <span className="ml-1">...</span>}
@@ -627,23 +659,23 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-canvas hover:bg-black/10 transition-colors border border-black"
+              className="flex items-center justify-center w-10 h-10 rounded-md bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-secondary"
             >
-              <X className="w-5 h-5 text-black" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
           {/* Set */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-black">Set</label>
+            <label className="block text-sm font-medium text-fifth">Set</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_set"
                 value={editedEntry?.entry_set === null ? "--" : editedEntry?.entry_set || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="font-light w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
                 required
               >
                 <option value="--">--</option>
@@ -658,20 +690,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_set || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               />
             )}
           </div>
           
           {/* Set Number */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-black">Set Number</label>
+            <label className="block text-sm font-medium text-fifth">Set Number</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_setnum"
                 value={editedEntry?.entry_setnum === null ? "--" : editedEntry?.entry_setnum?.toString() || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="font-light w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
                 required
               >
                 <option value="--">--</option>
@@ -686,20 +718,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_setnum || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               />
             )}
           </div>
 
           {/* Placement */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-black">Placement</label>
+            <label className="block text-sm font-medium text-fifth">Placement</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_placement"
                 value={editedEntry?.entry_placement === null ? "--" : editedEntry?.entry_placement || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="font-light w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               >
                 <option value="--">--</option>
                 {placements.map((placement) => (
@@ -713,48 +745,85 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_placement || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               />
             )}
           </div>
           
-          {/* Song */}
+          {/* Song - Updated with searchable dropdown */}
           <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-semibold text-black">Song</label>
+            <label className="block text-sm font-medium text-fifth">Song</label>
             {isEditing || isNewEntry ? (
-              <select
-                name="entry_song"
-                value={editedEntry?.entry_song === null ? "--" : editedEntry?.entry_song || "--"}
-                onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
-                required
-              >
-                <option value="--">--</option>
-                {songs.map((song) => (
-                  <option key={song.song_id} value={song.song}>
-                    {song.song}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <div
+                  className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light cursor-pointer flex items-center justify-between"
+                  onClick={() => setIsSongDropdownOpen(!isSongDropdownOpen)}
+                >
+                  <span className={selectedSongName ? 'text-fifth' : 'text-fifth/60'}>
+                    {selectedSongName || 'Select a song...'}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isSongDropdownOpen ? 'rotate-180' : ''}`} />
+                </div>
+                
+                {isSongDropdownOpen && (
+                  <div className="absolute z-10 w-full mt-1 bg-canvas border border-secondary rounded-md shadow-lg">
+                    <div className="p-2">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={songSearchTerm}
+                          onChange={(e) => setSongSearchTerm(e.target.value)}
+                          placeholder="Search songs..."
+                          className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
+                      </div>
+                    </div>
+                    
+                    <div className="max-h-60 overflow-y-auto">
+                      {filteredSongs.length > 0 ? (
+                        <>
+                          {filteredSongs.map((song) => (
+                            <div
+                              key={song.song_id}
+                              className={`px-3 py-0.5 hover:bg-tertiary/20 cursor-pointer text-xs ${
+                                selectedSongName === song.song ? 'bg-tertiary/10' : ''
+                              }`}
+                              onClick={() => handleSongSelection(song.song)}
+                            >
+                              {song.song}
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <div className="px-3 py-2 text-sm text-fifth/60">
+                          {songSearchTerm ? 'No songs found matching your search' : 'No songs available'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <input
                 type="text"
                 value={editedEntry?.entry_song || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               />
             )}
           </div>
           
           {/* Short */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-black">Short</label>
+            <label className="block text-sm font-medium text-fifth">Short</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_short"
                 value={editedEntry?.entry_short === null ? "--" : editedEntry?.entry_short || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="font-light w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               >
                 <option value="--">--</option>
                 {shorts.map((short) => (
@@ -768,20 +837,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_short || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               />
             )}
           </div>
           
           {/* Segue */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-black">Segue</label>
+            <label className="block text-sm font-medium text-fifth">Segue</label>
             {isEditing || isNewEntry ? (
               <select
                 name="entry_segue"
                 value={editedEntry?.entry_segue === null ? "--" : editedEntry?.entry_segue || "--"}
                 onChange={handleInputChange}
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="font-light w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               >
                 <option value="--">--</option>
                 {segues.map((segue) => (
@@ -795,14 +864,14 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 type="text"
                 value={editedEntry?.entry_segue || ''}
                 readOnly
-                className="w-full px-2 py-2 rounded-md border border-black bg-canvas/50 text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm"
+                className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
               />
             )}
           </div>
           
           {/* Length */}
           <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-semibold text-black">Length (hh:mm:ss)</label>
+            <label className="block text-sm font-medium text-fifth">Length (hh:mm:ss)</label>
             <input
               type="text"
               name="entry_length"
@@ -810,7 +879,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               onChange={handleInputChange}
               readOnly={!isEditing && !isNewEntry}
               placeholder="00:00:00"
-              className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+              className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
             />
           </div>
           
@@ -819,19 +888,19 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             <div className="flex flex-col space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <label className="block text-sm font-semibold text-black">Guests</label>
+                  <label className="block text-sm font-medium text-fifth">Guests</label>
                   {/* Move button next to the heading, only show when editing or new entry */}
                   {(isEditing || isNewEntry) && (
                     <button
                       onClick={handleSelectAllGooseMembers}
-                      className="px-2 py-1 rounded-md bg-[#f9ae37] text-black hover:bg-[#e29d26] transition-colors text-xs font-semibold border border-black"
+                      className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-canvas transition-colors text-xs font-medium border border-secondary"
                     >
                       Select All Goose Members
                     </button>
                   )}
                 </div>
                 <button 
-                  className="text-black hover:text-[#a9682e] cursor-pointer"
+                  className="text-fifth hover:text-[#a9682e] cursor-pointer"
                   onClick={() => setIsGuestSectionExpanded(!isGuestSectionExpanded)}
                 >
                   {isGuestSectionExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
@@ -851,12 +920,12 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                     return (
                       <div 
                         key={guestId} 
-                        className="bg-[#f9ae37] text-black text-xs px-2 py-1 rounded-full flex items-center border border-black"
+                        className="bg-tertiary text-fifth text-xs px-2 py-1 rounded-lg flex items-center border border-secondary"
                       >
                         <span>{guestInfo.guest_displayname || guestInfo.guest}</span>
                         {(isEditing || isNewEntry) && (
                           <button 
-                            className="ml-1 text-black/70 hover:text-black"
+                            className="ml-1 text-fifth/70 hover:text-fifth"
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent opening/closing the section
                               handleGuestSelection(guestId);
@@ -873,7 +942,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             </div>
             
             {isGuestSectionExpanded && (
-              <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'}`}>
+              <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'}`}>
                 {/* Add search input */}
                 {(isEditing || isNewEntry) && (
                   <div className="mb-3">
@@ -883,9 +952,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                         value={guestSearchTerm}
                         onChange={(e) => setGuestSearchTerm(e.target.value)}
                         placeholder="Search guests..."
-                        className="w-full px-3 py-1.5 pr-8 rounded-md border border-black bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-[#a9682e] text-black placeholder-black/60"
+                        className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
                       />
-                      <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black/60" />
+                      <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                     </div>
                   </div>
                 )}
@@ -894,8 +963,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                   <div className="max-h-60 overflow-y-auto">
                     {filteredGuestsByCategory.map(category => (
                       <div key={category.category} className="mb-4">
-                        <h4 className="text-sm font-medium text-black mb-2">{category.category}</h4>
-                        <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-fifth mb-2">{category.category}</h4>
+                        <div className="space-y-1">
                           {category.guests.map(guest => (
                             <div key={guest.guest_id} className="flex items-center">
                               <input
@@ -904,11 +973,11 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                                 checked={selectedGuestIds.includes(guest.guest_id)}
                                 onChange={() => handleGuestSelection(guest.guest_id)}
                                 disabled={!isEditing && !isNewEntry}
-                                className="mr-2 h-4 w-4 rounded border-black/30 bg-white checked:bg-[#f9ae37] focus:ring-[#a9682e] disabled:opacity-50"
+                                className="mr-2 h-4 w-4 rounded border-secondary/30 bg-white checked:bg-[#f9ae37] focus:ring-tertiary disabled:opacity-50"
                               />
                               <label 
                                 htmlFor={`guest-${guest.guest_id}`} 
-                                className="text-black text-sm cursor-pointer"
+                                className="text-fifth text-xs cursor-pointer"
                               >
                                 {guest.guest_displayname || guest.guest}
                                 {guest.guest_instrument && ` (${guest.guest_instrument})`}
@@ -920,14 +989,14 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-black/60 text-sm">
+                  <p className="text-fifth/60 text-sm">
                     {guestSearchTerm ? 'No guests found matching your search' : 'No guests available'}
                   </p>
                 )}
                 
                 {selectedGuestIds.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-black/10">
-                    <p className="text-sm text-black">Selected guests: {selectedGuestIds.length}</p>
+                  <div className="mt-3 pt-3 border-t border-secondary/10">
+                    <p className="text-sm text-fifth">Selected guests: {selectedGuestIds.length}</p>
                   </div>
                 )}
               </div>
@@ -936,27 +1005,27 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           
           {/* Coach's Notes */}
           <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-semibold text-black">Coach's Notes</label>
+            <label className="block text-sm font-medium text-fifth">Coach's Notes</label>
             <textarea
               name="entry_coachnotes"
               value={editedEntry?.entry_coachnotes || ''}
               onChange={handleInputChange}
               readOnly={!isEditing && !isNewEntry}
               rows={4}
-              className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'} text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+              className={`w-full font-light px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
             />
           </div>
 
           <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-semibold text-black">New Song?</label>
+            <label className="block text-sm font-medium text-fifth">New Song?</label>
             <select
               name="new_song_option"
               value={selectedNewSongOption}
               onChange={(e) => setSelectedNewSongOption(e.target.value)}
               disabled={!isEditing && !isNewEntry}
-              className={`w-full px-2 py-2 rounded-md border ${
-                isEditing || isNewEntry ? 'border-black bg-canvas' : 'border-black bg-canvas/50'
-              } text-black focus:outline-none focus:ring-2 focus:ring-[#a9682e] text-sm`}
+              className={`w-full font-light px-2 py-2 rounded-md border ${
+                isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'
+              } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
             >
               <option value="N/A">N/A</option>
               <option value="New Original Song">New Original Song</option>

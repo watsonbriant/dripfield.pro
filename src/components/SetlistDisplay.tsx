@@ -19,6 +19,17 @@ interface SetlistDisplayProps {
   navigate: (path: string) => void;
 }
 
+const cleanSongName = (songName: string): string => {
+  return songName
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/ñ/g, 'n')
+    .replace(/ü/g, 'u')
+    .replace(/–/g, '-')
+    .replace(/…/g, '...')
+    .replace(/∆/g, 'a');
+};
+
 const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) => {
   // Keep track of which songs we've seen
   const skipNumberingShorts = ["fake", "tease", "reprise"];
@@ -53,13 +64,13 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) =>
         return (
           <React.Fragment key={`${entry.entry_song}-${index}`}>
             {isNewSet && (
-              <hr className="border-black/30 my-2" />
+              <hr className="border-secondary my-2" />
             )}
             <div 
-              className="flex items-center text-[#fce7ca]/90 text-xs hover:bg-black/10 transition-colors rounded px-0 py-0"
+              className="flex items-center text-[#fce7ca]/90 text-xs hover:bg-tertiary/40 transition-colors rounded px-0 py-0"
             >
               <div 
-                className={`w-6 text-center rounded font-semibold ${
+                className={`w-6 text-center rounded font-medium ${
                   entry.entry_placement === 'Set 1 Opener' || 
                   entry.entry_placement === 'Set 1 Closer' || 
                   entry.entry_placement === 'Set 2 Opener' || 
@@ -72,7 +83,7 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) =>
                   entry.entry_placement === 'Set 5 Closer' || 
                   entry.entry_placement === 'Encore 1' || 
                   entry.entry_placement === 'Encore 2' || 
-                  entry.entry_placement === 'Encore 3' ? 'text-white' : 'text-black'
+                  entry.entry_placement === 'Encore 3' ? 'text-primary' : 'text-fifth'
                 }`}
                 style={{
                   backgroundColor: 
@@ -89,24 +100,24 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) =>
                     entry.entry_placement === 'Encore 1' ? '#7C2128' :
                     entry.entry_placement === 'Encore 2' ? '#CE1126' : 
                     entry.entry_placement === 'Encore 3' ? '#AF1E2D' :
-                    '#fae2c6'
+                    '#fdfdfd'
                 }}
               >
                 {displayNumber || '\u00A0'}
               </div>
               <div className="flex-1 pl-2">
-                <span className="font-semibold">
+                <span className="font-trad">
                   <button
                     onClick={() => navigate(`/song/${entry.songs.song_id}`)}
-                    className="text-black hover:text-[#a9682e] hover:underline cursor-pointer mr-2"
+                    className="text-fifth text-[0.875rem] leading-[0.75rem] hover:underline cursor-pointer mr-2"
                   >
-                    {entry.entry_song}
+                    {cleanSongName(entry.entry_song)}
                   </button>
                   {entry.entry_short && (
-                    <span className="text-red-500 mr-2">[{entry.entry_short}]</span>
+                    <span className="text-red-500 font-sans font-medium text-[0.625rem] leading-[0.5rem] mr-2">[{entry.entry_short}]</span>
                   )}
                   {entry.entry_segue && (
-                    <MoveRight className="text-red-500 inline w-[1rem] h-[1rem]" />
+                    <MoveRight className="text-red-500 inline pb-0.5 w-[1rem] h-[1rem]" />
                   )}
                 </span>
               </div>
