@@ -420,7 +420,7 @@ export default function SongTourPerformancesModal({
                 {guestGroups.length > 0 && (
                   <div className="bg-canvas border border-secondary rounded-lg p-2 mt-4 mx-8 relative">
                     <User className="w-5 h-5 text-fifth absolute top-2 right-2" />
-                    <div className="grid grid-cols-[20px_1fr] gap-x-2 gap-y-2 pr-8 ml-1 items-center">
+                    <div className="grid grid-cols-[20px_1fr] gap-x-2 gap-y-1 pr-8 ml-1 items-center">
                       {guestGroups.map((group, index) => (
                         <React.Fragment key={index}>
                           <div 
