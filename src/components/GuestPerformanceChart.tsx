@@ -297,9 +297,9 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                   className={`${
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
                   } hover:bg-tertiary/40 transition-colors text-xs ${
-                    isHighlighted ? 'border border-[#f9ae37] bg-[#f9ae37]/10' : ''
+                    isHighlighted ? 'border border-secondary bg-tertiary/40' : ''
                   } ${
-                    isHighlightedForSong ? 'bg-[#f9ae37]/30' : ''
+                    isHighlightedForSong ? 'bg-tertiary/40' : ''
                   } ${
                     (selectedGroup && !isHighlighted) || (selectedSong && !isHighlightedForSong) ? 'opacity-30' : 'opacity-100'
                   }`}

@@ -46,7 +46,7 @@ const CircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#8ec1b6" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -748,7 +748,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   if (errorMessage) {
     return (
       <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-secondary mb-4">{getTitle()}</h2>
+        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">{getTitle()}</h2>
         <div className="text-center py-6 text-red-500">{getErrorMessage()}</div>
       </div>
     );
@@ -762,7 +762,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   if (noShows) {
     return (
       <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-secondary mb-4">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
+        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
         <div className="text-center py-6 text-fifth">
           {getNoShowsMessage()}
         </div>
@@ -773,7 +773,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   if (noSongData) {
     return (
       <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-secondary mb-4">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
+        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
         <div className="text-center py-6 text-fifth">{getNoSongDataMessage()}</div>
       </div>
     );

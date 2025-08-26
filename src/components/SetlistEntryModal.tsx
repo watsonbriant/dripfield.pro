@@ -973,7 +973,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                                 checked={selectedGuestIds.includes(guest.guest_id)}
                                 onChange={() => handleGuestSelection(guest.guest_id)}
                                 disabled={!isEditing && !isNewEntry}
-                                className="mr-2 h-4 w-4 rounded border-secondary/30 bg-white checked:bg-[#f9ae37] focus:ring-tertiary disabled:opacity-50"
+                                className="mr-2 h-4 w-4 rounded border-secondary/30 bg-white checked:bg-tertiary focus:ring-tertiary disabled:opacity-50"
                               />
                               <label 
                                 htmlFor={`guest-${guest.guest_id}`} 

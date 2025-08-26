@@ -1151,7 +1151,7 @@ export function SetlistGameShowPage() {
                   ) : (
                     <Link
                       to="/login"
-                      className="px-4 py-2 bg-[#f9ae37]/50 hover:bg-[#f9ae37]/60 text-fifth font-medium rounded-md transition-colors inline-block border border-secondary/60"
+                      className="px-4 py-2 bg-tertiary/50 hover:bg-tertiary/60 text-fifth font-medium rounded-md transition-colors inline-block border border-secondary/60"
                     >
                       Login to Play
                     </Link>

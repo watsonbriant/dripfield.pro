@@ -345,7 +345,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
   if (isLoading) {
     return (
       <div className="bg-primary border border-secondary rounded-lg">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-secondary mb-4">Song Matrix</h2>
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">Song Matrix</h2>
         <div className="flex justify-center items-center h-40">
           <div className="animate-pulse text-fifth">Loading song matrix...</div>
         </div>
@@ -356,7 +356,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
   if (errorMessage) {
     return (
       <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-secondary mb-4">Song Matrix</h2>
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">Song Matrix</h2>
         <div className="text-center py-6 text-red-500">{errorMessage}</div>
       </div>
     );
@@ -365,7 +365,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
   if (songMatrix.songs.length === 0) {
     return (
       <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-full border border-secondary mb-4">Song Matrix</h2>
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">Song Matrix</h2>
         <div className="text-center py-6 text-fifth">No song data available for this venue</div>
       </div>
     );

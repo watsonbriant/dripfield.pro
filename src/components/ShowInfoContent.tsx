@@ -279,7 +279,7 @@ const ShowInfoContent = React.memo(({
                       >
                         <Link size={16} />
                       </button>
-                      <ShowImageGenerator show={show} setlist={setlist} className="bg-[#f9ae37]" />
+                      <ShowImageGenerator show={show} setlist={setlist} className="bg-tertiary" />
                       {isAdmin && (
                         <button
                           onClick={handleEditShow}

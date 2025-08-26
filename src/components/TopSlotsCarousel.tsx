@@ -78,7 +78,7 @@ const TopSlotsCarousel = ({
     };
     
     // Return the color based on title, or fallback to index-based color
-    return colorMap[title] || colorMap[index.toString()] || '#f9ae37'; // Default amber
+    return colorMap[title] || colorMap[index.toString()] || '#8ec1b6'; // Default amber
   };
   
   // Close dropdown when clicking outside
@@ -204,7 +204,7 @@ const TopSlotsCarousel = ({
                           setIsDropdownOpen(false);
                         }}
                         className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-tertiary/40 transition-colors ${
-                          index === safeCurrentIndex ? 'bg-[#f9ae37]' : ''
+                          index === safeCurrentIndex ? 'bg-[#8ec1b6]' : ''
                         }`}
                       >
                         {slot.title}

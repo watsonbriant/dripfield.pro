@@ -46,7 +46,7 @@ const DefaultCircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#b4b2b2" 
           strokeWidth="8"
           strokeOpacity="0.3"
         />
@@ -56,7 +56,7 @@ const DefaultCircularProgress = ({ value }: { value: number }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#f9ae37" 
+          stroke="#8ec1b6" 
           strokeWidth="8" 
           strokeLinecap="round"
           strokeDasharray={circumference}

@@ -19,13 +19,13 @@ const LoginModal: React.FC<{ onClose: () => void, onLogin: () => void }> = ({ on
         <div className="flex justify-end space-x-3">
           <button 
             onClick={onClose}
-            className="px-4 pt-1.5 pb-0.5 border border-secondary rounded-lg text-fifth hover:bg-red-500/50 transition-colors text-sm font-mohr bg-red-500"
+            className="px-4 py-1 border border-secondary rounded-lg text-fifth hover:bg-red-500/50 transition-colors text-sm font-medium bg-red-500"
           >
             Cancel
           </button>
           <button 
             onClick={onLogin}
-            className="px-4 pt-1.5 pb-0.5 bg-tertiary border border-secondary rounded-lg text-fifth hover:bg-primary transition-colors text-sm font-mohr"
+            className="px-4 py-1 bg-tertiary border border-secondary rounded-lg text-fifth hover:bg-primary transition-colors text-sm font-medium"
           >
             Log In
           </button>

@@ -287,7 +287,7 @@ const TourSongStats: React.FC<Props> = ({
   return (
     <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
-        <h2 className="text-xl font-mohr bg-[#f9ae37] text-fifth inline-block px-3 pt-1.5 pb-0.5 rounded-lg border border-secondary mb-4">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary mb-4">
           {uniqueSongCount} Songs Played
         </h2>
       )}

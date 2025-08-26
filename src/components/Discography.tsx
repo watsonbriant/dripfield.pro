@@ -204,7 +204,7 @@ export function Discography() {
           <div className="md:hidden">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-lg bg-[#f9ae37] text-fifth hover:bg-[#f9ae37]/90 transition-colors border border-secondary"
+              className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors border border-secondary"
             >
               <Search className="w-6 h-6" />
             </button>

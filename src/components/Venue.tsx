@@ -195,9 +195,9 @@ export function Venue() {
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#f9ae37] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse"></div>
+            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse delay-300"></div>
           </div>
           <p className="text-fifth mt-4">Loading venue data...</p>
         </div>

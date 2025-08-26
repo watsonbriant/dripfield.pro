@@ -102,7 +102,7 @@ export const Signup: React.FC = () => {
             <div className="mt-4">
               <Link
                 to="/login"
-                className="w-full px-4 py-2 text-fifth rounded-full font-medium transition-colors bg-[#f9ae37] hover:bg-[#f9ae37]/80 flex justify-center border border-secondary"
+                className="w-full px-4 py-2 text-fifth rounded-full font-medium transition-colors bg-tertiary hover:bg-tertiary/70 flex justify-center border border-secondary"
               >
                 Back to Login
               </Link>

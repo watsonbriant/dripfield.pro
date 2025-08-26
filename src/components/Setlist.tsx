@@ -441,7 +441,7 @@ export function Setlist() {
                       setIsShowDatesDropdownOpen(false);
                     }}
                     className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
-                      showId === showDate.show_id ? 'bg-[#f9ae37]' : ''
+                      showId === showDate.show_id ? 'bg-tertiary' : ''
                     }`}
                   >
                     <div className="flex justify-between items-center">
@@ -526,7 +526,7 @@ export function Setlist() {
                       setIsDropdownOpen(false);
                     }}
                     className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
-                      show?.show_tour === tour.tour ? 'bg-[#f9ae37]' : ''
+                      show?.show_tour === tour.tour ? 'bg-tertiary' : ''
                     }`}
                   >
                     <span className="text-fifth">{tour.tour}</span>

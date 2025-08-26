@@ -1910,7 +1910,7 @@ export function SongSelectionModal({
                     <button
                       onClick={handleAddSong}
                       disabled={!selectedSong}
-                      className="px-4 py-2 bg-tertiary hover:bg-tertiary/40 text-fifth font-semibold rounded-md transition-colors disabled:bg-[#f9ae37]/50 disabled:cursor-not-allowed flex items-center gap-2 border border-secondary"
+                      className="px-4 py-2 bg-tertiary hover:bg-tertiary/40 text-fifth font-semibold rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2 border border-secondary"
                     >
                       <Plus className="w-4 h-4" />
                       <span className="md:inline hidden">Add Song</span>

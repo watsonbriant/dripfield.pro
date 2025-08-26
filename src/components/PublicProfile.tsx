@@ -244,7 +244,7 @@ export const PublicProfile: React.FC = () => {
   if (isLoading) {
     return (
       <div className="max-w-[1280px] mx-auto flex items-center justify-center h-64">
-        <div className="font-mohr bg-tertiary text-fifth px-4 py-2 rounded-full border border-secondary">Loading profile...</div>
+        <div className="font-semibold bg-tertiary text-fifth px-4 py-2 rounded-full border border-secondary">Loading profile...</div>
       </div>
     );
   }
@@ -253,7 +253,7 @@ export const PublicProfile: React.FC = () => {
     return (
       <div className="max-w-[1280px] mx-auto mt-8">
         <div className="bg-white/20 border border-secondary rounded-lg p-6 text-center">
-          <h3 className="text-xl font-mohr bg-tertiary text-fifth inline-block px-4 py-1 rounded-full border border-secondary mb-2">Error</h3>
+          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-full border border-secondary mb-2">Error</h3>
           <p className="text-fifth/80">{error}</p>
           <button 
             onClick={() => navigate('/')} 
