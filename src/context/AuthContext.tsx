@@ -93,6 +93,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const updatePassword = async (newPassword: string) => {
+    return await supabase.auth.updateUser({ password: newPassword });
+  };
+
   const addAttendedShow = async (showId: string) => {
     if (!user) throw new Error('User must be logged in');
     
@@ -141,6 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     resetPassword,
+    updatePassword,
     addAttendedShow,
     removeAttendedShow,
     checkShowAttendance,
