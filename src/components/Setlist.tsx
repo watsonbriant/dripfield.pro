@@ -76,6 +76,7 @@ interface Show {
   show_subvenue_venue?: string; // Added for venue navigation
   venue_id?: string;
   show_wl_link?: string | null;
+  rating_visibility?: boolean;
   tours: {
     tour_showfields: boolean;
     tour_id: string; // Add this field
@@ -277,6 +278,7 @@ export function Setlist() {
             show_callbacks,
             show_wl_link,
             show_subvenue_venue,
+            rating_visibility,
             subvenues:show_subvenue(
               venues:subvenue_venue(
                 venue_id

@@ -33,6 +33,7 @@ interface Show {
   tour_showfields: boolean;
   tour_id: string;
   show_wl_link?: string | null; 
+  rating_visibility?: boolean;
 }
 
 interface SetlistEntry {

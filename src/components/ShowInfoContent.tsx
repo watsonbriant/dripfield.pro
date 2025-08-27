@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import wlImage from '../img/WL.png';
 import ShowImageGenerator from './ShowImageGenerator';
+import StarRating from './StarRating';
 
 interface SetlistEntry {
   entry_id: string;
@@ -35,6 +36,7 @@ interface ShowInfoContentProps {
     show_tour: string | null;
     tour_id?: string;
     show_wl_link?: string | null;
+    rating_visibility?: boolean;
   };
   navigateToVenue?: () => void;
   showPosition: ShowPosition | null;
@@ -117,8 +119,9 @@ const ShowInfoContent = React.memo(({
   
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3">
-      <div className="grid grid-cols-[1fr_auto] gap-4 items-start">
-        <div className="space-y-0">
+      {/* Top row: Date/Group on left, WL image on right */}
+      <div className="flex justify-between items-start mb-2">
+        <div>
           <div className="text-xl font-medium text-fifth">
             {formatInTimeZone(
               new Date(show.show_date),
@@ -126,18 +129,9 @@ const ShowInfoContent = React.memo(({
               'MM.dd.yy'
             )}
           </div>
-          <p className="text-2xl font-trad text-fifth leading-5 pb-2">{show.show_group}</p>
-          {show.show_detail && (
-            <p className="text-sm text-fifth">{show.show_detail}</p>
-          )}
-          {show.show_alert && (
-            <p className="text-sm">
-              <span className="font-medium text-[#E83356]">
-                [{show.show_alert}]
-              </span>
-            </p>
-          )}
+          <p className="text-2xl font-trad text-fifth leading-5">{show.show_group}</p>
         </div>
+        
         {/* WL Image - always visible if show_wl_link exists */}
         {show.show_wl_link && (
           <div className="relative">
@@ -166,6 +160,26 @@ const ShowInfoContent = React.memo(({
           </div>
         )}
       </div>
+
+      {/* Bottom section: Detail, Alert, and Rating */}
+      <div className="space-y-1">
+        {show.show_detail && (
+          <p className="text-sm text-fifth">{show.show_detail}</p>
+        )}
+        {show.show_alert && (
+          <p className="text-sm">
+            <span className="font-medium text-[#E83356]">
+              [{show.show_alert}]
+            </span>
+          </p>
+        )}
+        <StarRating 
+          showId={show.show_id} 
+          isVisible={show.rating_visibility || false}
+        />
+      </div>
+
+      {/* Rest of component */}
       <div className="mt-2 space-y-2">
         <hr className="border-secondary" />
         <div className="space-y-0">
