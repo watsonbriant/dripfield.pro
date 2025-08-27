@@ -16,6 +16,7 @@ type AuthContextType = {
   }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: Error | null }>;
   addAttendedShow: (showId: string) => Promise<void>;
   removeAttendedShow: (showId: string) => Promise<void>;
   checkShowAttendance: (showId: string) => Promise<boolean>;

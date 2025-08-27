@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 export const UpdatePassword: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -8,8 +9,48 @@ export const UpdatePassword: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const { updatePassword } = useAuth();
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [hasValidSession, setHasValidSession] = useState(false);
+  const { updatePassword, session } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const handleAuthCallback = async () => {
+      try {
+        // Check if we have URL parameters that indicate this is an auth callback
+        const token = searchParams.get('token');
+        const type = searchParams.get('type');
+        
+        if (token && type === 'recovery') {
+          // This is a recovery callback, let Supabase handle it
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash: token,
+            type: 'recovery'
+          });
+          
+          if (error) {
+            console.error('Token verification error:', error);
+            setError('Invalid or expired reset link. Please request a new password reset.');
+          } else {
+            setHasValidSession(true);
+          }
+        } else if (session) {
+          // User already has a valid session
+          setHasValidSession(true);
+        } else {
+          setError('No valid reset session found. Please request a new password reset.');
+        }
+      } catch (err) {
+        console.error('Auth callback error:', err);
+        setError('Something went wrong. Please try requesting a new password reset.');
+      } finally {
+        setSessionLoading(false);
+      }
+    };
+
+    handleAuthCallback();
+  }, [searchParams, session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +80,52 @@ export const UpdatePassword: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (sessionLoading) {
+    return (
+      <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg shadow-xl">
+          <div className="p-3">
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+              Update Password
+            </h2>
+          </div>
+          <div className="px-3 pb-3">
+            <p className="text-fifth">Verifying reset link...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasValidSession) {
+    return (
+      <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg shadow-xl">
+          <div className="p-3">
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+              Update Password
+            </h2>
+          </div>
+          <div className="px-3 pb-3">
+            {error && (
+              <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg mb-4">
+                <p className="text-sm text-fifth">{error}</p>
+              </div>
+            )}
+            <div className="mt-4">
+              <Link
+                to="/reset-password"
+                className="w-full px-4 py-2 text-fifth rounded-lg font-medium transition-colors bg-tertiary hover:bg-tertiary/80 border border-secondary flex justify-center"
+              >
+                Request New Password Reset
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[1280px] mx-auto">
