@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -10,47 +10,53 @@ export const UpdatePassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [sessionLoading, setSessionLoading] = useState(true);
-  const [hasValidSession, setHasValidSession] = useState(false);
-  const { updatePassword, session } = useAuth();
+  const { updatePassword, session, user } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
+    const handleRecoveryToken = async () => {
       try {
-        // Check if we have URL parameters that indicate this is an auth callback
-        const token = searchParams.get('token');
-        const type = searchParams.get('type');
-        
-        if (token && type === 'recovery') {
-          // This is a recovery callback, let Supabase handle it
-          const { data, error } = await supabase.auth.verifyOtp({
-            token_hash: token,
-            type: 'recovery'
+        // Check if there are URL hash fragments (common in auth callbacks)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const type = hashParams.get('type');
+
+        if (accessToken && refreshToken && type === 'recovery') {
+          // Set the session using the tokens from the URL
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
           });
-          
+
           if (error) {
-            console.error('Token verification error:', error);
+            console.error('Session setup error:', error);
             setError('Invalid or expired reset link. Please request a new password reset.');
-          } else {
-            setHasValidSession(true);
+          } else if (data.session) {
+            console.log('Session established successfully');
           }
-        } else if (session) {
-          // User already has a valid session
-          setHasValidSession(true);
-        } else {
-          setError('No valid reset session found. Please request a new password reset.');
         }
+
+        // Always wait a bit for session to be established
+        setTimeout(() => {
+          setSessionLoading(false);
+        }, 2000);
       } catch (err) {
-        console.error('Auth callback error:', err);
-        setError('Something went wrong. Please try requesting a new password reset.');
-      } finally {
+        console.error('Recovery token handling error:', err);
+        setError('Something went wrong with the password reset link.');
         setSessionLoading(false);
       }
     };
 
-    handleAuthCallback();
-  }, [searchParams, session]);
+    handleRecoveryToken();
+  }, []);
+
+  useEffect(() => {
+    // If we get a session while still loading, stop loading immediately
+    if (session && user) {
+      setSessionLoading(false);
+    }
+  }, [session, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,14 +97,14 @@ export const UpdatePassword: React.FC = () => {
             </h2>
           </div>
           <div className="px-3 pb-3">
-            <p className="text-fifth">Verifying reset link...</p>
+            <p className="text-fifth">Setting up your password reset session...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (!hasValidSession) {
+  if (!session || !user) {
     return (
       <div className="max-w-[1280px] mx-auto">
         <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg shadow-xl">
@@ -108,11 +114,11 @@ export const UpdatePassword: React.FC = () => {
             </h2>
           </div>
           <div className="px-3 pb-3">
-            {error && (
-              <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg mb-4">
-                <p className="text-sm text-fifth">{error}</p>
-              </div>
-            )}
+            <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg mb-4">
+              <p className="text-sm text-fifth">
+                {error || 'No valid reset session found. This might happen if the reset link is expired or has already been used.'}
+              </p>
+            </div>
             <div className="mt-4">
               <Link
                 to="/reset-password"
