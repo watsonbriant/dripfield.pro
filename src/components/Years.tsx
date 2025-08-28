@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic, Users } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic, Users, Star } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 import wlImage from '../img/WL.png';
@@ -67,6 +67,7 @@ export function Years() {
   const [previousYearId, setPreviousYearId] = useState<string | null>(null);
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
+  const [showRatings, setShowRatings] = useState<Record<string, number>>({});
 
   const tourColors = [
     '#3498DB', '#E74C3C', '#2ECC71', '#F39C12', 
@@ -104,7 +105,7 @@ export function Years() {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
-      setSortDirection('asc');
+      setSortDirection(column === 'rating' ? 'desc' : 'asc'); // Default desc for ratings
     }
   };
 
@@ -119,25 +120,77 @@ export function Years() {
 
   const sortData = (data: Show[]) => {
     return [...data].sort((a, b) => {
-      // Primary sort by show_date
-      const dateA = new Date(a.show_date).getTime();
-      const dateB = new Date(b.show_date).getTime();
-      if (dateA !== dateB) {
-        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      let valueA: any;
+      let valueB: any;
+
+      switch (sortColumn) {
+        case 'show_date':
+          valueA = new Date(a.show_date).getTime();
+          valueB = new Date(b.show_date).getTime();
+          break;
+        case 'rating':
+          valueA = showRatings[a.show_id] || 0;
+          valueB = showRatings[b.show_id] || 0;
+          break;
+        case 'show_group':
+          valueA = a.show_group || '';
+          valueB = b.show_group || '';
+          break;
+        case 'show_subvenue':
+          valueA = a.show_subvenue || '';
+          valueB = b.show_subvenue || '';
+          break;
+        case 'show_venue_location':
+          valueA = a.show_venue_location || '';
+          valueB = b.show_venue_location || '';
+          break;
+        case 'show_detail':
+          valueA = a.show_detail || '';
+          valueB = b.show_detail || '';
+          break;
+        case 'attendee_count':
+          valueA = attendeeCounts[a.show_id] || 0;
+          valueB = attendeeCounts[b.show_id] || 0;
+          break;
+        default:
+          // Default to date sorting
+          valueA = new Date(a.show_date).getTime();
+          valueB = new Date(b.show_date).getTime();
       }
-      
-      // Secondary sort by show_canonid (handle nulls appropriately)
+
+      // Handle string comparisons
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        const comparison = valueA.localeCompare(valueB);
+        if (comparison !== 0) {
+          return sortDirection === 'asc' ? comparison : -comparison;
+        }
+      } else {
+        // Handle numeric comparisons
+        if (valueA !== valueB) {
+          return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
+        }
+      }
+
+      // Secondary sort by show_date if primary sort values are equal
+      if (sortColumn !== 'show_date') {
+        const dateA = new Date(a.show_date).getTime();
+        const dateB = new Date(b.show_date).getTime();
+        if (dateA !== dateB) {
+          return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+      }
+
+      // Tertiary sort by show_canonid
       const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
       const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
       if (canonIdA !== canonIdB) {
         return sortDirection === 'asc' ? canonIdA - canonIdB : canonIdB - canonIdA;
       }
-      
-      // Tertiary sort by show_group
+
+      // Final sort by show_group
       const groupA = a.show_group || '';
       const groupB = b.show_group || '';
-      const groupComparison = groupA.localeCompare(groupB);
-      return sortDirection === 'asc' ? groupComparison : -groupComparison;
+      return groupA.localeCompare(groupB);
     });
   };
 
@@ -299,6 +352,41 @@ export function Years() {
       navigate('/years/2025', { replace: true });
     }
   }, [year, navigate]);
+
+  useEffect(() => {
+    const fetchShowRatings = async () => {
+      if (filteredShows.length === 0) return;
+      
+      try {
+        const showIds = filteredShows.map(s => s.show_id);
+        
+        const { data, error } = await supabase
+          .from('show_ratings')
+          .select('show_id, rating')
+          .in('show_id', showIds);
+        
+        if (error) throw error;
+        
+        // Calculate averages for each show
+        const ratings: Record<string, number> = {};
+        filteredShows.forEach(show => {
+          const showRatingsData = data?.filter(r => r.show_id === show.show_id) || [];
+          if (showRatingsData.length > 0) {
+            const average = showRatingsData.reduce((sum, r) => sum + r.rating, 0) / showRatingsData.length;
+            ratings[show.show_id] = Math.round(average * 100) / 100;
+          } else {
+            ratings[show.show_id] = 0;
+          }
+        });
+        
+        setShowRatings(ratings);
+      } catch (error) {
+        console.error('Error fetching show ratings:', error);
+      }
+    };
+    
+    fetchShowRatings();
+  }, [filteredShows]);
   
   // Effect to handle dropdown opening/closing and scrolling to current year
   React.useEffect(() => {
@@ -579,319 +667,373 @@ export function Years() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-4 mb-8">
-        <div className="col-span-1 overflow-x-auto">
-          {loading ? (
-            <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
-                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
-                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
-              </div>
-              <p className="text-fifth mt-4">Loading shows...</p>
+      {/* Shows Table - Full Width */}
+      <div className="mb-8 overflow-x-auto">
+        {loading ? (
+          <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+              <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+              <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
             </div>
-          ) : filteredShows.length === 0 ? (
-            <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
-              <p className="text-fifth">
-                {shows.length === 0 
-                  ? `No shows found for ${currentYear}` 
-                  : `No shows match the selected filters. ${" "}
-                    <button 
-                      className="text-[#a9682e] underline hover:text-[#7b4e23]"
-                      onClick={clearGroupFilters}
-                    >
-                      Clear filters
-                    </button>`
-                }
-              </p>
-            </div>
-          ) : (
-            <div className="bg-primary border border-secondary rounded-lg p-3">
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
-                  {currentYear} Shows
-                </h2>
-                {selectedGroups.length > 0 && (
-                  <button
-                    onClick={clearGroupFilters}
-                    className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-secondary hover:bg-red-600 transition-colors text-xs font-semibold"
-                  >
-                    Clear Filters
-                  </button>
-                )}
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse min-w-max">
-                  <thead>
-                    <tr className="bg-canvas border-y border-white/10">
-                      <th className="w-1 px-0 py-1"></th>
-                      <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
-                        onClick={() => handleSort('show_date')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Date
-                          {getSortIcon('show_date')}
-                        </div>
-                      </th>
-                      {user && (
-                        <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
-                          <Check size={16} className="text-fifth" strokeWidth={4} />
-                        </th>
-                      )}
-                      <th className="w-8 px-1 py-1 text-center align-middle text-s font-semibold text-fifth">
-                        <div className="flex justify-center items-center">
-                          <FileMusic size={16} className="text-fifth" strokeWidth={2} />
-                        </div>
-                      </th>
-                      <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
-                        onClick={() => handleSort('show_group')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Group
-                          {getSortIcon('show_group')}
-                        </div>
-                      </th>
-                      <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
-                        onClick={() => handleSort('show_subvenue')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Venue
-                          {getSortIcon('show_subvenue')}
-                        </div>
-                      </th>
-                      <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
-                        onClick={() => handleSort('show_venue_location')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Location
-                          {getSortIcon('show_venue_location')}
-                        </div>
-                      </th>
-                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
-                        <div className="flex justify-center items-center">
-                          <Users size={16} className="text-fifth" strokeWidth={2} />
-                        </div>
-                      </th>
-                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
-                        <div className="flex justify-center items-center">
-                          <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" />
-                        </div>
-                      </th>
-                      <th 
-                        className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
-                        onClick={() => handleSort('show_detail')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Detail
-                          {getSortIcon('show_detail')}
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {sortData(filteredShows).map((show, index) => (
-                      <tr
-                        key={show.show_id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                        } hover:bg-tertiary/40 transition-colors text-xs`}
-                      >
-                        <td 
-                          style={{ 
-                            width: '5px',
-                            padding: 0,
-                            backgroundColor: getTourColor(show.show_tour)
-                          }}
-                          onMouseEnter={(e) => {
-                            setHoveredTour(show.show_tour);
-                            setMousePosition({ x: e.clientX, y: e.clientY });
-                          }}
-                          onMouseMove={(e) => {
-                            setMousePosition({ x: e.clientX, y: e.clientY });
-                          }}
-                          onMouseLeave={() => setHoveredTour(null)}
-                        >
-                          {hoveredTour === show.show_tour && (
-                            <div 
-                              className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary min-w-max z-[9999]"
-                              style={{
-                                left: `${mousePosition.x + 10}px`,
-                                top: `${mousePosition.y - 10}px`
-                              }}
-                            >
-                              <div className="font-medium">{show.show_tour}</div>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
-                          <span className="font-medium">
-                            <button
-                              onClick={() => navigate(`/setlist/${show.show_id}`)}
-                              className="transition-colors table-link"
-                            >
-                              {show.show_date
-                                .split('-')
-                                .slice(1)
-                                .concat(show.show_date.substring(2, 4))
-                                .join('.')}
-                            </button>
-                          </span>
-                        </td>
-                        {user && (
-                          <td className="w-8 text-center">
-                            {show.attended && (
-                              <div className="flex justify-center items-center h-full">
-                                <div className="rounded-full p-0.5 bg-green-600">
-                                  <Check size={12} className="text-white" strokeWidth={3} />
-                                </div>
-                              </div>
-                            )}
-                          </td>
-                        )}
-                        <td className="w-8 text-center align-middle">
-                          {showsWithSetlists.has(show.show_id) && (
-                            <div className="flex justify-center items-center h-full">
-                              <button
-                                onClick={() => {
-                                  // Navigate with a state parameter to open the modal
-                                  navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
-                                }}
-                                className="hover:text-fifth hover:bg-tertiary hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
-                              >
-                                <FileMusic size={14.5} className="text-fifth" strokeWidth={2} />
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
-                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
-                          <button
-                            onClick={() => navigateToVenue(show)}
-                            className="hover:underline transition-colors"
-                          >
-                            {show.show_subvenue}
-                          </button>
-                        </td>
-                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_venue_location}</td>
-                        <td className="w-8 text-center text-fifth">
-                          {attendeeCounts[show.show_id] > 0 && (
-                            <span className="text-xs font-medium">{attendeeCounts[show.show_id]}</span>
-                          )}
-                        </td>
-                        <td className="w-8 text-center align-middle">
-                          {show.show_wl_link && (
-                            <div className="flex justify-center items-center h-full">
-                              <button
-                                onClick={() => window.open(show.show_wl_link, '_blank')}
-                                className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
-                              >
-                                <img src={wlImage} alt="WysteriaLane" className="w-[14.5px] h-[14.5px]" />
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
-                          {show.show_detail && show.show_detail}
-                          {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
-                          {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        <div className="col-span-1 lg:order-last">
-          {/* Tours Container */}
-          <div className="bg-primary border border-secondary rounded-lg p-3 w-full mb-4">
-            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
-              {currentYear} Tours
-            </h2>
-            <div className="space-y-1.5">
-              {loading ? (
-                <div className="text-center py-4">
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
-                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
-                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
-                  </div>
-                </div>
-              ) : tours.length === 0 ? (
-                <p className="text-fifth text-xs text-center py-2">No tours found</p>
-              ) : (
-                tours.map((tour) => (
-                  <div key={tour.tour_count} className="text-fifth text-xs flex items-center gap-2">
-                    <div 
-                      className="w-5 h-5 rounded flex-shrink-0 border border-secondary"
-                      style={{ backgroundColor: tour.color }}
-                    />
-                    <div>
-                      <button 
-                        onClick={() => navigate(`/tours/${tour.tour_id}`)}
-                        className="hover:underline transition-colors font-semibold"
-                      >
-                        {tour.tour_count.split(' (')[0]}
-                      </button>
-                      {' (' + tour.tour_count.split(' (')[1]}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <p className="text-fifth mt-4">Loading shows...</p>
           </div>
-          
-          {/* Group Filter Container */}
-          <div className="bg-primary border border-secondary rounded-lg p-3 w-full">
+        ) : filteredShows.length === 0 ? (
+          <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+            <p className="text-fifth">
+              {shows.length === 0 
+                ? `No shows found for ${currentYear}` 
+                : `No shows match the selected filters. ${" "}
+                  <button 
+                    className="text-[#a9682e] underline hover:text-[#7b4e23]"
+                    onClick={clearGroupFilters}
+                  >
+                    Clear filters
+                  </button>`
+              }
+            </p>
+          </div>
+        ) : (
+          <div className="bg-primary border border-secondary rounded-lg p-3">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
-                Filter by Group
+                {currentYear} Shows
               </h2>
               {selectedGroups.length > 0 && (
                 <button
                   onClick={clearGroupFilters}
                   className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-secondary hover:bg-red-600 transition-colors text-xs font-semibold"
                 >
-                  <span>Clear</span>
-                  <Filter className="w-3 h-3" />
+                  Clear Filters
                 </button>
               )}
             </div>
-            <div className="space-y-1.5">
-              {loading ? (
-                <div className="text-center py-4">
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
-                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
-                    <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse min-w-max">
+                <thead>
+                  <tr className="bg-canvas border-y border-white/10">
+                    <th className="w-1 px-0 py-1"></th>
+                    <th 
+                      className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      onClick={() => handleSort('show_date')}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        Date
+                        {getSortIcon('show_date')}
+                      </div>
+                    </th>
+                    {user && (
+                      <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
+                        <Check size={16} className="text-fifth" strokeWidth={4} />
+                      </th>
+                    )}
+                    <th className="w-8 px-1 py-1 text-center align-middle text-s font-semibold text-fifth">
+                      <div className="flex justify-center items-center">
+                        <FileMusic size={16} className="text-fifth" strokeWidth={2} />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      onClick={() => handleSort('show_group')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Group
+                        {getSortIcon('show_group')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      onClick={() => handleSort('show_subvenue')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Venue
+                        {getSortIcon('show_subvenue')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      onClick={() => handleSort('show_venue_location')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Location
+                        {getSortIcon('show_venue_location')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      onClick={() => handleSort('rating')}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        Rating
+                        {getSortIcon('rating')}
+                      </div>
+                    </th>
+                    <th 
+                      className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-black/10"
+                      onClick={() => handleSort('attendee_count')}
+                    >
+                      <div className="flex justify-center items-center">
+                        <Users size={16} className="text-fifth" strokeWidth={2} />
+                        {getSortIcon('attendee_count')}
+                      </div>
+                    </th>
+                    <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
+                      <div className="flex justify-center items-center">
+                        <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      onClick={() => handleSort('show_detail')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Detail
+                        {getSortIcon('show_detail')}
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {sortData(filteredShows).map((show, index) => (
+                    <tr
+                      key={show.show_id}
+                      className={`${
+                        index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                      } hover:bg-tertiary/40 transition-colors text-xs`}
+                    >
+                      <td 
+                        style={{ 
+                          width: '5px',
+                          padding: 0,
+                          backgroundColor: getTourColor(show.show_tour)
+                        }}
+                        onMouseEnter={(e) => {
+                          setHoveredTour(show.show_tour);
+                          setMousePosition({ x: e.clientX, y: e.clientY });
+                        }}
+                        onMouseMove={(e) => {
+                          setMousePosition({ x: e.clientX, y: e.clientY });
+                        }}
+                        onMouseLeave={() => setHoveredTour(null)}
+                      >
+                        {hoveredTour === show.show_tour && (
+                          <div 
+                            className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary min-w-max z-[9999]"
+                            style={{
+                              left: `${mousePosition.x + 10}px`,
+                              top: `${mousePosition.y - 10}px`
+                            }}
+                          >
+                            <div className="font-medium">{show.show_tour}</div>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                        <span className="font-medium">
+                          <button
+                            onClick={() => navigate(`/setlist/${show.show_id}`)}
+                            className="transition-colors table-link"
+                          >
+                            {show.show_date
+                              .split('-')
+                              .slice(1)
+                              .concat(show.show_date.substring(2, 4))
+                              .join('.')}
+                          </button>
+                        </span>
+                      </td>
+                      {user && (
+                        <td className="w-8 text-center">
+                          {show.attended && (
+                            <div className="flex justify-center items-center h-full">
+                              <div className="rounded-full p-0.5 bg-green-600">
+                                <Check size={12} className="text-white" strokeWidth={3} />
+                              </div>
+                            </div>
+                          )}
+                        </td>
+                      )}
+                      <td className="w-8 text-center align-middle">
+                        {showsWithSetlists.has(show.show_id) && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => {
+                                // Navigate with a state parameter to open the modal
+                                navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
+                              }}
+                              className="hover:text-fifth hover:bg-tertiary hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                            >
+                              <FileMusic size={14.5} className="text-fifth" strokeWidth={2} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
+                        <button
+                          onClick={() => navigateToVenue(show)}
+                          className="hover:underline transition-colors"
+                        >
+                          {show.show_subvenue}
+                        </button>
+                      </td>
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_venue_location}</td>
+                      <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                        <div className="relative flex items-center group">
+                          {/* Stars with hover-based transparency */}
+                          <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
+                            {[1, 2, 3, 4, 5].map((starNumber) => {
+                              const rating = showRatings[show.show_id] || 0;
+                              const fillPercentage = Math.min(Math.max(rating - starNumber + 1, 0), 1);
+
+                              return (
+                                <div key={starNumber} className="relative">
+                                  {/* Background star (empty) */}
+                                  <Star
+                                    size={16}
+                                    className="text-secondary"
+                                    fill="none"
+                                    stroke="currentColor"
+                                  />
+                                  {/* Foreground star (filled) */}
+                                  <div
+                                    className="absolute inset-0 overflow-hidden"
+                                    style={{ width: `${fillPercentage * 100}%` }}
+                                  >
+                                    <Star
+                                      size={16}
+                                      className="text-tertiary"
+                                      fill="currentColor"
+                                      stroke="currentColor"
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {/* Rating text overlaid on stars - only visible on hover */}
+                          {showRatings[show.show_id] > 0 && (
+                            <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-fifth pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                              {showRatings[show.show_id].toFixed(2)}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="w-8 text-center text-fifth">
+                        {attendeeCounts[show.show_id] > 0 && (
+                          <span className="text-xs font-medium">{attendeeCounts[show.show_id]}</span>
+                        )}
+                      </td>
+                      <td className="w-8 text-center align-middle">
+                        {show.show_wl_link && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => window.open(show.show_wl_link, '_blank')}
+                              className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
+                            >
+                              <img src={wlImage} alt="WysteriaLane" className="w-[14.5px] h-[14.5px]" />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
+                        {show.show_detail && show.show_detail}
+                        {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
+                        {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Two Column Layout for Tours and Filters */}
+      <div className="grid grid-cols-1 lg:grid-cols-[35%_calc(65%-1rem)] gap-4">
+        {/* Tours Container */}
+        <div className="bg-primary border border-secondary rounded-lg p-3 w-full">
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
+            {currentYear} Tours
+          </h2>
+          <div className="space-y-1.5">
+            {loading ? (
+              <div className="text-center py-4">
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                  <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                  <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+                </div>
+              </div>
+            ) : tours.length === 0 ? (
+              <p className="text-fifth text-xs text-center py-2">No tours found</p>
+            ) : (
+              tours.map((tour) => (
+                <div key={tour.tour_count} className="text-fifth text-xs flex items-center gap-2">
+                  <div 
+                    className="w-5 h-5 rounded flex-shrink-0 border border-secondary"
+                    style={{ backgroundColor: tour.color }}
+                  />
+                  <div className="flex-1 text-left leading-tight">
+                    <a 
+                      href={`/tours/${tour.tour_id}`}
+                      className="hover:underline transition-colors font-semibold text-left"
+                    >
+                      {tour.tour_count.split(' (')[0]}
+                    </a>
+                    {' (' + tour.tour_count.split(' (')[1]}
                   </div>
                 </div>
-              ) : groups.length === 0 ? (
-                <p className="text-fifth text-xs text-center py-2">No groups found</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {groups.map((groupData) => (
-                    <button
-                      key={groupData.group}
-                      onClick={() => toggleGroupSelection(groupData.group)}
-                      className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
-                        selectedGroups.includes(groupData.group)
-                          ? 'bg-tertiary text-fifth hover:underline border border-secondary'
-                          : 'bg-canvas text-fifth hover:underline border border-secondary'
-                      }`}
-                    >
-                      {groupData.group} ({groupData.count})
-                    </button>
-                  ))}
+              ))
+            )}
+          </div>
+        </div>
+        
+        {/* Group Filter Container */}
+        <div className="bg-primary border border-secondary rounded-lg p-3 w-full">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+              Filter by Group
+            </h2>
+            {selectedGroups.length > 0 && (
+              <button
+                onClick={clearGroupFilters}
+                className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-secondary hover:bg-red-600 transition-colors text-xs font-semibold"
+              >
+                <span>Clear</span>
+                <Filter className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            {loading ? (
+              <div className="text-center py-4">
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                  <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                  <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : groups.length === 0 ? (
+              <p className="text-fifth text-xs text-center py-2">No groups found</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {groups.map((groupData) => (
+                  <button
+                    key={groupData.group}
+                    onClick={() => toggleGroupSelection(groupData.group)}
+                    className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                      selectedGroups.includes(groupData.group)
+                        ? 'bg-tertiary text-fifth hover:underline border border-secondary'
+                        : 'bg-canvas text-fifth hover:underline border border-secondary'
+                    }`}
+                  >
+                    {groupData.group} ({groupData.count})
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
