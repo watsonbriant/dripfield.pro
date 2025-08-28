@@ -1023,13 +1023,13 @@ export function Years() {
                   <button
                     key={groupData.group}
                     onClick={() => toggleGroupSelection(groupData.group)}
-                    className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                    className={`px-1.5 py-0.5 rounded text-xs font-medium transition-colors ${
                       selectedGroups.includes(groupData.group)
                         ? 'bg-tertiary text-fifth hover:underline border border-secondary'
                         : 'bg-canvas text-fifth hover:underline border border-secondary'
                     }`}
                   >
-                    {groupData.group} ({groupData.count})
+                    {groupData.group} <span className="font-light">({groupData.count})</span>
                   </button>
                 ))}
               </div>
