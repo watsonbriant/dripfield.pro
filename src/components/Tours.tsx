@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight, FileMusic, Users } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight, FileMusic, Users, Star } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 import TourSongSpread from './TourSongSpread';
@@ -105,6 +105,7 @@ export function Tours() {
   const [previousTourId, setPreviousTourId] = React.useState<string | null>(null);
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
+  const [showRatings, setShowRatings] = useState<Record<string, number>>({});
   const [modalSongData, setModalSongData] = useState<{
     isOpen: boolean;
     songName: string;
@@ -279,6 +280,41 @@ export function Tours() {
     }
   }, [shows, currentTour]);
 
+  useEffect(() => {
+    const fetchShowRatings = async () => {
+      if (shows.length === 0) return;
+      
+      try {
+        const showIds = shows.map(s => s.show_id);
+        
+        const { data, error } = await supabase
+          .from('show_ratings')
+          .select('show_id, rating')
+          .in('show_id', showIds);
+        
+        if (error) throw error;
+        
+        // Calculate averages for each show
+        const ratings: Record<string, number> = {};
+        shows.forEach(show => {
+          const showRatingsData = data?.filter(r => r.show_id === show.show_id) || [];
+          if (showRatingsData.length > 0) {
+            const average = showRatingsData.reduce((sum, r) => sum + r.rating, 0) / showRatingsData.length;
+            ratings[show.show_id] = Math.round(average * 100) / 100;
+          } else {
+            ratings[show.show_id] = 0;
+          }
+        });
+        
+        setShowRatings(ratings);
+      } catch (error) {
+        console.error('Error fetching show ratings:', error);
+      }
+    };
+    
+    fetchShowRatings();
+  }, [shows]);
+
   // Fetch attended shows for current user
   useEffect(() => {
     if (!user) {
@@ -339,7 +375,7 @@ export function Tours() {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
-      setSortDirection('asc');
+      setSortDirection(column === 'rating' ? 'desc' : 'asc');
     }
   };
 
@@ -354,13 +390,26 @@ export function Tours() {
 
   const sortData = (data: Show[]) => {
     return [...data].sort((a, b) => {
-      let aValue: any = a[sortColumn as keyof Show];
-      let bValue: any = b[sortColumn as keyof Show];
+      let aValue: any;
+      let bValue: any;
+
+      // Handle special columns that aren't direct Show properties
+      if (sortColumn === 'rating') {
+        aValue = showRatings[a.show_id] || 0;
+        bValue = showRatings[b.show_id] || 0;
+      } else if (sortColumn === 'attendees') {
+        aValue = attendeeCounts[a.show_id] || 0;
+        bValue = attendeeCounts[b.show_id] || 0;
+      } else {
+        // For all other columns, get from Show object
+        aValue = a[sortColumn as keyof Show];
+        bValue = b[sortColumn as keyof Show];
+      }
 
       // Handle special cases for length and rarity which are percentages/time
       if (sortColumn === 'show_rarity') {
-        aValue = aValue ? parseFloat(aValue.replace('%', '')) : -1;
-        bValue = bValue ? parseFloat(bValue.replace('%', '')) : -1;
+        aValue = aValue && aValue !== '-' ? parseFloat(aValue.replace('%', '')) : -1;
+        bValue = bValue && bValue !== '-' ? parseFloat(bValue.replace('%', '')) : -1;
       } else if (sortColumn === 'show_length') {
         // Convert time strings to seconds for comparison
         const timeToSeconds = (timeStr: string | null) => {
@@ -1135,20 +1184,21 @@ export function Tours() {
                       { key: 'show_rarity', label: 'Rarity' },
                       { key: 'show_subvenue', label: 'Venue' },
                       { key: 'show_venue_location', label: 'Location' },
-                      { key: 'users', label: <Users size={16} className="text-fifth" strokeWidth={2} /> },
+                      { key: 'rating', label: 'Rating' },
+                      { key: 'attendees', label: <Users size={16} className="text-fifth" strokeWidth={2} /> },
                       { key: 'wl_link', label: <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" /> },
                       { key: 'show_detail', label: 'Detail' }
                     ].map(({ key, label }) => (
                       <th
                         key={key}
-                        onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'users' ? handleSort(key) : null}
-                        className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' ? 'text-center' : 'text-left'} 
+                        onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'wl_link' ? handleSort(key) : null}
+                        className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'rating' || key === 'attendees' ? 'text-center' : 'text-left'} 
                           text-s font-semibold text-fifth whitespace-nowrap 
-                          ${key !== 'attended' && key !== 'setlist' && key !== 'users' && key !== 'wl_link' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
+                          ${key !== 'attended' && key !== 'setlist' && key !== 'wl_link' ? 'px-4 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
                       >
-                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'setlist' || key === 'users' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
+                        <div className={`flex items-center ${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'users' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
                           {label}
-                          {key !== 'attended' && key !== 'setlist' && key !== 'users' && key !== 'wl_link' && getSortIcon(key)}
+                          {key !== 'attended' && key !== 'setlist' && key !== 'wl_link' && getSortIcon(key)}
                         </div>
                       </th>
                     ))}
@@ -1230,10 +1280,51 @@ export function Tours() {
                       <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
                         {show.show_venue_location}
                       </td>
+                      <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                        <div className="relative flex items-center justify-center group">
+                          {/* Stars with hover-based transparency */}
+                          <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
+                            {[1, 2, 3, 4, 5].map((starNumber) => {
+                              const rating = showRatings[show.show_id] || 0;
+                              const fillPercentage = Math.min(Math.max(rating - starNumber + 1, 0), 1);
+
+                              return (
+                                <div key={starNumber} className="relative">
+                                  {/* Background star (empty) */}
+                                  <Star
+                                    size={16}
+                                    className="text-secondary"
+                                    fill="none"
+                                    stroke="currentColor"
+                                  />
+                                  {/* Foreground star (filled) */}
+                                  <div
+                                    className="absolute inset-0 overflow-hidden"
+                                    style={{ width: `${fillPercentage * 100}%` }}
+                                  >
+                                    <Star
+                                      size={16}
+                                      className="text-tertiary"
+                                      fill="currentColor"
+                                      stroke="currentColor"
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {/* Rating text overlaid on stars - only visible on hover */}
+                          {showRatings[show.show_id] > 0 && (
+                            <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-fifth pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                              {showRatings[show.show_id].toFixed(2)}
+                            </div>
+                          )}
+                        </div>
+                      </td>
                       <td className="w-8 text-center text-fifth">
-                        {attendeeCounts[show.show_id] > 0 && (
-                          <span className="text-xs font-medium">{attendeeCounts[show.show_id]}</span>
-                        )}
+                        <span className="text-xs font-medium">
+                          {attendeeCounts[show.show_id] || 0}
+                        </span>
                       </td>
                       <td className="w-8 text-center align-middle">
                         {show.show_wl_link && (
