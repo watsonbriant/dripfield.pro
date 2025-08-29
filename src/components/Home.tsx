@@ -1009,7 +1009,7 @@ export function Home() {
 
       <div className="flex flex-col lg:flex-row">
         {/* Left Column - adjust width based on image aspect ratio */}
-        <div className="w-full lg:w-[43%] space-y-6 mr-6">
+        <div className="w-full lg:w-[43%] space-y-4 mr-4">
           {/* Logo container with natural height on mobile, fixed on desktop */}
           <div className="h-auto md:h-[204.05px] overflow-hidden rounded-lg flex items-center justify-center">
             <img
@@ -1377,7 +1377,7 @@ export function Home() {
         </div>
 
         {/* Right Column - adjust width based on image aspect ratio */}
-        <div className="w-full lg:w-[57%] space-y-6">
+        <div className="w-full lg:w-[57%] space-y-4">
           {/* Cover Image with fixed height - hidden on mobile */}
           <div className="hidden md:block overflow-hidden rounded-lg">
             <img

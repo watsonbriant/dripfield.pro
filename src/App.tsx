@@ -42,6 +42,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
   const [showId, setShowId] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
   const navigate = useNavigate();
   const { user } = useAuth();
   const [username, setUsername] = useState<string | null>(null);
@@ -208,6 +209,15 @@ function App() {
     if (showId.trim()) {
       navigate(`/setlist/${showId.trim()}`);
       setShowId('');
+      setIsShowModalOpen(false);
+    }
+  };
+
+  const handleUserSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userId.trim()) {
+      navigate(`/user/${userId.trim()}`);
+      setUserId('');
       setIsShowModalOpen(false);
     }
   };
@@ -402,8 +412,10 @@ function App() {
             >
               <X className="w-6 h-6" />
             </button>
-            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Find a Show</h2>
-            <form onSubmit={handleShowSearch} className="space-y-4">
+            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-4">Find a Show or User</h2>
+            
+            {/* Show search form */}
+            <form onSubmit={handleShowSearch} className="space-y-4 mb-4">
               <div>
                 <label htmlFor="showId" className="block text-sm font-medium text-fifth mb-1">
                   Enter Show ID
@@ -422,7 +434,30 @@ function App() {
                 type="submit"
                 className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-secondary"
               >
-                Go
+                Go to Show
+              </button>
+            </form>
+            
+            {/* User search form */}
+            <form onSubmit={handleUserSearch} className="space-y-4">
+              <div>
+                <label htmlFor="userId" className="block text-sm font-medium text-fifth mb-1">
+                  Enter User ID
+                </label>
+                <input
+                  type="text"
+                  id="userId"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  className="w-full px-2 py-1.5 bg-canvas border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary font-light text-sm"
+                  placeholder="Enter User ID"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-secondary"
+              >
+                Go to User
               </button>
             </form>
           </div>

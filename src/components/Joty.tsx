@@ -161,7 +161,6 @@ export function Joty() {
     async function fetchData() {
       try {
         setLoading(true);
-        console.log(`Fetching regions and matches for JOTY ${selectedYear}...`);
         
         // Fetch regions for selected year with priority levels 1-4
         const { data: regionsData, error: regionsError } = await supabase
@@ -172,11 +171,8 @@ export function Joty() {
           .order('joty_region_prioritylevel', { ascending: true });
 
         if (regionsError) {
-          console.error('Error fetching regions:', regionsError);
           throw regionsError;
         }
-
-        console.log('Raw regions data from database:', regionsData);
 
         // In the fetchData function, update the matches query:
         const { data: matchesData, error: matchesError } = await supabase
@@ -208,12 +204,8 @@ export function Joty() {
         .order('joty_game', { ascending: true });
 
         if (matchesError) {
-          console.error('Error fetching matches:', matchesError);
           throw matchesError;
         }
-
-        console.log('Raw matches data from database:', matchesData);
-        console.log('Number of matches found:', matchesData?.length);
 
         if (regionsData && regionsData.length === 4 && matchesData) {
           // Process regions
@@ -271,13 +263,10 @@ export function Joty() {
             };
           });
 
-          console.log('Processed matches:', processedMatches.slice(0, 5)); // Show first 5 matches
-
           setRegions(processedRegions);
           setMatches(processedMatches);
         }
       } catch (error) {
-        console.error('Error in fetchData:', error);
       } finally {
         setLoading(false);
       }

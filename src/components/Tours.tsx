@@ -1353,7 +1353,7 @@ export function Tours() {
       )}
 
       {shows.length > 0 && hasSlotEntries && (
-        <div className="mt-6">
+        <div className="mt-4">
           <div className="bg-primary border border-secondary rounded-lg p-3">
             <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary mb-2">
               Slots
@@ -1433,9 +1433,9 @@ export function Tours() {
       )}
 
       {shows.length > 0 && hasTourSetlistEntries && (
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left column - Song Spread and Not Played In Tour */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             {/* Song Spread */}
             <TourSongSpread shows={shows} />
             
@@ -1451,7 +1451,7 @@ export function Tours() {
           </div>
 
           {/* Right column on desktop contains TopSlotsCarousel and LongestSongs */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             {/* TopSlotsCarousel */}
             {topSlots.length > 0 && (
               <TopSlotsCarousel
@@ -1474,7 +1474,7 @@ export function Tours() {
       )}
 
       {shows.length > 0 && hasTourSetlistEntries && (
-        <div className="mt-6">
+        <div className="mt-4">
           <TourSongsCombined
             shows={shows}
             songIdMap={songIdMap}

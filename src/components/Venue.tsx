@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { formatInTimeZone } from 'date-fns-tz';
+import { Star } from 'lucide-react';
 import { VenueSearch } from './VenueSearch';
 import VenueSongMatrix from './VenueSongMatrix';
 
@@ -35,6 +36,7 @@ export function Venue() {
   const [loading, setLoading] = useState(true);
   const [songIdMap, setSongIdMap] = useState<{ [songName: string]: string }>({});
   const [yearIdMap, setYearIdMap] = useState<{ [year: string]: string }>({});
+  const [showRatings, setShowRatings] = useState<Record<string, number>>({});
 
   useEffect(() => {
     async function fetchVenueData() {
@@ -190,6 +192,41 @@ export function Venue() {
     fetchVenueData();
   }, [venueId]);
 
+  useEffect(() => {
+    const fetchShowRatings = async () => {
+      if (shows.length === 0) return;
+      
+      try {
+        const showIds = shows.map(s => s.show_id);
+        
+        const { data, error } = await supabase
+          .from('show_ratings')
+          .select('show_id, rating')
+          .in('show_id', showIds);
+        
+        if (error) throw error;
+        
+        // Calculate averages for each show
+        const ratings: Record<string, number> = {};
+        shows.forEach(show => {
+          const showRatingsData = data?.filter(r => r.show_id === show.show_id) || [];
+          if (showRatingsData.length > 0) {
+            const average = showRatingsData.reduce((sum, r) => sum + r.rating, 0) / showRatingsData.length;
+            ratings[show.show_id] = Math.round(average * 100) / 100;
+          } else {
+            ratings[show.show_id] = 0;
+          }
+        });
+        
+        setShowRatings(ratings);
+      } catch (error) {
+        console.error('Error fetching show ratings:', error);
+      }
+    };
+    
+    fetchShowRatings();
+  }, [shows]);
+
   if (loading) {
     return (
       <div className="max-w-[1280px] mx-auto">
@@ -231,7 +268,7 @@ export function Venue() {
         <VenueSearch />
       </div>
 
-      <div className="space-y-6 mb-8">
+      <div className="space-y-4 mb-8">
         {/* Shows List */}
         <div className="bg-primary border border-secondary rounded-lg p-3">
           <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Shows</h2>
@@ -243,6 +280,7 @@ export function Venue() {
                   <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Group</th>
                   <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Venue</th>
                   <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Tour</th>
+                  <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Rating</th>
                   <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Detail</th>
                 </tr>
               </thead>
@@ -281,6 +319,47 @@ export function Venue() {
                           {show.show_tour}
                         </button>
                       )}
+                    </td>
+                    <td className="px-4 py-1 text-fifth whitespace-nowrap">
+                      <div className="relative flex items-center justify-center group">
+                        {/* Stars with hover-based transparency */}
+                        <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
+                          {[1, 2, 3, 4, 5].map((starNumber) => {
+                            const rating = showRatings[show.show_id] || 0;
+                            const fillPercentage = Math.min(Math.max(rating - starNumber + 1, 0), 1);
+
+                            return (
+                              <div key={starNumber} className="relative">
+                                {/* Background star (empty) */}
+                                <Star
+                                  size={16}
+                                  className="text-secondary"
+                                  fill="none"
+                                  stroke="currentColor"
+                                />
+                                {/* Foreground star (filled) */}
+                                <div
+                                  className="absolute inset-0 overflow-hidden"
+                                  style={{ width: `${fillPercentage * 100}%` }}
+                                >
+                                  <Star
+                                    size={16}
+                                    className="text-tertiary"
+                                    fill="currentColor"
+                                    stroke="currentColor"
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* Rating text overlaid on stars - only visible on hover */}
+                        {showRatings[show.show_id] > 0 && (
+                          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-fifth pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                            {showRatings[show.show_id].toFixed(2)}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-1 text-fifth whitespace-nowrap">
                       {show.show_detail && show.show_detail}

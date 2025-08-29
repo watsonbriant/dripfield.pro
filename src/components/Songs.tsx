@@ -211,9 +211,9 @@ export function Songs() {
           sectionType === 'covers' 
             ? 'sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2' 
             : 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-        } gap-6`}>
+        } gap-4`}>
           {columns.map((columnCategories, columnIndex) => (
-            <div key={`${title}-column-${columnIndex}`} className="flex flex-col gap-6">
+            <div key={`${title}-column-${columnIndex}`} className="flex flex-col gap-4">
               {columnCategories.map(category => {
                 const categorySongs = songsByCategory[category.category] || [];
                 

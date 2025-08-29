@@ -475,7 +475,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
                   key={song} 
                   className={`${songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40`}
                 >
-                  <td className="font-trad text-fifth text-[.875rem] leading-[1rem] pb-1 pl-2 whitespace-nowrap font-trad border"
+                  <td className="font-trad text-fifth text-[.875rem] leading-[1rem] pb-1 px-2 whitespace-nowrap font-trad border"
                     style={{ borderColor: 'rgb(180, 178, 178)' }}>
                     <button 
                       onClick={() => {

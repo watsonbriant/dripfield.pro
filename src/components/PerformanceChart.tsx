@@ -4,6 +4,7 @@ import { formatInTimeZone } from 'date-fns-tz';
 import { ArrowUp, ArrowDown, ArrowUpDown, MoveRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import JOTYBadge from './JOTYBadge';
 
 const tooltipStyles = `
   .hang {
@@ -36,6 +37,7 @@ interface ChartPerformance {
   entry_setnum: string;
   entry_song?: string;
   entry_segue?: string | null;
+  joty_round?: string | null; 
 }
 
 interface PerformanceChartProps {
@@ -387,6 +389,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                   {getSortIcon('entry_song')}
                 </div>
               </th>
+              <th className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap">
+                JOTY
+              </th>
               <th 
                 className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('entry_length')}
@@ -487,7 +492,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                     )}
                   </td>
                   <td className="px-4 py-1 text-fifth">
-                    {/* Check if entry_song exists and is not just ">" */}
                     {(perf.entry_song && perf.entry_song !== '>') ? (
                       <span className="font-medium">
                         <span className="mr-2">{perf.entry_song}</span>
@@ -501,6 +505,19 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                       >
                         &gt;
                       </button>
+                    )}
+                  </td>
+                  <td className="px-4 py-1 text-fifth font-light whitespace-nowrap text-center">
+                    {perf.joty_round && (
+                      <JOTYBadge 
+                        round={perf.joty_round} 
+                        compact={true}
+                        onClick={() => {
+                          // Extract year from the show date
+                          const year = new Date(perf.show_date).getFullYear();
+                          navigate(`/joty/${year}`);
+                        }}
+                      />
                     )}
                   </td>
                   <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">

@@ -148,7 +148,7 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
   if (!shouldShowLength && !shouldShowRarity) return null;
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 mb-6">
+    <div className="bg-primary border border-secondary rounded-lg p-3 mb-4">
       {shouldShowLength && (
         <div>
           <div className="flex justify-between items-center mb-1">

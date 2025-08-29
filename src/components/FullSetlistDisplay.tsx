@@ -457,7 +457,7 @@ export default function FullSetlistDisplay({
   return (
     <div className="w-full space-y-0">
       {/* Mobile view content */}
-      <div className="lg:hidden space-y-6">
+      <div className="lg:hidden space-y-4">
         <ShowInfoContent 
           show={show} 
           navigateToVenue={navigateToVenue} 
@@ -469,7 +469,7 @@ export default function FullSetlistDisplay({
         {show.show_coachnotes && (
           <div className="bg-primary border border-secondary rounded-lg p-3">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-semibold text-fifth">Show Notes</h2>
+              <h2 className="text-lg font-medium text-fifth">Show Notes</h2>
               <Pen className="text-fifth w-[1rem] h-[1rem]" />
             </div>
             <div 
@@ -488,9 +488,9 @@ export default function FullSetlistDisplay({
       {/* Desktop layout */}
       <div className="space-y-6">
         {/* Main content area */}
-        <div className={`flex flex-col lg:flex-row lg:gap-6 ${setlist.length === 0 ? 'lg:block' : ''}`}>
+        <div className={`flex flex-col lg:flex-row lg:gap-4 ${setlist.length === 0 ? 'lg:block' : ''}`}>
           {/* Main setlist content */}
-          <div className={`flex-1 space-y-6 min-w-0 lg:mt-0 ${setlist.length === 0 ? 'lg:hidden' : ''}`}>
+          <div className={`flex-1 space-y-4 min-w-0 lg:mt-0 ${setlist.length === 0 ? 'lg:hidden' : ''}`}>
             {/* Setlist table */}
             {setlist.length > 0 && (
               <div className="bg-primary border border-secondary rounded-lg p-3 overflow-x-auto">
@@ -934,7 +934,7 @@ export default function FullSetlistDisplay({
 
             {/* Callbacks container */}
             {setlist.length > 0 && show.show_callbacks && (
-              <div className="bg-primary border border-secondary rounded-lg p-4 text-sm">
+              <div className="bg-primary border border-secondary rounded-lg p-3 text-sm">
                 <div 
                   className="font-light text-fifth [&_a]:text-fifth [&_a]:border [&_a]:border-secondary [&_a]:bg-tertiary [&_a]:rounded-lg [&_a]:py-0.5 [&_a]:px-1 [&_a]:font-medium"
                   dangerouslySetInnerHTML={{ __html: show.show_callbacks }}
@@ -944,12 +944,12 @@ export default function FullSetlistDisplay({
             
             {/* Stats and Guest Legend section */}
             {setlist.length > 0 && (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Desktop layout with grid */}
-                <div className="hidden md:grid grid-cols-2 gap-6 items-start">
+                <div className="hidden md:grid grid-cols-2 gap-4 items-start">
                   <SongSpread setlist={setlist} />
                   
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {guestGroups.length > 0 && (
                       <div className="bg-primary border border-secondary rounded-lg p-3 h-fit relative">
                         <User className="w-5 h-5 text-fifth absolute top-3 right-3" />
@@ -1020,15 +1020,15 @@ export default function FullSetlistDisplay({
                 </div>
 
                 {/* Mobile layout - stacked */}
-                <div className="md:hidden space-y-6">
+                <div className="md:hidden space-y-4">
                   <SongSpread setlist={setlist} />
                   
                   {/* Changes component */}
                   {showId && <ShowChanges showId={showId} />}
                   
                   {guestGroups.length > 0 && (
-                    <div className="bg-primary border border-secondary rounded-lg p-4 h-fit relative">
-                      <User className="w-5 h-5 text-fifth absolute top-4 right-4" />
+                    <div className="bg-primary border border-secondary rounded-lg p-3 h-fit relative">
+                      <User className="w-5 h-5 text-fifth absolute top-3 right-3" />
                       <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
                         {guestGroups.map((group, index) => (
                           <React.Fragment key={index}>
@@ -1096,7 +1096,7 @@ export default function FullSetlistDisplay({
           </div>
 
           {/* Sidebar - only visible on desktop */}
-          <div className={`hidden lg:block ${setlist.length === 0 ? 'w-full' : 'w-[270px] shrink-0'} space-y-6`}>
+          <div className={`hidden lg:block ${setlist.length === 0 ? 'w-full' : 'w-[270px] shrink-0'} space-y-4`}>
             <ShowInfoContent 
               show={show} 
               navigateToVenue={navigateToVenue} 

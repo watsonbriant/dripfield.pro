@@ -200,7 +200,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                 {songs.map((song, index) => (
                   <div key={index}>
                     <span className="font-medium">{song.song}</span>
-                    {song.artist && <>&nbsp;&nbsp;[{song.artist}]</>}
+                    {song.artist && <>&nbsp;&nbsp;[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</>}
                     &nbsp;&nbsp;[{song.playCount}]
                   </div>
                 ))}

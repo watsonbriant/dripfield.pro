@@ -943,7 +943,7 @@ export function SetlistGameShowPage() {
           <p className="text-fifth mt-4">Loading show details...</p>
         </div>
       ) : show ? (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Show Info Header */}
           <div className="bg-primary border border-secondary rounded-lg p-3">
             <div className="flex flex-col items-center text-center md:flex-row md:justify-between md:items-center md:text-left">
@@ -1120,21 +1120,21 @@ export function SetlistGameShowPage() {
           ) : (
             <div className="bg-primary border border-secondary rounded-lg p-3 text-center">
               <div className="flex items-center justify-center mb-2">
-                <List className="w-10 h-10 text-[#a9682e]" />
+                <List className="w-8 h-8 text-[#a9682e]" />
               </div>
 
               {show.isSelectionClosed ? (
                 <>
-                  <h2 className="text-xl font-medium text-fifth mb-2">
+                  <h2 className="text-base font-medium text-fifth mb-1">
                     Picks are closed for this show.
                   </h2>
-                  <p className="text-fifth max-w-lg mx-auto">
+                  <p className="text-fifth text-xs font-light max-w-lg mx-auto">
                     Check back later to see results after the setlist has been scored.
                   </p>
                 </>
               ) : (
                 <>
-                  <h2 className="text-lg font-medium text-fifth mb-2">
+                  <h2 className="text-base font-medium text-fifth mb-2">
                     Show is open for picks.
                   </h2>
                   {user ? (
@@ -1343,7 +1343,7 @@ export function SetlistGameShowPage() {
             </div>
 
             {/* Desktop view - show grid layout with all three sections */}
-            <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6">
+            <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4">
               {/* Top Songs Picked */}
               <div className="bg-primary border border-secondary rounded-lg p-3">
                 <h3 className="text-lg font-semibold bg-fourth text-primary inline-flex px-3 py-0.5 rounded-lg border border-secondary mb-3 flex items-center gap-2">

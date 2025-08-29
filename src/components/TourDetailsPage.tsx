@@ -477,7 +477,7 @@ export function TourDetailsPage() {
                     <p className="text-fifth mt-4">Loading tour details...</p>
                 </div>
             ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                     {/* Tour Info Card */}
                     <div className="bg-primary border border-secondary rounded-lg p-3">
                         <div className="flex flex-col md:flex-row md:justify-between md:items-center">

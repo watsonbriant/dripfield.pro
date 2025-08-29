@@ -33,6 +33,7 @@ interface Performance {
   entry_set: string;
   entry_setnum: number;
   entry_song: string;
+  joty_round?: string | null;
   guests: {
     guest_display_name: string;
   }[];
@@ -313,6 +314,9 @@ export function Song() {
             entry_short,
             entry_set,
             entry_setnum,
+            joty_results (
+              round_achieved
+            ),
             shows (
               show_date,
               show_group,
@@ -346,7 +350,8 @@ export function Song() {
           entry_short: perf.entry_short,
           entry_set: perf.entry_set,
           entry_setnum: perf.entry_setnum,
-          entry_song: songData.song, // Add this line
+          entry_song: songData.song, 
+          joty_round: perf.joty_results?.round_achieved || null,
           guests: perf.setlist_entry_guests?.map(g => ({
             guest_display_name: g.guests.guest_displayname
           })) || []
@@ -410,10 +415,10 @@ export function Song() {
       </div>
     
       <div className={`${song.song_lyrics 
-        ? "grid grid-cols-1 gap-6 space-y-0 xl:grid-cols-[minmax(936px,1fr)_1fr]" 
-        : "space-y-6"} mb-8`}>
+        ? "grid grid-cols-1 gap-4 space-y-0 xl:grid-cols-[minmax(936px,1fr)_1fr]" 
+        : "space-y-4"} mb-8`}>
         {/* Left column - main content */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Info Containers */}
           <div className={`grid grid-cols-1 ${
             // If no performances and no notes, full width
@@ -424,7 +429,7 @@ export function Song() {
               ? 'md:grid-cols-2'
               // Otherwise, split in three
               : 'md:grid-cols-3'
-          } gap-6`}>
+          } gap-4`}>
             {/* Song Info */}
             <div className="h-full">
               <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">

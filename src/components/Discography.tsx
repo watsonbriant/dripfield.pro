@@ -282,7 +282,7 @@ export function Discography() {
               </div>
 
               {/* Albums Grid for this Category Type */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {groupedAlbums[categoryTypeDisplay].map((album) => (
                   <div
                     key={album.title}

@@ -263,7 +263,9 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
                 {songs.map((song, index) => (
                   <div key={index}>
                     <span className="font-medium">{song.song}</span>
-                    {song.isSpecialCategory && song.artist && <>&nbsp;&nbsp;[{song.artist}]</>}
+                    {song.isSpecialCategory && song.artist && (
+                      <>&nbsp;&nbsp;[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</>
+                    )}
                   </div>
                 ))}
               </div>

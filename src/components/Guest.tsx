@@ -356,9 +356,9 @@ export function Guest() {
         <GuestSearch />
       </div>
 
-      <div className="space-y-6 mb-8">
+      <div className="space-y-4 mb-8">
         {/* Top row with Song List and Performances by Group side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Song List - Only show if there are performances */}
           {performances.length > 0 && (
             <div className="h-full">

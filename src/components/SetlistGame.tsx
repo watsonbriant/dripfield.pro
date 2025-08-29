@@ -995,7 +995,7 @@ export function SetlistGame() {
           <p className="text-fifth mt-4">Loading setlist games...</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {!user && (
             <div className="bg-primary border border-secondary rounded-lg p-3">
               <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap mb-3">How To Play</h2>
