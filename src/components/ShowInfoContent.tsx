@@ -176,6 +176,8 @@ const ShowInfoContent = React.memo(({
         <StarRating 
           showId={show.show_id} 
           isVisible={show.rating_visibility || false}
+          showDate={show.show_date}
+          showVenueLocation={show.show_venue_location}
         />
       </div>
 
