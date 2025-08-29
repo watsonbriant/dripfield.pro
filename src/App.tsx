@@ -33,7 +33,7 @@ import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 import { Joty } from './components/Joty';
 import sparklePic from './img/sparkle.png';
-import bgPic from './img/bg3.jpg';
+import bgPic from './img/bg4.jpg';
 
 import logo from './img/Logo2_Text.png';
 import logo2 from './img/Logo3_Text.jpg';
@@ -237,7 +237,7 @@ function App() {
     >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
-        <header className="z-20 bg-primary border-b border-secondary/15 px-6 py-1 md:sticky md:top-0">
+        <header className="z-20 bg-primary border-b border-secondary/15 px-6 md:sticky md:top-0">
           <div className="flex items-center max-w-[1280px] mx-auto w-full">
           <button
             onClick={handleLogoClick}
