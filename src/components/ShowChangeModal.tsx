@@ -60,15 +60,53 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
 
     const fetchSongs = async () => {
       try {
-        const { data, error } = await supabase
+        // First get the total count
+        const { count, error: countError } = await supabase
           .from('songs')
-          .select('song, song_id')
-          .order('song');
+          .select('*', { count: 'exact', head: true })
+          .eq('song_placeholder', false);
         
-        if (error) throw error;
-        setSongs(data || []);
+        if (countError) {
+          console.error('Error fetching count:', countError);
+          throw countError;
+        }
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allData: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('songs')
+            .select('song, song_id')
+            .eq('song_placeholder', false)
+            .order('song', { ascending: true })
+            .range(start, end);
+          
+          if (error) {
+            console.error(`Error fetching batch ${i + 1}:`, error);
+            throw error;
+          }
+          
+          if (data) {
+            allData = [...allData, ...data];
+          }
+        }
+        
+        if (allData.length > 0) {
+          const mappedSongs = allData.map(s => ({ song: s.song, song_id: s.song_id }));
+          setSongs(mappedSongs);
+        } else {
+          console.warn('❌ No data returned from query');
+          setSongs([]);
+        }
       } catch (error) {
-        console.error('Error fetching songs:', error);
+        console.error('❌ Error in fetchSongs:', error);
+        setSongs([]);
       }
     };
 
