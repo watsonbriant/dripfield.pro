@@ -429,7 +429,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                         <div className="w-4 h-4 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>
                     ) : (
                         <div 
-                            className="text-right lg:text-left cursor-pointer hover:text-fourth transition-colors"
+                            className="text-right lg:text-left cursor-pointer hover:text-fourth hover:underline transition-colors"
                             onClick={handleShowReviews}
                             title="Click to see reviews"
                         >
@@ -437,7 +437,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                                 {averageRating > 0 ? averageRating.toFixed(2) : ''}
                             </span>
                             {ratingCount > 0 && (
-                                <span className="text-xs text-fifth/70 ml-2 hover:text-fourth/70">
+                                <span className="text-xs text-fifth/70 ml-2">
                                     ({ratingCount} review{ratingCount > 1 ? 's' : ''})
                                 </span>
                             )}
