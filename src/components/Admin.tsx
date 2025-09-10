@@ -7,6 +7,8 @@ import { AdminGuest } from './AdminGuest';
 import { AdminShow } from './AdminShow';
 import { AdminChanges } from './AdminChanges';
 import { AdminReleases } from './AdminReleases';
+import { AdminVenue } from './AdminVenue';
+import { AdminSubvenue } from './AdminSubvenue';
 
 export function Admin() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -28,7 +30,7 @@ export function Admin() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   
   // Memoize tabs array to prevent re-creation on each render
-  const tabs = useMemo(() => ['Setlist', 'Artist', 'Song', 'Guest', 'Show', 'Changes', 'Releases'], []);
+  const tabs = useMemo(() => ['Setlist', 'Artist', 'Song', 'Guest', 'Show', 'Changes', 'Releases', 'Venue', 'Subvenue'], []);
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {
@@ -175,6 +177,18 @@ export function Admin() {
         return (
           <div className="bg-primary border border-secondary rounded-lg p-3">
             <AdminReleases />
+          </div>
+        );
+      case 'Venue':
+        return (
+          <div className="bg-primary border border-secondary rounded-lg p-3">
+            <AdminVenue />
+          </div>
+        );
+      case 'Subvenue':
+        return (
+          <div className="bg-primary border border-secondary rounded-lg p-3">
+            <AdminSubvenue />
           </div>
         );
       default:
