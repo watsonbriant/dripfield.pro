@@ -51,20 +51,52 @@ export function ShowReleaseModal({
     const fetchAvailableReleases = async () => {
         setLoading(true);
         try {
-            // First get all releases
-            const { data: allReleases, error: releasesError } = await supabase
-                .from('releases')
-                .select('release_id, release, release_displayname, release_service')
-                .order('release_displayname', { ascending: true });
+            // Fetch all releases with pagination
+            let allReleases: Release[] = [];
+            let releasePage = 0;
+            let hasMoreReleases = true;
+            const releasePageSize = 1000;
 
-            if (releasesError) throw releasesError;
+            while (hasMoreReleases) {
+                const { data, error } = await supabase
+                    .from('releases')
+                    .select('release_id, release, release_displayname, release_service')
+                    .order('release_displayname', { ascending: true })
+                    .range(releasePage * releasePageSize, (releasePage + 1) * releasePageSize - 1);
 
-            // Get ALL release associations (not just for this show)
-            const { data: allShowReleases, error: allShowReleasesError } = await supabase
-                .from('releases_shows')
-                .select('release_id');
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    allReleases = [...allReleases, ...data];
+                    releasePage++;
+                    hasMoreReleases = data.length === releasePageSize;
+                } else {
+                    hasMoreReleases = false;
+                }
+            }
 
-            if (allShowReleasesError) throw allShowReleasesError;
+            // Get ALL release associations with pagination
+            let allShowReleases: { release_id: string }[] = [];
+            let associationPage = 0;
+            let hasMoreAssociations = true;
+            const associationPageSize = 1000;
+
+            while (hasMoreAssociations) {
+                const { data, error } = await supabase
+                    .from('releases_shows')
+                    .select('release_id')
+                    .range(associationPage * associationPageSize, (associationPage + 1) * associationPageSize - 1);
+
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    allShowReleases = [...allShowReleases, ...data];
+                    associationPage++;
+                    hasMoreAssociations = data.length === associationPageSize;
+                } else {
+                    hasMoreAssociations = false;
+                }
+            }
 
             // Get releases already associated with THIS show
             const { data: thisShowReleases, error: thisShowReleasesError } = await supabase

@@ -24,21 +24,37 @@ export function AdminReleases() {
   const fetchReleases = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('releases')
-        .select('*')
-        .order('release_displayname', { ascending: true });
+        // Use pagination to fetch all releases
+        let allReleasesData: Release[] = [];
+        let page = 0;
+        let hasMore = true;
+        const pageSize = 1000;
+        
+        while (hasMore) {
+            const { data, error } = await supabase
+                .from('releases')
+                .select('*')
+                .order('release_displayname', { ascending: true })
+                .range(page * pageSize, (page + 1) * pageSize - 1);
 
-      if (error) throw error;
-      if (data) {
-        setReleases(data);
-      }
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+                allReleasesData = [...allReleasesData, ...data];
+                page++;
+                hasMore = data.length === pageSize;
+            } else {
+                hasMore = false;
+            }
+        }
+        
+        setReleases(allReleasesData || []);
     } catch (error) {
-      console.error('Error fetching releases:', error);
+        console.error('Error fetching releases:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  }, []);
+}, []);
 
   // Fetch releases on component mount
   useEffect(() => {
