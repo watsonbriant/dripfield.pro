@@ -166,7 +166,7 @@ export const AdminArtist: React.FC = () => {
                     No artists found
                   </div>
                 )}
-              </div>n
+              </div>
             </div>
           )}
         </div>
