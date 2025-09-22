@@ -1090,7 +1090,7 @@ export default function FullSetlistDisplay({
             )}
 
             {/* Mobile-only ReleaseContainer - appears after the guest legend */}
-            <div className="lg:hidden">
+            <div className="lg:hidden [&_img]:max-h-[315px] [&_img]:object-contain">
               {showId && <ReleaseContainer showId={showId} />}
             </div>
           </div>

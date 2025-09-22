@@ -61,10 +61,43 @@ const renderDisplayName = (displayName: string | null, release: string) => {
   return text;
 };
 
+// Function to fetch Bandcamp album ID via Supabase Edge Function
+const fetchBandcampAlbumId = async (bandcampUrl: string): Promise<string | null> => {
+  try {
+    const { data, error } = await supabase.functions.invoke('get-bandcamp-album-id', {
+      body: { url: bandcampUrl }
+    });
+    
+    if (error) {
+      console.error('Edge function error:', error);
+      return null;
+    }
+    
+    return data.albumId || null;
+  } catch (error) {
+    console.error('Error calling Bandcamp Edge Function:', error);
+    return null;
+  }
+};
+
+// Function to convert YouTube watch URL to embed URL
+const convertToYouTubeEmbed = (youtubeUrl: string): string => {
+  const videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
+  const videoId = videoIdMatch ? videoIdMatch[1] : null;
+  
+  if (videoId) {
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  
+  return youtubeUrl; // Return original if can't parse
+};
+
 const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
   const [releases, setReleases] = useState<Release[]>([]);
   const [currentReleaseIndex, setCurrentReleaseIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [embeddedReleaseIndex, setEmbeddedReleaseIndex] = useState<number | null>(null);
+  const [albumId, setAlbumId] = useState<string | null>(null);
 
   // Memoize the fetch function
   const fetchReleases = useCallback(async () => {
@@ -113,6 +146,26 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
     }
   }, [showId]);
 
+  // Handle streaming service release click
+  const handleStreamingClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    const currentRelease = releases[currentReleaseIndex];
+    const service = currentRelease.release_service?.toLowerCase();
+    
+    if (service === 'bandcamp' && currentRelease.release_link) {
+      const fetchedAlbumId = await fetchBandcampAlbumId(currentRelease.release_link);
+      if (fetchedAlbumId) {
+        setAlbumId(fetchedAlbumId);
+        setEmbeddedReleaseIndex(currentReleaseIndex);
+      }
+    } else if (service === 'youtube' && currentRelease.release_link) {
+      // For YouTube, we don't need to fetch anything - just set the embed state
+      setAlbumId(null); // Clear any previous Bandcamp album ID
+      setEmbeddedReleaseIndex(currentReleaseIndex);
+    }
+  };
+
   // Fetch releases when showId changes
   useEffect(() => {
     let isMounted = true;
@@ -120,6 +173,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
     const loadData = async () => {
       setIsLoading(true);
       setCurrentReleaseIndex(0);
+      setEmbeddedReleaseIndex(null);
       
       const data = await fetchReleases();
       
@@ -154,24 +208,71 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
       <div className="flex flex-col items-center">
         {releases.length > 0 && currentReleaseIndex < releases.length && (
           <div className="flex flex-col items-center w-full">
-            {releases[currentReleaseIndex]?.release_link ? (
-              <a 
-                href={releases[currentReleaseIndex].release_link}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="relative w-full mx-auto mb-3 block cursor-pointer"
-              >
-                <img 
-                  src={releases[currentReleaseIndex].release_artwork} 
-                  alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
-                  className="w-full h-full object-cover rounded-lg border border-secondary"
-                  onError={(e) => {
-                    // Handle error silently
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                  }}
-                />
-              </a>
+            {embeddedReleaseIndex === currentReleaseIndex && (albumId || releases[currentReleaseIndex].release_service?.toLowerCase() === 'youtube') ? (
+              <div className="relative w-full mx-auto mb-3 flex justify-center">
+                {releases[currentReleaseIndex].release_service?.toLowerCase() === 'bandcamp' && albumId ? (
+                  <iframe 
+                    style={{ 
+                      border: 0, 
+                      width: 'min(245px, 100%)', 
+                      height: '390px' 
+                    }}
+                    src={`https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/`}
+                    seamless
+                    title={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
+                  />
+                ) : releases[currentReleaseIndex].release_service?.toLowerCase() === 'youtube' ? (
+                  <iframe 
+                    className="lg:!h-[138px]"
+                    style={{ 
+                      border: 0, 
+                      width: 'min(560px, 100%)', 
+                      height: '200px' 
+                    }}
+                    src={convertToYouTubeEmbed(releases[currentReleaseIndex].release_link!)}
+                    title={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                ) : null}
+              </div>
+            ) : releases[currentReleaseIndex]?.release_link ? (
+              releases[currentReleaseIndex].release_service?.toLowerCase() === 'bandcamp' || releases[currentReleaseIndex].release_service?.toLowerCase() === 'youtube' ? (
+                <div 
+                  onClick={handleStreamingClick}
+                  className="relative w-full mx-auto mb-3 block cursor-pointer bg-canvas rounded-lg"
+                >
+                  <img 
+                    src={releases[currentReleaseIndex].release_artwork} 
+                    alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
+                    className="w-full h-full object-cover rounded-lg border border-secondary hover:opacity-70 transition-opacity"
+                    onError={(e) => {
+                      // Handle error silently
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              ) : (
+                <a 
+                  href={releases[currentReleaseIndex].release_link}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="relative w-full mx-auto mb-3 block cursor-pointer bg-canvas rounded-lg"
+                >
+                  <img 
+                    src={releases[currentReleaseIndex].release_artwork} 
+                    alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
+                    className="w-full h-full object-cover rounded-lg border border-secondary hover:opacity-70 transition-opacity"
+                    onError={(e) => {
+                      // Handle error silently
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                </a>
+              )
             ) : (        
               <div className="relative w-full mx-auto mb-4">
                 <img 
@@ -192,15 +293,25 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
               </h3>
               {releases[currentReleaseIndex]?.release_link && (
                 <div className="flex justify-center">
-                  <a 
-                    href={releases[currentReleaseIndex].release_link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1 text-black hover:underline font-normal text-xs transition-colors text-center"
-                  >
-                    {getServiceIcon(releases[currentReleaseIndex].release_service)}
-                    <span>{releases[currentReleaseIndex].release_service || "Streaming Service"}</span>
-                  </a>
+                  {releases[currentReleaseIndex].release_service?.toLowerCase() === 'bandcamp' || releases[currentReleaseIndex].release_service?.toLowerCase() === 'youtube' ? (
+                    <div 
+                      onClick={handleStreamingClick}
+                      className="flex items-center justify-center gap-1 text-black hover:underline font-normal text-xs transition-colors text-center cursor-pointer"
+                    >
+                      {getServiceIcon(releases[currentReleaseIndex].release_service)}
+                      <span>{releases[currentReleaseIndex].release_service || "Streaming Service"}</span>
+                    </div>
+                  ) : (
+                    <a 
+                      href={releases[currentReleaseIndex].release_link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1 text-black hover:underline font-normal text-xs transition-colors text-center"
+                    >
+                      {getServiceIcon(releases[currentReleaseIndex].release_service)}
+                      <span>{releases[currentReleaseIndex].release_service || "Streaming Service"}</span>
+                    </a>
+                  )}
                 </div>
               )}
             </div>
@@ -209,7 +320,10 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
             {releases.length > 1 && (
               <div className="flex justify-center items-center mt-2 gap-4">
                 <button
-                  onClick={() => setCurrentReleaseIndex(prev => (prev - 1 + releases.length) % releases.length)}
+                  onClick={() => {
+                    setCurrentReleaseIndex(prev => (prev - 1 + releases.length) % releases.length);
+                    setEmbeddedReleaseIndex(null);
+                  }}
                   className="p-1 rounded-full border text-black bg-tertiary border-secondary hover:bg-primary hover:text-black transition-colors"
                   aria-label="Previous release"
                 >
@@ -219,7 +333,10 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                   {releases.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentReleaseIndex(index)}
+                      onClick={() => {
+                        setCurrentReleaseIndex(index);
+                        setEmbeddedReleaseIndex(null);
+                      }}
                       className={`w-2 h-2 rounded-full transition-colors ${
                         currentReleaseIndex === index 
                           ? 'bg-black' 
@@ -231,7 +348,10 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                   ))}
                 </div>
                 <button
-                  onClick={() => setCurrentReleaseIndex(prev => (prev + 1) % releases.length)}
+                  onClick={() => {
+                    setCurrentReleaseIndex(prev => (prev + 1) % releases.length);
+                    setEmbeddedReleaseIndex(null);
+                  }}
                   className="p-1 rounded-full border text-black bg-tertiary border-secondary hover:bg-primary hover:text-black transition-colors"
                   aria-label="Next release"
                 >
