@@ -246,7 +246,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                   <img 
                     src={releases[currentReleaseIndex].release_artwork} 
                     alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
-                    className="w-full h-full object-cover rounded-lg border border-secondary hover:opacity-70 transition-opacity"
+                    className="w-full h-auto rounded-lg border border-secondary hover:opacity-70 transition-opacity"
                     onError={(e) => {
                       // Handle error silently
                       const target = e.target as HTMLImageElement;
@@ -264,7 +264,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                   <img 
                     src={releases[currentReleaseIndex].release_artwork} 
                     alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
-                    className="w-full h-full object-cover rounded-lg border border-secondary hover:opacity-70 transition-opacity"
+                    className="w-full h-auto rounded-lg border border-secondary hover:opacity-70 transition-opacity"
                     onError={(e) => {
                       // Handle error silently
                       const target = e.target as HTMLImageElement;
@@ -278,7 +278,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
                 <img 
                   src={releases[currentReleaseIndex].release_artwork} 
                   alt={releases[currentReleaseIndex].release_displayname || releases[currentReleaseIndex].release}
-                  className="w-full h-full object-cover rounded-lg border border-secondary"
+                  className="w-full h-auto rounded-lg border border-secondary"
                   onError={(e) => {
                     // Handle error silently
                     const target = e.target as HTMLImageElement;

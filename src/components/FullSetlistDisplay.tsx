@@ -1016,6 +1016,13 @@ export default function FullSetlistDisplay({
                       openModal={openChangesModal} 
                       setOpenModal={setOpenChangesModal} 
                     />}
+                    
+                    {/* Add ReleaseContainer here for medium+ screens */}
+                    {showId && (
+                      <div className="lg:hidden [&_img]:object-contain">
+                        <ReleaseContainer showId={showId} />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1085,14 +1092,16 @@ export default function FullSetlistDisplay({
                       </div>
                     </div>
                   )}
+
+                  {/* ReleaseContainer for mobile only */}
+                  {showId && (
+                    <div className="[&_img]:object-contain">
+                      <ReleaseContainer showId={showId} />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
-
-            {/* Mobile-only ReleaseContainer - appears after the guest legend */}
-            <div className="lg:hidden [&_img]:max-h-[315px] [&_img]:object-contain">
-              {showId && <ReleaseContainer showId={showId} />}
-            </div>
           </div>
 
           {/* Sidebar - only visible on desktop */}
