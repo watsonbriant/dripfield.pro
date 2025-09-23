@@ -1168,7 +1168,7 @@ export function Tours() {
               <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
                 {currentTour}
               </h2>
-              <span className="text-fifth font-semibold text-lg">{shows.length} {shows.length === 1 ? 'Show' : 'Shows'}</span>
+              <span className="text-fifth font-semibold text-lg whitespace-nowrap pl-4">{shows.length} {shows.length === 1 ? 'Show' : 'Shows'}</span>
             </div>
 
             <div className="overflow-x-auto">

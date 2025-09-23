@@ -473,7 +473,7 @@ export default function FullSetlistDisplay({
               <Pen className="text-fifth w-[1rem] h-[1rem]" />
             </div>
             <div 
-              className="text-fifth text-xs [&_a]:text-[#a9682e] hover:[&_a]:text-[#a9682e]/80 [&_a]:font-semibold mt-2"
+              className="text-fifth font-light text-xs hover:[&_a]:underline [&_a]:font-medium mt-2"
               dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
             />
           </div>

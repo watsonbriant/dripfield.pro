@@ -1029,7 +1029,7 @@ export function Home() {
             <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">Last 5 Shows</h2>
             {loading ? (
               <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading shows...</p>
+                <p className="text-fifth/70">Loading shows...</p>
               </div>
             ) : (
               <div className="overflow-x-auto relative">
@@ -1138,7 +1138,7 @@ export function Home() {
             </div>
             {loadingMostRecent ? (
               <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading show...</p>
+                <p className="text-fifth/70">Loading show...</p>
               </div>
             ) : mostRecentShow ? (
               <div>
@@ -1164,7 +1164,7 @@ export function Home() {
 
                 {loadingSetlist ? (
                   <div className="text-center py-4">
-                    <p className="text-[#fce7ca]/70">Loading setlist...</p>
+                    <p className="text-fifth/70">Loading setlist...</p>
                   </div>
                 ) : setlist.length > 0 ? (
                   <SetlistDisplay setlist={setlist} navigate={navigate} />
@@ -1176,7 +1176,7 @@ export function Home() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">No recent shows found</p>
+                <p className="text-fifth/70">No recent shows found</p>
               </div>
             )}
           </div>
@@ -1186,7 +1186,7 @@ export function Home() {
             <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">Next 5 Shows</h2>
             {loadingUpcoming ? (
               <div className="text-center py-12">
-                <p className="text-[#fce7ca]/70">Loading shows...</p>
+                <p className="text-fifth/70">Loading shows...</p>
               </div>
             ) : (
               <div className="overflow-x-auto relative">
@@ -1281,7 +1281,7 @@ export function Home() {
             <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">This Day in Goose History</h2>
             {loadingHistorical ? (
               <div className="text-center py-2 text-xs">
-                <p className="text-[#fce7ca]/70">Loading shows...</p>
+                <p className="text-fifth/70">Loading shows...</p>
               </div>
             ) : historicalShows.length === 0 ? (
               <div className="text-center py-2 text-sm">
