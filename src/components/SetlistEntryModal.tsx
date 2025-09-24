@@ -98,28 +98,31 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   
   // Add the updateStatistics function - runs in background without blocking save
   const updateStatistics = async () => {
-    console.log('Starting background statistics update...');
+    console.log('Starting background statistics update via Edge Function...');
     
-    // Don't await - let it run in background without blocking the save operation
-    supabase.rpc('update_all_setlist_entries')
-      .then(({ error }) => {
+    supabase.functions
+      .invoke('update-statistics', {
+        body: { action: 'update_all_setlist_entries' }
+      })
+      .then(({ data, error }) => {
         if (error) {
           console.error('Background stats update failed:', error);
-          
-          // Check if it's a timeout error
-          if (error.code === '57014' || error.message?.includes('timeout')) {
-            console.warn('RPC function timed out during background update. Entry was saved successfully.');
-          }
         } else {
-          console.log('Background stats update completed successfully');
+          console.log('Background stats update completed:', data);
+          
+          // Log individual results if available
+          if (data.results) {
+            console.log('Setorder update:', data.results.setorder);
+            console.log('Tour counts update:', data.results.tour_counts);
+            console.log('Statistics update:', data.results.statistics);
+          }
         }
       })
       .catch(error => {
         console.error('Background stats update error:', error);
       });
     
-    // Return immediately so save operation can complete
-    console.log('Statistics update running in background, save operation continuing...');
+    console.log('Statistics update running in background via Edge Function, save operation continuing...');
   };
 
   // Filtered songs based on search term
