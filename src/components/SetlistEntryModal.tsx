@@ -95,15 +95,29 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
 
   const [selectedNewSongOption, setSelectedNewSongOption] = useState<string>("N/A");
 
-  // Add the updateStatistics function
+  
+  // Add the updateStatistics function with console logging
   const updateStatistics = async () => {
+    console.log('🚀 Starting RPC update_all_setlist_entries...');
+    const startTime = Date.now();
+    
     try {
       const { error } = await supabase.rpc('update_all_setlist_entries');
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      
       if (error) {
-        console.error('Error updating statistics:', error);
+        console.error('❌ RPC update_all_setlist_entries failed:', error);
+        console.error('⏱️  Failed after:', duration, 'ms');
+      } else {
+        console.log('✅ RPC update_all_setlist_entries completed successfully');
+        console.log('⏱️  Execution time:', duration, 'ms');
       }
     } catch (error) {
-      console.error('Error calling update function:', error);
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      console.error('💥 Error calling update_all_setlist_entries:', error);
+      console.error('⏱️  Error occurred after:', duration, 'ms');
     }
   };
 
