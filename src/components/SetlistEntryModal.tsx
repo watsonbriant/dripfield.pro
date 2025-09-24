@@ -98,31 +98,20 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   
   // Add the updateStatistics function - runs in background without blocking save
   const updateStatistics = async () => {
-    console.log('Starting background statistics update via Edge Function...');
-    
     supabase.functions
       .invoke('update-statistics', {
         body: { action: 'update_all_setlist_entries' }
       })
       .then(({ data, error }) => {
         if (error) {
-          console.error('Background stats update failed:', error);
+          // Error handling without console logging
         } else {
-          console.log('Background stats update completed:', data);
-          
-          // Log individual results if available
-          if (data.results) {
-            console.log('Setorder update:', data.results.setorder);
-            console.log('Tour counts update:', data.results.tour_counts);
-            console.log('Statistics update:', data.results.statistics);
-          }
+          // Success handling without console logging
         }
       })
       .catch(error => {
-        console.error('Background stats update error:', error);
+        // Error handling without console logging
       });
-    
-    console.log('Statistics update running in background via Edge Function, save operation continuing...');
   };
 
   // Filtered songs based on search term
@@ -241,7 +230,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         
         setAllGuests(groupedGuests);
       } catch (error) {
-        console.error('Error fetching options:', error);
+        // Error handling without console logging
       }
     };
 
@@ -329,7 +318,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         setSelectedGuestIds(guestIds);
       }
     } catch (error) {
-      console.error('Error fetching entry guests:', error);
+      // Error handling without console logging
     }
   };
   
@@ -450,10 +439,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             .select();
           
           if (insertError) {
-            // If we hit a unique constraint error, just log and continue
-            if (insertError.code === '23505') { // PostgreSQL unique violation code
-              console.warn(`Skipping duplicate guest association: ${association.guest_id}`);
-            } else {
+            // If we hit a unique constraint error, just skip and continue
+            if (insertError.code !== '23505') { // PostgreSQL unique violation code
               throw insertError;
             }
           }
@@ -461,7 +448,6 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
       }
       
     } catch (error) {
-      console.error('Error saving guest associations:', error);
       throw error;
     }
   };
@@ -492,7 +478,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         entry_length: editedEntry.entry_length === "" ? null : editedEntry.entry_length,
         entry_placement: editedEntry.entry_placement === "" || editedEntry.entry_placement === "--" ? null : editedEntry.entry_placement,
         entry_coachnotes: editedEntry.entry_coachnotes === "" ? null : editedEntry.entry_coachnotes,
-        entry_new: selectedNewSongOption === "N/A" ? "FALSE" : selectedNewSongOption // Add this line
+        entry_new: selectedNewSongOption === "N/A" ? "FALSE" : selectedNewSongOption
       };
       
       let savedEntryId: string;
@@ -506,7 +492,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           entry_setnum: entryToSave.entry_setnum,
           entry_song: entryToSave.entry_song,
           entry_show: entryToSave.entry_show,
-          entry_new: entryToSave.entry_new // Add this line
+          entry_new: entryToSave.entry_new
         };
         
         // Add optional fields only if they have values
@@ -522,7 +508,6 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           .select();
         
         if (error) {
-          console.error('Error creating setlist entry:', error);
           alert(`Error creating entry: ${error.message}`);
           throw error;
         }
@@ -553,12 +538,11 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             entry_length: entryToSave.entry_length,
             entry_placement: entryToSave.entry_placement,
             entry_coachnotes: entryToSave.entry_coachnotes,
-            entry_new: entryToSave.entry_new // Add this line
+            entry_new: entryToSave.entry_new
           })
           .eq('entry_id', entryToSave.entry_id);
         
         if (error) {
-          console.error('Error updating setlist entry:', error);
           alert(`Error updating entry: ${error.message}`);
           throw error;
         }
@@ -574,7 +558,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
       onSave(); // Trigger refetch of entries
       onClose(); // Close modal after successful save
     } catch (error) {
-      console.error('Error saving setlist entry:', error);
+      // Error handling without console logging
     } finally {
       setIsSubmitting(false);
     }
@@ -622,7 +606,6 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                           .eq('entry_id', entry.entry_id)
                           .then(({ error }) => {
                             if (error) {
-                              console.error('Error deleting setlist entry:', error);
                               alert(`Error deleting entry: ${error.message}`);
                             } else {
                               // Update statistics after successful deletion
@@ -632,7 +615,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                             }
                           })
                           .catch(error => {
-                            console.error('Error during deletion:', error);
+                            // Error handling without console logging
                           })
                           .finally(() => {
                             setIsSubmitting(false);

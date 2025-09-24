@@ -99,6 +99,7 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showData, setShowData] = useState<ShowData | null>(null);
     const [setlist, setSetlist] = useState<SetlistEntry[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     // Use effect to sync with external control
     useEffect(() => {
@@ -130,6 +131,9 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
             }
 
             try {
+                setLoading(true);
+                setError(null);
+
                 // Fetch show changes
                 const { data: changesData, error: changesError } = await supabase
                     .from('show_changes')
@@ -139,7 +143,8 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
 
                 if (changesError) {
                     console.error('Supabase error (changes):', changesError);
-                    throw changesError;
+                    setError(`Error loading changes: ${changesError.message}`);
+                    // Don't return - continue with other queries
                 }
 
                 // Fetch setlist URL
@@ -147,25 +152,26 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                     .from('show_setlists')
                     .select('setlist_url')
                     .eq('show_id', showId)
-                    .single();
+                    .maybeSingle();
 
-                if (setlistError && setlistError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                if (setlistError && setlistError.code !== 'PGRST116') {
                     console.error('Supabase error (setlist):', setlistError);
+                    // Don't set error state for this - it's optional
                 }
 
                 // Store whether a setlist record exists (not just the URL)
-                const hasSetlistRecord = !setlistError || setlistError.code !== 'PGRST116';
+                const hasSetlistRecord = !setlistError;
 
                 // Fetch show details
                 const { data: showDetails, error: showError } = await supabase
                     .from('shows')
                     .select('show_date, show_subvenue, show_venue_location, show_group')
                     .eq('show_id', showId)
-                    .single();
+                    .maybeSingle();
 
                 if (showError) {
                     console.error('Supabase error (show):', showError);
-                    // Don't throw here - we still want to set what data we can
+                    setError(`Error loading show details: ${showError.message}`);
                 }
 
                 // Fetch setlist entries
@@ -190,6 +196,7 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
 
                 if (setlistError2) {
                     console.error('Supabase error (setlist entries):', setlistError2);
+                    // Don't set error state for this - the modal can work without it
                 }
 
                 setChanges(changesData || []);
@@ -199,6 +206,7 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                 setSetlist(setlistEntries || []);
             } catch (error) {
                 console.error('Error fetching show data:', error);
+                setError('Unexpected error occurred while loading show data');
             } finally {
                 setLoading(false);
             }
@@ -206,9 +214,6 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
 
         fetchShowData();
     }, [showId]);
-
-    useEffect(() => {
-    }, [isModalOpen]);
 
     // Don't render anything while loading
     if (loading) {
@@ -218,6 +223,22 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
     // If no setlist record exists, hide the entire component
     if (!setlistRecordExists) {
         return null;
+    }
+
+    // If there's an error and no data, show error state
+    if (error && changes.length === 0) {
+        return (
+            <div className={`bg-primary border border-secondary rounded-lg p-3 text-sm ${className}`}>
+                <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-lg font-medium text-fifth mb-2">
+                        Setlist Changes
+                    </h2>
+                </div>
+                <div className="text-red-400 text-xs">
+                    {error}
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -238,6 +259,12 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                         </button>
                     )}
                 </div>
+
+                {error && (
+                    <div className="text-red-400 text-xs mb-2">
+                        {error}
+                    </div>
+                )}
 
                 {changes.length === 0 ? (
                     <div className="text-fifth">
@@ -295,12 +322,15 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                                             src={setlistUrl}
                                             alt="Setlist"
                                             className="rounded-lg max-h-[500px] md:max-h-[500px] object-contain border border-secondary"
+                                            onError={(e) => {
+                                                console.error('Error loading setlist image');
+                                                e.currentTarget.style.display = 'none';
+                                            }}
                                         />
                                     </div>
                                 </div>
 
                                 {/* Right side - Actual Setlist (only show if there are changes) */}
-
                                 <div className="w-full md:w-[400px] p-3 bg-canvas flex flex-col">
                                     <div className="flex justify-center mb-4">
                                         <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary">Actual Setlist</h2>
@@ -323,34 +353,38 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                                     <div className="flex justify-center mb-2 mt-2">
                                         <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary">Setlist Changes</h2>
                                     </div>
-                                        <div className="mt-2 bg-primary p-3 rounded-lg border border-secondary">
-                                            {changes.length === 0 ? (
-                                                <div className="text-fifth text-xs">
-                                                    No changes from original setlist.
-                                                </div>
-                                            ) : (
-                                                <div className="space-y-1">
-                                                    {changes.map((change, index) => {
-                                                        const { icon } = getChangeIcon(change.change_type);
-                                                        return (
-                                                            <div 
-                                                                key={change.show_change_uuid} 
-                                                                className={`flex items-center gap-2 ${index !== 0 ? 'pt-1 border-t border-[#d8d7d7]' : ''}`}
-                                                            >
-                                                                <div className="flex-shrink-0">
-                                                                    {icon}
-                                                                </div>
-                                                                <div className="text-fifth text-xs [&_a]:font-medium font-light">
-                                                                    {renderChangeText(change.change)}
-                                                                </div>
+                                    <div className="mt-2 bg-primary p-3 rounded-lg border border-secondary">
+                                        {error && (
+                                            <div className="text-red-400 text-xs mb-2">
+                                                {error}
+                                            </div>
+                                        )}
+                                        {changes.length === 0 ? (
+                                            <div className="text-fifth text-xs">
+                                                No changes from original setlist.
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-1">
+                                                {changes.map((change, index) => {
+                                                    const { icon } = getChangeIcon(change.change_type);
+                                                    return (
+                                                        <div 
+                                                            key={change.show_change_uuid} 
+                                                            className={`flex items-center gap-2 ${index !== 0 ? 'pt-1 border-t border-[#d8d7d7]' : ''}`}
+                                                        >
+                                                            <div className="flex-shrink-0">
+                                                                {icon}
                                                             </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-                                        </div>
+                                                            <div className="text-fifth text-xs [&_a]:font-medium font-light">
+                                                                {renderChangeText(change.change)}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-
                             </div>
 
                             {/* Close button */}

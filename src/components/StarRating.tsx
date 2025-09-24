@@ -58,6 +58,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
         username: string;
     }>>([]);
     const [isLoadingReviews, setIsLoadingReviews] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
     // Fetch average rating and user's rating
     const fetchRatings = useCallback(async () => {
@@ -65,6 +66,19 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
 
         try {
             setIsLoading(true);
+            setError(null);
+
+            // Test if the table exists and is accessible
+            const { data: testData, error: testError } = await supabase
+                .from('show_ratings')
+                .select('uuid')
+                .limit(1);
+
+            if (testError) {
+                console.error('Error accessing show_ratings table:', testError);
+                setError(`Database error: ${testError.message}`);
+                return;
+            }
 
             // Fetch average rating and count
             const { data: avgData, error: avgError } = await supabase
@@ -74,6 +88,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
 
             if (avgError) {
                 console.error('Error fetching average rating:', avgError);
+                setError(`Error fetching ratings: ${avgError.message}`);
                 return;
             }
 
@@ -94,16 +109,19 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                     .select('rating')
                     .eq('show_id', showId)
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle(); // Use maybeSingle instead of single to handle no results gracefully
 
-                if (userError && userError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                if (userError) {
                     console.error('Error fetching user rating:', userError);
                 } else if (userData) {
                     setUserRating(userData.rating);
+                } else {
+                    setUserRating(null);
                 }
             }
         } catch (error) {
             console.error('Error in fetchRatings:', error);
+            setError('Unexpected error occurred');
         } finally {
             setIsLoading(false);
         }
@@ -114,34 +132,59 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
 
         try {
             setIsLoadingReviews(true);
+            setError(null);
 
-            const { data, error } = await supabase
+            // First get ratings with user IDs
+            const { data: ratingsData, error: ratingsError } = await supabase
                 .from('show_ratings')
-                .select(`
-                    rating,
-                    review,
-                    profiles!show_ratings_user_id_fkey (
-                        username
-                    )
-                `)
+                .select('rating, review, user_id')
                 .eq('show_id', showId)
-                .order('rating', { ascending: false })
-                .order('user_id', { ascending: true });
+                .order('rating', { ascending: false });
 
-            if (error) {
-                console.error('Error fetching reviews:', error);
+            if (ratingsError) {
+                console.error('Error fetching ratings:', ratingsError);
+                setError(`Error fetching reviews: ${ratingsError.message}`);
                 return;
             }
 
-            const formattedReviews = data?.map(item => ({
+            if (!ratingsData || ratingsData.length === 0) {
+                setReviews([]);
+                return;
+            }
+
+            // Get unique user IDs
+            const userIds = [...new Set(ratingsData.map(r => r.user_id))];
+
+            // Fetch usernames for these user IDs
+            const { data: profilesData, error: profilesError } = await supabase
+                .from('profiles')
+                .select('id, username')
+                .in('id', userIds);
+
+            if (profilesError) {
+                console.error('Error fetching profiles:', profilesError);
+                // Continue with anonymous usernames if profiles fetch fails
+            }
+
+            // Create a lookup map for usernames
+            const usernameMap = new Map();
+            if (profilesData) {
+                profilesData.forEach(profile => {
+                    usernameMap.set(profile.id, profile.username);
+                });
+            }
+
+            // Combine ratings with usernames
+            const formattedReviews = ratingsData.map(item => ({
                 rating: item.rating,
-                review: item.review,
-                username: item.profiles?.username || 'Anonymous'
-            })) || [];
+                review: item.review || '',
+                username: usernameMap.get(item.user_id) || 'Anonymous'
+            }));
 
             setReviews(formattedReviews);
         } catch (error) {
             console.error('Error in fetchReviews:', error);
+            setError('Error loading reviews');
         } finally {
             setIsLoadingReviews(false);
         }
@@ -158,6 +201,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
             setIsSaving(false);
             setIsHovering(false);
             setHoveredRating(0);
+            setError(null);
 
             // Then fetch new ratings
             fetchRatings();
@@ -173,17 +217,19 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
 
         try {
             setIsSaving(true);
+            setError(null);
 
             // Check if user already has a rating for this show
             const { data: existingRating, error: checkError } = await supabase
                 .from('show_ratings')
-                .select('rating')
+                .select('uuid, rating')
                 .eq('show_id', showId)
                 .eq('user_id', user.id)
-                .single();
+                .maybeSingle();
 
-            if (checkError && checkError.code !== 'PGRST116') {
+            if (checkError) {
                 console.error('Error checking existing rating:', checkError);
+                setError(`Error saving rating: ${checkError.message}`);
                 return;
             }
 
@@ -196,11 +242,11 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                 const { error: updateError } = await supabase
                     .from('show_ratings')
                     .update({ rating })
-                    .eq('show_id', showId)
-                    .eq('user_id', user.id);
+                    .eq('uuid', existingRating.uuid);
 
                 if (updateError) {
                     console.error('Error updating rating:', updateError);
+                    setError(`Error updating rating: ${updateError.message}`);
                     // Revert optimistic update
                     setUserRating(oldUserRating);
                     return;
@@ -217,6 +263,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
 
                 if (insertError) {
                     console.error('Error inserting rating:', insertError);
+                    setError(`Error saving rating: ${insertError.message}`);
                     // Revert optimistic update
                     setUserRating(oldUserRating);
                     return;
@@ -227,6 +274,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
             await fetchRatings();
         } catch (error) {
             console.error('Error in handleStarClick:', error);
+            setError('Unexpected error occurred while saving rating');
             // Revert optimistic update
             setUserRating(userRating);
         } finally {
@@ -320,6 +368,11 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                     </div>
                     
                     <div className="overflow-y-auto max-h-[60vh] p-3">
+                        {error && (
+                            <div className="bg-red-500/20 border border-red-500/50 rounded p-3 mb-3 text-red-400 text-sm">
+                                {error}
+                            </div>
+                        )}
                         {isLoadingReviews ? (
                             <div className="flex justify-center py-8">
                                 <div className="w-8 h-8 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>
@@ -427,6 +480,10 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                 <div className="flex-1 flex justify-start lg:justify-end text-sm text-fifth">
                     {isLoading ? (
                         <div className="w-4 h-4 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>
+                    ) : error ? (
+                        <div className="text-red-400 text-xs" title={error}>
+                            Error loading ratings
+                        </div>
                     ) : (
                         <div 
                             className="text-right lg:text-left cursor-pointer hover:text-fourth hover:underline transition-colors"
@@ -454,6 +511,13 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
             {userRating && (
                 <div className="text-xs text-fourth font-normal">
                     Your rating: {userRating}
+                </div>
+            )}
+
+            {/* Error display */}
+            {error && !isLoading && (
+                <div className="text-xs text-red-400 mt-1">
+                    {error}
                 </div>
             )}
 
