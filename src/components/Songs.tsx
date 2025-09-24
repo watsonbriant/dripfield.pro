@@ -69,19 +69,56 @@ export function Songs() {
         
         if (catError) throw catError;
         
-        // Fetch all songs
-        const { data: songsData, error: songsError } = await supabase
+        // Fetch songs with pagination strategy
+        // First get the total count
+        const { count, error: countError } = await supabase
           .from('songs')
-          .select('*')
-          .eq('song_placeholder', false)
-          .order('song_categoryorder', { ascending: true });
+          .select('*', { count: 'exact', head: true })
+          .eq('song_placeholder', false);
         
-        if (songsError) throw songsError;
+        if (countError) {
+          console.error('Error fetching songs count:', countError);
+          throw countError;
+        }
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allSongsData: Song[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('songs')
+            .select('*')
+            .eq('song_placeholder', false)
+            .order('song_categoryorder', { ascending: true })
+            .range(start, end);
+          
+          if (error) {
+            console.error(`Error fetching songs batch ${i + 1}:`, error);
+            throw error;
+          }
+          
+          if (data) {
+            allSongsData = [...allSongsData, ...data];
+          }
+        }
+        
+        if (allSongsData.length > 0) {
+          setSongs(allSongsData);
+        } else {
+          console.warn('❌ No songs data returned from query');
+          setSongs([]);
+        }
         
         setCategories(categoriesData || []);
-        setSongs(songsData || []);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setSongs([]);
+        setCategories([]);
       } finally {
         setLoading(false);
       }

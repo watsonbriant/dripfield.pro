@@ -602,7 +602,7 @@ export default function FullSetlistDisplay({
                               : (displayNumber || '\u00A0')
                             }
                           {!isMobile && hoveredEntry === entry.entry_id && !copiedEntries.has(entry.entry_id) && (
-                            <div className="fixed text-xs font-medium bg-secondary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
+                            <div className="fixed text-xs font-medium bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
                               style={{
                                 left: `${mousePosition.x + 10}px`,
                                 top: `${mousePosition.y - 10}px`
