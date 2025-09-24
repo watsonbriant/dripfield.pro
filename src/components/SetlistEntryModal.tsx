@@ -96,29 +96,30 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   const [selectedNewSongOption, setSelectedNewSongOption] = useState<string>("N/A");
 
   
-  // Add the updateStatistics function with console logging
+  // Add the updateStatistics function - runs in background without blocking save
   const updateStatistics = async () => {
-    console.log('🚀 Starting RPC update_all_setlist_entries...');
-    const startTime = Date.now();
+    console.log('Starting background statistics update...');
     
-    try {
-      const { error } = await supabase.rpc('update_all_setlist_entries');
-      const endTime = Date.now();
-      const duration = endTime - startTime;
-      
-      if (error) {
-        console.error('❌ RPC update_all_setlist_entries failed:', error);
-        console.error('⏱️  Failed after:', duration, 'ms');
-      } else {
-        console.log('✅ RPC update_all_setlist_entries completed successfully');
-        console.log('⏱️  Execution time:', duration, 'ms');
-      }
-    } catch (error) {
-      const endTime = Date.now();
-      const duration = endTime - startTime;
-      console.error('💥 Error calling update_all_setlist_entries:', error);
-      console.error('⏱️  Error occurred after:', duration, 'ms');
-    }
+    // Don't await - let it run in background without blocking the save operation
+    supabase.rpc('update_all_setlist_entries')
+      .then(({ error }) => {
+        if (error) {
+          console.error('Background stats update failed:', error);
+          
+          // Check if it's a timeout error
+          if (error.code === '57014' || error.message?.includes('timeout')) {
+            console.warn('RPC function timed out during background update. Entry was saved successfully.');
+          }
+        } else {
+          console.log('Background stats update completed successfully');
+        }
+      })
+      .catch(error => {
+        console.error('Background stats update error:', error);
+      });
+    
+    // Return immediately so save operation can complete
+    console.log('Statistics update running in background, save operation continuing...');
   };
 
   // Filtered songs based on search term
