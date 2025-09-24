@@ -134,6 +134,32 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                 setLoading(true);
                 setError(null);
 
+                // Fetch setlist record first to determine if component should be shown
+                const { data: setlistData, error: setlistError } = await supabase
+                    .from('show_setlists')
+                    .select('setlist_url')
+                    .eq('show_id', showId)
+                    .maybeSingle();
+
+                if (setlistError && setlistError.code !== 'PGRST116') {
+                    console.error('Supabase error (setlist):', setlistError);
+                    // Don't set error state for this - it's optional
+                }
+
+                // Check if a setlist record actually exists (not just no error)
+                const hasSetlistRecord = setlistData !== null;
+
+                // If no setlist record exists, set loading to false and return early
+                if (!hasSetlistRecord) {
+                    setSetlistRecordExists(false);
+                    setLoading(false);
+                    return;
+                }
+
+                // Record exists, so continue with other queries
+                setSetlistRecordExists(true);
+                setSetlistUrl(setlistData.setlist_url || null);
+
                 // Fetch show changes
                 const { data: changesData, error: changesError } = await supabase
                     .from('show_changes')
@@ -146,21 +172,6 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                     setError(`Error loading changes: ${changesError.message}`);
                     // Don't return - continue with other queries
                 }
-
-                // Fetch setlist URL
-                const { data: setlistData, error: setlistError } = await supabase
-                    .from('show_setlists')
-                    .select('setlist_url')
-                    .eq('show_id', showId)
-                    .maybeSingle();
-
-                if (setlistError && setlistError.code !== 'PGRST116') {
-                    console.error('Supabase error (setlist):', setlistError);
-                    // Don't set error state for this - it's optional
-                }
-
-                // Store whether a setlist record exists (not just the URL)
-                const hasSetlistRecord = !setlistError;
 
                 // Fetch show details
                 const { data: showDetails, error: showError } = await supabase
@@ -200,8 +211,6 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                 }
 
                 setChanges(changesData || []);
-                setSetlistUrl(setlistData?.setlist_url || null);
-                setSetlistRecordExists(hasSetlistRecord);
                 setShowData(showDetails || null);
                 setSetlist(setlistEntries || []);
             } catch (error) {
