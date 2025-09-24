@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Flame } from 'lucide-react';
+import { Clock, Flame, Space } from 'lucide-react';
 
 // Add the getRarityColor function
 const getRarityColor = (percentage: string | null): string => {
@@ -44,11 +44,58 @@ const getRarityColor = (percentage: string | null): string => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
+const getGapColor = (value: string | null): string => {
+  // If value is null or not a valid number string, return transparent
+  if (!value || value === '-') return 'transparent';
+
+  // Convert string to number
+  const numericValue = parseFloat(value);
+
+  if (isNaN(numericValue)) return 'transparent';
+
+  // Cap the value at 100 for color calculation (values > 100 use the 100 color)
+  const cappedValue = Math.min(numericValue, 100);
+
+  // Define color stops with REVERSED scale (0 = blue, 100 = red)
+  const colorStops = [
+    { percent: 0, color: { r: 13, g: 71, b: 161 } },      // #0D47A1 (Darker Blue) - Best
+    { percent: 12, color: { r: 46, g: 125, b: 50 } },     // #2E7D32 (Darker Green)
+    { percent: 24, color: { r: 179, g: 135, b: 0 } },     // #B38700 (Dark Yellow)
+    { percent: 50, color: { r: 230, g: 81, b: 0 } },      // #E65100 (Darker Orange)
+    { percent: 100, color: { r: 156, g: 12, b: 12 } }     // #9C0C0C (Even Darker Red) - Worst
+  ];
+
+  // Find the color stops to interpolate between
+  let lowerStop = colorStops[0];
+  let upperStop = colorStops[colorStops.length - 1];
+
+  for (let i = 0; i < colorStops.length - 1; i++) {
+    if (cappedValue >= colorStops[i].percent && cappedValue <= colorStops[i + 1].percent) {
+      lowerStop = colorStops[i];
+      upperStop = colorStops[i + 1];
+      break;
+    }
+  }
+
+  // Calculate interpolation factor
+  const range = upperStop.percent - lowerStop.percent;
+  const factor = range !== 0 ? (cappedValue - lowerStop.percent) / range : 0;
+
+  // Interpolate RGB values
+  const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
+  const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
+  const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
+
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
 interface Entry {
   entry_length: string | null;
   times_played_num: string | null;
   shows_since_debut_num: string | null;
   entry_song: string;
+  last_count: string | null;
+  entry_short?: string | null;
 }
 
 interface ShowStatsProps {
@@ -141,18 +188,81 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
     }
   }, [setlist, show_canonid]);
 
+  const averageShowGap = React.useMemo(() => {
+    if (!show_canonid || !setlist.length) return null;
+    
+    try {
+      const skipShorts = ["fake", "tease", "reprise", "aborted"];
+      const validEntries = [];
+      
+      // Filter for unique songs with valid performances that have last_count values
+      const seenSongs = new Set<string>();
+      
+      setlist.forEach(entry => {
+        // Skip if we've already processed this song
+        if (seenSongs.has(entry.entry_song)) return;
+        
+        // Skip if it's a performance type we don't count
+        if (entry.entry_short && skipShorts.includes(entry.entry_short.toLowerCase())) return;
+        
+        // Skip if no last_count value or it's empty
+        if (!entry.last_count || entry.last_count.trim() === '') return;
+        
+        seenSongs.add(entry.entry_song);
+        validEntries.push(entry.last_count);
+      });
+      
+      if (validEntries.length === 0) return null;
+      
+      // Parse last_count values according to the rules
+      const gapValues = validEntries.map(lastCount => {
+        const trimmed = lastCount.trim();
+        
+        // Handle "Debut" case
+        if (trimmed.toLowerCase() === 'debut') {
+          return 0;
+        }
+        
+        // Handle "number, TD" case
+        if (trimmed.includes(',') && trimmed.toUpperCase().includes('TD')) {
+          const numberPart = trimmed.split(',')[0].trim();
+          const parsed = parseInt(numberPart, 10);
+          return isNaN(parsed) ? null : parsed;
+        }
+        
+        // Handle plain number case
+        const parsed = parseInt(trimmed, 10);
+        return isNaN(parsed) ? null : parsed;
+      }).filter(value => value !== null) as number[];
+      
+      if (gapValues.length === 0) return null;
+      
+      const sum = gapValues.reduce((acc, val) => acc + val, 0);
+      const average = sum / gapValues.length;
+      
+      return {
+        average: average.toFixed(2),
+        count: gapValues.length
+      };
+    } catch (error) {
+      console.error('Error calculating average show gap:', error);
+      return null;
+    }
+  }, [setlist, show_canonid]);
+
   // Check if we should show any stats at all
   const shouldShowLength = hasLength;
   const shouldShowRarity = show_canonid && setlist.length > 0;
+  const shouldShowGap = show_canonid && setlist.length > 0;
   
-  if (!shouldShowLength && !shouldShowRarity) return null;
+  if (!shouldShowLength && !shouldShowRarity && !shouldShowGap) return null;
 
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3 mb-4">
       {shouldShowLength && (
         <div>
-          <div className="flex justify-between items-center mb-1">
-            <h2 className="text-lg font-medium text-fifth">Show Length</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth">Show Length</h2>
             <Clock className="text-fifth w-[1rem] h-[1rem]" />
           </div>
           <p className="text-fifth font-light text-xs">
@@ -162,16 +272,15 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
       )}
       
       {shouldShowRarity && (
-        <div className={shouldShowLength ? "mt-4" : ""}>
+        <div className={shouldShowLength ? "mt-1.5" : ""}>
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <h2 className="text-lg font-medium text-fifth">Show Rarity</h2>
+              <h2 className="text-base font-medium text-fifth">Show Rarity</h2>
               {rarityStats && (
                 <span
-                  className="text-primary text-sm font-normal px-2 py-0.5 rounded-md inline-block ml-3"
+                  className="text-primary text-xs font-normal px-1.5 py-0.5 rounded-md inline-block ml-3"
                   style={{
-                    backgroundColor: getRarityColor(rarityStats.percentage + '%'),
-                    border: '1px solid #b4b2b2'
+                    backgroundColor: getRarityColor(rarityStats.percentage + '%')
                   }}
                 >
                   {rarityStats.percentage}%
@@ -181,7 +290,33 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
             <Flame className="text-fifth w-[1rem] h-[1rem]" />
           </div>
           {!rarityStats && (
-            <p className="text-fifth text-sm">
+            <p className="text-fifth text-xs">
+              &nbsp;
+            </p>
+          )}
+        </div>
+      )}
+
+      {shouldShowGap && (
+        <div className={(shouldShowLength || shouldShowRarity) ? "mt-1.5" : ""}>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <h2 className="text-base font-medium text-fifth">Average Show Gap</h2>
+              {averageShowGap && (
+                <span 
+                  className="text-white text-xs font-normal px-1.5 py-0.5 rounded-md inline-block ml-3"
+                  style={{
+                    backgroundColor: getGapColor(averageShowGap.average)
+                  }}
+                >
+                  {averageShowGap.average}
+                </span>
+              )}
+            </div>
+            <Space className="text-fifth w-[1rem] h-[1rem]" />
+          </div>
+          {!averageShowGap && (
+            <p className="text-fifth text-xs">
               &nbsp;
             </p>
           )}
