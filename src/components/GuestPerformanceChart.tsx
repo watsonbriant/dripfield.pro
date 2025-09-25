@@ -336,7 +336,7 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
                     )}
                   </td>
                   <td 
-                    className="px-4 py-1 text-fifth font-light whitespace-nowrap relative"
+                    className="px-4 py-1 text-fifth font-light whitespace-nowrap"
                     onMouseEnter={(e) => {
                       if (perf.show_subvenue) {
                         setHoveredPerformance({

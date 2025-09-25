@@ -354,12 +354,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
           <thead>
             <tr className="bg-canvas border-y border-secondary">
               <th 
-                className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+                className="pl-4 pr-5 py-2 text-center text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
                 onClick={() => handleSort('show_date')}
               >
-                <div className="flex items-center gap-1">
+                <div className="flex justify-center gap-1">
                   Show
-                  {getSortIcon('show_date')}
                 </div>
               </th>
               <th 
@@ -368,7 +367,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Group
-                  {getSortIcon('show_group')}
                 </div>
               </th>
               <th 
@@ -377,7 +375,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Location
-                  {getSortIcon('show_venue_location')}
                 </div>
               </th>
               <th 
@@ -386,7 +383,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Song
-                  {getSortIcon('entry_song')}
                 </div>
               </th>
               <th className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap">
@@ -398,7 +394,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Length
-                  {getSortIcon('entry_length')}
                 </div>
               </th>
               <th 
@@ -407,7 +402,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Coach's Notes
-                  {getSortIcon('entry_coachnotes')}
                 </div>
               </th>
             </tr>
@@ -428,12 +422,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                   }`}
                 >
                   <td 
-                    className="px-4 py-1 text-fifth whitespace-nowrap"
+                    className="pl-4 pr-5 py-1 text-fifth whitespace-nowrap"
                     style={{
                       boxShadow: placementColors[perf.entry_placement] 
                         ? `inset -4px 0 0 ${placementColors[perf.entry_placement]}` 
-                        : 'none',
-                      paddingRight: placementColors[perf.entry_placement] ? '8px' : '4px'
+                        : 'none'
                     }}
                   >
                     <span className="font-medium">
@@ -451,7 +444,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                   </td>
                   <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
                   <td 
-                    className="px-4 py-1 text-fifth whitespace-nowrap font-light relative"
+                    className="px-4 py-1 text-fifth whitespace-nowrap font-light"
                     onMouseEnter={(e) => {
                       if (perf.show_subvenue) {
                         setHoveredPerformance({
