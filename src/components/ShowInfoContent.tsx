@@ -153,7 +153,7 @@ const ShowInfoContent = React.memo(({
               />
             </button>
             {wlHovered && (
-              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-semibold bg-secondary text-fifth px-3 py-1 rounded border border-secondary shadow-lg whitespace-nowrap z-[9999]">
+              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-semibold bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg whitespace-nowrap z-[9999]">
                 Chat on WysteriaLane.org!
               </div>
             )}

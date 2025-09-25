@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic, Users, Star } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, Filter, FileMusic, Users, Star, AudioLines } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 import wlImage from '../img/WL.png';
@@ -68,6 +68,7 @@ export function Years() {
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
   const [showRatings, setShowRatings] = useState<Record<string, number>>({});
+  const [showsWithReleases, setShowsWithReleases] = useState<Set<string>>(new Set());
 
   const tourColors = [
     '#3498DB', '#E74C3C', '#2ECC71', '#F39C12', 
@@ -287,7 +288,7 @@ export function Years() {
     fetchAttendeeCounts();
   }, [filteredShows, currentYear, selectedGroups, shows.length]);
 
-  // Add this after the existing useEffect hooks
+  // Fetch shows with setlists
   useEffect(() => {
     async function fetchShowsWithSetlists() {
       if (!currentYear) return;
@@ -309,6 +310,56 @@ export function Years() {
     
     if (shows.length > 0) {
       fetchShowsWithSetlists();
+    }
+  }, [shows, currentYear]);
+
+  // Fetch shows with releases (with pagination)
+  useEffect(() => {
+    async function fetchShowsWithReleases() {
+      if (!currentYear || shows.length === 0) return;
+      
+      try {
+        const showIds = shows.map(s => s.show_id);
+        
+        // First get the total count
+        const { count, error: countError } = await supabase
+          .from('releases_shows')
+          .select('*', { count: 'exact', head: true })
+          .in('show_id', showIds);
+        
+        if (countError) throw countError;
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allReleaseShows: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('releases_shows')
+            .select('show_id')
+            .in('show_id', showIds)
+            .range(start, end);
+          
+          if (error) throw error;
+          
+          if (data) {
+            allReleaseShows = [...allReleaseShows, ...data];
+          }
+        }
+        
+        const releaseSet = new Set(allReleaseShows.map(item => item.show_id));
+        setShowsWithReleases(releaseSet);
+      } catch (error) {
+        console.error('Error fetching shows with releases:', error);
+      }
+    }
+    
+    if (shows.length > 0) {
+      fetchShowsWithReleases();
     }
   }, [shows, currentYear]);
 
@@ -714,12 +765,11 @@ export function Years() {
                   <tr className="bg-canvas border-y border-white/10">
                     <th className="w-1 px-0 py-1"></th>
                     <th 
-                      className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      className="px-3 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                       onClick={() => handleSort('show_date')}
                     >
                       <div className="flex items-center justify-center gap-1">
                         Date
-                        {getSortIcon('show_date')}
                       </div>
                     </th>
                     {user && (
@@ -727,45 +777,50 @@ export function Years() {
                         <Check size={16} className="text-fifth" strokeWidth={4} />
                       </th>
                     )}
-                    <th className="w-8 px-1 py-1 text-center align-middle text-s font-semibold text-fifth">
-                      <div className="flex justify-center items-center">
-                        <FileMusic size={16} className="text-fifth" strokeWidth={2} />
-                      </div>
-                    </th>
                     <th 
-                      className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      className="px-2 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                       onClick={() => handleSort('show_group')}
                     >
                       <div className="flex items-center gap-1">
                         Group
-                        {getSortIcon('show_group')}
                       </div>
                     </th>
                     <th 
-                      className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      className="px-2 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                       onClick={() => handleSort('show_subvenue')}
                     >
                       <div className="flex items-center gap-1">
                         Venue
-                        {getSortIcon('show_subvenue')}
                       </div>
                     </th>
                     <th 
-                      className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      className="px-2 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                       onClick={() => handleSort('show_venue_location')}
                     >
                       <div className="flex items-center gap-1">
                         Location
-                        {getSortIcon('show_venue_location')}
                       </div>
                     </th>
                     <th 
-                      className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      className="px-2 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                       onClick={() => handleSort('rating')}
                     >
                       <div className="flex items-center justify-center gap-1">
                         Rating
-                        {getSortIcon('rating')}
+                      </div>
+                    </th>
+                    <th className="w-8 px-1 py-0.5 text-center align-middle text-s font-semibold text-fifth">
+                      <div className="flex justify-center items-center">
+                        <div className="text-primary bg-[#006400] rounded p-1">
+                          <FileMusic size={16} strokeWidth={2} />
+                        </div>
+                      </div>
+                    </th>
+                    <th className="w-8 px-1 py-0.5 text-center align-middle text-s font-semibold text-fifth">
+                      <div className="flex justify-center items-center">
+                        <div className="text-primary bg-[#7c2128] rounded p-1">
+                          <AudioLines size={16} strokeWidth={2} />
+                        </div>
                       </div>
                     </th>
                     <th 
@@ -774,7 +829,6 @@ export function Years() {
                     >
                       <div className="flex justify-center items-center">
                         <Users size={16} className="text-fifth" strokeWidth={2} />
-                        {getSortIcon('attendee_count')}
                       </div>
                     </th>
                     <th className="w-8 px-1 py-1 text-center text-s font-semibold text-fifth">
@@ -783,12 +837,11 @@ export function Years() {
                       </div>
                     </th>
                     <th 
-                      className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+                      className="px-2 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
                       onClick={() => handleSort('show_detail')}
                     >
                       <div className="flex items-center gap-1">
                         Detail
-                        {getSortIcon('show_detail')}
                       </div>
                     </th>
                   </tr>
@@ -828,7 +881,7 @@ export function Years() {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                      <td className="px-3 py-0.5 text-fifth whitespace-nowrap">
                         <span className="font-medium">
                           <button
                             onClick={() => navigate(`/setlist/${show.show_id}`)}
@@ -853,23 +906,8 @@ export function Years() {
                           )}
                         </td>
                       )}
-                      <td className="w-8 text-center align-middle">
-                        {showsWithSetlists.has(show.show_id) && (
-                          <div className="flex justify-center items-center h-full">
-                            <button
-                              onClick={() => {
-                                // Navigate with a state parameter to open the modal
-                                navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
-                              }}
-                              className="hover:text-fifth hover:bg-tertiary hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
-                            >
-                              <FileMusic size={14.5} className="text-fifth" strokeWidth={2} />
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
-                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
+                      <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
+                      <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                         <button
                           onClick={() => navigateToVenue(show)}
                           className="hover:underline transition-colors"
@@ -877,8 +915,8 @@ export function Years() {
                           {show.show_subvenue}
                         </button>
                       </td>
-                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_venue_location}</td>
-                      <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                      <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_venue_location}</td>
+                      <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
                         <div className="relative flex items-center group">
                           {/* Stars with hover-based transparency */}
                           <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
@@ -919,6 +957,33 @@ export function Years() {
                           )}
                         </div>
                       </td>
+                      <td className="w-8 text-center align-middle">
+                        {showsWithSetlists.has(show.show_id) && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => {
+                                // Navigate with a state parameter to open the modal
+                                navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
+                              }}
+                              className="text-[#006400] hover:text-primary hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                            >
+                              <FileMusic size={14.5} strokeWidth={2} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                      <td className="w-8 text-center align-middle">
+                        {showsWithReleases.has(show.show_id) && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => navigate(`/setlist/${show.show_id}`)}
+                              className="text-[#7c2128] hover:text-primary hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                            >
+                              <AudioLines size={14.5} strokeWidth={2} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
                       <td className="w-8 text-center text-fifth">
                         {attendeeCounts[show.show_id] > 0 && (
                           <span className="text-xs font-medium">{attendeeCounts[show.show_id]}</span>
@@ -936,10 +1001,10 @@ export function Years() {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
+                      <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                         {show.show_detail && show.show_detail}
                         {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
-                        {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
+                        {show.show_alert && <span className="text-[#CE1126] font-medium">[{show.show_alert}]</span>}
                       </td>
                     </tr>
                   ))}

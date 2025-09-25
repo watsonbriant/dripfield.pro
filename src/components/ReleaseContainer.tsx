@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, ArrowRight, MoveRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MoveRight, AudioLines } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NugsIcon from '../../public/src/img/nugs.png';
 import { FaYoutube } from "react-icons/fa6";
@@ -204,7 +204,10 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
   }
   
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 mb-4">
+    <div className="bg-primary border border-secondary rounded-lg p-3 mb-4 relative">
+      {/* AudioLines icon positioned in bottom right */}
+      <AudioLines className="absolute bottom-3 right-3 text-fifth w-5 h-5" />
+      
       <div className="flex flex-col items-center">
         {releases.length > 0 && currentReleaseIndex < releases.length && (
           <div className="flex flex-col items-center w-full">

@@ -468,12 +468,12 @@ export default function FullSetlistDisplay({
         />
         {show.show_coachnotes && (
           <div className="bg-primary border border-secondary rounded-lg p-3">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-medium text-fifth">Show Notes</h2>
+            <div className="flex justify-between items-center mb-1">
+              <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth">Show Notes</h2>
               <Pen className="text-fifth w-[1rem] h-[1rem]" />
             </div>
             <div 
-              className="text-fifth font-light text-xs hover:[&_a]:underline [&_a]:font-medium mt-2"
+              className="text-fifth font-light text-xs hover:[&_a]:underline [&_a]:font-medium"
               dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
             />
           </div>
@@ -1116,12 +1116,12 @@ export default function FullSetlistDisplay({
             />
             {show.show_coachnotes && (
               <div className="bg-primary border border-secondary rounded-lg p-3">
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="text-lg font-medium text-fifth">Show Notes</h2>
+                <div className="flex justify-between items-center mb-1">
+                  <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth font-medium text-fifth">Show Notes</h2>
                   <Pen className="text-fifth w-[1rem] h-[1rem]" />
                 </div>
                 <div 
-                  className="text-fifth font-light text-xs hover:[&_a]:underline [&_a]:font-medium mt-2"
+                  className="text-fifth font-light text-xs hover:[&_a]:underline [&_a]:font-medium"
                   dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
                 />
               </div>

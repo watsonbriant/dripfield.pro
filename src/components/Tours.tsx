@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight, FileMusic, Users, Star } from 'lucide-react';
+import { ChevronDown, Search, ArrowUp, ArrowDown, Check, MoveRight, FileMusic, Users, Star, AudioLines } from 'lucide-react';
 import { Modal } from './Modal';
 import { useAuth } from '../context/AuthContext';
 import TourSongSpread from './TourSongSpread';
@@ -109,6 +109,7 @@ export function Tours() {
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
   const [showRatings, setShowRatings] = useState<Record<string, number>>({});
+  const [showsWithReleases, setShowsWithReleases] = useState<Set<string>>(new Set());
   const [modalSongData, setModalSongData] = useState<{
     isOpen: boolean;
     songName: string;
@@ -328,6 +329,56 @@ export function Tours() {
     
     if (shows.length > 0) {
       fetchShowsWithSetlists();
+    }
+  }, [shows, currentTour]);
+
+  // Fetch shows with releases (with pagination)
+  useEffect(() => {
+    async function fetchShowsWithReleases() {
+      if (!currentTour || shows.length === 0) return;
+      
+      try {
+        const showIds = shows.map(s => s.show_id);
+        
+        // First get the total count
+        const { count, error: countError } = await supabase
+          .from('releases_shows')
+          .select('*', { count: 'exact', head: true })
+          .in('show_id', showIds);
+        
+        if (countError) throw countError;
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allReleaseShows: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('releases_shows')
+            .select('show_id')
+            .in('show_id', showIds)
+            .range(start, end);
+          
+          if (error) throw error;
+          
+          if (data) {
+            allReleaseShows = [...allReleaseShows, ...data];
+          }
+        }
+        
+        const releaseSet = new Set(allReleaseShows.map(item => item.show_id));
+        setShowsWithReleases(releaseSet);
+      } catch (error) {
+        console.error('Error fetching shows with releases:', error);
+      }
+    }
+    
+    if (shows.length > 0) {
+      fetchShowsWithReleases();
     }
   }, [shows, currentTour]);
 
@@ -1292,7 +1343,6 @@ export function Tours() {
                     {[
                       { key: 'show_date', label: 'Date' },
                       ...(user ? [{ key: 'attended', label: <Check size={16} className="text-fifth" strokeWidth={4} /> }] : []),
-                      { key: 'setlist', label: <FileMusic size={16} className="text-fifth" strokeWidth={2} /> },
                       { key: 'show_group', label: 'Group' },
                       { key: 'show_length', label: 'Length' },
                       { key: 'show_rarity', label: 'Rarity' },
@@ -1300,18 +1350,38 @@ export function Tours() {
                       { key: 'show_subvenue', label: 'Venue' },
                       { key: 'show_venue_location', label: 'Location' },
                       { key: 'rating', label: 'Rating' },
+                      { 
+                        key: 'setlist', 
+                        label: (
+                          <div className="flex justify-center items-center">
+                            <div className="text-primary bg-[#006400] rounded p-1">
+                              <FileMusic size={16} strokeWidth={2} />
+                            </div>
+                          </div>
+                        )
+                      },
+                      { 
+                        key: 'releases', 
+                        label: (
+                          <div className="flex justify-center items-center">
+                            <div className="text-primary bg-[#7c2128] rounded p-1">
+                              <AudioLines size={16} strokeWidth={2} />
+                            </div>
+                          </div>
+                        )
+                      },
                       { key: 'attendees', label: <Users size={16} className="text-fifth" strokeWidth={2} /> },
                       { key: 'wl_link', label: <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" /> },
                       { key: 'show_detail', label: 'Detail' }
                     ].map(({ key, label }) => (
                       <th
                         key={key}
-                        onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'wl_link' ? handleSort(key) : null}
+                        onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? handleSort(key) : null}
                         className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'rating' || key === 'attendees' ? 'text-center' : 'text-left'}
                           text-s font-semibold text-fifth whitespace-nowrap 
-                          ${key !== 'attended' && key !== 'setlist' && key !== 'wl_link' ? 'px-2 py-1 cursor-pointer hover:bg-black/10' : 'w-8 px-1 py-1 text-center'}`}
+                          ${key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? 'px-2 py-1 cursor-pointer hover:bg-black/10' : key === 'setlist' || key === 'releases' ? 'w-8 px-1 py-0.5 text-center' : 'w-8 px-1 py-1 text-center'}`}
                       >
-                        <div className={`flex items-center ${key === 'show_length' || key === 'attended' || key === 'show_rarity' || key === 'show_gap' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'users' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
+                        <div className={`flex items-center ${key === 'show_length' || key === 'attended' || key === 'show_rarity' || key === 'show_gap' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'users' || key === 'releases' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
                           {label}
                         </div>
                       </th>
@@ -1350,21 +1420,6 @@ export function Tours() {
                           )}
                         </td>
                       )}
-                      <td className="w-8 text-center align-middle">
-                        {showsWithSetlists.has(show.show_id) && (
-                          <div className="flex justify-center items-center h-full">
-                            <button
-                              onClick={() => {
-                                // Navigate with a state parameter to open the modal
-                                navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
-                              }}
-                              className="hover:text-fifth hover:bg-tertiary hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
-                            >
-                              <FileMusic size={14.5} className="text-fifth" strokeWidth={2} />
-                            </button>
-                          </div>
-                        )}
-                      </td>
                       <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
                       <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-center">
                         {show.show_length || ''}
@@ -1449,6 +1504,33 @@ export function Tours() {
                           )}
                         </div>
                       </td>
+                      <td className="w-8 text-center align-middle">
+                        {showsWithSetlists.has(show.show_id) && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => {
+                                // Navigate with a state parameter to open the modal
+                                navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
+                              }}
+                              className="text-[#006400] hover:text-primary hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                            >
+                              <FileMusic size={14.5} strokeWidth={2} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                      <td className="w-8 text-center align-middle">
+                        {showsWithReleases.has(show.show_id) && (
+                          <div className="flex justify-center items-center h-full">
+                            <button
+                              onClick={() => navigate(`/setlist/${show.show_id}`)}
+                              className="text-[#7c2128] hover:text-primary hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                            >
+                              <AudioLines size={14.5} strokeWidth={2} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
                       <td className="w-8 text-center text-fifth">
                         <span className="text-xs font-medium">
                           {attendeeCounts[show.show_id] || 0}
@@ -1469,7 +1551,7 @@ export function Tours() {
                       <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                         {show.show_detail && show.show_detail}
                         {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
-                        {show.show_alert && <span className="text-[#CE1126]"><strong>[{show.show_alert}]</strong></span>}
+                        {show.show_alert && <span className="text-[#CE1126] font-medium">[{show.show_alert}]</span>}
                       </td>
                     </tr>
                   ))}
