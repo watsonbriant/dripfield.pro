@@ -7,9 +7,6 @@ import { SetlistGameRulesModal } from './SetlistGameRulesModal'; // Import the n
 import { SetlistGameStandings } from './SetlistGameStandings';
 import { PastTours } from './PastTours';
 import { ChevronDown, X, HelpCircle, Trophy, ListMusic } from 'lucide-react'; // Add Trophy icon
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBluesky } from '@fortawesome/free-brands-svg-icons';
-import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
 import { SetlistGameShows } from './SetlistGameShows';
 
 interface GameShow {
@@ -940,30 +937,6 @@ export function SetlistGame() {
         </div>
 
         <div className="flex gap-3 justify-center lg:justify-start">
-          <a
-            href="https://bsky.app/profile/echoofashow.bsky.social"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-fifth hover:text-[#a9682e] transition-colors"
-          >
-            <FontAwesomeIcon
-              icon={faBluesky}
-              size="2x"
-            />
-          </a>
-
-          <a
-            href="https://x.com/echoofashow"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mr-4 text-fifth hover:text-[#a9682e] transition-colors"
-          >
-            <FontAwesomeIcon
-              icon={faXTwitter}
-              size="2x"
-            />
-          </a>
-
           {/* How to Play Button - visible to everyone */}
           <button
             onClick={() => setShowRulesModal(true)}

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, Calendar, MapPin, Music, Users, Building2, Disc, X, ShieldCheck, Search, Bug, FileWarning, ListMusic, Trophy } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
 
 // Import custom navigation icons
 import sparklePic from '../img/sparkle.png'
@@ -322,17 +324,31 @@ export function Sidebar({
               className="border-b border-white/5 last:border-b-0"
             >
               {item.name === 'Donate' ? (
-                <button
-                  onClick={() => {
-                    if (item.action) {
-                      item.action();
-                    }
-                  }}
-                  className="mx-auto block px-3 pb-0.5 my-4 text-lg font-trad text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black"
-                  aria-label={item.name}
-                >
-                  {item.name}
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      if (item.action) {
+                        item.action();
+                      }
+                    }}
+                    className="mx-auto block px-3 pb-0.5 my-4 text-lg font-trad text-black bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-black"
+                    aria-label={item.name}
+                  >
+                    {item.name}
+                  </button>
+                  {/* X (Twitter) icon - placed directly after Donate button */}
+                  <a
+                    href="https://x.com/dripfieldpro"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mx-auto block w-fit text-fifth hover:border border border-primary hover:border-fifth rounded-lg p-0.5 hover:text-fifth hover:bg-tertiary bg-primary transition-colors mb-4"
+                  >
+                    <FontAwesomeIcon
+                      icon={faXTwitter}
+                      size="2x"
+                    />
+                  </a>
+                </>
               ) : (
                 <button
                   onClick={() => {

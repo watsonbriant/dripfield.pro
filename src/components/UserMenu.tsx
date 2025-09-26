@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { User, ChevronDown } from 'lucide-react';
 import sparklePic from '../img/sparkle.png'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
 
 export const UserMenu: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -167,6 +169,18 @@ export const UserMenu: React.FC = () => {
 
   return (
     <div className="flex items-center">
+      <a
+        href="https://x.com/dripfieldpro"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mr-4 text-fifth hover:border border border-primary hidden md:block hover:border-fifth rounded-lg p-0.5 hover:text-fifth hover:bg-tertiary bg-primary transition-colors"
+      >
+        <FontAwesomeIcon
+          icon={faXTwitter}
+          size="2x"
+        />
+      </a>
+
       <Link
         to="#"
         onClick={(e) => {
