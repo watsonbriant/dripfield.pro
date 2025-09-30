@@ -359,7 +359,6 @@ export function SetlistGameShowPage() {
 
   // Fetch top picked songs
   useEffect(() => {
-    // Updated fetchTopSongs function with multiple sorting criteria
     async function fetchTopSongs() {
       if (!showId) return;
 
@@ -403,26 +402,49 @@ export function SetlistGameShowPage() {
           songCounts[pick.song]++;
         });
 
-        // Get unique song names
-        const songNames = Object.keys(songCounts);
-
-        // Fetch song categories for all the picked songs
-        const { data: songData, error: songError } = await supabase
+        // Fetch song categories for all songs WITH PAGINATION
+        // First get the total count
+        const { count, error: countError } = await supabase
           .from('songs')
-          .select(`
-            song, 
-            song_id,
-            song_category,
-            categories:song_category(
-              category,
-              category_canonid,
-              category_artwork
-            )
-          `);
-
-        if (songError) {
-          console.error('Error fetching song categories:', songError);
+          .select('*', { count: 'exact', head: true });
+        
+        if (countError) {
+          console.error('Error fetching song count:', countError);
           return;
+        }
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allSongData: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('songs')
+            .select(`
+              song, 
+              song_id,
+              song_category,
+              categories:song_category(
+                category,
+                category_canonid,
+                category_artwork
+              )
+            `)
+            .order('song', { ascending: true })
+            .range(start, end);
+          
+          if (error) {
+            console.error(`Error fetching song batch ${i + 1}:`, error);
+            throw error;
+          }
+          
+          if (data) {
+            allSongData = [...allSongData, ...data];
+          }
         }
 
         // Create a map of song to category_canonid
@@ -430,7 +452,7 @@ export function SetlistGameShowPage() {
         const songIdMap: Record<string, string> = {};
         const categoryArtworkMap: Record<string, string> = {};
 
-        songData?.forEach(song => {
+        allSongData?.forEach(song => {
           if (song.categories && typeof song.categories === 'object') {
             if ('category_canonid' in song.categories) {
               songCategoryMap[song.song] = (song.categories as SongCategory).category_canonid || 0;
@@ -528,26 +550,49 @@ export function SetlistGameShowPage() {
           songCounts[pick.song]++;
         });
 
-        // Get unique song names
-        const songNames = Object.keys(songCounts);
-
-        // Fetch song categories for all the picked songs
-        const { data: songData, error: songError } = await supabase
+        // Fetch song categories for all songs WITH PAGINATION
+        // First get the total count
+        const { count, error: countError } = await supabase
           .from('songs')
-          .select(`
-          song, 
-          song_id,
-          song_category,
-          categories:song_category(
-            category,
-            category_canonid,
-            category_artwork
-          )
-        `);
-
-        if (songError) {
-          console.error('Error fetching song categories:', songError);
+          .select('*', { count: 'exact', head: true });
+        
+        if (countError) {
+          console.error('Error fetching song count:', countError);
           return;
+        }
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allSongData: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('songs')
+            .select(`
+              song, 
+              song_id,
+              song_category,
+              categories:song_category(
+                category,
+                category_canonid,
+                category_artwork
+              )
+            `)
+            .order('song', { ascending: true })
+            .range(start, end);
+          
+          if (error) {
+            console.error(`Error fetching song batch ${i + 1}:`, error);
+            throw error;
+          }
+          
+          if (data) {
+            allSongData = [...allSongData, ...data];
+          }
         }
 
         // Create a map of song to category_canonid and song_id
@@ -555,7 +600,7 @@ export function SetlistGameShowPage() {
         const songIdMap: Record<string, string> = {};
         const categoryArtworkMap: Record<string, string> = {};
 
-        songData?.forEach(song => {
+        allSongData?.forEach(song => {
           if (song.categories && typeof song.categories === 'object') {
             if ('category_canonid' in song.categories) {
               songCategoryMap[song.song] = (song.categories as SongCategory).category_canonid || 0;
@@ -659,23 +704,49 @@ export function SetlistGameShowPage() {
           }
         }
 
-        // Fetch song categories for all the picked songs
-        const { data: songData, error: songError } = await supabase
+        // Fetch song categories for all the picked songs WITH PAGINATION
+        // First get the total count
+        const { count, error: countError } = await supabase
           .from('songs')
-          .select(`
-          song, 
-          song_id,
-          song_category,
-          categories:song_category(
-            category,
-            category_canonid,
-            category_artwork
-          )
-        `);
-
-        if (songError) {
-          console.error('Error fetching song categories:', songError);
+          .select('*', { count: 'exact', head: true });
+        
+        if (countError) {
+          console.error('Error fetching song count:', countError);
           return;
+        }
+        
+        // Fetch in batches of 1000
+        const batchSize = 1000;
+        const totalBatches = Math.ceil((count || 0) / batchSize);
+        let allSongData: any[] = [];
+        
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * batchSize;
+          const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+          
+          const { data, error } = await supabase
+            .from('songs')
+            .select(`
+              song, 
+              song_id,
+              song_category,
+              categories:song_category(
+                category,
+                category_canonid,
+                category_artwork
+              )
+            `)
+            .order('song', { ascending: true })
+            .range(start, end);
+          
+          if (error) {
+            console.error(`Error fetching song batch ${i + 1}:`, error);
+            throw error;
+          }
+          
+          if (data) {
+            allSongData = [...allSongData, ...data];
+          }
         }
 
         // Create a map of song to category_canonid and song_id
@@ -683,7 +754,7 @@ export function SetlistGameShowPage() {
         const songIdMap: Record<string, string> = {};
         const categoryArtworkMap: Record<string, string> = {};
 
-        songData?.forEach(song => {
+        allSongData?.forEach(song => {
           if (song.categories && typeof song.categories === 'object') {
             if ('category_canonid' in song.categories) {
               songCategoryMap[song.song] = (song.categories as SongCategory).category_canonid || 0;
