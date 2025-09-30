@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import coverImage from '../img/Cover.jpg';
 import gooseGif from '../img/Goose.gif';
 import cover2 from '../img/Cover2.jpg';
-import textLogo from '../img/Logo_Text.png'
 
 interface Show {
   show_date: string;
@@ -1396,7 +1395,7 @@ export function Home() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value === 'all-time' ? 'all-time' : Number(e.target.value))}
-                className="bg-tertiary text-fifth px-4 py-1.5 rounded-lg border border-secondary hover:bg-primary transition-colors text-base font-semibold appearance-none pr-10 cursor-pointer"
+                className="bg-tertiary text-fifth px-4 py-1.5 rounded-lg border border-secondary hover:bg-primary transition-colors text-base font-semibold appearance-none pr-10 cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none "
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                   backgroundPosition: 'right 0.5rem center',
