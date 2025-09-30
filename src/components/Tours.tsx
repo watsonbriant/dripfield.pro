@@ -25,9 +25,9 @@ interface Show {
   show_venue_location: string | null;
   show_length?: string | null;
   show_rarity?: string | null;
-  show_subvenue_venue?: string; // Added for venue navigation
-  venue_id?: string; // Added for venue ID
-  attended?: boolean; // Added to track if user attended
+  show_subvenue_venue?: string;
+  venue_id?: string;
+  attended?: boolean;
   show_wl_link?: string | null;
   show_gap?: string | null;
   setlist_entries?: Array<{
@@ -86,7 +86,7 @@ export function Tours() {
   const { tour } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [currentTour, setCurrentTour] = React.useState<string>('2025 Fall');
+  const [currentTour, setCurrentTour] = React.useState<string>('');
   const [currentTourId, setCurrentTourId] = React.useState<string>('');
   const [currentTourShowFields, setCurrentTourShowFields] = React.useState<boolean>(false);
   const [shows, setShows] = React.useState<Show[]>([]);
@@ -130,27 +130,22 @@ export function Tours() {
   };
 
   const getRarityColor = (percentage: string | null): string => {
-    // If percentage is null or not a valid percentage string, return transparent
     if (!percentage || percentage === '-') return 'transparent';
 
-    // Convert percentage string to number
     const numericPercentage = parseFloat(percentage.replace('%', ''));
 
     if (isNaN(numericPercentage)) return 'transparent';
 
-    // Cap the value at 100 for color calculation (values > 100 use the 100% color)
     const cappedPercentage = Math.min(numericPercentage, 100);
 
-    // Define our 4 color stops with breakpoints at 0, 15, 50, 100
     const colorStops = [
-      { percent: 0, color: { r: 156, g: 12, b: 12 } },     // #9C0C0C (Even Darker Red)
-      { percent: 12, color: { r: 230, g: 81, b: 0 } },     // #E65100 (Darker Orange)
-      { percent: 24, color: { r: 179, g: 135, b: 0 } },    // #D3A304 (Dark Yellow)
-      { percent: 50, color: { r: 46, g: 125, b: 50 } },    // #2E7D32 (Darker Green)
-      { percent: 100, color: { r: 13, g: 71, b: 161 } }    // #0D47A1 (Darker Blue)
+      { percent: 0, color: { r: 156, g: 12, b: 12 } },
+      { percent: 12, color: { r: 230, g: 81, b: 0 } },
+      { percent: 24, color: { r: 179, g: 135, b: 0 } },
+      { percent: 50, color: { r: 46, g: 125, b: 50 } },
+      { percent: 100, color: { r: 13, g: 71, b: 161 } }
     ];
 
-    // Find the color stops to interpolate between
     let lowerStop = colorStops[0];
     let upperStop = colorStops[colorStops.length - 1];
 
@@ -162,11 +157,9 @@ export function Tours() {
       }
     }
 
-    // Calculate interpolation factor
     const range = upperStop.percent - lowerStop.percent;
     const factor = range !== 0 ? (cappedPercentage - lowerStop.percent) / range : 0;
 
-    // Interpolate RGB values
     const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
     const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
     const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
@@ -175,27 +168,22 @@ export function Tours() {
   };
 
   const getGapColor = (value: string | null): string => {
-    // If value is null or not a valid number string, return transparent
     if (!value || value === '-') return 'transparent';
 
-    // Convert string to number
     const numericValue = parseFloat(value);
 
     if (isNaN(numericValue)) return 'transparent';
 
-    // Cap the value at 100 for color calculation (values > 100 use the 100 color)
     const cappedValue = Math.min(numericValue, 100);
 
-    // Define color stops with REVERSED scale (0 = blue, 100 = red)
     const colorStops = [
-      { percent: 0, color: { r: 13, g: 71, b: 161 } },      // #0D47A1 (Darker Blue) - Best
-      { percent: 12, color: { r: 46, g: 125, b: 50 } },     // #2E7D32 (Darker Green)
-      { percent: 24, color: { r: 179, g: 135, b: 0 } },     // #B38700 (Dark Yellow)
-      { percent: 50, color: { r: 230, g: 81, b: 0 } },      // #E65100 (Darker Orange)
-      { percent: 100, color: { r: 156, g: 12, b: 12 } }     // #9C0C0C (Even Darker Red) - Worst
+      { percent: 0, color: { r: 13, g: 71, b: 161 } },
+      { percent: 12, color: { r: 46, g: 125, b: 50 } },
+      { percent: 24, color: { r: 179, g: 135, b: 0 } },
+      { percent: 50, color: { r: 230, g: 81, b: 0 } },
+      { percent: 100, color: { r: 156, g: 12, b: 12 } }
     ];
 
-    // Find the color stops to interpolate between
     let lowerStop = colorStops[0];
     let upperStop = colorStops[colorStops.length - 1];
 
@@ -207,11 +195,9 @@ export function Tours() {
       }
     }
 
-    // Calculate interpolation factor
     const range = upperStop.percent - lowerStop.percent;
     const factor = range !== 0 ? (cappedValue - lowerStop.percent) / range : 0;
 
-    // Interpolate RGB values
     const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
     const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
     const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
@@ -219,38 +205,27 @@ export function Tours() {
     return `rgb(${r}, ${g}, ${b})`;
   };
 
-  // Window width state for responsive behavior
   const [windowWidth, setWindowWidth] = React.useState(
     typeof window !== 'undefined' ? window.innerWidth : 0
   );
 
-  // Resize event handler
   React.useEffect(() => {
-    // Function to update window width
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    // Add event listener
     window.addEventListener('resize', handleResize);
-
-    // Initial call to set the width
     handleResize();
 
-    // Clean up
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Unified loading state
   const [isLoading, setIsLoading] = React.useState(true);
-
-  // Track loading states of individual data components
   const [toursLoaded, setToursLoaded] = React.useState(false);
   const [showsLoaded, setShowsLoaded] = React.useState(false);
   const [slotsLoaded, setSlotsLoaded] = React.useState(false);
   const [songIdsLoaded, setSongIdsLoaded] = React.useState(false);
 
-  // Fetch attendee counts for all shows with pagination
   useEffect(() => {
     const fetchAttendeeCounts = async () => {
       if (shows.length === 0) return;
@@ -258,7 +233,6 @@ export function Tours() {
       try {
         const showIds = shows.map(s => s.show_id);
         
-        // First get the total count
         const { count, error: countError } = await supabase
           .from('user_attended_shows')
           .select('*', { count: 'exact', head: true })
@@ -266,7 +240,6 @@ export function Tours() {
         
         if (countError) throw countError;
         
-        // Fetch in batches of 1000
         const batchSize = 1000;
         const totalBatches = Math.ceil((count || 0) / batchSize);
         let allData: any[] = [];
@@ -288,7 +261,6 @@ export function Tours() {
           }
         }
         
-        // Count attendees per show
         const counts: Record<string, number> = {};
         shows.forEach(show => {
           counts[show.show_id] = 0;
@@ -307,7 +279,6 @@ export function Tours() {
     fetchAttendeeCounts();
   }, [shows]);
 
-  // Fetch shows with setlists
   useEffect(() => {
     async function fetchShowsWithSetlists() {
       if (!currentTour || shows.length === 0) return;
@@ -332,7 +303,6 @@ export function Tours() {
     }
   }, [shows, currentTour]);
 
-  // Fetch shows with releases (with pagination)
   useEffect(() => {
     async function fetchShowsWithReleases() {
       if (!currentTour || shows.length === 0) return;
@@ -340,7 +310,6 @@ export function Tours() {
       try {
         const showIds = shows.map(s => s.show_id);
         
-        // First get the total count
         const { count, error: countError } = await supabase
           .from('releases_shows')
           .select('*', { count: 'exact', head: true })
@@ -348,7 +317,6 @@ export function Tours() {
         
         if (countError) throw countError;
         
-        // Fetch in batches of 1000
         const batchSize = 1000;
         const totalBatches = Math.ceil((count || 0) / batchSize);
         let allReleaseShows: any[] = [];
@@ -396,7 +364,6 @@ export function Tours() {
         
         if (error) throw error;
         
-        // Calculate averages for each show
         const ratings: Record<string, number> = {};
         shows.forEach(show => {
           const showRatingsData = data?.filter(r => r.show_id === show.show_id) || [];
@@ -417,7 +384,6 @@ export function Tours() {
     fetchShowRatings();
   }, [shows]);
 
-  // Fetch attended shows for current user
   useEffect(() => {
     if (!user) {
       setAttendedShowIds([]);
@@ -443,12 +409,10 @@ export function Tours() {
     fetchAttendedShows();
   }, [user]);
 
-  // Helper function to navigate to venue pages
   const navigateToVenue = (show: Show) => {
     if (show.venue_id) {
       navigate(`/venue/${show.venue_id}`);
     } else if (show.show_subvenue_venue) {
-      // If we don't have venue_id but have the venue name, use that
       navigate(`/venue/${encodeURIComponent(show.show_subvenue_venue)}`);
     }
   };
@@ -495,7 +459,6 @@ export function Tours() {
       let aValue: any;
       let bValue: any;
 
-      // Handle special columns that aren't direct Show properties
       if (sortColumn === 'rating') {
         aValue = showRatings[a.show_id] || 0;
         bValue = showRatings[b.show_id] || 0;
@@ -503,12 +466,10 @@ export function Tours() {
         aValue = attendeeCounts[a.show_id] || 0;
         bValue = attendeeCounts[b.show_id] || 0;
       } else {
-        // For all other columns, get from Show object
         aValue = a[sortColumn as keyof Show];
         bValue = b[sortColumn as keyof Show];
       }
 
-      // Handle special cases for length and rarity which are percentages/time
       if (sortColumn === 'show_rarity') {
         aValue = aValue && aValue !== '-' ? parseFloat(aValue.replace('%', '')) : -1;
         bValue = bValue && bValue !== '-' ? parseFloat(bValue.replace('%', '')) : -1;
@@ -516,7 +477,6 @@ export function Tours() {
         aValue = aValue ? parseFloat(aValue) : -1;
         bValue = bValue ? parseFloat(bValue) : -1;
       } else if (sortColumn === 'show_length') {
-        // Convert time strings to seconds for comparison
         const timeToSeconds = (timeStr: string | null) => {
           if (!timeStr) return -1;
           const [hours, minutes, seconds] = timeStr.split(':').map(Number);
@@ -525,12 +485,10 @@ export function Tours() {
         aValue = timeToSeconds(aValue as string | null);
         bValue = timeToSeconds(bValue as string | null);
       } else if (sortColumn === 'show_date') {
-        // Ensure dates are compared correctly
         aValue = new Date(aValue).getTime();
         bValue = new Date(bValue).getTime();
       }
 
-      // Handle null values
       if (aValue === null) aValue = '';
       if (bValue === null) bValue = '';
 
@@ -591,26 +549,12 @@ export function Tours() {
     }
   };
 
-  // Check if all data is loaded
   React.useEffect(() => {
     if (toursLoaded && showsLoaded && slotsLoaded && songIdsLoaded) {
       setIsLoading(false);
     }
   }, [toursLoaded, showsLoaded, slotsLoaded, songIdsLoaded]);
 
-  React.useEffect(() => {
-    if (!tour) {
-      navigate('/tours/2025 Fall', { replace: true });
-    }
-  }, [tour, navigate]);
-
-  React.useEffect(() => {
-    if (tour && tour !== currentTour) {
-      setCurrentTour(tour);
-    }
-  }, [tour]);
-
-  // Effect to handle dropdown opening/closing and scrolling to current tour
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -620,9 +564,7 @@ export function Tours() {
 
     document.addEventListener('mousedown', handleClickOutside);
 
-    // Scroll to the current tour when dropdown opens
     if (isDropdownOpen && dropdownListRef.current) {
-      // Find the button for the current tour
       const buttons = dropdownListRef.current.querySelectorAll('button');
       for (const button of buttons) {
         if (button.textContent?.trim() === currentTour) {
@@ -635,40 +577,55 @@ export function Tours() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen, currentTour]);
 
+  // Initialize tour from URL or redirect to 2025 Fall
   React.useEffect(() => {
-    async function fetchTours() {
+    async function initializeTour() {
       try {
         const { data, error } = await supabase
           .from('tours')
           .select('tour, tour_canonid, tour_id, tour_showfields')
           .order('tour_canonid', { ascending: true });
 
-        if (error) {
-          throw error;
-        }
-
-        // Find the tour_id for initial navigation
-        const winter2025 = data?.find(t => t.tour === '2025 Fall');
-        if (winter2025 && !tour) {
-          navigate(`/tours/${winter2025.tour_id}`, { replace: true });
-          setCurrentTourId(winter2025.tour_id);
-          setCurrentTour('2025 Fall');
-          setCurrentTourShowFields(winter2025.tour_showfields || false);
-        }
+        if (error) throw error;
 
         setTours(data || []);
+
+        // If no tour in URL, redirect to 2025 Fall
+        if (!tour) {
+          const winter2025 = data?.find(t => t.tour === '2025 Fall');
+          if (winter2025) {
+            navigate(`/tours/${winter2025.tour_id}`, { replace: true });
+          }
+          return;
+        }
+
+        // Validate that the tour_id in URL exists
+        const tourData = data?.find(t => t.tour_id === tour);
+        
+        if (tourData) {
+          // Valid tour_id - set it
+          setCurrentTour(tourData.tour);
+          setCurrentTourId(tourData.tour_id);
+          setCurrentTourShowFields(tourData.tour_showfields || false);
+        } else {
+          // Invalid tour_id - redirect to 2025 Fall
+          const winter2025 = data?.find(t => t.tour === '2025 Fall');
+          if (winter2025) {
+            navigate(`/tours/${winter2025.tour_id}`, { replace: true });
+          }
+        }
+
         setToursLoaded(true);
       } catch (error) {
         console.error('Error fetching tours:', error);
-        setToursLoaded(true); // Still mark as loaded to show error state
+        setToursLoaded(true);
       }
     }
 
-    fetchTours();
+    initializeTour();
   }, [tour, navigate]);
 
   React.useEffect(() => {
-    // Fetch all songs to get their IDs
     const fetchSongIds = async () => {
       try {
         const { data, error } = await supabase
@@ -686,7 +643,7 @@ export function Tours() {
         setSongIdsLoaded(true);
       } catch (error) {
         console.error('Error fetching song IDs:', error);
-        setSongIdsLoaded(true); // Still mark as loaded to show error state
+        setSongIdsLoaded(true);
       }
     };
 
@@ -694,34 +651,21 @@ export function Tours() {
   }, []);
 
   React.useEffect(() => {
-    // If the tour parameter changes, set loading to true
     if (tour !== previousTourId) {
       setIsLoading(true);
       setPreviousTourId(tour || null);
     }
-
-    if (tour && tours.length > 0) {
-      const tourData = tours.find(t => t.tour_id === tour);
-      if (tourData) {
-        setCurrentTour(tourData.tour);
-        setCurrentTourId(tourData.tour_id);
-        setCurrentTourShowFields(tourData.tour_showfields || false);
-      }
-    }
-  }, [tour, tours, previousTourId]);
+  }, [tour, previousTourId]);
 
   React.useEffect(() => {
-    // Reset loading states when tour changes
-    if (currentTour) {
-      setIsLoading(true);
-      setShowsLoaded(false);
-      setSlotsLoaded(false);
-    }
+    if (!currentTour) return;
 
-    // We'll use Promise.all to load everything in parallel
+    setIsLoading(true);
+    setShowsLoaded(false);
+    setSlotsLoaded(false);
+
     async function fetchAllData() {
       try {
-        // Start both requests in parallel rather than sequentially
         const showsPromise = supabase
           .from('shows')
           .select(`
@@ -787,21 +731,17 @@ export function Tours() {
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true });
 
-        // Wait for all data to be fetched
         const [showsResult, placementsResult, slotsResult] = await Promise.all([
           showsPromise,
           placementsPromise,
           slotsPromise
         ]);
 
-        // Check for errors in any of the requests
         if (showsResult.error) throw showsResult.error;
         if (placementsResult.error) throw placementsResult.error;
         if (slotsResult.error) throw slotsResult.error;
 
-        // Process shows data
         const processedShows = showsResult.data?.map(show => {
-          // Calculate show length
           let totalSeconds = 0;
           const hasLength = show.setlist_entries?.some(entry => entry.entry_length !== null);
 
@@ -820,7 +760,6 @@ export function Tours() {
             });
           }
 
-          // Format length string
           let show_length = null;
           if (totalSeconds > 0) {
             const hours = Math.floor(totalSeconds / 3600);
@@ -829,13 +768,11 @@ export function Tours() {
             show_length = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
           }
 
-          // Calculate show rarity
           let show_rarity = null;
           if (show.show_canonid && show.setlist_entries?.length) {
             const skipShorts = ["fake", "tease", "reprise", "aborted"];
             const uniqueSongs = new Map();
             
-            // First pass: identify songs with at least one valid performance
             const songsWithValidPerformance = new Set<string>();
             show.setlist_entries.forEach(entry => {
               if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
@@ -843,7 +780,6 @@ export function Tours() {
               }
             });
             
-            // Second pass: add songs to the map only if they have a valid performance
             show.setlist_entries.forEach(entry => {
               if (songsWithValidPerformance.has(entry.entry_song) && !uniqueSongs.has(entry.entry_song)) {
                 uniqueSongs.set(entry.entry_song, {
@@ -865,7 +801,6 @@ export function Tours() {
             }
           }
 
-          // Calculate average show gap
           let show_gap = null;
           if (show.show_canonid && show.setlist_entries?.length) {
             show_gap = calculateAverageShowGap(show.setlist_entries);
@@ -875,24 +810,21 @@ export function Tours() {
             ...show,
             show_length,
             show_rarity,
-            show_gap, // Add this
+            show_gap,
             venue_id: show.subvenues?.venues?.venue_id,
             attended: attendedShowIds.includes(show.show_id)
           };
         });
 
-        // Process slots data
         const transformedData = slotsResult.data?.map(show => {
           const slots: any = {
             show_id: show.show_id,
             Show_Date: show.show_date
           };
 
-          // Group entries by placement
           const placementEntries: { [key: string]: Array<SongEntryWithId> } = {};
 
           show.setlist_entries?.forEach(entry => {
-            // Skip main set entries
             if (entry.entry_placement.startsWith('Main Set')) {
               return;
             }
@@ -907,9 +839,7 @@ export function Tours() {
             });
           });
 
-          // Add entries to slots
           Object.entries(placementEntries).forEach(([key, entries]) => {
-            // Sort entries by setnum
             entries.sort((a, b) => a.setnum - b.setnum);
             slots[key] = entries;
           });
@@ -917,7 +847,6 @@ export function Tours() {
           return slots;
         });
 
-        // Find active columns and order them according to placement_order
         const columnsWithData = new Set<string>();
         transformedData?.forEach(show => {
           Object.entries(show).forEach(([key, value]) => {
@@ -927,7 +856,6 @@ export function Tours() {
           });
         });
 
-        // Order the columns based on placement_order
         const orderedColumns = placementsResult.data
           ?.filter(p => Array.from(columnsWithData).includes(p.placements.replace(/\s+/g, '_')))
           .map(p => p.placements.replace(/\s+/g, '_'));
@@ -940,8 +868,6 @@ export function Tours() {
           )
         );
 
-        // Update all state at once after processing
-        // Check if any show has setlist entries
         const hasAnySetlistEntries = processedShows?.some(show =>
           show.setlist_entries && show.setlist_entries.length > 0
         );
@@ -951,34 +877,27 @@ export function Tours() {
         setSlots(transformedData || []);
         setActiveColumns(orderedColumns || []);
 
-        // Mark data as loaded
         setShowsLoaded(true);
         setSlotsLoaded(true);
       } catch (error) {
         console.error('Error fetching data:', error);
-        // Even on error, mark as loaded to show error state
         setShowsLoaded(true);
         setSlotsLoaded(true);
       }
     }
 
-    if (currentTour) {
-      fetchAllData();
-    }
+    fetchAllData();
   }, [currentTour, attendedShowIds]);
 
-  // Fetch placement data for top slots
   React.useEffect(() => {
     async function fetchPlacementData() {
       if (!currentTour || showsLoaded === false) return;
 
       try {
-        // Get all show IDs for this tour
         const showIds = shows.map(show => show.show_id);
 
         if (showIds.length === 0) return;
 
-        // First fetch all setlist entries with their placements
         const { data: entriesData, error: entriesError } = await supabase
           .from('setlist_entries')
           .select(`
@@ -991,7 +910,6 @@ export function Tours() {
 
         if (entriesError) throw entriesError;
 
-        // Then fetch song category information for all unique songs
         const uniqueSongs = [...new Set(entriesData?.map(entry => entry.entry_song) || [])];
 
         const { data: songsData, error: songsError } = await supabase
@@ -1008,7 +926,6 @@ export function Tours() {
 
         if (songsError) throw songsError;
 
-        // Create maps of songs to their category IDs and artwork
         const songCategoryMap: Record<string, number> = {};
         const songArtworkMap: Record<string, string> = {};
 
@@ -1019,7 +936,6 @@ export function Tours() {
           }
         });
 
-        // Process the entries data with the category information
         const processedTopSlots = processTourDataWithCategories(entriesData || [], songCategoryMap, songArtworkMap);
         setTopSlots(processedTopSlots);
       } catch (error) {
@@ -1027,19 +943,16 @@ export function Tours() {
       }
     }
 
-    // Function to process tour data with category information
     const processTourDataWithCategories = (
       entries: Array<{ entry_placement: string; entry_song: string; entry_show?: string }>,
       songCategoryMap: Record<string, number>,
       songArtworkMap: Record<string, string>
     ) => {
-      // Count songs by placement categories
       const showOpeners: Record<string, number> = {};
       const setOpeners: Record<string, number> = {};
       const setClosers: Record<string, number> = {};
       const encores: Record<string, number> = {};
 
-      // Track unique combinations of show+placement+song
       const uniqueCombinations = new Set<string>();
 
       entries.forEach(entry => {
@@ -1047,73 +960,60 @@ export function Tours() {
         const show = entry.entry_show || '';
         const song = entry.entry_song;
 
-        // Create a unique key for this show+placement+song combination
         const uniqueKey = `${show}|${placement}|${song}`;
 
-        // Only process if we haven't seen this combination before
         if (!uniqueCombinations.has(uniqueKey)) {
           uniqueCombinations.add(uniqueKey);
 
-          // Show openers (Set 1 Opener)
           if (placement === "Set 1 Opener") {
             showOpeners[song] = (showOpeners[song] || 0) + 1;
           }
 
-          // Set Openers (contains "Opener")
           if (placement.includes("Opener")) {
             setOpeners[song] = (setOpeners[song] || 0) + 1;
           }
 
-          // Set Closers (contains "Closer")
           if (placement.includes("Closer")) {
             setClosers[song] = (setClosers[song] || 0) + 1;
           }
 
-          // Encores (contains "Encore")
           if (placement.includes("Encore")) {
             encores[song] = (encores[song] || 0) + 1;
           }
         }
       });
 
-      // Check if all categories are empty
       const hasShowOpeners = Object.keys(showOpeners).length > 0;
       const hasSetOpeners = Object.keys(setOpeners).length > 0;
       const hasSetClosers = Object.keys(setClosers).length > 0;
       const hasEncores = Object.keys(encores).length > 0;
 
-      // If all categories are empty, return an empty array
       if (!hasShowOpeners && !hasSetOpeners && !hasSetClosers && !hasEncores) {
         return [];
       }
 
-      // Format data for top slots
       const formatSlotData = (data: Record<string, number>, title: string): SlotData => {
         const sortedData = Object.entries(data)
           .map(([song, count]) => ({
             song,
             count,
             categoryCanonId: songCategoryMap[song] || 999,
-            artwork: songArtworkMap[song] || undefined  // Added artwork
+            artwork: songArtworkMap[song] || undefined
           }))
           .sort((a, b) => {
-            // First by count (descending)
             if (a.count !== b.count) {
               return b.count - a.count;
             }
 
-            // Then by category_canonid (ascending)
             if (a.categoryCanonId !== b.categoryCanonId) {
               return a.categoryCanonId - b.categoryCanonId;
             }
 
-            // Finally alphabetically by song name
             return a.song.localeCompare(b.song);
           })
-          .slice(0, 8) // Get top 8
+          .slice(0, 8)
           .map(({ song, count, artwork }) => ({ left: song, right: count, artwork }));
 
-        // If no data, return empty data instead of placeholder
         if (sortedData.length === 0) {
           return {
             title,
@@ -1131,7 +1031,6 @@ export function Tours() {
         };
       };
 
-      // Create slot data for carousel, only include non-empty categories
       const result = [];
 
       if (hasShowOpeners) {
@@ -1158,7 +1057,7 @@ export function Tours() {
 
   const renderSongList = (songs: SongEntryWithId[] | null) => {
     if (!songs || songs.length === 0) return null;
-  
+
     return (
       <div
         className="w-full text-left"
@@ -1194,7 +1093,6 @@ export function Tours() {
     );
   };
 
-  // Show a loading state while data is being fetched and processed
   if (isLoading) {
     return (
       <div className="max-w-[1280px] mx-auto">
@@ -1205,7 +1103,7 @@ export function Tours() {
               <button
                 className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
               >
-                {currentTour}
+                {currentTour || 'Select Tour'}
                 <ChevronDown className="w-4 h-4" />
               </button>
             </div>
@@ -1223,7 +1121,6 @@ export function Tours() {
     );
   }
 
-  // Handle the case where no tour is found
   if (tours.length === 0) {
     return (
       <div className="max-w-[1280px] mx-auto">
@@ -1247,7 +1144,6 @@ export function Tours() {
     );
   }
 
-  // Return statement of the Tours component
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between mb-6 items-center">
@@ -1465,7 +1361,6 @@ export function Tours() {
                       </td>
                       <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
                         <div className="relative flex items-center justify-center group">
-                          {/* Stars with hover-based transparency */}
                           <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
                             {[1, 2, 3, 4, 5].map((starNumber) => {
                               const rating = showRatings[show.show_id] || 0;
@@ -1473,14 +1368,12 @@ export function Tours() {
 
                               return (
                                 <div key={starNumber} className="relative">
-                                  {/* Background star (empty) */}
                                   <Star
                                     size={16}
                                     className="text-secondary"
                                     fill="none"
                                     stroke="currentColor"
                                   />
-                                  {/* Foreground star (filled) */}
                                   <div
                                     className="absolute inset-0 overflow-hidden"
                                     style={{ width: `${fillPercentage * 100}%` }}
@@ -1496,7 +1389,6 @@ export function Tours() {
                               );
                             })}
                           </div>
-                          {/* Rating text overlaid on stars - only visible on hover */}
                           {showRatings[show.show_id] > 0 && (
                             <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-fifth pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                               {showRatings[show.show_id].toFixed(2)}
@@ -1509,7 +1401,6 @@ export function Tours() {
                           <div className="flex justify-center items-center h-full">
                             <button
                               onClick={() => {
-                                // Navigate with a state parameter to open the modal
                                 navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
                               }}
                               className="text-[#006400] hover:text-primary hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
@@ -1644,12 +1535,9 @@ export function Tours() {
 
       {shows.length > 0 && hasTourSetlistEntries && (
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Left column - Song Spread and Not Played In Tour */}
           <div className="flex flex-col gap-4">
-            {/* Song Spread */}
             <TourSongSpread shows={shows} />
             
-            {/* Not Played In Tour - conditionally rendered based on tour_showfields */}
             {currentTourShowFields && (
               <NotPlayedInTour
                 tourId={currentTourId}
@@ -1660,9 +1548,7 @@ export function Tours() {
             )}
           </div>
 
-          {/* Right column on desktop contains TopSlotsCarousel and LongestSongs */}
           <div className="flex flex-col gap-4">
-            {/* TopSlotsCarousel */}
             {topSlots.length > 0 && (
               <TopSlotsCarousel
                 slots={topSlots}
@@ -1673,7 +1559,6 @@ export function Tours() {
               />
             )}
 
-            {/* LongestSongs */}
             <LongestSongs
               showIds={shows.map(show => show.show_id)}
               songIdMap={songIdMap}
@@ -1695,7 +1580,6 @@ export function Tours() {
         </div>
       )}
 
-      {/* Song Tour Performances Modal */}
       <SongTourPerformancesModal
         isOpen={modalSongData.isOpen}
         onClose={() => setModalSongData({ isOpen: false, songName: '' })}

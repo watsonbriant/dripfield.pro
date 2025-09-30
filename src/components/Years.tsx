@@ -23,9 +23,9 @@ interface Show {
   show_canonid: number | null;
   venue_location: string | null;
   show_venue_location: string;
-  show_subvenue_venue: string; // Added for venue navigation
-  venue_id?: string; // Added for venue ID
-  attended?: boolean; // Added to track if user attended
+  show_subvenue_venue: string;
+  venue_id?: string;
+  attended?: boolean;
   show_wl_link?: string | null;
 }
 
@@ -46,7 +46,7 @@ export function Years() {
   const { year } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [currentYear, setCurrentYear] = React.useState<string>('2025');
+  const [currentYear, setCurrentYear] = React.useState<string>('');
   const [currentYearId, setCurrentYearId] = React.useState<string>('');
   const [years, setYears] = React.useState<Year[]>([]);
   const [shows, setShows] = React.useState<Show[]>([]);
@@ -106,7 +106,7 @@ export function Years() {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
-      setSortDirection(column === 'rating' ? 'desc' : 'asc'); // Default desc for ratings
+      setSortDirection(column === 'rating' ? 'desc' : 'asc');
     }
   };
 
@@ -154,25 +154,21 @@ export function Years() {
           valueB = attendeeCounts[b.show_id] || 0;
           break;
         default:
-          // Default to date sorting
           valueA = new Date(a.show_date).getTime();
           valueB = new Date(b.show_date).getTime();
       }
 
-      // Handle string comparisons
       if (typeof valueA === 'string' && typeof valueB === 'string') {
         const comparison = valueA.localeCompare(valueB);
         if (comparison !== 0) {
           return sortDirection === 'asc' ? comparison : -comparison;
         }
       } else {
-        // Handle numeric comparisons
         if (valueA !== valueB) {
           return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
         }
       }
 
-      // Secondary sort by show_date if primary sort values are equal
       if (sortColumn !== 'show_date') {
         const dateA = new Date(a.show_date).getTime();
         const dateB = new Date(b.show_date).getTime();
@@ -181,31 +177,26 @@ export function Years() {
         }
       }
 
-      // Tertiary sort by show_canonid
       const canonIdA = a.show_canonid === null ? -1 : a.show_canonid;
       const canonIdB = b.show_canonid === null ? -1 : b.show_canonid;
       if (canonIdA !== canonIdB) {
         return sortDirection === 'asc' ? canonIdA - canonIdB : canonIdB - canonIdA;
       }
 
-      // Final sort by show_group
       const groupA = a.show_group || '';
       const groupB = b.show_group || '';
       return groupA.localeCompare(groupB);
     });
   };
 
-  // Helper function to navigate to venue pages
   const navigateToVenue = (show: Show) => {
     if (show.venue_id) {
       navigate(`/venue/${show.venue_id}`);
     } else if (show.show_subvenue_venue) {
-      // If we don't have venue_id but have the venue name, use that
       navigate(`/venue/${encodeURIComponent(show.show_subvenue_venue)}`);
     }
   };
 
-  // Toggle group selection for filtering
   const toggleGroupSelection = (group: string) => {
     setSelectedGroups(prevSelected => {
       if (prevSelected.includes(group)) {
@@ -216,7 +207,6 @@ export function Years() {
     });
   };
 
-  // Clear all group filters
   const clearGroupFilters = () => {
     setSelectedGroups([]);
   };
@@ -229,7 +219,6 @@ export function Years() {
       try {
         const showIds = filteredShows.map(s => s.show_id);
         
-        // First get the total count
         const { count, error: countError } = await supabase
           .from('user_attended_shows')
           .select('*', { count: 'exact', head: true })
@@ -237,7 +226,6 @@ export function Years() {
         
         if (countError) throw countError;
         
-        // Fetch in batches of 1000
         const batchSize = 1000;
         const totalBatches = Math.ceil((count || 0) / batchSize);
         let allData: any[] = [];
@@ -259,7 +247,6 @@ export function Years() {
           }
         }
         
-        // Count attendees per show
         const counts: Record<string, number> = {};
         filteredShows.forEach(show => {
           counts[show.show_id] = 0;
@@ -269,29 +256,19 @@ export function Years() {
           counts[record.show_id] = (counts[record.show_id] || 0) + 1;
         });
         
-        // Log detailed breakdown
-        filteredShows.forEach(show => {
-          const count = counts[show.show_id];
-        });
-        
-        // Log summary statistics
-        const showsWithAttendees = Object.values(counts).filter(count => count > 0).length;
-        const totalAttendees = Object.values(counts).reduce((sum, count) => sum + count, 0);
-        const avgAttendeesPerShow = showsWithAttendees > 0 ? (totalAttendees / showsWithAttendees).toFixed(1) : 0;
-        
         setAttendeeCounts(counts);
       } catch (error) {
-        console.error('❌ Error fetching attendee counts:', error);
+        console.error('Error fetching attendee counts:', error);
       }
     };
     
     fetchAttendeeCounts();
-  }, [filteredShows, currentYear, selectedGroups, shows.length]);
+  }, [filteredShows]);
 
   // Fetch shows with setlists
   useEffect(() => {
     async function fetchShowsWithSetlists() {
-      if (!currentYear) return;
+      if (!currentYear || shows.length === 0) return;
       
       try {
         const { data, error } = await supabase
@@ -321,7 +298,6 @@ export function Years() {
       try {
         const showIds = shows.map(s => s.show_id);
         
-        // First get the total count
         const { count, error: countError } = await supabase
           .from('releases_shows')
           .select('*', { count: 'exact', head: true })
@@ -329,7 +305,6 @@ export function Years() {
         
         if (countError) throw countError;
         
-        // Fetch in batches of 1000
         const batchSize = 1000;
         const totalBatches = Math.ceil((count || 0) / batchSize);
         let allReleaseShows: any[] = [];
@@ -399,12 +374,6 @@ export function Years() {
   }, [user]);
 
   useEffect(() => {
-    if (!year) {
-      navigate('/years/2025', { replace: true });
-    }
-  }, [year, navigate]);
-
-  useEffect(() => {
     const fetchShowRatings = async () => {
       if (filteredShows.length === 0) return;
       
@@ -418,7 +387,6 @@ export function Years() {
         
         if (error) throw error;
         
-        // Calculate averages for each show
         const ratings: Record<string, number> = {};
         filteredShows.forEach(show => {
           const showRatingsData = data?.filter(r => r.show_id === show.show_id) || [];
@@ -449,15 +417,11 @@ export function Years() {
 
     document.addEventListener('mousedown', handleClickOutside);
     
-    // Scroll to the current year when dropdown opens
     if (isDropdownOpen && dropdownListRef.current) {
-      // Find the button for the current year
       const currentYearButton = dropdownListRef.current.querySelector(`button[key="${currentYear}"]`);
       if (currentYearButton) {
-        // Scroll the current year button into view
         currentYearButton.scrollIntoView({ block: 'center' });
       } else {
-        // Alternative approach: find all buttons and look for one with the current year text
         const buttons = dropdownListRef.current.querySelectorAll('button');
         for (const button of buttons) {
           if (button.textContent?.trim() === currentYear) {
@@ -471,55 +435,63 @@ export function Years() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen, currentYear]);
   
+  // Initialize year from URL or redirect to 2025
   React.useEffect(() => {
-    async function fetchYears() {
+    async function initializeYear() {
       try {
         const { data, error } = await supabase
           .from('years')
           .select('year, year_id')
           .order('year', { ascending: true });
 
-        if (error) {
-          throw error;
-        }
-
-        // Find the 2025 year_id for initial navigation
-        const year2025 = data?.find(y => y.year === '2025');
-        if (year2025 && !year) {
-          navigate(`/years/${year2025.year_id}`, { replace: true });
-          setCurrentYearId(year2025.year_id);
-          setCurrentYear('2025');
-        }
-
+        if (error) throw error;
+        
         setYears(data || []);
+
+        // If no year in URL, redirect to 2025
+        if (!year) {
+          const year2025 = data?.find(y => y.year === '2025');
+          if (year2025) {
+            navigate(`/years/${year2025.year_id}`, { replace: true });
+          }
+          return;
+        }
+
+        // Validate that the year_id in URL exists
+        const yearData = data?.find(y => y.year_id === year);
+        
+        if (yearData) {
+          // Valid year_id - set it
+          setCurrentYear(yearData.year);
+          setCurrentYearId(yearData.year_id);
+        } else {
+          // Invalid year_id - redirect to 2025
+          const year2025 = data?.find(y => y.year === '2025');
+          if (year2025) {
+            navigate(`/years/${year2025.year_id}`, { replace: true });
+          }
+        }
       } catch (error) {
         console.error('Error fetching years:', error);
       }
     }
 
-    fetchYears();
+    initializeYear();
   }, [year, navigate]);
 
   // Effect to handle URL year_id changes
   React.useEffect(() => {
-    // If the year parameter changes, set loading to true
     if (year !== previousYearId) {
       setLoading(true);
       setPreviousYearId(year || null);
-      // Reset group filters when changing years
       setSelectedGroups([]);
     }
+  }, [year, previousYearId]);
 
-    if (year && years.length > 0) {
-      const yearData = years.find(y => y.year_id === year);
-      if (yearData) {
-        setCurrentYear(yearData.year);
-        setCurrentYearId(yearData.year_id);
-      }
-    }
-  }, [year, years, previousYearId]);
-
+  // Fetch tours - only when currentYear is set
   React.useEffect(() => {
+    if (!currentYear) return;
+
     async function fetchTours() {
       try {
         const { data, error } = await supabase
@@ -530,9 +502,7 @@ export function Years() {
           `)
           .eq('show_year', currentYear);
   
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
   
         const tourCounts = {};
         data.forEach(item => {
@@ -548,7 +518,6 @@ export function Years() {
           }
         });
   
-        // Create transformed tours array (without colors initially)
         const transformedTours = Object.entries(tourCounts).map(([tourName, { count, tour_canonid, tour_id, tour }]) => ({
           tour_count: `${tourName} (${count})`,
           tour_canonid: tour_canonid || 0,
@@ -556,10 +525,8 @@ export function Years() {
           tour: tourName
         }));
   
-        // Sort by tour_canonid first
         const sortedTours = transformedTours.sort((a, b) => a.tour_canonid - b.tour_canonid);
         
-        // Then assign colors based on the sorted order
         const toursWithColors = sortedTours.map((tour, index) => ({
           ...tour,
           color: tourColors[index % tourColors.length]
@@ -574,7 +541,7 @@ export function Years() {
     fetchTours();
   }, [currentYear]);
 
-  // Effect to extract unique groups and their counts
+  // Extract unique groups and their counts
   React.useEffect(() => {
     const groupCounts: Record<string, number> = {};
     
@@ -592,7 +559,10 @@ export function Years() {
     setGroups(groupsArray);
   }, [shows]);
 
+  // Fetch shows - only when currentYear is set
   React.useEffect(() => {
+    if (!currentYear) return;
+
     async function fetchShows() {
       try {
         const { data, error } = await supabase
@@ -621,11 +591,8 @@ export function Years() {
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
-        // Process venue IDs and mark attended shows
         const processedData = data?.map(show => ({
           ...show,
           venue_id: show.subvenues?.venues?.venue_id,
@@ -686,7 +653,7 @@ export function Years() {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
             >
-              {currentYear}
+              {currentYear || 'Select Year'}
               <ChevronDown className="w-4 h-4" />
             </button>
           </div>
@@ -918,7 +885,6 @@ export function Years() {
                       <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_venue_location}</td>
                       <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
                         <div className="relative flex items-center group">
-                          {/* Stars with hover-based transparency */}
                           <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
                             {[1, 2, 3, 4, 5].map((starNumber) => {
                               const rating = showRatings[show.show_id] || 0;
@@ -926,14 +892,12 @@ export function Years() {
 
                               return (
                                 <div key={starNumber} className="relative">
-                                  {/* Background star (empty) */}
                                   <Star
                                     size={16}
                                     className="text-secondary"
                                     fill="none"
                                     stroke="currentColor"
                                   />
-                                  {/* Foreground star (filled) */}
                                   <div
                                     className="absolute inset-0 overflow-hidden"
                                     style={{ width: `${fillPercentage * 100}%` }}
@@ -949,7 +913,6 @@ export function Years() {
                               );
                             })}
                           </div>
-                          {/* Rating text overlaid on stars - only visible on hover */}
                           {showRatings[show.show_id] > 0 && (
                             <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-fifth pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                               {showRatings[show.show_id].toFixed(2)}
@@ -962,7 +925,6 @@ export function Years() {
                           <div className="flex justify-center items-center h-full">
                             <button
                               onClick={() => {
-                                // Navigate with a state parameter to open the modal
                                 navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
                               }}
                               className="text-[#006400] hover:text-primary hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
