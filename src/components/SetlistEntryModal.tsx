@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { Save, Edit, X, Trash2, Check, ChevronDown, ChevronUp, Search } from 'lucide-react';
 
@@ -60,6 +60,7 @@ interface SetlistEntryModalProps {
   onClose: () => void;
   entry: SetlistEntryData | null;
   onSave: () => void;
+  onSaveStatusUpdate: (status: 'idle' | 'processing' | 'done' | 'error') => void;
   isNewEntry?: boolean;
 }
 
@@ -68,11 +69,13 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   onClose, 
   entry, 
   onSave,
+  onSaveStatusUpdate,
   isNewEntry = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editedEntry, setEditedEntry] = useState<SetlistEntryData | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'processing' | 'done' | 'error'>('idle');
   
   // Options for dropdown selections
   const [sets, setSets] = useState<SetOptions[]>([]);
@@ -95,23 +98,48 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
 
   const [selectedNewSongOption, setSelectedNewSongOption] = useState<string>("N/A");
 
+  const songSearchInputRef = useRef<HTMLInputElement>(null);
+
+  const getDefaultPlacement = (setName: string): string | null => {
+    if (!setName || setName === '--') return null;
+    
+    // Handle Set 1-5 (both "1" and "Set 1" formats)
+    const mainSetMatch = setName.match(/^(?:Set )?(\d)$/);
+    if (mainSetMatch) {
+      return `Main Set ${mainSetMatch[1]}`;
+    }
+    
+    // Handle E1, E2, E3
+    const encoreMatch = setName.match(/^E(\d)$/);
+    if (encoreMatch) {
+      return `Encore ${encoreMatch[1]}`;
+    }
+    
+    return null;
+  };
   
-  // Add the updateStatistics function - runs in background without blocking save
+  // Add the updateStatistics function - runs in background and reports status
   const updateStatistics = async () => {
-    supabase.functions
-      .invoke('update-statistics', {
-        body: { action: 'update_all_setlist_entries' }
-      })
-      .then(({ data, error }) => {
-        if (error) {
-          // Error handling without console logging
-        } else {
-          // Success handling without console logging
-        }
-      })
-      .catch(error => {
-        // Error handling without console logging
-      });
+    try {
+      const { data, error } = await supabase.functions
+        .invoke('update-statistics', {
+          body: { action: 'update_all_setlist_entries' }
+        });
+      
+      if (error) {
+        setSaveStatus('error');
+        onSaveStatusUpdate('error');
+        return false;
+      } else {
+        setSaveStatus('done');
+        onSaveStatusUpdate('done');
+        return true;
+      }
+    } catch (error) {
+      setSaveStatus('error');
+      onSaveStatusUpdate('error');
+      return false;
+    }
   };
 
   // Filtered songs based on search term
@@ -254,9 +282,10 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   // Update local state when entry changes
   useEffect(() => {
     if (entry) {
-      // For new entries, ensure defaults are set properly
       if (isNewEntry) {
-        // Create a copy of entry with default values for dropdowns
+        // For new entries, set default placement based on set value
+        const defaultPlacement = getDefaultPlacement(entry.entry_set);
+        
         const entryWithDefaults = {
           ...entry,
           entry_set: entry.entry_set || "--",
@@ -264,44 +293,47 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           entry_song: entry.entry_song || null,
           entry_short: entry.entry_short || null,
           entry_segue: entry.entry_segue || null,
-          entry_placement: entry.entry_placement || null,
-          entry_new: entry.entry_new || "FALSE" // Add default for entry_new
+          entry_placement: defaultPlacement, // Set default placement
+          entry_new: entry.entry_new || "FALSE"
         };
         
         setEditedEntry(entryWithDefaults);
         setSelectedSongName('');
         setSongSearchTerm('');
-        // For new entries, default to N/A
         setSelectedNewSongOption("N/A");
       } else {
+        // existing entry logic stays the same
         setEditedEntry(entry);
-        
-        // Set the selected song name for display
         setSelectedSongName(entry.entry_song || '');
         setSongSearchTerm('');
         
-        // For existing entries, set the dropdown value based on the database value
         if (entry.entry_new === "New Original Song") {
           setSelectedNewSongOption("New Original Song");
         } else if (entry.entry_new === "New Cover Song") {
           setSelectedNewSongOption("New Cover Song");
         } else {
-          // If it's FALSE or null or undefined, set to N/A
           setSelectedNewSongOption("N/A");
         }
       }
       
-      setIsEditing(isNewEntry); // Auto-enable editing mode for new entries
+      setIsEditing(isNewEntry);
       
-      // Only fetch guests for existing entries
       if (!isNewEntry && entry.entry_id) {
         fetchEntryGuests(entry.entry_id);
       } else {
-        // Clear selected guests for new entries
         setSelectedGuestIds([]);
       }
     }
   }, [entry, isNewEntry]);
+
+  useEffect(() => {
+    if (isSongDropdownOpen && songSearchInputRef.current) {
+      // Small delay to ensure the dropdown is rendered
+      setTimeout(() => {
+        songSearchInputRef.current?.focus();
+      }, 50);
+    }
+  }, [isSongDropdownOpen]);
   
   // Fetch guests associated with this setlist entry
   const fetchEntryGuests = async (entryId: string) => {
@@ -373,19 +405,29 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
     
     const { name, value } = e.target;
     
-    // Handle special cases like numbers and "--" option for dropdowns
     let updatedValue: string | number | null = value;
     
     if (value === "--") {
-      updatedValue = name === "entry_setnum" ? "--" : null;  // Keep "--" string for entry_setnum
+      updatedValue = name === "entry_setnum" ? "--" : null;
     } else if (name === 'entry_setnum' || name === 'entry_setorder') {
       updatedValue = value === '' ? null : parseInt(value) || 0;
     }
     
-    setEditedEntry({
-      ...editedEntry,
-      [name]: updatedValue,
-    });
+    // If Set changes and this is a new entry or user hasn't manually changed placement,
+    // auto-update placement
+    if (name === 'entry_set' && isNewEntry) {
+      const defaultPlacement = getDefaultPlacement(value);
+      setEditedEntry({
+        ...editedEntry,
+        [name]: updatedValue,
+        entry_placement: defaultPlacement // Auto-update placement when set changes
+      });
+    } else {
+      setEditedEntry({
+        ...editedEntry,
+        [name]: updatedValue,
+      });
+    }
   };
 
   const toggleEdit = () => {
@@ -456,6 +498,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
     if (!editedEntry) return;
     
     setIsSubmitting(true);
+    setSaveStatus('processing');
+    onSaveStatusUpdate('processing');
     
     try {
       // Check if required fields are filled for new entries
@@ -463,6 +507,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         if (!editedEntry.entry_set || !editedEntry.entry_song) {
           alert('Please fill in all required fields (Set and Song are required)');
           setIsSubmitting(false);
+          setSaveStatus('idle');
+          onSaveStatusUpdate('idle');
           return;
         }
       }
@@ -509,6 +555,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         
         if (error) {
           alert(`Error creating entry: ${error.message}`);
+          setSaveStatus('error');
+          onSaveStatusUpdate('error');
           throw error;
         }
         
@@ -523,7 +571,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         }
         
         // Update statistics after successful insert
-        updateStatistics();
+        await updateStatistics();
       } else {
         // Update existing entry
         
@@ -544,6 +592,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         
         if (error) {
           alert(`Error updating entry: ${error.message}`);
+          setSaveStatus('error');
+          onSaveStatusUpdate('error');
           throw error;
         }
         
@@ -551,14 +601,15 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         await saveGuestAssociations(entryToSave.entry_id);
         
         // Update statistics after successful update
-        updateStatistics();
+        await updateStatistics();
       }
       
       setIsEditing(false);
       onSave(); // Trigger refetch of entries
       onClose(); // Close modal after successful save
     } catch (error) {
-      // Error handling without console logging
+      setSaveStatus('error');
+      onSaveStatusUpdate('error');
     } finally {
       setIsSubmitting(false);
     }
@@ -568,7 +619,26 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
-      <div className="bg-primary border border-secondary rounded-lg p-3 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-primary border border-secondary rounded-lg p-3 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+        {/* Loading Overlay */}
+        {isSubmitting && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 rounded-lg">
+            <div className={`px-6 py-3 rounded-lg border border-secondary transition-colors ${
+              saveStatus === 'processing' ? 'bg-black text-primary' :
+              saveStatus === 'done' ? 'bg-green-600 text-primary' :
+              saveStatus === 'error' ? 'bg-red-600 text-primary' :
+              'bg-fourth text-primary'
+            }`}>
+              <span className="text-lg font-semibold">
+                {saveStatus === 'processing' ? 'Processing...' :
+                 saveStatus === 'done' ? 'Done!' :
+                 saveStatus === 'error' ? 'Error.' :
+                 'Saving...'}
+              </span>
+            </div>
+          </div>
+        )}
+        
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
             {isNewEntry ? 'Add Setlist Entry' : 'Edit Setlist Entry'}
@@ -597,8 +667,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                   <button
                     onClick={() => {
                       if (isDeleteConfirming) {
-                        // Second click - proceed with deletion
                         setIsSubmitting(true);
+                        setSaveStatus('processing');
+                        onSaveStatusUpdate('processing');
                         
                         supabase
                           .from('setlist_entries')
@@ -607,15 +678,17 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                           .then(({ error }) => {
                             if (error) {
                               alert(`Error deleting entry: ${error.message}`);
+                              setSaveStatus('error');
+                              onSaveStatusUpdate('error');
                             } else {
-                              // Update statistics after successful deletion
                               updateStatistics();
-                              onSave(); // Trigger refetch of entries
-                              onClose(); // Close modal after successful deletion
+                              onSave();
+                              onClose();
                             }
                           })
                           .catch(error => {
-                            // Error handling without console logging
+                            setSaveStatus('error');
+                            onSaveStatusUpdate('error');
                           })
                           .finally(() => {
                             setIsSubmitting(false);
@@ -771,6 +844,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                     <div className="p-2">
                       <div className="relative">
                         <input
+                          ref={songSearchInputRef}
                           type="text"
                           value={songSearchTerm}
                           onChange={(e) => setSongSearchTerm(e.target.value)}

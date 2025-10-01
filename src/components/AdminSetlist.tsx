@@ -44,6 +44,9 @@ export const AdminSetlist: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(false);
   const showDataLoadedRef = useRef(false);
+  
+  // Status tracking for save operations
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'processing' | 'done' | 'error'>('idle');
 
   // Handle clicks outside the dropdown
   useEffect(() => {
@@ -282,17 +285,17 @@ export const AdminSetlist: React.FC = () => {
     if (!selectedShow) return;
     
     const newEntry: SetlistEntryData = {
-      entry_id: '', // This will be assigned by the database
+      entry_id: '', 
       entry_set: setlistEntries.length > 0 ? setlistEntries[setlistEntries.length - 1].entry_set : '',
-      entry_setnum: setlistEntries.length > 0 ? setlistEntries[setlistEntries.length - 1].entry_setnum : 1,
-      entry_setorder: 0, // This will be calculated by your application
+      entry_setnum: setlistEntries.length > 0 ? setlistEntries[setlistEntries.length - 1].entry_setnum + 1 : 1, // Changed: +1 here
+      entry_setorder: 0,
       entry_song: '',
       entry_short: null,
       entry_segue: null,
       entry_length: null,
-      entry_placement: null,
+      entry_placement: null, // We'll handle this in the modal
       entry_coachnotes: null,
-      entry_new: 'FALSE', // Add this line
+      entry_new: 'FALSE',
       entry_show: selectedShow.show_id
     };
     
@@ -307,13 +310,53 @@ export const AdminSetlist: React.FC = () => {
       fetchSetlistEntries(selectedShow.show_id);
     }
     setIsEntryModalOpen(false);
+    
+    // Reset status after 2 seconds
+    setTimeout(() => {
+      setSaveStatus('idle');
+    }, 2000);
+  };
+  
+  // Handle save status updates from modal
+  const handleSaveStatusUpdate = (status: 'idle' | 'processing' | 'done' | 'error') => {
+    setSaveStatus(status);
+  };
+  
+  // Get header styling based on save status
+  const getHeaderStyle = () => {
+    switch (saveStatus) {
+      case 'processing':
+        return 'bg-black text-primary';
+      case 'done':
+        return 'bg-green-600 text-primary';
+      case 'error':
+        return 'bg-red-600 text-primary';
+      default:
+        return 'bg-fourth text-primary';
+    }
+  };
+  
+  // Get header text based on save status
+  const getHeaderText = () => {
+    switch (saveStatus) {
+      case 'processing':
+        return 'Processing...';
+      case 'done':
+        return 'Done!';
+      case 'error':
+        return 'Error.';
+      default:
+        return 'Setlist Management';
+    }
   };
 
   return (
     <div>
       {/* Header with right-aligned dropdown */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Setlist Management</h3>
+        <h3 className={`text-lg font-semibold text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary transition-colors ${getHeaderStyle()}`}>
+          {getHeaderText()}
+        </h3>
         
         <div className="relative" ref={dropdownRef}>
           <button
@@ -485,6 +528,7 @@ export const AdminSetlist: React.FC = () => {
         onClose={() => setIsEntryModalOpen(false)}
         entry={selectedEntry}
         onSave={handleSaveEntry}
+        onSaveStatusUpdate={handleSaveStatusUpdate}
         isNewEntry={isNewEntry}
       />
     </div>
