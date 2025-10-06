@@ -348,9 +348,9 @@ function App() {
               <Route path="/years/:year?" element={<Years />} />
               <Route path="/tours/:tour?" element={<Tours />} />
               <Route path="/songs" element={<Songs />} />
-              <Route path="/guests" element={<Guests />} />
+              <Route path="/personnel" element={<Guests />} />
               <Route path="/venues" element={<Venues />} />
-              <Route path="/guest/:guestId" element={<Guest />} />
+              <Route path="/personnel/:PersonnelID" element={<Guest />} />
               <Route path="/venue/:venueId" element={<Venue />} />
               <Route path="/setlist/:showId" element={<Setlist />} />
               <Route path="/song/:songId" element={<Song />} />

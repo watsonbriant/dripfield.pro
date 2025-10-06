@@ -223,7 +223,7 @@ export function Guests() {
                   <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
                       className="font-medium hover:underline transition-colors table-link cursor-pointer"
-                      onClick={() => navigate(`/guest/${member.guest_id}`)}
+                      onClick={() => navigate(`/personnel/${member.guest_id}`)}
                     >
                       {member.guest}
                     </span>
@@ -270,7 +270,7 @@ export function Guests() {
                   <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
                       className="font-medium hover:underline transition-colors table-link cursor-pointer"
-                      onClick={() => navigate(`/guest/${member.guest_id}`)}
+                      onClick={() => navigate(`/personnel/${member.guest_id}`)}
                     >
                       {member.guest}
                     </span>
@@ -321,7 +321,7 @@ export function Guests() {
                   <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
                       className="font-medium hover:underline transition-colors table-link cursor-pointer"
-                      onClick={() => navigate(`/guest/${guest.guest_id}`)}
+                      onClick={() => navigate(`/personnel/${guest.guest_id}`)}
                     >
                       {guest.guest}
                     </span>
@@ -405,7 +405,7 @@ export function Guests() {
                   <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <span 
                       className="font-medium hover:underline transition-colors table-link cursor-pointer"
-                      onClick={() => navigate(`/guest/${group.guest_id}`)}
+                      onClick={() => navigate(`/personnel/${group.guest_id}`)}
                     >
                       {group.guest}
                     </span>

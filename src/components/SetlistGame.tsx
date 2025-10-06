@@ -49,7 +49,7 @@ interface SubmissionDetails {
 export function SetlistGame() {
   const [loading, setLoading] = useState(true);
   const [gameShows, setGameShows] = useState<GameShow[]>([]);
-  const [activeLeague, setActiveLeague] = useState("2025 Fall");
+  const [activeLeague, setActiveLeague] = useState("2025 Holiday Run");
   const { user } = useAuth();
   const [activeSongSelectionShow, setActiveSongSelectionShow] = useState<GameShow | null>(null);
   const [userPicks, setUserPicks] = useState<UserPick[]>([]);
@@ -994,7 +994,7 @@ export function SetlistGame() {
                 <ListMusic className="w-5 h-5 mr-2" />
                 <span>Active League</span>
               </h2>
-              <span className="px-3 py-1 text-sm font-medium rounded-full bg-secondary text-fifth border border-secondary">
+              <span className="px-3 py-1 text-sm font-medium rounded-lg bg-secondary text-fifth border border-secondary">
                 {activeLeague}
               </span>
             </div>

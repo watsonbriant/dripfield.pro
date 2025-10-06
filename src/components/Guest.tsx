@@ -69,14 +69,14 @@ const CircularProgress = ({ value }: { value: number }) => {
 };
 
 export function Guest() {
-  const { guestId } = useParams();
+  const { PersonnelID } = useParams();
   const navigate = useNavigate();
   const [guest, setGuest] = useState<GuestInfo | null>(null);
   const [performances, setPerformances] = useState<Performance[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [previousGuestId, setPreviousGuestId] = useState<string | null>(null);
+  const [previousPersonnelID, setPreviousPersonnelID] = useState<string | null>(null);
   const [selectedSong, setSelectedSong] = useState<string | null>(null);
   const [songShowMap, setSongShowMap] = useState<SongShowMap>({});
 
@@ -93,15 +93,15 @@ export function Guest() {
   };
 
   useEffect(() => {
-    // If the guestId parameter changes, set loading to true
-    if (guestId !== previousGuestId) {
+    // If the PersonnelID parameter changes, set loading to true
+    if (PersonnelID !== previousPersonnelID) {
       setLoading(true);
       setLoadingProgress(0);
-      setPreviousGuestId(guestId || null);
+      setPreviousPersonnelID(PersonnelID || null);
     }
 
     async function fetchGuestData() {
-      if (!guestId) return;
+      if (!PersonnelID) return;
 
       try {
         setLoadingProgress(5);
@@ -115,7 +115,7 @@ export function Guest() {
             guest_instrument,
             guest_displayname
           `)
-          .eq('guest_id', guestId)
+          .eq('guest_id', PersonnelID)
           .single();
 
         if (guestError) throw guestError;
@@ -160,7 +160,7 @@ export function Guest() {
                 )
               )
             `, { count: 'exact' })
-            .eq('guest_id', guestId)
+            .eq('guest_id', PersonnelID)
             .range(page * pageSize, (page + 1) * pageSize - 1);
             
           if (showsError) throw showsError;
@@ -229,7 +229,7 @@ export function Guest() {
     }
 
     async function fetchSongShowMap() {
-      if (!guestId) return;
+      if (!PersonnelID) return;
       
       try {
         
@@ -252,7 +252,7 @@ export function Guest() {
                 )
               )
             `)
-            .eq('guest_id', guestId)
+            .eq('guest_id', PersonnelID)
             .range(page * pageSize, (page + 1) * pageSize - 1);
             
           if (error) throw error;
@@ -299,11 +299,11 @@ export function Guest() {
     }
     
     // Run both fetches together
-    if (guestId) {
+    if (PersonnelID) {
       // Sequential fetching to track progress better
       fetchGuestData().then(() => fetchSongShowMap());
     }
-  }, [guestId]);
+  }, [PersonnelID]);
 
   // Handle group selection
   const handleGroupClick = (group: string) => {
@@ -366,7 +366,7 @@ export function Guest() {
                 <div className="text-fifth text-base font-medium">Songs Played</div>
                 <div className="max-h-[350px] overflow-y-auto">
                   <SongsPlayed 
-                    guestId={guestId} 
+                    PersonnelID={PersonnelID} 
                     isLoading={loading} 
                     selectedSong={selectedSong}
                     onSongClick={handleSongClick}

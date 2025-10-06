@@ -11,7 +11,7 @@ interface SongCount {
 }
 
 interface SongsPlayedProps {
-  guestId: string | undefined;
+  PersonnelID: string | undefined;
   isLoading: boolean;
   selectedSong: string | null;
   onSongClick: (song: string) => void;
@@ -73,7 +73,7 @@ const DefaultCircularProgress = ({ value }: { value: number }) => {
 };
 
 export function SongsPlayed({ 
-  guestId, 
+  PersonnelID, 
   isLoading, 
   selectedSong, 
   onSongClick,
@@ -91,7 +91,7 @@ export function SongsPlayed({
 
   useEffect(() => {
     async function fetchSongs() {
-      if (!guestId) return;
+      if (!PersonnelID) return;
       
       try {
         setLoading(true);
@@ -121,7 +121,7 @@ export function SongsPlayed({
                 )
               )
             `, { count: 'exact' })
-            .eq('guest_id', guestId)
+            .eq('guest_id', PersonnelID)
             .range(page * pageSize, (page + 1) * pageSize - 1);
             
           if (error) throw error;
@@ -268,7 +268,7 @@ export function SongsPlayed({
     }
     
     fetchSongs();
-  }, [guestId]);
+  }, [PersonnelID]);
   
   // Handle sorting
   const handleSortClick = (column: 'song' | 'count') => {

@@ -195,15 +195,15 @@ export function Sidebar({
       path: '/songs' 
     },
     { 
-      name: 'Guests', 
+      name: 'Personnel', 
       icon: <Users className="w-5 h-5" />, 
       desktopIcon: (
         <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
           <Users className="w-4 h-4 flex-shrink-0" />
-          <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Guests</span>
+          <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Personnel</span>
         </div>
       ),
-      path: '/guests' 
+      path: '/personnel' 
     },
     { 
       name: 'Venues', 
@@ -228,12 +228,12 @@ export function Sidebar({
       path: '/discography' 
     },
     { 
-      name: 'Echo of a Show', 
+      name: 'Setlist Game', 
       icon: <ListMusic className="w-5 h-5" />, 
       desktopIcon: (
         <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
           <ListMusic className="w-4 h-4 flex-shrink-0" />
-          <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Echo of a Show</span>
+          <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Setlist Game</span>
         </div>
       ),
       path: '/setlistgame'
@@ -395,8 +395,8 @@ export function Sidebar({
   const regularNavItems = filteredNavigation.filter(item => !item.adminOnly && !item.mobileOnly);
   const adminNavItems = filteredNavigation.filter(item => item.adminOnly && !item.mobileOnly);
 
-  // Find the index of "Echo of a Show" in regularNavItems
-  const echoIndex = regularNavItems.findIndex(item => item.name === 'Echo of a Show');
+  // Find the index of "Setlist Game" in regularNavItems
+  const echoIndex = regularNavItems.findIndex(item => item.name === 'Setlist Game');
 
   // Split regularNavItems into two arrays
   const firstLineItems = regularNavItems.slice(0, echoIndex);
@@ -452,7 +452,7 @@ export function Sidebar({
           ))}
         </ul>
         
-        {/* Second line with Echo of a Show and subsequent items */}
+        {/* Second line with Setlist Game and subsequent items */}
         <div className="border-white/10"></div>
         <ul className="flex flex-wrap items-center justify-center mt-1.5">
           {adminLineItems.map((item) => (
