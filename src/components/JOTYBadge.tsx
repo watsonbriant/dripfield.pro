@@ -16,9 +16,9 @@ export default function JOTYBadge({ round, compact = false, onClick }: JOTYBadge
       case 'JOTY':
         return `${baseStyles} bg-gradient-to-br from-[#FFD700] to-[#FFC700] text-gray-800`;
       case '2nd':
-        return `${baseStyles} bg-gradient-to-br from-[#C0C0C0] to-[#A8A8A8] text-gray-800`;
+        return `${baseStyles} bg-gradient-to-br from-[#6B7280] to-[#6B7280] text-primary`;
       case 'F4':
-        return `${baseStyles} bg-gradient-to-br from-[#CD7F32] to-[#B87333] text-primary`;
+        return `${baseStyles} bg-gradient-to-br from-[#CD7F32] to-[#CD7F32] text-primary`;
       case 'E8':
         return `${baseStyles} bg-[#8B5CF6] text-primary`;
       case 'S16':
@@ -26,7 +26,7 @@ export default function JOTYBadge({ round, compact = false, onClick }: JOTYBadge
       case 'R32':
         return `${baseStyles} bg-[#10B981] text-primary`;
       case 'R64':
-        return `${baseStyles} bg-[#6B7280] text-primary`;
+        return `${baseStyles} bg-gray-300 text-gray-800`;
       default:
         return `${baseStyles} bg-gray-400 text-primary`;
     }
