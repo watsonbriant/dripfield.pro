@@ -123,7 +123,7 @@ export const Profile: React.FC = () => {
     }
   };
 
-  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Guests', 'Loose Ends'];
+  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Personnel', 'Loose Ends'];
 
   // Handle click outside to close dropdown and check for screen size changes
   useEffect(() => {
@@ -225,10 +225,10 @@ export const Profile: React.FC = () => {
             <UserSlots userId={user.id} />
           </div>
         );
-      case 'Guests':
+      case 'Personnel':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Guests You've Seen</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Musicians You've Seen</h3>
             <UserGuests userId={user.id} />
           </div>
         );

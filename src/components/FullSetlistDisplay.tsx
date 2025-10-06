@@ -968,7 +968,7 @@ export default function FullSetlistDisplay({
                                     <span className="inline-block whitespace-nowrap">
                                       <span 
                                         className="cursor-pointer hover:underline transition-colors font-medium relative"
-                                        onClick={() => navigate(`/guest/${g.guest_id}`)}
+                                        onClick={() => navigate(`/personnel/${g.guest_id}`)}
                                       onMouseEnter={(e) => {
                                         if (!isMobile) {
                                           setHoveredPersonnel(g.guest_id);

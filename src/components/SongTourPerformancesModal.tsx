@@ -436,7 +436,7 @@ export default function SongTourPerformancesModal({
                                     <span 
                                       className="cursor-pointer hover:underline transition-colors font-medium"
                                       onClick={() => {
-                                        navigate(`/guest/${g.guest_id}`);
+                                        navigate(`/personnel/${g.guest_id}`);
                                         onClose();
                                       }}
                                     >

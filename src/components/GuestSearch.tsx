@@ -82,7 +82,7 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search guests..."
+                placeholder="Search personnel..."
                 className="w-full px-4 py-2 rounded-md border border-secondary bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
               />
             </div>
@@ -94,7 +94,7 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
                     setSelectedGuest(guest.guest);
                     setIsModalOpen(false);
                     setSearchTerm('');
-                    navigate(`/guest/${guest.guest_id}`);
+                    navigate(`/personnel/${guest.guest_id}`);
                   }}
                   className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-fifth"
                 >
@@ -132,7 +132,7 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search guests..."
+                placeholder="Search personnel..."
                 className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-fifth text-sm focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
               />
               <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
@@ -146,7 +146,7 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
                   setSelectedGuest(guest.guest);
                   setIsDropdownOpen(false);
                   setSearchTerm('');
-                  navigate(`/guest/${guest.guest_id}`);
+                  navigate(`/personnel/${guest.guest_id}`);
                 }}
                 className="w-full text-left px-4 py-1 text-sm text-fifth leading-[1rem] font-medium hover:bg-canvas transition-colors"
               >

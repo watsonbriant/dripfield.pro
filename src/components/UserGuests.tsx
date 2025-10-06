@@ -512,7 +512,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
                 >
                   <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
                     <button
-                      onClick={() => navigate(`/guest/${guest.guest_id}`)}
+                      onClick={() => navigate(`/personnel/${guest.guest_id}`)}
                       className="font-medium hover:underline transition-colors"
                     >
                       {guest.guest}
