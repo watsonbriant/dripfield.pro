@@ -135,7 +135,7 @@ export const PublicProfile: React.FC = () => {
     fetchMappings();
   }, []);
 
-  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Guests', 'Loose Ends'];
+  const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Personnel', 'Loose Ends'];
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -223,10 +223,10 @@ export const PublicProfile: React.FC = () => {
             <UserSlots userId={userId} />
           </div>
         );
-      case 'Guests':
+      case 'Personnel':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Guests Seen</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Personnel Seen</h3>
             <UserGuests userId={userId} />
           </div>
         );

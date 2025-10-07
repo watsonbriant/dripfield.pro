@@ -388,8 +388,8 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
         // Small delay before removing the loading screen for smooth transition
         setTimeout(() => setLoading(false), 500);
       } catch (error) {
-        console.error('Error fetching user guests:', error);
-        setError('Failed to load guest data');
+        console.error('Error fetching user personnel:', error);
+        setError('Failed to load personnel data');
         setLoadingProgress(100);
         setTimeout(() => setLoading(false), 500);
       }
@@ -401,31 +401,31 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
   // Get loading message based on profile ownership
   const getLoadingMessage = () => {
     if (isOwnProfile) {
-      return "Loading guest data...";
+      return "Loading personnel data...";
     } else {
-      return `Loading ${username ? username + "'s" : "their"} guest data...`;
+      return `Loading ${username ? username + "'s" : "their"} personnel data...`;
     }
   };
 
   // Get error message based on profile ownership
   const getErrorMessage = () => {
     if (isOwnProfile) {
-      return error || "Failed to load guest data";
+      return error || "Failed to load personnel data";
     } else if (username) {
-      return `Failed to load ${username}'s guest data`;
+      return `Failed to load ${username}'s personnel data`;
     } else {
-      return "Failed to load guest data";
+      return "Failed to load personnel data";
     }
   };
 
   // Get empty state message based on profile ownership
   const getEmptyStateMessage = () => {
     if (isOwnProfile) {
-      return "You haven't seen any shows with guest appearances yet.";
+      return "You haven't seen any shows with personnel yet.";
     } else if (username) {
-      return `${username} hasn't seen any shows with guest appearances yet.`;
+      return `${username} hasn't seen any shows with personnel yet.`;
     } else {
-      return "This user hasn't seen any shows with guest appearances yet.";
+      return "This user hasn't seen any shows with personnel yet.";
     }
   };
 
@@ -497,7 +497,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
           <table className="w-full border-collapse table-fixed">
             <thead>
               <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap w-[40%]">Guest</th>
+                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap w-[40%]">Personnel</th>
                 <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-[30%]"># of Songs</th>
                 <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-[30%]"># of Shows</th>
               </tr>
