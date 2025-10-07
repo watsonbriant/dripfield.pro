@@ -9,6 +9,7 @@ import { AdminChanges } from './AdminChanges';
 import { AdminReleases } from './AdminReleases';
 import { AdminVenue } from './AdminVenue';
 import { AdminSubvenue } from './AdminSubvenue';
+import { supabase } from '../lib/supabase';
 
 export function Admin() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -16,6 +17,8 @@ export function Admin() {
     type: 'success' | 'error' | null;
     message: string | null;
   }>({ type: null, message: null });
+  
+  const [userCount, setUserCount] = useState<number | null>(null);
   
   // Initialize activeTab from localStorage or default to 'Setlist'
   const [activeTab, setActiveTab] = useState(() => {
@@ -31,6 +34,28 @@ export function Admin() {
   
   // Memoize tabs array to prevent re-creation on each render
   const tabs = useMemo(() => ['Setlist', 'Artist', 'Song', 'Guest', 'Show', 'Changes', 'Releases', 'Venue', 'Subvenue'], []);
+
+  // Fetch user count on component mount
+  useEffect(() => {
+    async function fetchUserCount() {
+      try {
+        const { count, error } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true });
+        
+        if (error) {
+          console.error('Error fetching user count:', error);
+          return;
+        }
+        
+        setUserCount(count);
+      } catch (error) {
+        console.error('Error in fetchUserCount:', error);
+      }
+    }
+
+    fetchUserCount();
+  }, []);
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {
@@ -199,7 +224,14 @@ export function Admin() {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Admin Panel</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Admin Panel</h2>
+          {userCount !== null && (
+            <span className="bg-fourth text-primary px-3 py-1 rounded-full text-sm font-medium border border-secondary">
+              {userCount.toLocaleString()} {userCount === 1 ? 'user' : 'users'}
+            </span>
+          )}
+        </div>
         <button
           onClick={handleUpdateStatistics}
           disabled={isUpdating || updateStatus.type === 'success'}
@@ -215,7 +247,7 @@ export function Admin() {
             ? 'Waiting...'
             : updateStatus.type === 'success'
             ? updateStatus.message
-            : 'Update Database'}
+            : 'Update'}
         </button>
       </div>
       
