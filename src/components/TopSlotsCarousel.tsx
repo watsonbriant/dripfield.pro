@@ -66,10 +66,10 @@ const TopSlotsCarousel = ({
   const getHeaderBgColor = (title: string, index: number) => {
     // Color palette for different slot types
     const colorMap: Record<string, string> = {
-      'Show Openers': '#006400',
-      'Set Openers': '#019B7A',  
-      'Set Closers': '#E17401', 
-      'Encores': '#7C2128',    
+      'Show Openers': '#047857',
+      'Set Openers': '#10b981',  
+      'Set Closers': '#3b82f6', 
+      'Encores': '#be123c',    
       // Fallback colors based on index if title doesn't match
       '0': '#006400',
       '1': '#019B7A',

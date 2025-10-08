@@ -1124,13 +1124,13 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
       case 'notSeenSongs':
         return 'bg-[#CE1126]'; // Red
       case 'showOpeners':
-        return 'bg-[#006400]'; // Dark green
+        return 'bg-[#047857]'; // Dark green
       case 'setOpeners':
-        return 'bg-[#019B7A]'; // Teal
+        return 'bg-[#10b981]'; // Teal
       case 'setClosers':
-        return 'bg-[#E17401]'; // Orange
+        return 'bg-[#3b82f6]'; // Orange
       case 'encoreSongs':
-        return 'bg-[#7C2128]'; // Burgundy
+        return 'bg-[#be123c]'; // Burgundy
       default:
         return 'bg-tertiary'; // Default yellow
     }

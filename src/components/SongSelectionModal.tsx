@@ -530,19 +530,19 @@ export function SongSelectionModal({
     if (!placement) return 'transparent';
     
     const colorMap: { [key: string]: string } = {
-      'Set 1 Opener': '#006400',
-      'Set 1 Closer': '#995905',
-      'Set 2 Opener': '#019B7A',
-      'Set 3 Opener': '#019B7A',
-      'Set 4 Opener': '#019B7A',
-      'Set 5 Opener': '#019B7A',
-      'Set 2 Closer': '#E17401',
-      'Set 3 Closer': '#E17401',
-      'Set 4 Closer': '#E17401',
-      'Set 5 Closer': '#E17401',
-      'Encore 1': '#7C2128',
-      'Encore 2': '#CE1126',
-      'Encore 3': '#AF1E2D'
+      'Set 1 Opener': '#047857',
+      'Set 1 Closer': '#1e40af',
+      'Set 2 Opener': '#10b981',
+      'Set 3 Opener': '#10b981',
+      'Set 4 Opener': '#10b981',
+      'Set 5 Opener': '#10b981',
+      'Set 2 Closer': '#3b82f6',
+      'Set 3 Closer': '#3b82f6',
+      'Set 4 Closer': '#3b82f6',
+      'Set 5 Closer': '#3b82f6',
+      'Encore 1': '#be123c',
+      'Encore 2': '#f43f5e',
+      'Encore 3': '#f43f5e'
     };
     
     return colorMap[placement] || '#000000';

@@ -403,19 +403,19 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
 
   const getColumnBackgroundColor = (column: string): string => {
     const colorMap: { [key: string]: string } = {
-      'Set_1_Opener': '#006400',
-      'Set_1_Closer': '#995905',
-      'Set_2_Opener': '#019B7A',
-      'Set_3_Opener': '#019B7A',
-      'Set_4_Opener': '#019B7A',
-      'Set_5_Opener': '#019B7A',
-      'Set_2_Closer': '#E17401',
-      'Set_3_Closer': '#E17401',
-      'Set_4_Closer': '#E17401',
-      'Set_5_Closer': '#E17401',
-      'Encore_1': '#7C2128',
-      'Encore_2': '#CE1126',
-      'Encore_3': '#AF1E2D'
+      'Set_1_Opener': '#047857',
+      'Set_1_Closer': '#1e40af',
+      'Set_2_Opener': '#10b981',
+      'Set_3_Opener': '#10b981',
+      'Set_4_Opener': '#10b981',
+      'Set_5_Opener': '#10b981',
+      'Set_2_Closer': '#3b82f6',
+      'Set_3_Closer': '#3b82f6',
+      'Set_4_Closer': '#3b82f6',
+      'Set_5_Closer': '#3b82f6',
+      'Encore_1': '#be123c',
+      'Encore_2': '#f43f5e',
+      'Encore_3': '#f43f5e'
     };
     return colorMap[column] || '';
   };
