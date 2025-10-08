@@ -12,6 +12,7 @@ import { Venues } from './components/Venues';
 import { Setlist } from './components/Setlist';
 import { Guest } from './components/Guest';
 import { Discography } from './components/Discography';
+import { Lists } from './components/Lists';
 import { Venue } from './components/Venue';
 import { Admin } from './components/Admin';
 import { Bugs } from './components/Bugs';
@@ -356,6 +357,7 @@ function App() {
               <Route path="/song/:songId" element={<Song />} />
               <Route path="/user/:userId" element={<PublicProfile />} />
               <Route path="/discography" element={<Discography />} />
+              <Route path="/lists" element={<Lists />} />
               <Route path="/joty/:year?" element={<Joty />} />
               <Route path="/submit" element={<Submit />} />
               
