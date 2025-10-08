@@ -87,19 +87,19 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) =>
                 }`}
                 style={{
                   backgroundColor: 
-                    entry.entry_placement === 'Set 1 Opener' ? '#006400' :
-                    entry.entry_placement === 'Set 1 Closer' ? '#995905' :
+                    entry.entry_placement === 'Set 1 Opener' ? '#047857' :
+                    entry.entry_placement === 'Set 1 Closer' ? '#1e40af' :
                     entry.entry_placement === 'Set 2 Opener' || 
                     entry.entry_placement === 'Set 3 Opener' || 
                     entry.entry_placement === 'Set 4 Opener' || 
-                    entry.entry_placement === 'Set 5 Opener' ? '#019B7A' :
+                    entry.entry_placement === 'Set 5 Opener' ? '#10b981' :
                     entry.entry_placement === 'Set 2 Closer' || 
                     entry.entry_placement === 'Set 3 Closer' || 
                     entry.entry_placement === 'Set 4 Closer' || 
-                    entry.entry_placement === 'Set 5 Closer' ? '#E17401' :
-                    entry.entry_placement === 'Encore 1' ? '#7C2128' :
-                    entry.entry_placement === 'Encore 2' ? '#CE1126' : 
-                    entry.entry_placement === 'Encore 3' ? '#AF1E2D' :
+                    entry.entry_placement === 'Set 5 Closer' ? '#3b82f6' :
+                    entry.entry_placement === 'Encore 1' ? '#be123c' :
+                    entry.entry_placement === 'Encore 2' ? '#f43f5e' : 
+                    entry.entry_placement === 'Encore 3' ? '#f43f5e' :
                     '#fdfdfd'
                 }}
               >
