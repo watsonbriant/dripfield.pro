@@ -227,17 +227,17 @@ export function Sidebar({
       ),
       path: '/discography' 
     },
-    { 
-      name: 'Lists', 
-      icon: <List className="w-5 h-5" />, 
-      desktopIcon: (
-        <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
-          <List className="w-4 h-4 flex-shrink-0" />
-          <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Lists</span>
-        </div>
-      ),
-      path: '/lists' 
-    },
+    // { 
+    //   name: 'Lists', 
+    //   icon: <List className="w-5 h-5" />, 
+    //   desktopIcon: (
+    //     <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+    //       <List className="w-4 h-4 flex-shrink-0" />
+    //       <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Lists</span>
+    //     </div>
+    //   ),
+    //   path: '/lists' 
+    // },
     { 
       name: 'Setlist Game', 
       icon: <ListMusic className="w-5 h-5" />, 
