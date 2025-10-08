@@ -124,24 +124,20 @@ const calculateRarity = (timesPlayed: number | null, showsSinceDebut: number | n
 };
 
 const getRarityColor = (percentage: string | null): string => {
-  // If percentage is null or not a valid percentage string, return transparent
   if (!percentage || percentage === '-' || percentage === '') return 'transparent';
   
-  // Convert percentage string to number
   const numericPercentage = parseFloat(percentage.replace('%', ''));
   
   if (isNaN(numericPercentage)) return 'transparent';
   
-  // Define our 4 color stops with breakpoints at 0, 15, 50, 100
   const colorStops = [
-    { percent: 0, color: { r: 156, g: 12, b: 12 } },     // #9C0C0C (Even Darker Red)
-    { percent: 12, color: { r: 230, g: 81, b: 0 } },     // #E65100 (Darker Orange)
-    { percent: 24, color: { r: 179, g: 135, b: 0 } },    // #D3A304 (Dark Yellow)
-    { percent: 50, color: { r: 46, g: 125, b: 50 } },    // #2E7D32 (Darker Green)
-    { percent: 100, color: { r: 13, g: 71, b: 161 } }    // #0D47A1 (Darker Blue)
+    { percent: 0, color: { r: 156, g: 12, b: 12 } },
+    { percent: 12, color: { r: 230, g: 81, b: 0 } },
+    { percent: 24, color: { r: 179, g: 135, b: 0 } },
+    { percent: 50, color: { r: 46, g: 125, b: 50 } },
+    { percent: 100, color: { r: 13, g: 71, b: 161 } }
   ];
   
-  // Find the color stops to interpolate between
   let lowerStop = colorStops[0];
   let upperStop = colorStops[colorStops.length - 1];
   
@@ -153,11 +149,9 @@ const getRarityColor = (percentage: string | null): string => {
     }
   }
   
-  // Calculate interpolation factor
   const range = upperStop.percent - lowerStop.percent;
   const factor = range !== 0 ? (numericPercentage - lowerStop.percent) / range : 0;
   
-  // Interpolate RGB values
   const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
   const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
   const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
@@ -217,12 +211,10 @@ export default function FullSetlistDisplay({
     checkAdminStatus();
   }, []);
 
-  // Add useEffect to reset individual toggles when global toggle changes
   useEffect(() => {
     setIndividualToggles({});
   }, [showCoachNotes]);
 
-  // Add a function to handle individual whistle clicks
   const toggleIndividualCoachNote = (entryId: string) => {
     setIndividualToggles(prev => ({
       ...prev,
@@ -230,16 +222,13 @@ export default function FullSetlistDisplay({
     }));
   };
 
-  // Update the logic to determine if coach notes should be shown for an entry
   const shouldShowCoachNotesForEntry = (entryId: string, hasCoachNotes: boolean) => {
     if (!hasCoachNotes) return false;
     
-    // If this entry has an individual toggle state, use that
     if (entryId in individualToggles) {
       return individualToggles[entryId];
     }
     
-    // Otherwise fall back to the global toggle
     return showCoachNotes;
   };
 
@@ -263,34 +252,26 @@ export default function FullSetlistDisplay({
     fetchAttendeeCount();
   }, [show.show_id, showId]);
 
-  // Check if we're on a mobile device
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
     
-    // Initial check
     checkIfMobile();
     
-    // Add event listener for window resize
     window.addEventListener('resize', checkIfMobile);
     
-    // Cleanup
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   useEffect(() => {}, [show, setlist]);
 
-  // Update the dependency array to include show.show_tour
   useEffect(() => {
-    if (!show || !showDates.length) return; // Remove show.show_canonid check
+    if (!show || !showDates.length) return;
     
-    // Clear previous show position state when show changes
     setShowPosition(null);
     
-    // First sort by date, then by canonid (to ensure proper ordering)
     const sortedShows = [...showDates].sort((a, b) => {
-      // First compare dates
       const dateA = new Date(a.show_date);
       const dateB = new Date(b.show_date);
       
@@ -298,18 +279,14 @@ export default function FullSetlistDisplay({
         return dateA.getTime() - dateB.getTime();
       }
       
-      // If dates are the same, sort by canonid
       if (a.show_canonid === null) return 1;
       if (b.show_canonid === null) return -1;
       return a.show_canonid - b.show_canonid;
     });
     
-    // Include all shows, regardless of canonid
-    // Find current show position
     const currentIndex = sortedShows.findIndex(s => s.show_id === show.show_id);
     const currentPosition = currentIndex + 1;
     
-    // Determine previous and next show IDs
     const prevShowId = currentIndex > 0 ? sortedShows[currentIndex - 1].show_id : null;
     const nextShowId = currentIndex < sortedShows.length - 1 ? sortedShows[currentIndex + 1].show_id : null;
     
@@ -319,7 +296,7 @@ export default function FullSetlistDisplay({
       prevShowId,
       nextShowId
     });
-  }, [show, showDates, show?.show_id, show?.show_tour]); // Keep the same dependency array
+  }, [show, showDates, show?.show_id, show?.show_tour]);
 
   useEffect(() => {
     const groupsArray: GuestGroup[] = [];
@@ -349,10 +326,8 @@ export default function FullSetlistDisplay({
     setGuestGroups(groupsArray);
   }, [setlist]);
 
-  // Define the entry_short values we want to skip numbering for
   const skipNumberingShorts = ["fake", "tease", "reprise", "aborted"];
 
-  // Instead of tracking seen songs with a simple Set, we'll track songs with valid numbers
   const songsWithNumbers = new Set<string>();
   let currentRunningNumber = 1;
   
@@ -441,7 +416,6 @@ export default function FullSetlistDisplay({
       await navigator.clipboard.writeText(entryId);
       setCopiedEntries(prev => new Set(prev).add(entryId));
       
-      // Remove from copied set after 2 seconds
       setTimeout(() => {
         setCopiedEntries(prev => {
           const newSet = new Set(prev);
@@ -512,20 +486,14 @@ export default function FullSetlistDisplay({
                   </div>
 
                   {setlist.map((entry, index) => {
-                    // Check if this entry has a short value that should skip numbering
                     const shouldSkipNumbering = entry.entry_short && 
                       skipNumberingShorts.includes(entry.entry_short.toLowerCase());
                     
-                    // Has this song already received a number?
                     const alreadyHasNumber = songsWithNumbers.has(entry.entry_song);
                     
-                    // Only assign a number if:
-                    // 1. The song doesn't already have a number elsewhere in the setlist AND
-                    // 2. This specific entry doesn't have a short value we want to skip
                     const displayNumber = (!alreadyHasNumber && !shouldSkipNumbering) ? 
                       currentRunningNumber++ : null;
                     
-                    // If we assigned a number, add this song to our tracking set
                     if (displayNumber !== null) {
                       songsWithNumbers.add(entry.entry_song);
                     }
@@ -535,11 +503,8 @@ export default function FullSetlistDisplay({
                   
                     const elements = [];
                   
-                    // Only show set breaks and encore dividers if we have multiple placement types
                     if (!hasSinglePlacementType) {
-                      // Add encore divider if needed
                       if (prevEntry && entry.entry_set.startsWith('E')) {
-                        // Only show encore divider when transitioning from non-encore or different encore
                         if (!prevEntry.entry_set.startsWith('E') || prevEntry.entry_set !== entry.entry_set) {
                           elements.push(
                             <div 
@@ -552,7 +517,6 @@ export default function FullSetlistDisplay({
                         }
                       }
                   
-                      // Add set break if needed
                       if (prevEntry && shouldShowSetBreak(prevEntry.entry_set, entry.entry_set)) {
                         elements.push(
                           <div 
@@ -565,20 +529,14 @@ export default function FullSetlistDisplay({
                       }
                     }
                   
-                    // Add the song entry
                     elements.push(
                       <div 
                         key={entry.entry_id}
                         className={`${getGridClass(show.show_canonid)} grid-auto-columns-min-content text-fifth text-sm hover:bg-tertiary/40 transition-colors pr-2 py-[1px] items-start bg-primary relative`}
                       >
-                        {/* Number column */}
+                        {/* Number column with absolute positioned background */}
                         <div
-                          className={`w-8 ${getPlacementColor(entry.entry_placement) !== 'transparent' ? 'text-white' : 'text-fifth'} text-center font-medium leading-[1.125rem] rounded-full mt-[1px] ${isAdmin ? 'cursor-pointer' : ''} relative`}
-                          style={{
-                            backgroundColor: copiedEntries.has(entry.entry_id) 
-                              ? '#22c55e' 
-                              : getPlacementColor(entry.entry_placement)
-                          }}
+                          className={`w-8 ${getPlacementColor(entry.entry_placement) !== 'transparent' ? 'text-white' : 'text-fifth'} text-center font-medium leading-[1.125rem] mt-[1px] ${isAdmin ? 'cursor-pointer' : ''} relative`}
                           onClick={() => handleNumberClick(entry.entry_id)}
                           onMouseEnter={(e) => {
                             if (!isMobile) {
@@ -597,10 +555,22 @@ export default function FullSetlistDisplay({
                             }
                           }}
                         >
+                          {/* Absolute positioned background that fills parent row */}
+                          <div 
+                            className="absolute inset-0 -top-[2px] -bottom-[3px] z-10"
+                            style={{
+                              backgroundColor: copiedEntries.has(entry.entry_id) 
+                                ? '#22c55e' 
+                                : getPlacementColor(entry.entry_placement)
+                            }}
+                          />
+                          {/* Content with relative positioning to appear above background */}
+                          <span className="relative pt-6 z-20">
                             {copiedEntries.has(entry.entry_id) 
                               ? '✓' 
                               : (displayNumber || '\u00A0')
                             }
+                          </span>
                           {!isMobile && hoveredEntry === entry.entry_id && !copiedEntries.has(entry.entry_id) && (
                             <div className="fixed text-xs font-medium bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
                               style={{
@@ -667,21 +637,21 @@ export default function FullSetlistDisplay({
                                         toggleIndividualCoachNote(entry.entry_id);
                                       }}
                                       onMouseEnter={(e) => {
-                                        e.stopPropagation(); // Add this
+                                        e.stopPropagation();
                                         if (!isMobile) {
                                           setHoveredEntry(entry.entry_id + '_whistle');
-                                          setHoveredSong(null); // Add this to clear any song hover
+                                          setHoveredSong(null);
                                           setMousePosition({ x: e.clientX, y: e.clientY });
                                         }
                                       }}
                                       onMouseMove={(e) => {
-                                        e.stopPropagation(); // Add this
+                                        e.stopPropagation();
                                         if (!isMobile) {
                                           setMousePosition({ x: e.clientX, y: e.clientY });
                                         }
                                       }}
                                       onMouseLeave={(e) => {
-                                        e.stopPropagation(); // Add this
+                                        e.stopPropagation();
                                         if (!isMobile) {
                                           setHoveredEntry(null);
                                         }
@@ -704,7 +674,6 @@ export default function FullSetlistDisplay({
                                     round={entry.joty_round} 
                                     compact={true}
                                     onClick={() => {
-                                      // Extract year from the show date
                                       const year = new Date(show.show_date).getFullYear();
                                       navigate(`/joty/${year}`);
                                     }}
@@ -720,7 +689,6 @@ export default function FullSetlistDisplay({
                               />
                             )}
                             
-                            {/* Hover tooltip remains the same */}
                             {!isMobile && hoveredSong === entry.entry_id && (
                               <div 
                                 className="fixed text-xs bg-tertiary text-fifth px-3 py-1 rounded border font-light border-secondary shadow-lg min-w-max z-[9999] text-left"
@@ -846,7 +814,6 @@ export default function FullSetlistDisplay({
                           >
                             {calculateRarity(entry.times_played_num, entry.shows_since_debut_num)}
                             
-                            {/* Add the same tooltip here */}
                             {!isMobile && hoveredSong === entry.entry_id + '_rarity' && (
                               <div 
                                 className="fixed text-xs bg-tertiary text-fifth px-3 py-1 rounded border font-light border-secondary shadow-lg min-w-max z-[9999] text-left"
@@ -1010,14 +977,12 @@ export default function FullSetlistDisplay({
                       </div>
                     )}
                     
-                    {/* Changes component - now inside the right column */}
                     {showId && <ShowChanges 
                       showId={showId} 
                       openModal={openChangesModal} 
                       setOpenModal={setOpenChangesModal} 
                     />}
                     
-                    {/* Add ReleaseContainer here for medium+ screens */}
                     {showId && (
                       <div className="lg:hidden [&_img]:object-contain">
                         <ReleaseContainer showId={showId} />
@@ -1030,7 +995,6 @@ export default function FullSetlistDisplay({
                 <div className="md:hidden space-y-4">
                   <SongSpread setlist={setlist} />
                   
-                  {/* Changes component */}
                   {showId && <ShowChanges showId={showId} />}
                   
                   {guestGroups.length > 0 && (
@@ -1093,7 +1057,6 @@ export default function FullSetlistDisplay({
                     </div>
                   )}
 
-                  {/* ReleaseContainer for mobile only */}
                   {showId && (
                     <div className="[&_img]:object-contain">
                       <ReleaseContainer showId={showId} />
