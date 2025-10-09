@@ -384,7 +384,7 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                                 className={`${song.bgGroup % 2 === 0 ? 'bg-canvas' : 'bg-primary'
                                     } hover:bg-tertiary/40 transition-colors text-xs`}
                             >
-                                <td className="pl-2 pr-1 w-[30px] text-center font-medium text-fifth">
+                                <td className="pl-2 pr-1 w-[30px] text-center font-semibold text-[0.875rem] text-fifth">
                                     {song.displayRank !== null ? song.displayRank : ''}
                                 </td>
                                 <td className="pl-2 text-fifth">
