@@ -178,7 +178,7 @@ export function ListInd() {
                 </div>
             </div>
 
-            <div className="bg-primary border border-secondary rounded-lg p-4">
+            <div className="bg-primary border border-secondary rounded-lg p-3">
                 {SpecialListComponent ? (
                     <SpecialListComponent 
                         listId={listId} 
