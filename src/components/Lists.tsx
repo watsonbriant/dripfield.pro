@@ -72,13 +72,13 @@ export function Lists() {
           <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
             Songs
           </h2>
-          <div className="text-fourth text-sm font-medium space-y-1">
+          <div className="text-fourth text-sm font-medium">
             {songLists.length > 0 ? (
               songLists.map((list) => (
                 <button
                   key={list.id}
                   onClick={() => handleListClick(list.list_id)}
-                  className="block w-full text-left hover:text-tertiary transition-colors cursor-pointer"
+                  className="block w-full text-left hover:underline transition-colors cursor-pointer"
                 >
                   {list.list_name}
                 </button>
@@ -93,13 +93,13 @@ export function Lists() {
           <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
             Shows
           </h2>
-          <div className="text-fourth text-sm font-medium space-y-1">
+          <div className="text-fourth text-sm font-medium">
             {showLists.length > 0 ? (
               showLists.map((list) => (
                 <button
                   key={list.id}
                   onClick={() => handleListClick(list.list_id)}
-                  className="block w-full text-left hover:text-tertiary transition-colors cursor-pointer"
+                  className="block w-full text-left hover:underline transition-colors cursor-pointer"
                 >
                   {list.list_name}
                 </button>

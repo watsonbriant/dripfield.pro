@@ -432,7 +432,7 @@ export function ListInd() {
                                     Location
                                 </div>
                             </th>
-                            <th className="px-3 py-1 text-left text-s font-medium text-fifth whitespace-nowrap">
+                            <th className="px-3 py-1 text-left text-s font-medium text-fifth whitespace-nowrap w-[350px] max-w-[350px]">
                                 Coach's Notes
                             </th>
                         </tr>
