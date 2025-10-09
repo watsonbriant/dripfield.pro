@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { ArrowLeft } from 'lucide-react';
 import { LongestPerformancesList } from './lists/LongestPerformancesList';
 import { PopularPlacementsList } from './lists/PopularPlacementsList';
+import { UnfinishedReprisedList } from './lists/UnfinishedReprisedList';
 
 interface List {
     id: number;
@@ -62,10 +63,10 @@ const CircularProgress = ({ value }: { value: number }) => {
 
 // Map of special list UUIDs to their corresponding components
 const SPECIAL_LIST_COMPONENTS: Record<string, React.ComponentType<any>> = {
-    '1fdc862c-bef0-4a7c-92f7-f6686b7efbd8': LongestPerformancesList, // Longest performances
-    '3657a3a7-bcb4-483b-b8ef-e4ae28495a61': LongestPerformancesList, // Shortest performances (same component, different logic)
-    'a9fcbc3a-c3de-42b4-a274-1974badd283c': PopularPlacementsList, // Most Popular Placements
-    // Add more special list UUIDs here as you create them
+    '1fdc862c-bef0-4a7c-92f7-f6686b7efbd8': LongestPerformancesList,
+    '3657a3a7-bcb4-483b-b8ef-e4ae28495a61': LongestPerformancesList,
+    'a9fcbc3a-c3de-42b4-a274-1974badd283c': PopularPlacementsList,
+    'f0989de4-b27d-4b8f-98c2-5e3d51a310b4': UnfinishedReprisedList
 };
 
 export function ListInd() {
@@ -173,7 +174,7 @@ export function ListInd() {
                         {list.list_name}
                     </h1>
                     {list.list_description && (
-                        <p className="text-fifth font-light text-xs mt-2 bg-[#e3e3e3] rounded-lg px-2 py-1 border border-secondary">{list.list_description}</p>
+                        <p className="text-fifth font-light text-xs mt-2 bg-primary rounded-lg px-2 py-1 border border-secondary">{list.list_description}</p>
                     )}
                 </div>
             </div>
