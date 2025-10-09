@@ -13,6 +13,7 @@ import { Setlist } from './components/Setlist';
 import { Guest } from './components/Guest';
 import { Discography } from './components/Discography';
 import { Lists } from './components/Lists';
+import { ListInd } from './components/ListInd';
 import { Venue } from './components/Venue';
 import { Admin } from './components/Admin';
 import { Bugs } from './components/Bugs';
@@ -358,6 +359,7 @@ function App() {
               <Route path="/user/:userId" element={<PublicProfile />} />
               <Route path="/discography" element={<Discography />} />
               <Route path="/lists" element={<Lists />} />
+              <Route path="/lists/:listId" element={<ListInd />} />
               <Route path="/joty/:year?" element={<Joty />} />
               <Route path="/submit" element={<Submit />} />
               
