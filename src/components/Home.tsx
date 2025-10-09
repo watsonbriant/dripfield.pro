@@ -1557,7 +1557,7 @@ export function Home() {
                   {/* Most Common Not Played */}
                   {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-fifth">Most Common Not Played</h3>
                     <div className="overflow-x-auto relative">
                       <table className="w-full border-collapse">
                         <tbody className="divide-y divide-white/5">
@@ -1741,7 +1741,7 @@ export function Home() {
                 {/* 2. Most Common Not Played */}
                 {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#CE1126]">Most Common Not Played</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-fifth">Most Common Not Played</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">

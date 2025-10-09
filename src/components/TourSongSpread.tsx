@@ -136,7 +136,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
 
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3">
-      <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary mb-2">
+      <h2 className="text-lg font-semibold bg-fourth text-primary inline-block px-3 rounded-lg border border-secondary mb-2">
         Song Spread
       </h2>
       <div className="space-y-1.5">
