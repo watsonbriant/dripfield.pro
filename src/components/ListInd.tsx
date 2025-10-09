@@ -256,12 +256,28 @@ export function ListInd() {
             // Get unique song IDs
             const uniqueSongIds = Array.from(songMap.keys());
 
-            // Fetch all songs at once
-            const { data: allSongData, error: songError } = await supabase
-                .from('songs')
-                .select('song, song_id');
+            // Fetch all songs with pagination
+            let allSongData: any[] = [];
+            const songBatchSize = 1000;
+            let songOffset = 0;
+            let hasMoreSongs = true;
 
-            if (songError) throw songError;
+            while (hasMoreSongs) {
+                const { data: songBatch, error: songError } = await supabase
+                    .from('songs')
+                    .select('song, song_id')
+                    .range(songOffset, songOffset + songBatchSize - 1);
+
+                if (songError) throw songError;
+
+                if (songBatch && songBatch.length > 0) {
+                    allSongData = [...allSongData, ...songBatch];
+                    songOffset += songBatchSize;
+                    hasMoreSongs = songBatch.length === songBatchSize;
+                } else {
+                    hasMoreSongs = false;
+                }
+            }
 
             setLoadingProgress(85);
 
@@ -273,6 +289,7 @@ export function ListInd() {
             // Map song names to performances
             const longestPerfs = Array.from(songMap.values()).map(perf => {
                 const songData = songDataMap.get(perf.entry_song);
+                
                 return {
                     ...perf,
                     song_id: songData?.song_id || perf.entry_song, // Use the UUID for navigation
@@ -376,28 +393,13 @@ export function ListInd() {
         return sorted;
     };
 
-    if (loading) {
-        return (
-            <div className="max-w-[936px] mx-auto">
-                <div className="max-h-[320px] overflow-y-auto">
-                    <div className="flex items-center justify-center py-6">
-                        <CircularProgress value={loadingProgress} />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (!list) {
-        return (
-            <div className="max-w-[936px] mx-auto">
-                <div className="text-fifth text-center py-8">List not found</div>
-            </div>
-        );
-    }
-
     const renderLongestPerformancesTable = () => {
         const sortedPerformances = getSortedPerformances();
+
+        // Log all song URLs that will be generated
+        sortedPerformances.forEach((perf, index) => {
+            const songUrl = `/song/${perf.song_id}`;
+        });
 
         return (
             <div className="overflow-x-auto">
@@ -487,6 +489,26 @@ export function ListInd() {
             </div>
         );
     };
+
+    if (loading) {
+        return (
+            <div className="max-w-[936px] mx-auto">
+                <div className="max-h-[320px] overflow-y-auto">
+                    <div className="flex items-center justify-center py-6">
+                        <CircularProgress value={loadingProgress} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!list) {
+        return (
+            <div className="max-w-[936px] mx-auto">
+                <div className="text-fifth text-center py-8">List not found</div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-[936px] mx-auto">
