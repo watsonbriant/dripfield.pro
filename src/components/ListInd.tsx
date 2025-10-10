@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { LongestPerformancesList } from './lists/LongestPerformancesList';
 import { PopularPlacementsList } from './lists/PopularPlacementsList';
 import { UnfinishedReprisedList } from './lists/UnfinishedReprisedList';
+import { SeguesList } from './lists/SeguesList';
 
 interface List {
     id: number;
@@ -66,7 +67,8 @@ const SPECIAL_LIST_COMPONENTS: Record<string, React.ComponentType<any>> = {
     '1fdc862c-bef0-4a7c-92f7-f6686b7efbd8': LongestPerformancesList,
     '3657a3a7-bcb4-483b-b8ef-e4ae28495a61': LongestPerformancesList,
     'a9fcbc3a-c3de-42b4-a274-1974badd283c': PopularPlacementsList,
-    'f0989de4-b27d-4b8f-98c2-5e3d51a310b4': UnfinishedReprisedList
+    'f0989de4-b27d-4b8f-98c2-5e3d51a310b4': UnfinishedReprisedList,
+    '37cdd57e-6a16-474e-9715-ba05e95e0217': SeguesList
 };
 
 export function ListInd() {
@@ -76,6 +78,10 @@ export function ListInd() {
     const [items, setItems] = useState<ListItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingProgress, setLoadingProgress] = useState<number>(0);
+
+    // Determine if this is the segues list that needs narrow width
+    const isSeguesList = listId === '37cdd57e-6a16-474e-9715-ba05e95e0217';
+    const containerMaxWidth = isSeguesList ? 'max-w-[500px]' : 'max-w-[936px]';
 
     useEffect(() => {
         if (listId) {
@@ -137,7 +143,7 @@ export function ListInd() {
 
     if (loading) {
         return (
-            <div className="max-w-[936px] mx-auto">
+            <div className={`${containerMaxWidth} mx-auto`}>
                 <div className="max-h-[320px] overflow-y-auto">
                     <div className="flex items-center justify-center py-6">
                         <CircularProgress value={loadingProgress} />
@@ -149,7 +155,7 @@ export function ListInd() {
 
     if (!list) {
         return (
-            <div className="max-w-[936px] mx-auto">
+            <div className={`${containerMaxWidth} mx-auto`}>
                 <div className="text-fifth text-center py-8">List not found</div>
             </div>
         );
@@ -159,7 +165,7 @@ export function ListInd() {
     const SpecialListComponent = listId ? SPECIAL_LIST_COMPONENTS[listId] : null;
 
     return (
-        <div className="max-w-[936px] mx-auto">
+        <div className={`${containerMaxWidth} mx-auto`}>
             <button
                 onClick={() => navigate('/lists')}
                 className="flex items-center bg-tertiary rounded-lg py-1 px-2 border border-secondary hover:underline transition-colors font-medium text-sm text-fifth mb-6"
