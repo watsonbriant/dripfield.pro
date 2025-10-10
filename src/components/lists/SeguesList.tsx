@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircleEllipsis, MoveRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-
-interface PlaceholderItem {
-    item_name: string;
-    item_id: string;
-    count: number;
-    category_canonid?: number;
-    category_artwork?: string;
-}
+import SeguePerformancesModal from './SeguePerformancesModal';
 
 interface SegueSong {
     song_name: string;
@@ -63,15 +56,22 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
     const [loading, setLoading] = useState(true);
     const [container1Data, setContainer1Data] = useState<Segue[]>([]);
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+    const [segueModalData, setSegueModalData] = useState<{
+        isOpen: boolean;
+        sourceSongName: string;
+        destinationSongName: string;
+    }>({
+        isOpen: false,
+        sourceSongName: '',
+        destinationSongName: ''
+    });
 
     useEffect(() => {
-        console.log('SeguesList mounted with listId:', listId);
         fetchAllData();
     }, [listId]);
 
     async function fetchAllData() {
         try {
-            console.log('Starting fetchAllData...');
             onProgressUpdate(10);
             await fetchContainer1Data();
             onProgressUpdate(100);
@@ -85,11 +85,9 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
 
     async function fetchContainer1Data() {
         try {
-            console.log('Starting fetchContainer1Data...');
             onProgressUpdate(15);
 
             // First get the total count of entries with canonid and segue containing ">"
-            console.log('Fetching count of entries with segue containing ">"...');
             const { count, error: countError } = await supabase
                 .from('setlist_entries')
                 .select('*, shows!inner(*)', { count: 'exact', head: true })
@@ -101,19 +99,14 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 throw countError;
             }
 
-            console.log('Total entries with segues:', count);
-
             // Fetch in batches of 1000
             const batchSize = 1000;
             const totalBatches = Math.ceil((count || 0) / batchSize);
-            console.log('Total batches to fetch:', totalBatches);
             let allEntries: any[] = [];
 
             for (let i = 0; i < totalBatches; i++) {
                 const start = i * batchSize;
                 const end = Math.min(start + batchSize - 1, (count || 0) - 1);
-
-                console.log(`Fetching batch ${i + 1}/${totalBatches} (${start}-${end})...`);
 
                 const batchProgress = 15 + ((i + 1) / totalBatches) * 30; // Reduced from 45 to 30
                 onProgressUpdate(Math.round(batchProgress));
@@ -140,9 +133,7 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                     throw entriesError;
                 }
 
-                console.log(`Batch ${i + 1} fetched:`, entries?.length, 'entries');
                 if (i === 0 && entries && entries.length > 0) {
-                    console.log('Sample entry from first batch:', entries[0]);
                 }
 
                 if (entries) {
@@ -150,7 +141,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 }
             }
 
-            console.log('Total entries fetched:', allEntries.length);
             onProgressUpdate(50);
 
             // Count occurrences of each song that has a segue and store instances
@@ -168,7 +158,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 const songName = entry.entry_song;
                 
                 if (index < 5) {
-                    console.log(`Processing entry ${index}: ${songName} with segue: ${entry.entry_segue}`);
                 }
 
                 const existing = songDataMap.get(songName);
@@ -193,12 +182,9 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 }
             });
 
-            console.log('Unique songs with segues found:', songDataMap.size);
-            console.log('First 5 songs:', Array.from(songDataMap.entries()).slice(0, 5));
             onProgressUpdate(60);
 
             // Fetch all songs with pagination (including artwork, category, and category_canonid)
-            console.log('Fetching song data...');
             let allSongData: any[] = [];
             const songBatchSize = 1000;
             let songOffset = 0;
@@ -232,7 +218,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 }
             }
 
-            console.log('Total songs fetched:', allSongData.length);
             onProgressUpdate(70);
 
             // Create lookup map
@@ -244,8 +229,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                     category_canonid: s.categories?.category_canonid
                 }]) || []
             );
-
-            console.log('Song lookup map created with', songLookupMap.size, 'entries');
 
             // Convert to array with song metadata
             const songsWithMetadata = Array.from(songDataMap.entries())
@@ -273,19 +256,15 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 return a.song_name.localeCompare(b.song_name);
             }).slice(0, 25);
 
-            console.log('Top 25 songs with segues:', sortedSongs.map(s => `${s.song_name}: ${s.count} (cat: ${s.category_canonid})`));
             onProgressUpdate(75);
 
             // NOW PROCESS ALL DESTINATIONS UPFRONT
-            console.log('Processing destinations for all top 25 songs...');
             
             // Get all unique show IDs from all instances across all top 25 songs
             const allShowIds = new Set<string>();
             sortedSongs.forEach(song => {
                 song.instances.forEach(inst => allShowIds.add(inst.entry_show));
             });
-            
-            console.log(`Fetching setlist entries for ${allShowIds.size} unique shows...`);
             
             // Fetch all setlist entries for these shows in batches
             const showIdArray = Array.from(allShowIds);
@@ -313,8 +292,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 const showProgress = 75 + ((i + 1) / showBatches.length) * 10;
                 onProgressUpdate(Math.round(showProgress));
             }
-
-            console.log(`Fetched ${allShowEntries.length} total entries from shows`);
 
             // Group entries by show for efficient lookup
             const entriesByShow = new Map<string, any[]>();
@@ -367,8 +344,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                     }
                     return a.song_name.localeCompare(b.song_name);
                 });
-
-                console.log(`Processed ${destinations.length} destinations for ${song.song_name}`);
                 
                 // Update progress during destination processing
                 const destProgress = 85 + ((songIndex + 1) / sortedSongs.length) * 10;
@@ -399,12 +374,8 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                     destinations: song.destinations // Already populated!
                 };
             });
-
-            console.log('Final segue data created with destinations:', segueData.length, 'items');
-            console.log('First item:', segueData[0]);
             
             setContainer1Data(segueData);
-            console.log('Container1Data set successfully');
             onProgressUpdate(100);
         } catch (error) {
             console.error('Error fetching segue data:', error);
@@ -425,8 +396,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
     };
 
     const renderSegueTable = (segues: Segue[]) => {
-        console.log('Rendering segue table with', segues.length, 'items');
-        
         // Calculate rankings with tie handling
         let currentRank = 1;
         let currentBgGroup = 0;
@@ -466,7 +435,7 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                                         <td className="pl-2 text-fifth">
                                             <div className="flex items-center justify-between">
                                                 <button
-                                                    onClick={() => navigate(`/song/${segue.songs[0].song_id}`)}
+                                                    onClick={() => toggleExpanded(segue)}
                                                     className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
                                                 >
                                                     {cleanSongName(segue.songs[0].song_name)}
@@ -513,7 +482,11 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                                                                                     <div className="flex items-center gap-2">
                                                                                         <MoveRight className="text-red-500 w-3 h-3" />
                                                                                         <button
-                                                                                            onClick={() => navigate(`/song/${dest.song_id}`)}
+                                                                                            onClick={() => setSegueModalData({
+                                                                                                isOpen: true,
+                                                                                                sourceSongName: segue.songs[0].song_name,
+                                                                                                destinationSongName: dest.song_name
+                                                                                            })}
                                                                                             className="font-trad text-fifth text-[0.875rem] leading-[0.75rem] hover:underline cursor-pointer"
                                                                                         >
                                                                                             {cleanSongName(dest.song_name)}
@@ -555,8 +528,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
         );
     };
 
-    console.log('Rendering component, loading:', loading, 'data length:', container1Data.length);
-
     if (loading) {
         return (
             <div className="text-fifth text-center py-8">Loading data...</div>
@@ -574,6 +545,12 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                 </p>
                 {renderSegueTable(container1Data)}
             </div>
+            <SeguePerformancesModal
+                isOpen={segueModalData.isOpen}
+                onClose={() => setSegueModalData({ isOpen: false, sourceSongName: '', destinationSongName: '' })}
+                sourceSongName={segueModalData.sourceSongName}
+                destinationSongName={segueModalData.destinationSongName}
+            />
         </div>
     );
 }
