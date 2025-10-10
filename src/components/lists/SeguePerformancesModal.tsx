@@ -20,6 +20,7 @@ interface SeguePerformancesModalProps {
   onClose: () => void;
   sourceSongName: string;
   destinationSongName: string;
+  sandwichSongs?: string[]; // Array of all song names in the sandwich
 }
 
 const cleanSongName = (songName: string): string => {
@@ -37,17 +38,207 @@ export default function SeguePerformancesModal({
   isOpen,
   onClose,
   sourceSongName,
-  destinationSongName
+  destinationSongName,
+  sandwichSongs
 }: SeguePerformancesModalProps) {
   const navigate = useNavigate();
   const [performances, setPerformances] = useState<SeguePerformance[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isOpen && sourceSongName && destinationSongName) {
-      fetchSeguePerformances();
+    if (isOpen) {
+      if (sandwichSongs && sandwichSongs.length > 0) {
+        fetchSandwichPerformances();
+      } else if (sourceSongName && destinationSongName) {
+        fetchSeguePerformances();
+      }
     }
-  }, [isOpen, sourceSongName, destinationSongName]);
+  }, [isOpen, sourceSongName, destinationSongName, sandwichSongs]);
+
+  const fetchSandwichPerformances = async () => {
+    setLoading(true);
+    try {
+      // Get count of all setlist entries for the first song (unfinished)
+      const firstSong = sandwichSongs![0];
+      const { count, error: countError } = await supabase
+        .from('setlist_entries')
+        .select('*', { count: 'exact', head: true })
+        .eq('entry_song', firstSong)
+        .eq('entry_short', 'unfinished');
+
+      if (countError) throw countError;
+
+      // Fetch all entries in batches
+      const batchSize = 1000;
+      const totalBatches = Math.ceil((count || 0) / batchSize);
+      let allEntries: any[] = [];
+
+      for (let i = 0; i < totalBatches; i++) {
+        const start = i * batchSize;
+        const end = Math.min(start + batchSize - 1, (count || 0) - 1);
+
+        const { data, error } = await supabase
+          .from('setlist_entries')
+          .select(`
+            entry_id,
+            entry_song,
+            entry_show,
+            entry_set,
+            entry_setnum,
+            entry_length,
+            shows!inner (
+              show_id,
+              show_date,
+              show_canonid,
+              show_venue_location,
+              subvenues (
+                subvenue_venue,
+                venues (
+                  venue_id
+                )
+              )
+            )
+          `)
+          .eq('entry_song', firstSong)
+          .eq('entry_short', 'unfinished')
+          .not('shows.show_canonid', 'is', null)
+          .range(start, end);
+
+        if (error) throw error;
+        if (data) allEntries = [...allEntries, ...data];
+      }
+
+      // Get all unique show IDs and their sets
+      const showSetPairs = [...new Set(allEntries.map(e => `${e.entry_show}|${e.entry_set}`))];
+
+      // Fetch all setlist entries for these show/set combinations
+      const showIds = [...new Set(allEntries.map(e => e.entry_show))];
+      const showBatchSize = 50;
+      const showBatches = [];
+      for (let i = 0; i < showIds.length; i += showBatchSize) {
+        showBatches.push(showIds.slice(i, i + showBatchSize));
+      }
+
+      let allShowEntries: any[] = [];
+      for (const showBatch of showBatches) {
+        const { data, error } = await supabase
+          .from('setlist_entries')
+          .select('entry_id, entry_show, entry_set, entry_setnum, entry_song, entry_length, entry_short')
+          .in('entry_show', showBatch)
+          .order('entry_show')
+          .order('entry_set')
+          .order('entry_setnum');
+
+        if (error) throw error;
+        if (data) allShowEntries = [...allShowEntries, ...data];
+      }
+
+      // Group entries by show and set
+      const entriesByShowSet = new Map<string, any[]>();
+      allShowEntries.forEach(entry => {
+        const key = `${entry.entry_show}|${entry.entry_set}`;
+        if (!entriesByShowSet.has(key)) {
+          entriesByShowSet.set(key, []);
+        }
+        entriesByShowSet.get(key)!.push(entry);
+      });
+
+      // Find valid sandwich patterns
+      const validSandwiches: SeguePerformance[] = [];
+      allEntries.forEach(unfinishedEntry => {
+        const key = `${unfinishedEntry.entry_show}|${unfinishedEntry.entry_set}`;
+        const setEntries = entriesByShowSet.get(key);
+        if (!setEntries) return;
+
+        // Find the unfinished entry index
+        const unfinishedIndex = setEntries.findIndex(e => e.entry_id === unfinishedEntry.entry_id);
+        if (unfinishedIndex === -1) return;
+
+        // Look for matching sandwich pattern starting from this unfinished entry
+        let matchIndex = unfinishedIndex;
+        let allMatched = true;
+        const matchedEntries: any[] = [];
+
+        for (let i = 0; i < sandwichSongs!.length; i++) {
+          const expectedSong = sandwichSongs![i];
+          const isFirst = i === 0;
+          const isLast = i === sandwichSongs!.length - 1;
+
+          if (matchIndex >= setEntries.length) {
+            allMatched = false;
+            break;
+          }
+
+          const currentEntry = setEntries[matchIndex];
+          
+          // Check song name matches
+          if (currentEntry.entry_song !== expectedSong) {
+            allMatched = false;
+            break;
+          }
+
+          // Check first is unfinished and last is reprise
+          if (isFirst && currentEntry.entry_short !== 'unfinished') {
+            allMatched = false;
+            break;
+          }
+          if (isLast && currentEntry.entry_short !== 'reprise') {
+            allMatched = false;
+            break;
+          }
+
+          matchedEntries.push(currentEntry);
+          matchIndex++;
+        }
+
+        if (allMatched && matchedEntries.length === sandwichSongs!.length) {
+          // Calculate combined length
+          const totalSeconds = matchedEntries.reduce((sum, entry) => {
+            if (!entry.entry_length) return sum;
+            const parts = entry.entry_length.split(':').map(Number);
+            if (parts.length === 3) {
+              return sum + parts[0] * 3600 + parts[1] * 60 + parts[2];
+            } else if (parts.length === 2) {
+              return sum + parts[0] * 60 + parts[1];
+            }
+            return sum;
+          }, 0);
+
+          let combinedLength = null;
+          if (totalSeconds > 0) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            if (hours > 0) {
+              combinedLength = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+              combinedLength = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+          }
+
+          validSandwiches.push({
+            show_date: unfinishedEntry.shows.show_date,
+            show_id: unfinishedEntry.shows.show_id,
+            show_venue_location: unfinishedEntry.shows.show_venue_location,
+            show_subvenue_venue: unfinishedEntry.shows.subvenues?.subvenue_venue,
+            venue_id: unfinishedEntry.shows.subvenues?.venues?.venue_id,
+            first_song_length: null,
+            second_song_length: null,
+            combined_length: combinedLength
+          });
+        }
+      });
+
+      // Sort by show_date
+      validSandwiches.sort((a, b) => new Date(a.show_date).getTime() - new Date(b.show_date).getTime());
+
+      setPerformances(validSandwiches);
+    } catch (error) {
+      console.error('Error fetching sandwich performances:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchSeguePerformances = async () => {
     setLoading(true);
@@ -225,6 +416,8 @@ export default function SeguePerformancesModal({
 
   if (!isOpen) return null;
 
+  const isSandwich = sandwichSongs && sandwichSongs.length > 0;
+
   return (
     <>
       {/* Backdrop */}
@@ -235,20 +428,41 @@ export default function SeguePerformancesModal({
       
       {/* Modal */}
       <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[650px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-secondary bg-primary rounded-t-lg">
-          <div className="flex items-center flex-1">
-            <h2 className="text-xl font-trad bg-tertiary text-fifth inline-block px-3 pb-0.5 rounded-lg border border-secondary mr-4">
-              Segue Lookup
+        <div className="flex items-center justify-between p-3 border-b border-secondary bg-primary rounded-t-lg">
+          <div className="flex items-center flex-1 gap-4 min-w-0">
+            <h2 className="text-xl font-trad bg-tertiary text-fifth px-3 pb-0.5 rounded-lg border border-secondary whitespace-nowrap flex-shrink-0">
+              {isSandwich ? 'Reprise Lookup' : 'Segue Lookup'}
             </h2>
-            <span className="text-xs font-medium bg-secondary text-fifth px-3 py-1 rounded-full border border-secondary whitespace-nowrap mr-4 flex items-center gap-2">
-              <span>{cleanSongName(sourceSongName)}</span>
-              <MoveRight className="text-red-500 w-3 h-3" />
-              <span>{cleanSongName(destinationSongName)}</span>
-            </span>
+            <div className="text-xs font-medium bg-secondary text-fifth px-3 py-1 rounded-full border border-secondary min-w-0" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+              {isSandwich ? (
+                <>
+                  {sandwichSongs!.map((song, index) => (
+                    <React.Fragment key={index}>
+                      {index > 0 && (
+                        <>
+                          {' '}
+                          <MoveRight className="text-red-500 w-3 h-3 inline-block mx-1" style={{ verticalAlign: 'middle' }} />
+                          {' '}
+                        </>
+                      )}
+                      <span style={{ display: 'inline' }}>{cleanSongName(song)}</span>
+                    </React.Fragment>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <span style={{ display: 'inline' }}>{cleanSongName(sourceSongName)}</span>
+                  {' '}
+                  <MoveRight className="text-red-500 w-3 h-3 inline-block mx-1" style={{ verticalAlign: 'middle' }} />
+                  {' '}
+                  <span style={{ display: 'inline' }}>{cleanSongName(destinationSongName)}</span>
+                </>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors flex-shrink-0"
+            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors flex-shrink-0 ml-4"
           >
             <X className="w-5 h-5 text-fifth" />
           </button>
@@ -262,11 +476,11 @@ export default function SeguePerformancesModal({
                 <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
                 <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
               </div>
-              <p className="text-fifth mt-4">Loading segue performances...</p>
+              <p className="text-fifth mt-4">Loading {isSandwich ? 'sandwich' : 'segue'} performances...</p>
             </div>
           ) : performances.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-fifth">No performances found for this segue.</p>
+              <p className="text-fifth">No performances found for this {isSandwich ? 'sandwich' : 'segue'}.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">

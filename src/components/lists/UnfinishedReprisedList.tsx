@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoveRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import SeguePerformancesModal from './SeguePerformancesModal';
 
 interface PlaceholderItem {
     item_name: string;
@@ -46,8 +47,13 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
     const [loading, setLoading] = useState(true);
     const [container1Data, setContainer1Data] = useState<PlaceholderItem[]>([]);
     const [container2Data, setContainer2Data] = useState<Sandwich[]>([]);
-    const [container3Data, setContainer3Data] = useState<PlaceholderItem[]>([]);
-    const [container4Data, setContainer4Data] = useState<PlaceholderItem[]>([]);
+    const [sandwichModalData, setSandwichModalData] = useState<{
+        isOpen: boolean;
+        sandwichSongs: string[];
+    }>({
+        isOpen: false,
+        sandwichSongs: []
+    });
 
     useEffect(() => {
         fetchAllData();
@@ -57,11 +63,8 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
         try {
             onProgressUpdate(10);
 
-            // Placeholder data for now
             await fetchContainer1Data();
             await fetchContainer2Data();
-            await fetchContainer3Data();
-            await fetchContainer4Data();
 
             onProgressUpdate(100);
         } catch (error) {
@@ -154,7 +157,6 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
             const batchSize = 1000;
             let hasMore = true;
 
-            // Fetch all setlist entries for shows with canonid
             while (hasMore) {
                 const { data, error } = await supabase
                     .from('setlist_entries')
@@ -193,7 +195,6 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                 }
             }
 
-            // Group entries by show and set
             const showSetMap: { [key: string]: any[] } = {};
             allData.forEach((entry: any) => {
                 const key = `${entry.entry_show}_${entry.entry_set}`;
@@ -203,14 +204,11 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                 showSetMap[key].push(entry);
             });
 
-            // Find sandwiches
             const sandwiches: { [key: string]: Sandwich } = {};
 
             Object.values(showSetMap).forEach((entries: any[]) => {
-                // Sort by entry_setnum
                 entries.sort((a, b) => a.entry_setnum - b.entry_setnum);
 
-                // Group by song name to find unfinished/reprise pairs
                 const songGroups: { [songName: string]: any[] } = {};
                 entries.forEach(entry => {
                     if (!songGroups[entry.entry_song]) {
@@ -219,31 +217,25 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                     songGroups[entry.entry_song].push(entry);
                 });
 
-                // For each song, find unfinished/reprise pairs
                 Object.entries(songGroups).forEach(([songName, songEntries]) => {
                     const unfinishedEntries = songEntries.filter(e => e.entry_short === 'unfinished');
                     const repriseEntries = songEntries.filter(e => e.entry_short === 'reprise');
 
                     if (unfinishedEntries.length > 0 && repriseEntries.length > 0) {
-                        // Get first unfinished and last reprise
                         const firstUnfinished = unfinishedEntries[0];
                         const lastReprise = repriseEntries[repriseEntries.length - 1];
 
-                        // Make sure reprise comes after unfinished
                         if (lastReprise.entry_setnum > firstUnfinished.entry_setnum) {
-                            // Get all songs between them (inclusive)
                             const betweenSongs = entries.filter(
                                 e => e.entry_setnum >= firstUnfinished.entry_setnum &&
                                     e.entry_setnum <= lastReprise.entry_setnum
                             );
 
-                            // Build sandwich
                             const sandwichSongs: SandwichSong[] = betweenSongs.map(e => ({
                                 song_name: e.entry_song,
                                 song_id: e.songs.song_id
                             }));
 
-                            // Create key for grouping identical sandwiches
                             const sandwichKey = sandwichSongs.map(s => s.song_id).join('|');
                             const sortString = sandwichSongs.map(s => cleanSongName(s.song_name)).join(' ');
 
@@ -264,9 +256,8 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                 });
             });
 
-            // Sort and take top 25
             const processedSandwiches = Object.values(sandwiches)
-                .filter(sandwich => sandwich.count > 1) // Add this line
+                .filter(sandwich => sandwich.count > 1)
                 .sort((a, b) => {
                     if (b.count !== a.count) {
                         return b.count - a.count;
@@ -284,32 +275,7 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
         }
     }
 
-    async function fetchContainer3Data() {
-        // Placeholder implementation
-        const placeholderData: PlaceholderItem[] = [
-            { item_name: 'Placeholder Item 1', item_id: '1', count: 88 },
-            { item_name: 'Placeholder Item 2', item_id: '2', count: 83 },
-            { item_name: 'Placeholder Item 3', item_id: '3', count: 79 },
-            { item_name: 'Placeholder Item 4', item_id: '4', count: 74 },
-            { item_name: 'Placeholder Item 5', item_id: '5', count: 69 },
-        ];
-        setContainer3Data(placeholderData);
-    }
-
-    async function fetchContainer4Data() {
-        // Placeholder implementation
-        const placeholderData: PlaceholderItem[] = [
-            { item_name: 'Placeholder Item 1', item_id: '1', count: 86 },
-            { item_name: 'Placeholder Item 2', item_id: '2', count: 81 },
-            { item_name: 'Placeholder Item 3', item_id: '3', count: 77 },
-            { item_name: 'Placeholder Item 4', item_id: '4', count: 72 },
-            { item_name: 'Placeholder Item 5', item_id: '5', count: 67 },
-        ];
-        setContainer4Data(placeholderData);
-    }
-
     const renderSandwichTable = (sandwiches: Sandwich[]) => {
-        // Calculate rankings with tie handling
         let currentRank = 1;
         let currentBgGroup = 0;
         const rankedSandwiches = sandwiches.map((sandwich, index) => {
@@ -330,10 +296,8 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                 <table className="w-full border-collapse">
                     <tbody>
                         {rankedSandwiches.map((sandwich, index) => {
-                            // Check if next item has same count (meaning we're in a tied group and not last)
                             const nextItem = rankedSandwiches[index + 1];
                             const showBorderBottom = nextItem && sandwich.count === nextItem.count;
-                            // Show regular border if not in a tie AND not the last item
                             const showRegularBorder = !showBorderBottom && index < rankedSandwiches.length - 1;
 
                             return (
@@ -349,7 +313,11 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                                     </td>
                                     <td className="pl-2 text-fifth">
                                         <div
-                                            className="w-full text-left pb-0.5"
+                                            className="w-full text-left pb-0.5 cursor-pointer"
+                                            onClick={() => setSandwichModalData({
+                                                isOpen: true,
+                                                sandwichSongs: sandwich.songs.map(s => s.song_name)
+                                            })}
                                             style={{
                                                 wordWrap: 'break-word',
                                                 overflowWrap: 'break-word',
@@ -363,14 +331,13 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                                                     {songIndex > 0 && (
                                                         <MoveRight className="text-red-500 inline w-4 h-4 mr-1" style={{ verticalAlign: 'middle' }} />
                                                     )}
-                                                    <a
-                                                        onClick={() => navigate(`/song/${song.song_id}`)}
-                                                        className={`text-fifth text-[1rem] leading-[0.875rem] font-trad transition-colors table-link cursor-pointer inline ${songIndex < sandwich.songs.length - 1 ? 'mr-1' : ''
+                                                    <span
+                                                        className={`text-fifth text-[1rem] leading-[0.875rem] font-trad transition-colors table-link inline ${songIndex < sandwich.songs.length - 1 ? 'mr-1' : ''
                                                             }`}
                                                         style={{ verticalAlign: 'middle' }}
                                                     >
                                                         {cleanSongName(song.song_name)}
-                                                    </a>
+                                                    </span>
                                                 </React.Fragment>
                                             ))}
                                         </div>
@@ -388,7 +355,6 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
     };
 
     const renderTable = (items: PlaceholderItem[], bgColor: string) => {
-        // Calculate rankings with tie handling
         let currentRank = 1;
         let currentBgGroup = 0;
         const rankedItems = items.map((item, index) => {
@@ -409,7 +375,6 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                 <table className="w-full border-collapse">
                     <tbody className="divide-y divide-white/5">
                         {rankedItems.map((item, index) => {
-                            // Check if next item has same count (meaning we're in a tied group and not last)
                             const nextItem = rankedItems[index + 1];
                             const showBorderBottom = nextItem && item.count === nextItem.count;
                             
@@ -513,6 +478,14 @@ export function UnfinishedReprisedList({ listId, onProgressUpdate }: UnfinishedR
                     {renderSandwichTable(container2Data)}
                 </div>
             </div>
+
+            <SeguePerformancesModal
+                isOpen={sandwichModalData.isOpen}
+                onClose={() => setSandwichModalData({ isOpen: false, sandwichSongs: [] })}
+                sourceSongName=""
+                destinationSongName=""
+                sandwichSongs={sandwichModalData.sandwichSongs}
+            />
         </div>
     );
 }
