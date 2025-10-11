@@ -101,9 +101,16 @@ interface Entry {
 interface ShowStatsProps {
   setlist: Entry[];
   show_canonid: number | null;
+  show_rarity?: number | null;
+  show_gap?: number | null;
 }
 
-const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
+const ShowStats: React.FC<ShowStatsProps> = ({ 
+  setlist, 
+  show_canonid,
+  show_rarity,
+  show_gap
+}) => {
   const hasLength = setlist.some(entry => entry.entry_length !== null);
   
   const formatTimeUnit = (value: number, unit: string): string | null => {
@@ -145,110 +152,20 @@ const ShowStats: React.FC<ShowStatsProps> = ({ setlist, show_canonid }) => {
   }, [setlist, hasLength]);
 
   const rarityStats = React.useMemo(() => {
-    if (!show_canonid || !setlist.length) return null;
-    try {
-      const skipShorts = ["fake", "tease", "reprise", "aborted"];
-      const uniqueSongs = new Map();
-      
-      // First pass: identify songs with at least one valid performance
-      const songsWithValidPerformance = new Set<string>();
-      setlist.forEach(entry => {
-        if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
-          songsWithValidPerformance.add(entry.entry_song);
-        }
-      });
-      
-      // Second pass: add songs to the map only if they have a valid performance
-      setlist.forEach(entry => {
-        if (songsWithValidPerformance.has(entry.entry_song) && !uniqueSongs.has(entry.entry_song)) {
-          uniqueSongs.set(entry.entry_song, {
-            times_played_num: entry.times_played_num,
-            shows_since_debut_num: entry.shows_since_debut_num
-          });
-        }
-      });
-  
-      const totalPlays = Array.from(uniqueSongs.values()).reduce((sum, entry) => 
-        sum + (entry.times_played_num ? parseInt(entry.times_played_num, 10) : 0), 0);
-      
-      const totalShows = Array.from(uniqueSongs.values()).reduce((sum, entry) => 
-        sum + (entry.shows_since_debut_num ? parseInt(entry.shows_since_debut_num, 10) : 0), 0);
-      
-      if (totalShows === 0) return null;
-      const percentage = (totalPlays * 100.0) / totalShows;
-      
-      return {
-        percentage: percentage.toFixed(2),
-        plays: totalPlays,
-        shows: totalShows
-      };
-    } catch (error) {
-      console.error('Error calculating rarity:', error);
-      return null;
-    }
-  }, [setlist, show_canonid]);
+    if (!show_canonid || show_rarity === null || show_rarity === undefined) return null;
+    
+    return {
+      percentage: show_rarity.toFixed(2)
+    };
+  }, [show_canonid, show_rarity]);
 
   const averageShowGap = React.useMemo(() => {
-    if (!show_canonid || !setlist.length) return null;
+    if (!show_canonid || show_gap === null || show_gap === undefined) return null;
     
-    try {
-      const skipShorts = ["fake", "tease", "reprise", "aborted"];
-      const validEntries = [];
-      
-      // Filter for unique songs with valid performances that have last_count values
-      const seenSongs = new Set<string>();
-      
-      setlist.forEach(entry => {
-        // Skip if we've already processed this song
-        if (seenSongs.has(entry.entry_song)) return;
-        
-        // Skip if it's a performance type we don't count
-        if (entry.entry_short && skipShorts.includes(entry.entry_short.toLowerCase())) return;
-        
-        // Skip if no last_count value or it's empty
-        if (!entry.last_count || entry.last_count.trim() === '') return;
-        
-        seenSongs.add(entry.entry_song);
-        validEntries.push(entry.last_count);
-      });
-      
-      if (validEntries.length === 0) return null;
-      
-      // Parse last_count values according to the rules
-      const gapValues = validEntries.map(lastCount => {
-        const trimmed = lastCount.trim();
-        
-        // Handle "Debut" case
-        if (trimmed.toLowerCase() === 'debut') {
-          return 0;
-        }
-        
-        // Handle "number, TD" case
-        if (trimmed.includes(',') && trimmed.toUpperCase().includes('TD')) {
-          const numberPart = trimmed.split(',')[0].trim();
-          const parsed = parseInt(numberPart, 10);
-          return isNaN(parsed) ? null : parsed;
-        }
-        
-        // Handle plain number case
-        const parsed = parseInt(trimmed, 10);
-        return isNaN(parsed) ? null : parsed;
-      }).filter(value => value !== null) as number[];
-      
-      if (gapValues.length === 0) return null;
-      
-      const sum = gapValues.reduce((acc, val) => acc + val, 0);
-      const average = sum / gapValues.length;
-      
-      return {
-        average: average.toFixed(2),
-        count: gapValues.length
-      };
-    } catch (error) {
-      console.error('Error calculating average show gap:', error);
-      return null;
-    }
-  }, [setlist, show_canonid]);
+    return {
+      average: show_gap.toFixed(2)
+    };
+  }, [show_canonid, show_gap]);
 
   // Check if we should show any stats at all
   const shouldShowLength = hasLength;

@@ -279,6 +279,8 @@ export function Setlist() {
             show_wl_link,
             show_subvenue_venue,
             rating_visibility,
+            show_rarity,
+            show_gap,
             subvenues:show_subvenue(
               venues:subvenue_venue(
                 venue_id

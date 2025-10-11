@@ -34,6 +34,8 @@ interface Show {
   tour_id: string;
   show_wl_link?: string | null; 
   rating_visibility?: boolean;
+  show_rarity?: number | null;
+  show_gap?: number | null;
 }
 
 interface SetlistEntry {
@@ -454,7 +456,12 @@ export default function FullSetlistDisplay({
         )}
         {setlist.length > 0 && (
           <div className="space-y-4">
-            <ShowStats setlist={setlist} show_canonid={show.show_canonid} />
+            <ShowStats 
+              setlist={setlist} 
+              show_canonid={show.show_canonid}
+              show_rarity={show.show_rarity}
+              show_gap={show.show_gap}
+            />
           </div>
         )}
       </div>
@@ -1091,7 +1098,12 @@ export default function FullSetlistDisplay({
             )}
             {setlist.length > 0 && (
               <div>
-                <ShowStats setlist={setlist} show_canonid={show.show_canonid} />
+                <ShowStats 
+                  setlist={setlist} 
+                  show_canonid={show.show_canonid}
+                  show_rarity={show.show_rarity}
+                  show_gap={show.show_gap}
+                />
               </div>
             )}
             {showId && <ReleaseContainer showId={showId} />}

@@ -24,12 +24,12 @@ interface Show {
   show_canonid: number | null;
   show_venue_location: string | null;
   show_length?: string | null;
-  show_rarity?: string | null;
+  show_rarity?: string | null;  // This will be formatted with %
+  show_gap?: string | null;
   show_subvenue_venue?: string;
   venue_id?: string;
   attended?: boolean;
   show_wl_link?: string | null;
-  show_gap?: string | null;
   setlist_entries?: Array<{
     entry_length: string | null;
     entry_song: string;
@@ -497,58 +497,6 @@ export function Tours() {
     });
   };
 
-  const calculateAverageShowGap = (setlistEntries: Array<{
-    entry_song: string;
-    entry_short?: string | null;
-    last_count?: string | null;
-  }> | undefined): string | null => {
-    if (!setlistEntries || setlistEntries.length === 0) return null;
-    
-    try {
-      const skipShorts = ["fake", "tease", "reprise", "aborted"];
-      const validEntries = [];
-      const seenSongs = new Set<string>();
-      
-      setlistEntries.forEach(entry => {
-        if (seenSongs.has(entry.entry_song)) return;
-        if (entry.entry_short && skipShorts.includes(entry.entry_short.toLowerCase())) return;
-        if (!entry.last_count || entry.last_count.trim() === '') return;
-        
-        seenSongs.add(entry.entry_song);
-        validEntries.push(entry.last_count);
-      });
-      
-      if (validEntries.length === 0) return null;
-      
-      const gapValues = validEntries.map(lastCount => {
-        const trimmed = lastCount.trim();
-        
-        if (trimmed.toLowerCase() === 'debut') {
-          return 0;
-        }
-        
-        if (trimmed.includes(',') && trimmed.toUpperCase().includes('TD')) {
-          const numberPart = trimmed.split(',')[0].trim();
-          const parsed = parseInt(numberPart, 10);
-          return isNaN(parsed) ? null : parsed;
-        }
-        
-        const parsed = parseInt(trimmed, 10);
-        return isNaN(parsed) ? null : parsed;
-      }).filter(value => value !== null) as number[];
-      
-      if (gapValues.length === 0) return null;
-      
-      const sum = gapValues.reduce((acc, val) => acc + val, 0);
-      const average = sum / gapValues.length;
-      
-      return average.toFixed(2);
-    } catch (error) {
-      console.error('Error calculating average show gap:', error);
-      return null;
-    }
-  };
-
   React.useEffect(() => {
     if (toursLoaded && showsLoaded && slotsLoaded && songIdsLoaded) {
       setIsLoading(false);
@@ -681,6 +629,8 @@ export function Tours() {
             show_venue_location,
             show_subvenue_venue,
             show_wl_link,
+            show_rarity,
+            show_gap,
             subvenues:show_subvenue(
               venues:subvenue_venue(
                 venue_id
@@ -768,43 +718,15 @@ export function Tours() {
             show_length = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
           }
 
-          let show_rarity = null;
-          if (show.show_canonid && show.setlist_entries?.length) {
-            const skipShorts = ["fake", "tease", "reprise", "aborted"];
-            const uniqueSongs = new Map();
-            
-            const songsWithValidPerformance = new Set<string>();
-            show.setlist_entries.forEach(entry => {
-              if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
-                songsWithValidPerformance.add(entry.entry_song);
-              }
-            });
-            
-            show.setlist_entries.forEach(entry => {
-              if (songsWithValidPerformance.has(entry.entry_song) && !uniqueSongs.has(entry.entry_song)) {
-                uniqueSongs.set(entry.entry_song, {
-                  times_played_num: entry.times_played_num,
-                  shows_since_debut_num: entry.shows_since_debut_num
-                });
-              }
-            });
+          // Format rarity with % symbol if it exists
+          const show_rarity = show.show_rarity !== null && show.show_rarity !== undefined
+            ? `${show.show_rarity.toFixed(2)}%`
+            : null;
 
-            const totalPlays = Array.from(uniqueSongs.values()).reduce((sum, entry) =>
-              sum + (entry.times_played_num ? parseInt(entry.times_played_num, 10) : 0), 0);
-
-            const totalShows = Array.from(uniqueSongs.values()).reduce((sum, entry) =>
-              sum + (entry.shows_since_debut_num ? parseInt(entry.shows_since_debut_num, 10) : 0), 0);
-
-            if (totalShows > 0) {
-              const percentage = (totalPlays * 100.0) / totalShows;
-              show_rarity = `${percentage.toFixed(2)}%`;
-            }
-          }
-
-          let show_gap = null;
-          if (show.show_canonid && show.setlist_entries?.length) {
-            show_gap = calculateAverageShowGap(show.setlist_entries);
-          }
+          // Format gap as string with 2 decimal places if it exists
+          const show_gap = show.show_gap !== null && show.show_gap !== undefined
+            ? show.show_gap.toFixed(2)
+            : null;
 
           return {
             ...show,

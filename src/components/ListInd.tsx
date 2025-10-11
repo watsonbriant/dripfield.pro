@@ -6,6 +6,7 @@ import { LongestPerformancesList } from './lists/LongestPerformancesList';
 import { PopularPlacementsList } from './lists/PopularPlacementsList';
 import { UnfinishedReprisedList } from './lists/UnfinishedReprisedList';
 import { SeguesList } from './lists/SeguesList';
+import { LongestShowsList } from './lists/LongestShowsList';
 
 interface List {
     id: number;
@@ -68,7 +69,9 @@ const SPECIAL_LIST_COMPONENTS: Record<string, React.ComponentType<any>> = {
     '3657a3a7-bcb4-483b-b8ef-e4ae28495a61': LongestPerformancesList,
     'a9fcbc3a-c3de-42b4-a274-1974badd283c': PopularPlacementsList,
     'f0989de4-b27d-4b8f-98c2-5e3d51a310b4': UnfinishedReprisedList,
-    '37cdd57e-6a16-474e-9715-ba05e95e0217': SeguesList
+    '37cdd57e-6a16-474e-9715-ba05e95e0217': SeguesList,
+    '45a4b90e-adbe-4af5-9051-2f4d212069fc': LongestShowsList,
+    'ce613616-28bc-40dd-a6a8-1dd5fe6b0456': LongestShowsList
 };
 
 export function ListInd() {
@@ -81,7 +84,9 @@ export function ListInd() {
 
     // Determine if this is the segues list that needs narrow width
     const isSeguesList = listId === '37cdd57e-6a16-474e-9715-ba05e95e0217';
-    const containerMaxWidth = isSeguesList ? 'max-w-[500px]' : 'max-w-[936px]';
+    const isShowsList = listId === '45a4b90e-adbe-4af5-9051-2f4d212069fc' || 
+                        listId === 'ce613616-28bc-40dd-a6a8-1dd5fe6b0456';
+    const containerMaxWidth = isSeguesList ? 'max-w-[500px]' : isShowsList ? 'max-w-[1280px]' : 'max-w-[936px]';
 
     useEffect(() => {
         if (listId) {

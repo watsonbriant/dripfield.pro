@@ -17,7 +17,7 @@ interface AttendedShow {
     show_group: string;
     show_subvenue: string;
     show_venue_location: string;
-    show_subvenue_venue: string; // Added for venue navigation
+    show_subvenue_venue: string;
     show_tour: string | null;
     show_canonid: string | null;
     tours: {
@@ -27,34 +27,25 @@ interface AttendedShow {
     show_alert: string | null;
     show_length?: string | null;
     show_rarity?: string | null;
-    setlist_entries?: Array<{
-      entry_length: string | null;
-      entry_song: string;
-      times_played_num: string | null;
-      shows_since_debut_num: string | null;
-    }>;
+    show_gap?: string | null;
   };
 }
 
 const getRarityColor = (percentage: string | null): string => {
-  // If percentage is null or not a valid percentage string, return transparent
   if (!percentage || percentage === '-') return 'transparent';
   
-  // Convert percentage string to number
   const numericPercentage = parseFloat(percentage.replace('%', ''));
   
   if (isNaN(numericPercentage)) return 'transparent';
   
-  // Define our 4 color stops with breakpoints at 0, 15, 50, 100
   const colorStops = [
-    { percent: 0, color: { r: 156, g: 12, b: 12 } },     // #9C0C0C (Even Darker Red)
-    { percent: 12, color: { r: 230, g: 81, b: 0 } },     // #E65100 (Darker Orange)
-    { percent: 24, color: { r: 179, g: 135, b: 0 } },    // #D3A304 (Dark Yellow)
-    { percent: 50, color: { r: 46, g: 125, b: 50 } },    // #2E7D32 (Darker Green)
-    { percent: 100, color: { r: 13, g: 71, b: 161 } }    // #0D47A1 (Darker Blue)
+    { percent: 0, color: { r: 156, g: 12, b: 12 } },
+    { percent: 12, color: { r: 230, g: 81, b: 0 } },
+    { percent: 24, color: { r: 179, g: 135, b: 0 } },
+    { percent: 50, color: { r: 46, g: 125, b: 50 } },
+    { percent: 100, color: { r: 13, g: 71, b: 161 } }
   ];
   
-  // Find the color stops to interpolate between
   let lowerStop = colorStops[0];
   let upperStop = colorStops[colorStops.length - 1];
   
@@ -66,16 +57,63 @@ const getRarityColor = (percentage: string | null): string => {
     }
   }
   
-  // Calculate interpolation factor
   const range = upperStop.percent - lowerStop.percent;
   const factor = range !== 0 ? (numericPercentage - lowerStop.percent) / range : 0;
   
-  // Interpolate RGB values
   const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
   const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
   const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
   
   return `rgb(${r}, ${g}, ${b})`;
+};
+
+const getGapColor = (value: string | null): string => {
+  if (!value || value === '-') return 'transparent';
+
+  const numericValue = parseFloat(value);
+
+  if (isNaN(numericValue)) return 'transparent';
+
+  const cappedValue = Math.min(numericValue, 100);
+
+  const colorStops = [
+    { percent: 0, color: { r: 13, g: 71, b: 161 } },
+    { percent: 12, color: { r: 46, g: 125, b: 50 } },
+    { percent: 24, color: { r: 179, g: 135, b: 0 } },
+    { percent: 50, color: { r: 230, g: 81, b: 0 } },
+    { percent: 100, color: { r: 156, g: 12, b: 12 } }
+  ];
+
+  let lowerStop = colorStops[0];
+  let upperStop = colorStops[colorStops.length - 1];
+
+  for (let i = 0; i < colorStops.length - 1; i++) {
+    if (cappedValue >= colorStops[i].percent && cappedValue <= colorStops[i + 1].percent) {
+      lowerStop = colorStops[i];
+      upperStop = colorStops[i + 1];
+      break;
+    }
+  }
+
+  const range = upperStop.percent - lowerStop.percent;
+  const factor = range !== 0 ? (cappedValue - lowerStop.percent) / range : 0;
+
+  const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
+  const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
+  const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
+
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
+// Helper function to format show length without leading zeros in hours
+const formatShowLength = (length: string | null): string => {
+  if (!length) return '';
+  const parts = length.split(':');
+  if (parts.length === 3) {
+    const hours = parseInt(parts[0], 10);
+    return `${hours}:${parts[1]}:${parts[2]}`;
+  }
+  return length;
 };
 
 // CircularProgress component
@@ -259,17 +297,14 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                 show_subvenue_venue,
                 show_tour,
                 show_canonid,
+                show_length,
+                show_rarity,
+                show_gap,
                 tours!show_tour(
                   tour_id
                 ),
                 show_detail,
-                show_alert,
-                setlist_entries (
-                  entry_length,
-                  entry_song,
-                  times_played_num,
-                  shows_since_debut_num
-                )
+                show_alert
               `)
               .in('show_id', currentChunk)
               .range(page * pageSize, (page + 1) * pageSize - 1);
@@ -295,75 +330,33 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
         }
         setLoadingProgress(80);
         
-        // Combine the attendance records with the show details and calculate length and rarity
+        // Combine the attendance records with the show details and format the values
         const combinedData = allAttendanceData.map(attendedShow => {
           const showDetails = allShowData?.find(show => show.show_id === attendedShow.show_id);
           
-          let showWithMetrics = { ...showDetails };
+          let showWithFormattedValues = { ...showDetails };
           
-          if (showDetails && showDetails.setlist_entries?.length) {
-            // Calculate show length
-            let totalSeconds = 0;
-            const hasLength = showDetails.setlist_entries.some(entry => entry.entry_length !== null);
+          if (showDetails) {
+            // Format rarity with % symbol if it exists
+            const show_rarity = showDetails.show_rarity !== null && showDetails.show_rarity !== undefined
+              ? `${showDetails.show_rarity.toFixed(2)}%`
+              : null;
             
-            if (hasLength) {
-              showDetails.setlist_entries.forEach(entry => {
-                if (entry.entry_length) {
-                  const parts = entry.entry_length.split(':').map(Number);
-                  if (parts.length === 3) {
-                    const [hours, minutes, seconds] = parts;
-                    totalSeconds += (hours * 3600) + (minutes * 60) + seconds;
-                  } else if (parts.length === 2) {
-                    const [minutes, seconds] = parts;
-                    totalSeconds += (minutes * 60) + seconds;
-                  }
-                }
-              });
-            }
+            // Format gap as string with 2 decimal places if it exists
+            const show_gap = showDetails.show_gap !== null && showDetails.show_gap !== undefined
+              ? showDetails.show_gap.toFixed(2)
+              : null;
             
-            // Format length string
-            let show_length = null;
-            if (totalSeconds > 0) {
-              const hours = Math.floor(totalSeconds / 3600);
-              const minutes = Math.floor((totalSeconds % 3600) / 60);
-              const seconds = totalSeconds % 60;
-              show_length = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-            
-            // Calculate show rarity
-            let show_rarity = null;
-            const uniqueSongs = new Map();
-            
-            showDetails.setlist_entries.forEach(entry => {
-              if (!uniqueSongs.has(entry.entry_song)) {
-                uniqueSongs.set(entry.entry_song, {
-                  times_played_num: entry.times_played_num,
-                  shows_since_debut_num: entry.shows_since_debut_num
-                });
-              }
-            });
-            
-            const totalPlays = Array.from(uniqueSongs.values()).reduce((sum, entry) => 
-              sum + (entry.times_played_num ? parseInt(entry.times_played_num, 10) : 0), 0);
-            
-            const totalShows = Array.from(uniqueSongs.values()).reduce((sum, entry) => 
-              sum + (entry.shows_since_debut_num ? parseInt(entry.shows_since_debut_num, 10) : 0), 0);
-            
-            if (totalShows > 0) {
-              const percentage = (totalPlays * 100.0) / totalShows;
-              show_rarity = `${percentage.toFixed(2)}%`;
-            }
-            
-            showWithMetrics = {
+            showWithFormattedValues = {
               ...showDetails,
-              show_length,
-              show_rarity
+              show_rarity,
+              show_gap
             };
           }
           
           return {
             ...attendedShow,
-            show: showWithMetrics
+            show: showWithFormattedValues
           };
         });
         
@@ -480,6 +473,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                 <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Tour</th>
                 <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Length</th>
                 <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Rarity</th>
+                <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Gap</th>
                 <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Venue</th>
                 <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Location</th>
                 <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Detail</th>
@@ -537,7 +531,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                   </td>
                   <td className="px-4 py-0.5 font-light text-center whitespace-nowrap">
                     <span className="text-fifth">
-                      {attendedShow.show?.show_length || ''}
+                      {formatShowLength(attendedShow.show?.show_length)}
                     </span>
                   </td>
                   <td className="px-4 text-center whitespace-nowrap">
@@ -549,6 +543,20 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                         }}
                       >
                         {attendedShow.show.show_rarity}
+                      </span>
+                    ) : (
+                      <span className="text-fifth"></span>
+                    )}
+                  </td>
+                  <td className="px-4 text-center whitespace-nowrap">
+                    {attendedShow.show?.show_gap ? (
+                      <span 
+                        className="text-white font-normal px-2 py-0.5 rounded-md inline-block"
+                        style={{ 
+                          backgroundColor: getGapColor(attendedShow.show.show_gap) 
+                        }}
+                      >
+                        {attendedShow.show.show_gap}
                       </span>
                     ) : (
                       <span className="text-fifth"></span>
