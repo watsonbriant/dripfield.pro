@@ -1786,7 +1786,7 @@ export function Home() {
                 {/* 3. Top Show Openers */}
                 {showOpeners.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#006400]">Top Show Openers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#047857]">Top Show Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1831,7 +1831,7 @@ export function Home() {
                 {/* 4. Top Set Openers */}
                 {setOpeners.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#019B7A]">Top Set Openers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#10b981]">Top Set Openers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1876,7 +1876,7 @@ export function Home() {
                 {/* 5. Top Set Closers */}
                 {setClosers.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#E17401]">Top Set Closers</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#3b82f6]">Top Set Closers</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
@@ -1921,7 +1921,7 @@ export function Home() {
                 {/* 6. Top Encores */}
                 {encores.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#7C2128]">Top Encores</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#be123c]">Top Encores</h3>
                   <div className="overflow-x-auto relative">
                     <table className="w-full border-collapse">
                       <tbody className="divide-y divide-white/5">
