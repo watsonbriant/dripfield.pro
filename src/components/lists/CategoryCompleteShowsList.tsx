@@ -451,9 +451,6 @@ export function CategoryCompleteShowsList({ onProgressUpdate }: CategoryComplete
             <table className="w-full border-collapse min-w-max">
                 <thead>
                     <tr className="bg-canvas">
-                        <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap w-[40px]">
-                            #
-                        </th>
                         <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap">
                             Date
                         </th>
@@ -521,9 +518,6 @@ export function CategoryCompleteShowsList({ onProgressUpdate }: CategoryComplete
                             key={show.show_id}
                             className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}
                         >
-                            <td className="px-2 py-0.5 text-center font-semibold text-[0.875rem] text-fifth">
-                                {index + 1}
-                            </td>
                             <td className="px-2 py-0.5 text-center whitespace-nowrap">
                                 <button
                                     onClick={() => navigate(`/setlist/${show.show_id}`)}
