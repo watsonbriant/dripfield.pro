@@ -15,7 +15,12 @@ const placementColors: Record<string, string> = {
     'Set 5 Closer': '#3b82f6',
     'Encore 1': '#be123c',
     'Encore 2': '#f43f5e',
-    'Encore 3': '#f43f5e'
+    'Encore 3': '#f43f5e',
+    'Main Set 1': '#000000',
+    'Main Set 2': '#4c4c4c',
+    'Main Set 3': '#4c4c4c',
+    'Main Set 4': '#4c4c4c',
+    'Main Set 5': '#4c4c4c'
 };
 
 // Tooltip styles similar to PerformanceChart
