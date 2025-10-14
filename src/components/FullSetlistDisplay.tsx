@@ -10,6 +10,7 @@ import { supabase } from '../lib/supabase';
 import { GiWhistle } from "react-icons/gi";
 import SongTourPerformancesModal from './SongTourPerformancesModal';
 import JOTYBadge from './JOTYBadge';
+import { CategoryCompleteBadge } from './CategoryCompleteBadge';
 
 interface Guest {
   guest_display_name: string;
@@ -36,6 +37,7 @@ interface Show {
   rating_visibility?: boolean;
   show_rarity?: number | null;
   show_gap?: number | null;
+  show_listcategorycomplete?: string | null;
 }
 
 interface SetlistEntry {
@@ -457,7 +459,7 @@ export default function FullSetlistDisplay({
           </div>
         )}
         {setlist.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-4 max-md:pb-4">
             <ShowStats 
               setlist={setlist} 
               show_canonid={show.show_canonid}
@@ -465,6 +467,10 @@ export default function FullSetlistDisplay({
               show_gap={show.show_gap}
               show_length_rank={showLengthRank}
             />
+            {/* Show ONLY on mobile (below lg breakpoint) */}
+            <div className="md:hidden">
+              <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+            </div>
           </div>
         )}
       </div>
@@ -924,7 +930,13 @@ export default function FullSetlistDisplay({
               <div className="space-y-4">
                 {/* Desktop layout with grid */}
                 <div className="hidden md:grid grid-cols-2 gap-4 items-start">
-                  <SongSpread setlist={setlist} />
+                  <div>
+                    {/* Show ONLY on tablet (md to lg), not on mobile or desktop */}
+                    <div className="hidden md:block lg:hidden mb-4">
+                      <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+                    </div>
+                    <SongSpread setlist={setlist} />
+                  </div>
                   
                   <div className="space-y-4">
                     {guestGroups.length > 0 && (
@@ -992,6 +1004,10 @@ export default function FullSetlistDisplay({
                       openModal={openChangesModal} 
                       setOpenModal={setOpenChangesModal} 
                     />}
+
+                    <div className="hidden lg:block mb-4">
+                      <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+                    </div>
                     
                     {showId && (
                       <div className="lg:hidden [&_img]:object-contain">
@@ -1010,7 +1026,7 @@ export default function FullSetlistDisplay({
                   {guestGroups.length > 0 && (
                     <div className="bg-primary border border-secondary rounded-lg p-3 h-fit relative">
                       <User className="w-5 h-5 text-fifth absolute top-3 right-3" />
-                      <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-2 pr-8">
+                      <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-1 pr-8">
                         {guestGroups.map((group, index) => (
                           <React.Fragment key={index}>
                             <div 
@@ -1100,7 +1116,7 @@ export default function FullSetlistDisplay({
               </div>
             )}
             {setlist.length > 0 && (
-              <div>
+              <div className="space-y-4">
                 <ShowStats 
                   setlist={setlist} 
                   show_canonid={show.show_canonid}
@@ -1108,6 +1124,10 @@ export default function FullSetlistDisplay({
                   show_gap={show.show_gap}
                   show_length_rank={showLengthRank} 
                 />
+                {/* Show ONLY on desktop (lg and above) */}
+                <div className="sm:hidden">
+                  <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+                </div>
               </div>
             )}
             {showId && <ReleaseContainer showId={showId} />}
