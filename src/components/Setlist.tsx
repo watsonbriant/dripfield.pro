@@ -283,6 +283,8 @@ export function Setlist() {
             show_rarity,
             show_gap,
             show_listcategorycomplete,
+            show_jivecomplete,
+            show_dripfieldcomplete,
             subvenues:show_subvenue(
               venues:subvenue_venue(
                 venue_id

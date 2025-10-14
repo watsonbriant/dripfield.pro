@@ -11,6 +11,8 @@ import { GiWhistle } from "react-icons/gi";
 import SongTourPerformancesModal from './SongTourPerformancesModal';
 import JOTYBadge from './JOTYBadge';
 import { CategoryCompleteBadge } from './CategoryCompleteBadge';
+import { JiveCompleteBadge } from './JiveCompleteBadge';
+import { DripfieldCompleteBadge } from './DripfieldCompleteBadge';
 
 interface Guest {
   guest_display_name: string;
@@ -468,8 +470,10 @@ export default function FullSetlistDisplay({
               show_length_rank={showLengthRank}
             />
             {/* Show ONLY on mobile (below lg breakpoint) */}
-            <div className="md:hidden">
+            <div className="md:hidden space-y-4">
               <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+              <JiveCompleteBadge showJiveComplete={show.show_jivecomplete || false} />
+              <DripfieldCompleteBadge showDripfieldComplete={show.show_dripfieldcomplete || false} />
             </div>
           </div>
         )}
@@ -932,8 +936,10 @@ export default function FullSetlistDisplay({
                 <div className="hidden md:grid grid-cols-2 gap-4 items-start">
                   <div>
                     {/* Show ONLY on tablet (md to lg), not on mobile or desktop */}
-                    <div className="hidden md:block lg:hidden mb-4">
+                    <div className="hidden md:block lg:hidden space-y-4 mb-4">
                       <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+                      <JiveCompleteBadge showJiveComplete={show.show_jivecomplete || false} />
+                      <DripfieldCompleteBadge showDripfieldComplete={show.show_dripfieldcomplete || false} />
                     </div>
                     <SongSpread setlist={setlist} />
                   </div>
@@ -1005,8 +1011,10 @@ export default function FullSetlistDisplay({
                       setOpenModal={setOpenChangesModal} 
                     />}
 
-                    <div className="hidden lg:block mb-4">
+                    <div className="hidden lg:block space-y-4">
                       <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+                      <JiveCompleteBadge showJiveComplete={show.show_jivecomplete || false} />
+                      <DripfieldCompleteBadge showDripfieldComplete={show.show_dripfieldcomplete || false} />
                     </div>
                     
                     {showId && (
@@ -1125,8 +1133,10 @@ export default function FullSetlistDisplay({
                   show_length_rank={showLengthRank} 
                 />
                 {/* Show ONLY on desktop (lg and above) */}
-                <div className="sm:hidden">
+                <div className="sm:hidden space-y-4">
                   <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
+                  <JiveCompleteBadge showJiveComplete={show.show_jivecomplete || false} />
+                  <DripfieldCompleteBadge showDripfieldComplete={show.show_dripfieldcomplete || false} />
                 </div>
               </div>
             )}
