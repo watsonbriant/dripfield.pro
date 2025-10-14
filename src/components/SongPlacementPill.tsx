@@ -158,7 +158,7 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                                         width: `${stat.percentage}%`,
                                         backgroundColor: placementColors[stat.placement] || '#000000'
                                     }}
-                                    className="h-full flex items-center justify-center text-primary text-xs font-bold transition-all hover:opacity-70 cursor-pointer relative"
+                                    className="h-full flex items-center justify-center text-primary text-xs font-bold relative"
                                     onMouseEnter={(e) => {
                                         setHoveredSection(stat);
                                         setMousePosition({ x: e.clientX, y: e.clientY });
