@@ -140,17 +140,23 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                 </div>
 
                 <div className="relative flex items-center">
-                    <div className="flex overflow-hidden h-8 rounded-lg border border-secondary flex-1" style={{gap: 0}}>
+                    <div 
+                        className="flex overflow-hidden h-8 rounded-lg border border-secondary flex-1" 
+                        style={{
+                            gap: 0,
+                            backgroundColor: adjustedStats.length > 0 
+                                ? (placementColors[adjustedStats[adjustedStats.length - 1].placement] || '#000000')
+                                : 'transparent'
+                        }}
+                    >
                         {adjustedStats.map((stat, index) => {
-                            const minWidth = stat.percentage < 5 ? '5px' : undefined;
                             return (
                                 <div
                                     key={index}
                                     ref={el => sectionRefs.current[index] = el}
                                     style={{
                                         width: `${stat.percentage}%`,
-                                        backgroundColor: placementColors[stat.placement] || '#000000',
-                                        minWidth: minWidth
+                                        backgroundColor: placementColors[stat.placement] || '#000000'
                                     }}
                                     className="h-full flex items-center justify-center text-primary text-xs font-bold transition-all hover:opacity-70 cursor-pointer relative"
                                     onMouseEnter={(e) => {
