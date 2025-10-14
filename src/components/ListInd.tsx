@@ -8,6 +8,7 @@ import { UnfinishedReprisedList } from './lists/UnfinishedReprisedList';
 import { SeguesList } from './lists/SeguesList';
 import { LongestShowsList } from './lists/LongestShowsList';
 import { CategoryCompleteShowsList } from './lists/CategoryCompleteShowsList';
+import { JiveCompleteShowsList } from './lists/JiveCompleteShowsList';
 
 interface List {
     id: number;
@@ -73,7 +74,8 @@ const SPECIAL_LIST_COMPONENTS: Record<string, React.ComponentType<any>> = {
     '37cdd57e-6a16-474e-9715-ba05e95e0217': SeguesList,
     '45a4b90e-adbe-4af5-9051-2f4d212069fc': LongestShowsList,
     'ce613616-28bc-40dd-a6a8-1dd5fe6b0456': LongestShowsList,
-    '81dbe56c-7cc4-466b-b8d7-47c1ca041afc': CategoryCompleteShowsList
+    '81dbe56c-7cc4-466b-b8d7-47c1ca041afc': CategoryCompleteShowsList,
+    'c66cfb55-12a8-4cfe-9147-547d9e6c1736': JiveCompleteShowsList
 };
 
 export function ListInd() {
@@ -88,6 +90,7 @@ export function ListInd() {
     const isSeguesList = listId === '37cdd57e-6a16-474e-9715-ba05e95e0217';
     const isShowsList = listId === '45a4b90e-adbe-4af5-9051-2f4d212069fc' || 
                         listId === 'ce613616-28bc-40dd-a6a8-1dd5fe6b0456' ||
+                        listId === 'c66cfb55-12a8-4cfe-9147-547d9e6c1736' ||
                         listId === '81dbe56c-7cc4-466b-b8d7-47c1ca041afc';
     const containerMaxWidth = isSeguesList ? 'max-w-[500px]' : isShowsList ? 'max-w-[1280px]' : 'max-w-[936px]';
 
