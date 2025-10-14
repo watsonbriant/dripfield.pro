@@ -48,7 +48,7 @@ interface PlacementStat {
   placement: string;
   count: number;
   percentage: number;
-  order?: number; // Add placement order field
+  order?: number;
 }
 
 interface Stats {
@@ -56,6 +56,13 @@ interface Stats {
   rarity: string;
   totalShows: number;
   hasRarity: boolean;
+}
+
+interface LastPlayed {
+  show_date: string;
+  show_canonid: number;
+  showsAgo: number;
+  show_id: string;
 }
 
 const cleanSongName = (songName: string): string => {
@@ -70,23 +77,19 @@ const cleanSongName = (songName: string): string => {
 };
 
 const getRarityColor = (percentage: string | null): string => {
-  // If percentage is null or not a valid percentage string, return transparent
   if (!percentage || percentage === '-') return 'transparent';
   
-  // Convert percentage string to number
   const numericPercentage = parseFloat(percentage.replace('%', ''));
   
   if (isNaN(numericPercentage)) return 'transparent';
   
-  // Define our 4 color stops with breakpoints at 0, 15, 50, 100
   const colorStops = [
-    { percent: 0, color: { r: 156, g: 12, b: 12 } },     // #9C0C0C (Even Darker Red)
-    { percent: 15, color: { r: 230, g: 81, b: 0 } },     // #E65100 (Darker Orange)
-    { percent: 50, color: { r: 46, g: 125, b: 50 } },    // #2E7D32 (Darker Green)
-    { percent: 100, color: { r: 13, g: 71, b: 161 } }    // #0D47A1 (Darker Blue)
+    { percent: 0, color: { r: 156, g: 12, b: 12 } },
+    { percent: 15, color: { r: 230, g: 81, b: 0 } },
+    { percent: 50, color: { r: 46, g: 125, b: 50 } },
+    { percent: 100, color: { r: 13, g: 71, b: 161 } }
   ];
   
-  // Find the color stops to interpolate between
   let lowerStop = colorStops[0];
   let upperStop = colorStops[colorStops.length - 1];
   
@@ -98,11 +101,9 @@ const getRarityColor = (percentage: string | null): string => {
     }
   }
   
-  // Calculate interpolation factor
   const range = upperStop.percent - lowerStop.percent;
   const factor = range !== 0 ? (numericPercentage - lowerStop.percent) / range : 0;
   
-  // Interpolate RGB values
   const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
   const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
   const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
@@ -128,17 +129,16 @@ export function Song() {
   const [previousSongId, setPreviousSongId] = useState<string | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [placementStats, setPlacementStats] = useState<PlacementStat[]>([]);
+  const [lastPlayed, setLastPlayed] = useState<LastPlayed | null>(null);
 
   const fetchPlacementStats = async (songName: string) => {
     try {
-      // First, get the placement order information
       const { data: placementOrders, error: placementError } = await supabase
         .from('placements')
         .select('placements, placement_order');
         
       if (placementError) throw placementError;
       
-      // Create a map of placement names to their orders
       const placementOrderMap: Record<string, number> = {};
       if (placementOrders) {
         placementOrders.forEach(p => {
@@ -148,7 +148,6 @@ export function Song() {
         });
       }
 
-      // Fetch all canon performances of this song
       const { data: canonPerformances, error } = await supabase
         .from('setlist_entries')
         .select(`
@@ -167,29 +166,83 @@ export function Song() {
         return;
       }
       
-      // Count occurrences of each placement
       const placementCounts: Record<string, number> = {};
       canonPerformances.forEach(perf => {
         const placement = perf.entry_placement;
         placementCounts[placement] = (placementCounts[placement] || 0) + 1;
       });
       
-      // Calculate percentages and create stats array
       const totalPerformances = canonPerformances.length;
       const stats = Object.entries(placementCounts)
         .map(([placement, count]) => ({
           placement,
           count,
           percentage: (count / totalPerformances) * 100,
-          order: placementOrderMap[placement] // Add the order from our map
+          order: placementOrderMap[placement]
         }))
-        // Sort by count for the legend display (most common first)
         .sort((a, b) => b.count - a.count);
       
       setPlacementStats(stats);
     } catch (error) {
       console.error('Error fetching placement stats:', error);
       setPlacementStats([]);
+    }
+  };
+
+  const fetchLastPlayed = async (songName: string) => {
+    try {
+      const now = new Date();
+      const alaskaDate = formatInTimeZone(now, 'America/Anchorage', 'yyyy-MM-dd');
+      
+      const { data: mostRecentShow, error: recentError } = await supabase
+        .from('shows')
+        .select('show_canonid, show_date')
+        .not('show_canonid', 'is', null)
+        .lte('show_date', alaskaDate)
+        .order('show_date', { ascending: false })
+        .order('show_canonid', { ascending: false })
+        .order('show_group', { ascending: true })
+        .limit(1)
+        .single();
+      
+      if (recentError || !mostRecentShow) {
+        console.error('Error fetching most recent show:', recentError);
+        setLastPlayed(null);
+        return;
+      }
+
+      const { data: lastPerformance, error: lastError } = await supabase
+        .from('setlist_entries')
+        .select(`
+          entry_show,
+          shows!inner (
+            show_id,
+            show_date,
+            show_canonid
+          )
+        `)
+        .eq('entry_song', songName)
+        .not('shows.show_canonid', 'is', null)
+        .order('shows(show_canonid)', { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (lastError || !lastPerformance) {
+        setLastPlayed(null);
+        return;
+      }
+
+      const showsAgo = mostRecentShow.show_canonid - lastPerformance.shows.show_canonid + 1;
+      
+      setLastPlayed({
+        show_date: lastPerformance.shows.show_date,
+        show_canonid: lastPerformance.shows.show_canonid,
+        showsAgo: showsAgo,
+        show_id: lastPerformance.shows.show_id
+      });
+    } catch (error) {
+      console.error('Error fetching last played:', error);
+      setLastPlayed(null);
     }
   };
 
@@ -214,7 +267,6 @@ export function Song() {
       return a.group.localeCompare(b.group);
     });
   
-    // Get all shows where this song was performed that have a canon ID
     const { data: showsWithCanonIds, error: showsError } = await supabase
       .from('shows')
       .select('show_canonid')
@@ -230,10 +282,8 @@ export function Song() {
       };
     }
   
-    // Get the minimum canon ID from shows where this song was played
     const minCanonId = Math.min(...showsWithCanonIds.map(s => s.show_canonid));
   
-    // Get the most recent show with canon ID using the same logic as Home component
     const now = new Date();
     const alaskaDate = formatInTimeZone(now, 'America/Anchorage', 'yyyy-MM-dd');
     
@@ -242,9 +292,9 @@ export function Song() {
       .select('show_canonid, show_date')
       .not('show_canonid', 'is', null)
       .lte('show_date', alaskaDate)
-      .order('show_date', { ascending: false })  // Most recent date first
-      .order('show_canonid', { ascending: false })  // Highest canon ID first
-      .order('show_group', { ascending: true })  // Group alphabetically
+      .order('show_date', { ascending: false })
+      .order('show_canonid', { ascending: false })
+      .order('show_group', { ascending: true })
       .limit(1)
       .single();
   
@@ -271,18 +321,16 @@ export function Song() {
   };
 
   useEffect(() => {
-    // If the songId parameter changes, set loading to true
     if (songId !== previousSongId) {
       setLoading(true);
       setPreviousSongId(songId || null);
-      setSelectedGroup(null); // Reset selected group when song changes
+      setSelectedGroup(null);
     }
 
     async function fetchSongData() {
       if (!songId) return;
 
       try {
-        // First get the song data
         const { data: songData, error: songError } = await supabase
           .from('songs')
           .select(`
@@ -302,7 +350,6 @@ export function Song() {
         if (songError) throw songError;
         setSong(songData);
       
-        // Then get the performance data
         const { data: performanceData, error: performanceError } = await supabase
           .from('setlist_entries')
           .select(`
@@ -314,6 +361,7 @@ export function Song() {
             entry_short,
             entry_set,
             entry_setnum,
+            shows_since_debut_num,
             joty_results (
               round_achieved
             ),
@@ -352,6 +400,7 @@ export function Song() {
           entry_setnum: perf.entry_setnum,
           entry_song: songData.song, 
           joty_round: perf.joty_results?.round_achieved || null,
+          shows_since_debut_num: perf.shows_since_debut_num,
           guests: perf.setlist_entry_guests?.map(g => ({
             guest_display_name: g.guests.guest_displayname
           })) || []
@@ -359,12 +408,12 @@ export function Song() {
       
         setPerformances(processedPerformances);
 
-        // Calculate stats
         const newStats = await calculateStats(processedPerformances);
         setStats(newStats);
         
-        // Fetch placement stats
         await fetchPlacementStats(songData.song);
+        
+        await fetchLastPlayed(songData.song);
       } catch (error) {
         console.error('Error fetching song data:', error);
       } finally {
@@ -375,7 +424,6 @@ export function Song() {
     fetchSongData();
   }, [songId, currentPage]);
 
-  // Handle group selection
   const handleGroupClick = (group: string) => {
     setSelectedGroup(currentGroup => currentGroup === group ? null : group);
   };
@@ -417,20 +465,14 @@ export function Song() {
       <div className={`${song.song_lyrics 
         ? "grid grid-cols-1 gap-4 space-y-0 xl:grid-cols-[minmax(936px,1fr)_1fr]" 
         : "space-y-4"} mb-8`}>
-        {/* Left column - main content */}
         <div className="space-y-4">
-          {/* Info Containers */}
           <div className={`grid grid-cols-1 ${
-            // If no performances and no notes, full width
             !performances.length && !song.song_coachnotes
               ? 'md:grid-cols-1'
-              // If either no performances OR no notes, split in two
               : (!performances.length || !song.song_coachnotes)
               ? 'md:grid-cols-2'
-              // Otherwise, split in three
               : 'md:grid-cols-3'
           } gap-4`}>
-            {/* Song Info */}
             <div className="h-full">
               <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
                 {song.categories?.category_artwork && (
@@ -451,11 +493,23 @@ export function Song() {
                     <div className="text-fifth text-sm font-light">{song.song_originalartist}</div>
                     </div>
                   )}
+                  {lastPlayed && (
+                    <div>
+                      <div className="text-fifth text-base font-medium">Last Time Played</div>
+                      <div className="text-fifth text-sm font-light">
+                        <button
+                          onClick={() => navigate(`/setlist/${lastPlayed.show_id}`)}
+                          className="hover:underline cursor-pointer font-medium"
+                        >
+                          {formatInTimeZone(new Date(lastPlayed.show_date), 'UTC', 'MM.dd.yy')}
+                        </button> ({lastPlayed.showsAgo === 1 ? 'most recent show' : `${lastPlayed.showsAgo} shows ago`})
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           
-            {/* Performance Stats */}
             {performances.length > 0 && (
               <div className="h-full">
                 <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full space-y-2">
@@ -495,7 +549,6 @@ export function Song() {
               </div>
             )}
           
-            {/* Song Notes */}
             {song.song_coachnotes && (
               <div className="h-full">
                 <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
@@ -509,7 +562,6 @@ export function Song() {
             )}
           </div>
 
-          {/* Song Placement Pill */}
           {placementStats.length > 0 && (
             <div className="overflow-x-auto">
               <div className="bg-primary border border-secondary rounded-lg p-3">
@@ -518,7 +570,6 @@ export function Song() {
             </div>
           )}
 
-          {/* Performance Timeline */}
           <div className="overflow-x-auto">
             {performances.length > 0 ? (
               <PerformanceChart 
@@ -535,7 +586,6 @@ export function Song() {
           </div>
         </div>
 
-        {/* Right column - Lyrics (only shown if lyrics exist) */}
         {song.song_lyrics && (
           <div className="h-fit xl:sticky xl:top-3">
             <div className="bg-primary rounded-lg p-3 border border-secondary w-full">

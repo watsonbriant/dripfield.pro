@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
-import { ArrowUp, ArrowDown, ArrowUpDown, MoveRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, MoveRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import JOTYBadge from './JOTYBadge';
@@ -28,8 +28,8 @@ interface ChartPerformance {
   show_group: string;
   show_subvenue: string;
   show_venue_location: string;
-  show_subvenue_venue?: string; // Added for venue navigation
-  venue_id?: string; // Added for venue ID
+  show_subvenue_venue?: string;
+  venue_id?: string;
   entry_length: string | null;
   entry_short: string | null;
   entry_coachnotes: string | null;
@@ -37,7 +37,9 @@ interface ChartPerformance {
   entry_setnum: string;
   entry_song?: string;
   entry_segue?: string | null;
-  joty_round?: string | null; 
+  joty_round?: string | null;
+  shows_since_debut_num?: number | null;
+  gap?: number | string | null;
 }
 
 interface PerformanceChartProps {
@@ -77,11 +79,73 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
   const [showOnlyAttended, setShowOnlyAttended] = useState(false);
   const [attendedShowIds, setAttendedShowIds] = useState<Set<string>>(new Set());
   const [loadingAttended, setLoadingAttended] = useState(false);
+  const [performancesWithGaps, setPerformancesWithGaps] = useState<ChartPerformance[]>([]);
   
   const years = Array.from(
     { length: 2026 - 2012 + 1 },
     (_, i) => 2012 + i
   );
+
+  // Calculate gaps for all performances
+  useEffect(() => {
+    const calculateGaps = () => {
+      // First, sort performances chronologically (same as initial table sorting)
+      const sortedPerfs = [...performances].sort((a, b) => {
+        // Compare by date
+        const dateA = new Date(a.show_date).getTime();
+        const dateB = new Date(b.show_date).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        
+        // If dates are equal, compare by entry_set
+        const setA = a.entry_set || '';
+        const setB = b.entry_set || '';
+        const setComparison = setA.localeCompare(setB);
+        if (setComparison !== 0) return setComparison;
+        
+        // If sets are equal, compare by entry_setnum
+        const setnumA = parseInt(a.entry_setnum || '0');
+        const setnumB = parseInt(b.entry_setnum || '0');
+        return setnumA - setnumB;
+      });
+
+      // Calculate gaps
+      const perfsWithGaps = sortedPerfs.map((perf, index) => {
+        let gap: number | string | null = null;
+
+        if (perf.shows_since_debut_num !== null && perf.shows_since_debut_num !== undefined) {
+          if (index === 0) {
+            // First performance is the debut
+            gap = 'Debut';
+          } else {
+            // Find the previous performance with a non-null shows_since_debut_num
+            let prevIndex = index - 1;
+            while (prevIndex >= 0) {
+              const prevPerf = sortedPerfs[prevIndex];
+              if (prevPerf.shows_since_debut_num !== null && prevPerf.shows_since_debut_num !== undefined) {
+                gap = perf.shows_since_debut_num - prevPerf.shows_since_debut_num;
+                break;
+              }
+              prevIndex--;
+            }
+            
+            // If we didn't find any previous performance with shows_since_debut_num, this is debut
+            if (gap === null) {
+              gap = 'Debut';
+            }
+          }
+        }
+
+        return {
+          ...perf,
+          gap
+        };
+      });
+
+      setPerformancesWithGaps(perfsWithGaps);
+    };
+
+    calculateGaps();
+  }, [performances]);
 
   // Fetch attended shows when user is logged in
   useEffect(() => {
@@ -116,8 +180,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
 
   // Filter performances based on attended shows
   const filteredPerformances = showOnlyAttended && user
-    ? performances.filter(perf => attendedShowIds.has(perf.show_id))
-    : performances;
+    ? performancesWithGaps.filter(perf => attendedShowIds.has(perf.show_id))
+    : performancesWithGaps;
 
   const performancesByYear = filteredPerformances.reduce((acc, perf) => {
     if (!perf.show_date) return acc;
@@ -128,7 +192,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
       acc[parseInt(year)] = [];
     }
 
-    // Format as MM.DD
     const formattedDate = `${month}.${day}`;
 
     acc[parseInt(year)].push({
@@ -145,22 +208,17 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
     fullData: ChartPerformance;
   }>>);
 
-  // Helper function to determine if a performance should be highlighted
   const shouldHighlight = (performance: ChartPerformance) => {
     if (!selectedGroup) return false;
     return performance.show_group === selectedGroup;
   };
 
-  // Helper function to navigate to venue pages
   const navigateToVenue = (perf: ChartPerformance) => {
     if (perf.venue_id) {
       navigate(`/venue/${perf.venue_id}`);
     } else if (perf.show_subvenue_venue) {
-      // If we don't have venue_id but have the venue name, use that
       navigate(`/venue/${encodeURIComponent(perf.show_subvenue_venue)}`);
     } else {
-      // If we don't have either, we can use the venue location and subvenue
-      // to help construct a search that might match the venue
       const venueSearchTerm = perf.show_subvenue || perf.show_venue_location;
       if (venueSearchTerm) {
         navigate(`/venue/${encodeURIComponent(venueSearchTerm)}`);
@@ -186,10 +244,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      // If clicking the same column, toggle direction
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      // If clicking a new column, set it as sort column with ascending direction
       setSortColumn(column);
       setSortDirection('asc');
     }
@@ -223,16 +279,13 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               </div>
               <div className="space-y-1">
                 {performancesByYear[year]?.sort((a, b) => {
-                  // First sort by date
                   const dateComparison = a.formattedDate.localeCompare(b.formattedDate);
                   if (dateComparison !== 0) return dateComparison;
                   
-                  // Then by entry_set
                   const setA = a.fullData.entry_set || '';
                   const setB = b.fullData.entry_set || '';
                   if (setA !== setB) return setA.localeCompare(setB);
                   
-                  // Finally by entry_setnum
                   return (parseInt(a.fullData.entry_setnum) || 0) - (parseInt(b.fullData.entry_setnum) || 0);
                 }).map((perf, index) => {
                   const isHighlighted = shouldHighlight(perf.fullData);
@@ -271,25 +324,20 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
   );
 
   const renderTableView = () => {
-    // Apply default sorting if no column is selected
     let sortedPerformances = [...filteredPerformances];
     
-    // Sort by the selected column
     sortedPerformances.sort((a, b) => {
       let valueA: any;
       let valueB: any;
       
-      // Extract the values based on the sort column
       switch (sortColumn) {
         case 'show_date':
-          // First compare by date
           const dateA = new Date(a.show_date).getTime();
           const dateB = new Date(b.show_date).getTime();
           if (dateA !== dateB) {
             return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
           }
           
-          // If dates are equal, compare by entry_set
           const setA = a.entry_set || '';
           const setB = b.entry_set || '';
           const setComparison = setA.localeCompare(setB);
@@ -297,7 +345,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
             return sortDirection === 'asc' ? setComparison : -setComparison;
           }
           
-          // If sets are equal too, compare by entry_setnum
           const setnumA = parseInt(a.entry_setnum || '0');
           const setnumB = parseInt(b.entry_setnum || '0');
           return sortDirection === 'asc' ? setnumA - setnumB : setnumB - setnumA;
@@ -314,7 +361,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
           valueB = b.entry_song || '';
           break;
         case 'entry_length':
-          // Convert time strings to seconds for comparison
           const timeToSeconds = (timeStr: string | null) => {
             if (!timeStr) return 0;
             const parts = timeStr.split(':').map(Number);
@@ -328,6 +374,22 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
           valueA = timeToSeconds(a.entry_length);
           valueB = timeToSeconds(b.entry_length);
           break;
+        case 'gap':
+          // Sort gaps: Debut first, then by numeric value
+          const gapA = a.gap;
+          const gapB = b.gap;
+          
+          if (gapA === null && gapB === null) return 0;
+          if (gapA === null) return sortDirection === 'asc' ? 1 : -1;
+          if (gapB === null) return sortDirection === 'asc' ? -1 : 1;
+          
+          if (gapA === 'Debut' && gapB === 'Debut') return 0;
+          if (gapA === 'Debut') return sortDirection === 'asc' ? -1 : 1;
+          if (gapB === 'Debut') return sortDirection === 'asc' ? 1 : -1;
+          
+          valueA = typeof gapA === 'number' ? gapA : 0;
+          valueB = typeof gapB === 'number' ? gapB : 0;
+          break;
         case 'entry_coachnotes':
           valueA = a.entry_coachnotes || '';
           valueB = b.entry_coachnotes || '';
@@ -337,13 +399,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
           valueB = (b as any)[sortColumn] || '';
       }
       
-      // Handle string comparison
       if (typeof valueA === 'string' && typeof valueB === 'string') {
         const comparison = valueA.localeCompare(valueB);
         return sortDirection === 'asc' ? comparison : -comparison;
       }
       
-      // Handle numeric comparison
       const comparison = valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
       return sortDirection === 'asc' ? comparison : -comparison;
     });
@@ -359,6 +419,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex justify-center gap-1">
                   Show
+                  {getSortIcon('show_date')}
                 </div>
               </th>
               <th 
@@ -367,6 +428,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Group
+                  {getSortIcon('show_group')}
                 </div>
               </th>
               <th 
@@ -375,6 +437,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Location
+                  {getSortIcon('show_venue_location')}
                 </div>
               </th>
               <th 
@@ -383,10 +446,20 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Song
+                  {getSortIcon('entry_song')}
                 </div>
               </th>
               <th className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap">
                 JOTY
+              </th>
+              <th 
+                className="px-4 py-2 text-center text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+                onClick={() => handleSort('gap')}
+              >
+                <div className="flex justify-center items-center gap-1">
+                  Gap
+                  {getSortIcon('gap')}
+                </div>
               </th>
               <th 
                 className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
@@ -394,6 +467,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Length
+                  {getSortIcon('entry_length')}
                 </div>
               </th>
               <th 
@@ -402,6 +476,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               >
                 <div className="flex items-center gap-1">
                   Coach's Notes
+                  {getSortIcon('entry_coachnotes')}
                 </div>
               </th>
             </tr>
@@ -506,12 +581,20 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                         round={perf.joty_round} 
                         compact={true}
                         onClick={() => {
-                          // Extract year from the show date
                           const year = new Date(perf.show_date).getFullYear();
                           navigate(`/joty/${year}`);
                         }}
                       />
                     )}
+                  </td>
+                  <td className="px-4 py-1 text-fifth font-light whitespace-nowrap text-center">
+                    {perf.gap !== null && perf.gap !== undefined ? (
+                      perf.gap === 'Debut' ? (
+                        <span className="font-medium text-green-600">Debut</span>
+                      ) : (
+                        perf.gap
+                      )
+                    ) : ''}
                   </td>
                   <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
                     {perf.entry_length ? formatLength(perf.entry_length) : ''}
@@ -538,7 +621,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
           <div className="flex items-center gap-3">
             <div className="text-fifth text-base font-medium">Performances</div>
             
-            {/* Add My Shows pill */}
             {user && (
               <button
                 onClick={() => setShowOnlyAttended(!showOnlyAttended)}
@@ -561,7 +643,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                     showOnlyAttended ? 'bg-green-600' : 'bg-red-600'
                   }`}>
                     {showOnlyAttended ? (
-                      // Checkmark when active
                       <svg 
                         className="w-3 h-3 text-fifth" 
                         viewBox="0 0 20 20" 
@@ -574,7 +655,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                         />
                       </svg>
                     ) : (
-                      // X when inactive
                       <svg 
                         className="w-3 h-3 text-fifth" 
                         viewBox="0 0 20 20" 
@@ -594,7 +674,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
             )}
           </div>
           
-          {/* Add selectedGroup indicator if present */}
           {selectedGroup && (
             <div className="text-xs text-fifth items-end tooltip-bubble">
               <span className="font-medium text-fifth border border-secondary bg-tertiary px-1 py-0.5 rounded">
@@ -603,7 +682,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
             </div>
           )}
           
-          {/* View toggle switch */}
           <div className="flex items-center">
             <div className="flex items-center gap-3">
               <svg 
@@ -658,7 +736,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
         
         {viewMode === 'timeline' ? renderTimelineView() : renderTableView()}
 
-        {/* Tooltip (only shown in timeline view) */}
         {viewMode === 'timeline' && hoveredPerformance && (
           <div 
             className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] font-light text-xs tooltip-bubble border border-secondary"
@@ -671,7 +748,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
             }}
           >
             <div>
-              {/* Date and short */}
               <div className="hang font-medium">
                 {formatInTimeZone(
                   new Date(hoveredPerformance.fullData.show_date),
@@ -682,22 +758,18 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                   <span className="text-red-700 ml-1">&nbsp;&nbsp;[{hoveredPerformance.fullData.entry_short}]</span>
                 )}
               </div>
-              {/* Group and tour */}
               <div className="hang">
                 <span className='font-medium'>{hoveredPerformance.fullData.show_group}</span>
                 {hoveredPerformance.fullData.show_tour && ` (${hoveredPerformance.fullData.show_tour})`}
               </div>
-              {/* Venue */}
               <div className="hang">
                 {hoveredPerformance.fullData.show_subvenue} 
                 {hoveredPerformance.fullData.show_venue_location && ` (${hoveredPerformance.fullData.show_venue_location})`}
               </div>
-              {/* Placement and length */}
               <div className="hang">
                 {hoveredPerformance.fullData.entry_placement}
                 {hoveredPerformance.fullData.entry_length && ` (${formatLength(hoveredPerformance.fullData.entry_length)})`}
               </div>
-              {/* Coach notes */}
               {hoveredPerformance.fullData.entry_coachnotes && (
                 <div 
                   className="hang italic"
