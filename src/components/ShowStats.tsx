@@ -103,15 +103,51 @@ interface ShowStatsProps {
   show_canonid: number | null;
   show_rarity?: number | null;
   show_gap?: number | null;
+  show_length_rank?: number | null;
 }
 
 const ShowStats: React.FC<ShowStatsProps> = ({ 
   setlist, 
   show_canonid,
   show_rarity,
-  show_gap
+  show_gap,
+  show_length_rank 
 }) => {
+  const [rankHovered, setRankHovered] = React.useState(false);
+  
   const hasLength = setlist.some(entry => entry.entry_length !== null);
+  
+  // Function to get ordinal suffix (1st, 2nd, 3rd, etc.)
+  const getOrdinalSuffix = (num: number): string => {
+    const j = num % 10;
+    const k = num % 100;
+    if (j === 1 && k !== 11) return num + "st";
+    if (j === 2 && k !== 12) return num + "nd";
+    if (j === 3 && k !== 13) return num + "rd";
+    return num + "th";
+  };
+  
+  // Function to get ranking text for show length
+  const getRankingText = (rank: number): string => {
+    if (rank === 1) return "Longest Goose show of all-time.";
+    
+    const wordMap: { [key: number]: string } = {
+      2: "Second",
+      3: "Third",
+      4: "Fourth",
+      5: "Fifth",
+      6: "Sixth",
+      7: "Seventh",
+      8: "Eighth",
+      9: "Ninth"
+    };
+    
+    if (rank >= 2 && rank <= 9) {
+      return `${wordMap[rank]}-longest Goose show of all-time.`;
+    }
+    
+    return `${getOrdinalSuffix(rank)}-longest Goose show of all-time.`;
+  };
   
   const formatTimeUnit = (value: number, unit: string): string | null => {
     if (value === 0) return null;
@@ -180,7 +216,27 @@ const ShowStats: React.FC<ShowStatsProps> = ({
         <div>
           <div className="flex justify-between items-center">
             <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth">Show Length</h2>
-            <Clock className="text-fifth w-[1rem] h-[1rem]" />
+            <div className="flex items-center gap-2">
+              {show_length_rank && (
+                <div className="relative inline-flex items-center">
+                  <a
+                    href="https://dripfield.pro/lists/45a4b90e-adbe-4af5-9051-2f4d212069fc"
+                    rel="noopener noreferrer"
+                    className="text-fifth text-xs font-medium px-2 py-[1px] rounded-md bg-yellow-500 inline-block"
+                    onMouseEnter={() => setRankHovered(true)}
+                    onMouseLeave={() => setRankHovered(false)}
+                  >
+                    #{show_length_rank}
+                  </a>
+                  {rankHovered && (
+                    <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-medium bg-fifth text-primary px-2 py-0.5 rounded border border-secondary shadow-lg whitespace-nowrap z-[9999]">
+                      {getRankingText(show_length_rank)}
+                    </div>
+                  )}
+                </div>
+              )}
+              <Clock className="text-fifth w-[1rem] h-[1rem]" />
+            </div>
           </div>
           <p className="text-fifth font-light text-xs">
             {totalLength || 'The length of this show is unknown.'}

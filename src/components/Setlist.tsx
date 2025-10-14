@@ -100,6 +100,7 @@ export function Setlist() {
   const showDatesDropdownRef = React.useRef<HTMLDivElement>(null);
   const showDatesDropdownListRef = React.useRef<HTMLDivElement>(null);
   const [showCoachNotes, setShowCoachNotes] = React.useState(false);
+  const [showLengthRank, setShowLengthRank] = React.useState<number | null>(null);
 
   const location = useLocation();
   const [openChangesModal, setOpenChangesModal] = React.useState(false);
@@ -382,6 +383,57 @@ export function Setlist() {
     fetchSetlist();
   }, [showId]);
 
+  React.useEffect(() => {
+    async function fetchShowLengthRank() {
+      if (!showId || !show?.show_canonid) return;
+
+      try {
+        // Fetch all canonical shows with show_length
+        const { data: showsData, error } = await supabase
+          .from('shows')
+          .select('show_id, show_length')
+          .not('show_canonid', 'is', null)
+          .not('show_length', 'is', null);
+
+        if (error) throw error;
+
+        // Convert show_length to seconds for comparison
+        const timeToSeconds = (timeStr: string) => {
+          const parts = timeStr.split(':').map(Number);
+          if (parts.length === 3) {
+            return parts[0] * 3600 + parts[1] * 60 + parts[2];
+          } else if (parts.length === 2) {
+            return parts[0] * 60 + parts[1];
+          }
+          return 0;
+        };
+
+        // Convert and sort by length
+        const showsWithSeconds = showsData
+          .map(s => ({
+            show_id: s.show_id,
+            total_seconds: timeToSeconds(s.show_length)
+          }))
+          .sort((a, b) => b.total_seconds - a.total_seconds);
+
+        // Find current show's rank (1-indexed)
+        const rankIndex = showsWithSeconds.findIndex(s => s.show_id === showId);
+        
+        // Only set rank if show is in top 25
+        if (rankIndex !== -1 && rankIndex < 25) {
+          setShowLengthRank(rankIndex + 1);
+        } else {
+          setShowLengthRank(null);
+        }
+      } catch (error) {
+        console.error('Error fetching show length rank:', error);
+        setShowLengthRank(null);
+      }
+    }
+
+    fetchShowLengthRank();
+  }, [showId, show?.show_canonid]);
+
   if (loading) {
     return (
       <div className="max-w-[1280px] mx-auto">
@@ -552,6 +604,7 @@ export function Setlist() {
         showId={showId}
         openChangesModal={openChangesModal}
         setOpenChangesModal={setOpenChangesModal}
+        showLengthRank={showLengthRank}
       />
     </div>
   );

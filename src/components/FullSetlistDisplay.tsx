@@ -96,6 +96,7 @@ interface FullSetlistDisplayProps {
   showId?: string;
   openChangesModal?: boolean;
   setOpenChangesModal?: (open: boolean) => void;
+  showLengthRank?: number | null;
 }
 
 const cleanSongName = (songName: string): string => {
@@ -169,7 +170,8 @@ export default function FullSetlistDisplay({
   navigateToVenue, 
   showId,
   openChangesModal,
-  setOpenChangesModal
+  setOpenChangesModal,
+  showLengthRank
 }: FullSetlistDisplayProps) {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -461,6 +463,7 @@ export default function FullSetlistDisplay({
               show_canonid={show.show_canonid}
               show_rarity={show.show_rarity}
               show_gap={show.show_gap}
+              show_length_rank={showLengthRank}
             />
           </div>
         )}
@@ -1103,6 +1106,7 @@ export default function FullSetlistDisplay({
                   show_canonid={show.show_canonid}
                   show_rarity={show.show_rarity}
                   show_gap={show.show_gap}
+                  show_length_rank={showLengthRank} 
                 />
               </div>
             )}
