@@ -755,9 +755,11 @@ export default function FullSetlistDisplay({
                         {show.show_canonid !== null && (
                           <div className={`text-fifth/80 text-center rounded-md ${
                               entry.last_count?.includes('TD') 
-                                ? 'bg-[#55c26d]/80 text-fifth' 
+                                ? 'bg-emerald-400 text-fifth' 
+                                : entry.last_count?.includes('LIB')
+                                  ? 'bg-amber-300 text-fifth' 
                                 : entry.last_count?.includes('Debut')
-                                  ? 'bg-[#ec7171]/80 text-fifth'
+                                  ? 'bg-rose-400 text-fifth'
                                   : ''
                             } ${entry.last_show_id ? 'cursor-pointer hover:underline transition-colors' : ''}`}
                             onClick={() => {
