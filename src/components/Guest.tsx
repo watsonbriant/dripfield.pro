@@ -324,7 +324,7 @@ export function Guest() {
             <div className="w-4 h-4 rounded-full bg-[#8ec1b6] animate-pulse delay-150"></div>
             <div className="w-4 h-4 rounded-full bg-[#8ec1b6] animate-pulse delay-300"></div>
           </div>
-          <p className="text-fifth mt-4">Loading guest data...</p>
+          <p className="text-fifth mt-4">Loading personnel data...</p>
         </div>
       </div>
     );
@@ -334,7 +334,7 @@ export function Guest() {
     return (
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center py-12">
-          <p className="text-fifth">Guest not found</p>
+          <p className="text-fifth">Personnel not found</p>
         </div>
       </div>
     );
