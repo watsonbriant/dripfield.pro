@@ -121,10 +121,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   // Add the updateStatistics function - runs in background and reports status
   const updateStatistics = async () => {
     try {
-      const { data, error } = await supabase.functions
-        .invoke('update-statistics', {
-          body: { action: 'update_all_setlist_entries' }
-        });
+      const { data, error } = await supabase
+        .rpc('update_all_setlist_entries');
       
       if (error) {
         setSaveStatus('error');

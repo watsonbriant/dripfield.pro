@@ -100,44 +100,16 @@ export function Admin() {
     setUpdateStatus({ type: null, message: null });
     
     try {
-      const response = await fetch('https://hook.us2.make.com/gn9grskvrkor428pac36qyixbohzyg37', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'update_statistics'
-        })
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      // Check if the response is JSON
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        if (data.success) {
-          setUpdateStatus({
-            type: 'success',
-            message: 'Success!'
-          });
-        } else {
-          throw new Error(data.message || 'Failed.');
-        }
-      } else {
-        // Handle non-JSON response
-        const text = await response.text();
-        if (response.status === 200) {
-          setUpdateStatus({
-            type: 'success',
-            message: 'Success!'
-          });
-        } else {
-          throw new Error(text || 'Failed to update statistics');
-        }
-      }
+      const { data, error } = await supabase
+        .rpc('update_all_setlist_entries');
       
-      // Reset success state after 3 seconds
+      if (error) throw error;
+      
+      setUpdateStatus({
+        type: 'success',
+        message: 'Success!'
+      });
+      
       setTimeout(() => {
         setUpdateStatus({ type: null, message: null });
       }, 3000);
@@ -145,9 +117,9 @@ export function Admin() {
     } catch (error) {
       setUpdateStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'Failed to trigger statistics update. Please try again.'
+        message: error instanceof Error ? error.message : 'Failed to update statistics. Please try again.'
       });
-      console.error('Error triggering statistics update:', error);
+      console.error('Error updating statistics:', error);
     } finally {
       setIsUpdating(false);
     }
