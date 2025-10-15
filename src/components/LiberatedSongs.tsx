@@ -1,0 +1,279 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import SongTourPerformancesModal from './SongTourPerformancesModal';
+
+interface LiberatedSongsProps {
+    showIds: string[];
+    songIdMap: { [songName: string]: string };
+    tourId?: string;
+    onDataLoaded?: (hasData: boolean) => void;
+}
+
+interface LiberatedSong {
+    entry_song: string;
+    last_count: string;
+    last_show_date: string | null;
+    last_show_id: string | null;
+    entry_length?: string;
+    song_id?: string;
+    show_date?: string;
+    show_id?: string;
+    venue_location?: string;
+    category_artwork?: string;
+}
+
+const cleanSongName = (songName: string): string => {
+    return songName
+        .replace(/\[/g, '(')
+        .replace(/\]/g, ')')
+        .replace(/ñ/g, 'n')
+        .replace(/ü/g, 'u')
+        .replace(/–/g, '-')
+        .replace(/…/g, '...')
+        .replace(/∆/g, 'a');
+};
+
+const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
+    showIds,
+    songIdMap,
+    tourId = '',
+    onDataLoaded
+}) => {
+    const navigate = useNavigate();
+    const [liberatedSongs, setLiberatedSongs] = useState<LiberatedSong[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [modalSongData, setModalSongData] = useState<{
+        isOpen: boolean;
+        songName: string;
+    }>({
+        isOpen: false,
+        songName: ''
+    });
+
+    useEffect(() => {
+        const fetchLiberatedSongs = async () => {
+            if (!showIds || showIds.length === 0) {
+                setLoading(false);
+                onDataLoaded?.(false);
+                return;
+            }
+
+            try {
+                // Fetch entries with LIB in last_count
+                const { data, error } = await supabase
+                    .from('setlist_entries')
+                    .select(`
+            entry_song,
+            last_count,
+            last_show_date,
+            last_show_id,
+            entry_show,
+            entry_length,
+            songs!inner(
+              song_category,
+              categories!inner(
+                category_artwork
+              )
+            ),
+            shows (
+              show_date,
+              show_venue_location
+            )
+          `)
+                    .in('entry_show', showIds)
+                    .ilike('last_count', '%LIB%')
+                    .order('shows(show_date)', { ascending: true })
+                    .order('entry_song', { ascending: true });
+
+                if (error) throw error;
+
+                // Process and format data
+                const formattedData: LiberatedSong[] = data?.map(entry => {
+                    return {
+                        entry_song: entry.entry_song,
+                        last_count: entry.last_count,
+                        last_show_date: entry.last_show_date,
+                        last_show_id: entry.last_show_id,
+                        entry_length: entry.entry_length,
+                        song_id: songIdMap[entry.entry_song] || '',
+                        show_date: entry.shows?.show_date,
+                        show_id: entry.entry_show,
+                        venue_location: entry.shows?.show_venue_location,
+                        category_artwork: entry.songs?.categories?.category_artwork
+                    };
+                }) || [];
+
+                setLiberatedSongs(formattedData);
+                onDataLoaded?.(formattedData.length > 0);
+            } catch (error) {
+                console.error('Error fetching liberated songs:', error);
+                onDataLoaded?.(false);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLiberatedSongs();
+    }, [showIds, songIdMap, onDataLoaded]);
+
+    // Format date for display (MM.DD.YY)
+    const formatDate = (dateStr?: string): string => {
+        if (!dateStr) return '';
+
+        return dateStr
+            .split('-')
+            .slice(1)
+            .concat(dateStr.substring(2, 4))
+            .join('.');
+    };
+
+    // Extract show count from last_count (e.g., "105, LIB" -> "105")
+    const extractShowCount = (lastCount: string): string => {
+        const match = lastCount.match(/(\d+),?\s*LIB/i);
+        const result = match ? match[1] : '';
+        return result;
+    };
+
+    // Format entry_length to remove leading zeroes
+    const formatLength = (length?: string): string => {
+        if (!length) return '';
+
+        // Split by colon to get parts
+        const parts = length.split(':');
+
+        if (parts.length === 3) {
+            // Format: HH:MM:SS
+            const hours = parseInt(parts[0], 10);
+            const minutes = parseInt(parts[1], 10);
+            const seconds = parts[2];
+
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+            } else {
+                return `${minutes}:${seconds}`;
+            }
+        }
+
+        return length;
+    };
+
+    const handleSongClick = (songName: string) => {
+        setModalSongData({
+            isOpen: true,
+            songName: songName
+        });
+    };
+
+    const handleShowClick = (showId: string) => {
+        if (showId) {
+            navigate(`/setlist/${showId}`);
+        }
+    };
+
+    // Don't render anything if there are no liberated songs
+    if (!loading && liberatedSongs.length === 0) {
+        return null;
+    }
+
+    return (
+        <div className="bg-primary border border-secondary rounded-lg p-3">
+            <div className="flex items-center mb-2 gap-2">
+                <h2 className="text-lg font-semibold bg-amber-300 text-fifth inline-block px-3 rounded-lg border border-secondary">
+                    Liberated Songs
+                </h2>
+                <h2 className="text-xs font-medium bg-secondary text-fifth inline-block px-1.5 py-0.5 rounded-lg border border-secondary">
+                    <span className="hidden md:inline">Songs returning after ≥ 100 shows</span>
+                    <span className="md:hidden">≥ 100 show gap</span>
+                </h2>
+            </div>
+            {loading ? (
+                <div className="text-center py-4">
+                    <p className="text-fifth/70">Loading...</p>
+                </div>
+            ) : (
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse min-w-max">
+                        <tbody className="divide-y divide-white/5">
+                            {liberatedSongs.map((song, index) => (
+                                <tr
+                                    key={`${song.entry_song}-${index}`}
+                                    className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                                        } hover:bg-tertiary/40 transition-colors text-xs`}
+                                >
+                                    <td className="px-4 pb-0.5 text-[1rem] leading-[1rem] font-trad">
+                                        <div className="flex items-center justify-between">
+                                            <span
+                                                className="text-fifth cursor-pointer hover:underline"
+                                                onClick={() => handleSongClick(song.entry_song)}
+                                            >
+                                                {cleanSongName(song.entry_song)}
+                                            </span>
+                                            {song.category_artwork && (
+                                                <img
+                                                    src={song.category_artwork}
+                                                    alt={`${song.entry_song} artwork`}
+                                                    className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
+                                                    onError={(e) => {
+                                                        // Hide the image if it fails to load
+                                                        (e.target as HTMLImageElement).style.display = 'none';
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-0.5 text-fifth/70 text-center">
+                                        {formatLength(song.entry_length)}
+                                    </td>
+                                    <td className="px-4 py-0.5 text-fifth">
+                                        {song.show_date && (
+                                            <>
+                                                <span className="font-light">Returned&nbsp;&nbsp;</span>
+                                                <span
+                                                    onClick={() => handleShowClick(song.show_id || '')}
+                                                    className="font-medium cursor-pointer hover:underline"
+                                                >
+                                                    {formatDate(song.show_date)}
+                                                </span>
+                                                {song.venue_location && <span className="text-fifth/70 font-light">&nbsp;[{song.venue_location.replace(/[\[\]]/g, '')}]</span>}
+                                            </>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                                        {song.last_show_date && (
+                                            <>
+                                                <span className="font-light">LTP&nbsp;&nbsp;</span>
+                                                <span
+                                                    onClick={() => handleShowClick(song.last_show_id || '')}
+                                                    className="font-medium cursor-pointer hover:underline"
+                                                >
+                                                    {song.last_show_date}
+                                                </span>
+                                                {extractShowCount(song.last_count) && (
+                                                    <span className="text-fifth/70 font-light">
+                                                        &nbsp;({extractShowCount(song.last_count)} shows)
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* Song Tour Performances Modal */}
+            <SongTourPerformancesModal
+                isOpen={modalSongData.isOpen}
+                onClose={() => setModalSongData({ isOpen: false, songName: '' })}
+                songName={modalSongData.songName}
+                tourId={tourId}
+                currentShowId=""
+            />
+        </div>
+    );
+};
+
+export default LiberatedSongs;

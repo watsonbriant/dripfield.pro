@@ -10,6 +10,8 @@ import LongestSongs from './LongestSongs';
 import TourSongsCombined from './TourSongsCombined';
 import NotPlayedInTour from './NotPlayedInTour';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
+import LiberatedSongs from './LiberatedSongs';
+import GuestAppearances from './GuestAppearances';
 import wlImage from '../img/WL.png';
 
 interface Show {
@@ -104,6 +106,7 @@ export function Tours() {
   const [songIdMap, setSongIdMap] = React.useState<{ [songName: string]: string }>({});
   const [topSlots, setTopSlots] = React.useState<SlotData[]>([]);
   const [hasTourSetlistEntries, setHasTourSetlistEntries] = React.useState(false);
+  const [hasGuestAppearances, setHasGuestAppearances] = useState(false);
   const [uniqueSongCount, setUniqueSongCount] = React.useState<number>(0);
   const [previousTourId, setPreviousTourId] = React.useState<string | null>(null);
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
@@ -790,13 +793,21 @@ export function Tours() {
           )
         );
 
+        // Filter out shows with no slot data
+        const filteredSlots = (transformedData || []).filter(show => {
+          return Object.entries(show).some(([key, value]) => {
+            if (key === 'show_id' || key === 'Show_Date') return false;
+            return value && Array.isArray(value) && value.length > 0;
+          });
+        });
+
         const hasAnySetlistEntries = processedShows?.some(show =>
           show.setlist_entries && show.setlist_entries.length > 0
         );
         setHasTourSetlistEntries(hasAnySetlistEntries || false);
         setShows(processedShows || []);
         setHasSlotEntries(hasEntries);
-        setSlots(transformedData || []);
+        setSlots(filteredSlots); // Use filtered slots instead of transformedData
         setActiveColumns(orderedColumns || []);
 
         setShowsLoaded(true);
@@ -1456,38 +1467,100 @@ export function Tours() {
       )}
 
       {shows.length > 0 && hasTourSetlistEntries && (
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-4">
+        <>
+          {/* First row - Desktop: TourSongSpread and TopSlotsCarousel side by side */}
+          {/* Mid-sized: TourSongSpread left, TopSlotsCarousel + NotPlayed stacked right */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
             <TourSongSpread shows={shows} />
             
-            {currentTourShowFields && (
-              <NotPlayedInTour
+            <div className="flex flex-col gap-4">
+              {topSlots.length > 0 && (
+                <TopSlotsCarousel
+                  slots={topSlots}
+                  isMobile={windowWidth < 1280}
+                  songIdMap={songIdMap}
+                  onSongClick={(songId) => navigate(`/song/${songId}`)}
+                  tourId={currentTourId}
+                />
+              )}
+
+              {/* NotPlayed - shows in right column on mid-sized only */}
+              {currentTourShowFields && (
+                <div className="xl:hidden">
+                  <NotPlayedInTour
+                    tourId={currentTourId}
+                    tourName={currentTour}
+                    showIds={shows.map(show => show.show_id)}
+                    songIdMap={songIdMap}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Second row - Desktop: Three columns (NotPlayed, Longest, Guests) */}
+          {/* Mid-sized: Two columns (Longest, Guests) */}
+          {/* If only LongestSongs: Full width */}
+          {currentTourShowFields ? (
+            <div 
+              className={`mt-4 grid grid-cols-1 gap-4 items-start ${
+                hasGuestAppearances ? 'md:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-2'
+              }`}
+              style={{ 
+                gridTemplateColumns: windowWidth >= 1280 
+                  ? hasGuestAppearances 
+                    ? 'calc(30% - 10.67px) calc(20% - 10.67px) calc(50% - 10.67px)'
+                    : 'calc(50% - 8px) calc(50% - 8px)' // Two equal columns on desktop when only 2 visible
+                  : windowWidth >= 768 
+                    ? 'calc(50% - 8px) calc(50% - 8px)' 
+                    : '100%'
+              }}
+            >
+              {/* NotPlayed - shows in first column on desktop only */}
+              <div className="hidden xl:block">
+                <NotPlayedInTour
+                  tourId={currentTourId}
+                  tourName={currentTour}
+                  showIds={shows.map(show => show.show_id)}
+                  songIdMap={songIdMap}
+                />
+              </div>
+
+              {/* GuestAppearances - no wrapper div needed */}
+              <GuestAppearances 
+                showIds={shows.map(show => show.show_id)}
                 tourId={currentTourId}
-                tourName={currentTour}
+                onDataLoaded={setHasGuestAppearances}
+              />
+
+              {/* Longest - shows in left column on mid-sized, second column on desktop */}
+              <LongestSongs
                 showIds={shows.map(show => show.show_id)}
                 songIdMap={songIdMap}
-              />
-            )}
-          </div>
-
-          <div className="flex flex-col gap-4">
-            {topSlots.length > 0 && (
-              <TopSlotsCarousel
-                slots={topSlots}
-                isMobile={windowWidth < 1280}
-                songIdMap={songIdMap}
-                onSongClick={(songId) => navigate(`/song/${songId}`)}
                 tourId={currentTourId}
               />
-            )}
+            </div>
+          ) : (
+            <div className="mt-4">
+              <LongestSongs
+                showIds={shows.map(show => show.show_id)}
+                songIdMap={songIdMap}
+                tourId={currentTourId}
+              />
+            </div>
+          )}
 
-            <LongestSongs
-              showIds={shows.map(show => show.show_id)}
-              songIdMap={songIdMap}
-              tourId={currentTourId}
-            />
-          </div>
-        </div>
+          {/* Third row - Full width Liberated Songs on all sizes */}
+          {currentTourShowFields && (
+            <div className="mt-4">
+              <LiberatedSongs 
+                showIds={shows.map(show => show.show_id)} 
+                songIdMap={songIdMap}
+                tourId={currentTourId}
+              />
+            </div>
+          )}
+        </>
       )}
 
       {shows.length > 0 && hasTourSetlistEntries && (

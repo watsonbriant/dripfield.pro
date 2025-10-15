@@ -16,6 +16,7 @@ interface LongestSong {
   show_date?: string;
   show_id?: string;
   venue_location?: string;
+  category_artwork?: string;
 }
 
 const cleanSongName = (songName: string): string => {
@@ -56,6 +57,12 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
             entry_song,
             entry_length,
             entry_show,
+            songs!inner(
+              song_category,
+              categories!inner(
+                category_artwork
+              )
+            ),
             shows (
               show_date,
               show_venue_location
@@ -75,7 +82,8 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
           song_id: songIdMap[entry.entry_song] || '',
           show_date: entry.shows?.show_date,
           show_id: entry.entry_show,
-          venue_location: entry.shows?.show_venue_location
+          venue_location: entry.shows?.show_venue_location,
+          category_artwork: entry.songs?.categories?.category_artwork
         })) || [];
 
         setLongestSongs(formattedData);
@@ -155,13 +163,26 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
                   } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="px-4 pt-0.5 pb-1 text-[1rem] leading-[1rem] font-trad">
-                    <span
-                      className="text-fifth cursor-pointer hover:underline"
-                      onClick={() => handleSongClick(song.entry_song)}
-                    >
-                      {cleanSongName(song.entry_song)}
-                    </span>
+                  <td className="px-4 pb-0.5 text-[1rem] leading-[1rem] font-trad">
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="text-fifth cursor-pointer hover:underline"
+                        onClick={() => handleSongClick(song.entry_song)}
+                      >
+                        {cleanSongName(song.entry_song)}
+                      </span>
+                      {song.category_artwork && (
+                        <img
+                          src={song.category_artwork}
+                          alt={`${song.entry_song} artwork`}
+                          className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
+                          onError={(e) => {
+                            // Hide the image if it fails to load
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-0.5 text-fifth text-center font-medium">
                     {formatTime(song.entry_length)}
@@ -175,7 +196,7 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
                         >
                           {formatDate(song.show_date)}
                         </span>
-                        {song.venue_location && <span className="text-fifth/70">&nbsp;&nbsp;[{song.venue_location}]</span>}
+                        {song.venue_location && <span className="text-fifth/70 font-light">&nbsp;&nbsp;[{song.venue_location.replace(/[\[\]]/g, '')}]</span>}
                       </>
                     )}
                   </td>

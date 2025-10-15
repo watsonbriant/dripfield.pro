@@ -176,7 +176,7 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
 
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3">
-      <h2 className="text-lg font-semibold bg-fifth text-white inline-block px-3 rounded-lg border border-secondary mb-1.5">
+      <h2 className="text-lg font-semibold bg-fifth text-primary inline-block px-3 rounded-lg border border-secondary mb-1.5">
         Most Common Not Played
       </h2>
       
