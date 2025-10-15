@@ -497,22 +497,25 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
   const handleSaveChanges = async () => {
     if (!editedEntry) return;
     
-    setIsSubmitting(true);
+    // Check if required fields are filled for new entries
+    if (isNewEntry) {
+      if (!editedEntry.entry_set || !editedEntry.entry_song) {
+        alert('Please fill in all required fields (Set and Song are required)');
+        return;
+      }
+    }
+
+    // NOTE: Remove the loading overlay JSX from the modal's return statement
+    // since the modal now closes immediately
+
+    // Close modal immediately
+    onClose();
+    
+    // Set initial status
     setSaveStatus('processing');
     onSaveStatusUpdate('processing');
     
     try {
-      // Check if required fields are filled for new entries
-      if (isNewEntry) {
-        if (!editedEntry.entry_set || !editedEntry.entry_song) {
-          alert('Please fill in all required fields (Set and Song are required)');
-          setIsSubmitting(false);
-          setSaveStatus('idle');
-          onSaveStatusUpdate('idle');
-          return;
-        }
-      }
-  
       // Create a copy of editedEntry with empty strings and "--" converted to null
       const entryToSave = {
         ...editedEntry,
@@ -606,12 +609,9 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
       
       setIsEditing(false);
       onSave(); // Trigger refetch of entries
-      onClose(); // Close modal after successful save
     } catch (error) {
       setSaveStatus('error');
       onSaveStatusUpdate('error');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
