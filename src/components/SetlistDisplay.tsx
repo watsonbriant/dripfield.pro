@@ -38,7 +38,7 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) =>
   let currentRunningNumber = 1;
   
   return (
-    <div className="space-y-1">
+    <div>
       {setlist.map((entry, index) => {
         // Check if this entry has a short value that should skip numbering
         const shouldSkipNumbering = entry.entry_short && 
@@ -64,7 +64,7 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, navigate }) =>
         return (
           <React.Fragment key={`${entry.entry_song}-${index}`}>
             {isNewSet && (
-              <hr className="border-secondary my-2" />
+              <hr className="border-secondary my-1" />
             )}
             <div 
               className="flex items-center text-[#fce7ca]/90 text-xs hover:bg-tertiary/40 transition-colors rounded px-0 py-0"
