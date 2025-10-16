@@ -527,7 +527,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
                           navigate(`/song/${songId}`);
                         }
                       }}
-                      className="text-[.875rem] leading-[1rem] pb-1 pl-2 font-trad hover:underline transition-colors cursor-pointer"
+                      className="text-[.875rem] leading-[1rem] pb-1 px-2 font-trad hover:underline transition-colors cursor-pointer"
                     >
                       {cleanSongName(song)}
                     </button>
