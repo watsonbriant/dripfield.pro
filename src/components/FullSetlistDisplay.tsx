@@ -938,7 +938,7 @@ export default function FullSetlistDisplay({
                 <div className="hidden md:grid grid-cols-2 gap-4 items-start">
                   <div>
                     {/* Show ONLY on tablet (md to lg), not on mobile or desktop */}
-                    <div className="hidden md:block lg:hidden space-y-4 mb-4">
+                    <div className="hidden md:block lg:hidden">
                       <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
                       <JiveCompleteBadge showJiveComplete={show.show_jivecomplete || false} />
                       <DripfieldCompleteBadge showDripfieldComplete={show.show_dripfieldcomplete || false} />

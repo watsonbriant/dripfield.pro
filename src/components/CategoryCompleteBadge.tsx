@@ -47,7 +47,7 @@ export function CategoryCompleteBadge({ categoryName }: CategoryCompleteBadgePro
 
   return (
     <div 
-      className="bg-yellow-500 border border-secondary rounded-lg p-3 cursor-pointer hover:bg-yellow-400 transition-colors"
+      className="bg-yellow-500 border border-secondary rounded-lg p-3 cursor-pointer hover:bg-yellow-400 transition-colors mb-4"
       onClick={handleClick}
     >
       <div className="flex items-center gap-3">
