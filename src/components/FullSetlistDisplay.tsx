@@ -577,7 +577,7 @@ export default function FullSetlistDisplay({
                         >
                           {/* Absolute positioned background that fills parent row */}
                           <div 
-                            className="absolute inset-0 -top-[2px] -bottom-[3px] z-10"
+                            className="absolute inset-0 -top-[2px] -bottom-[3px] z-10 pointer-events-none"
                             style={{
                               backgroundColor: copiedEntries.has(entry.entry_id) 
                                 ? '#22c55e' 
@@ -585,7 +585,7 @@ export default function FullSetlistDisplay({
                             }}
                           />
                           {/* Content with relative positioning to appear above background */}
-                          <span className="relative pt-6 z-20">
+                          <span className="relative z-20 inline-block w-full h-full flex items-center justify-center">
                             {copiedEntries.has(entry.entry_id) 
                               ? '✓' 
                               : (displayNumber || '\u00A0')

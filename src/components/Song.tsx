@@ -554,7 +554,7 @@ export function Song() {
                 <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
                   <div className="text-fifth text-base font-medium mb-1">Song Notes</div>
                   <div 
-                    className="text-fifth font-light text-xs"
+                    className="text-fifth font-light text-xs [&_a]:font-medium"
                     dangerouslySetInnerHTML={{ __html: song.song_coachnotes }}
                   />
                 </div>
