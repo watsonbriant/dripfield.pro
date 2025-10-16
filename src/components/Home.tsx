@@ -1025,7 +1025,7 @@ export function Home() {
 
           {/* Last 5 Shows Table */}
           <div className="bg-primary border border-secondary rounded-lg p-3">
-            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">Last 5 Shows</h2>
+            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">Last 51 Shows</h2>
             {loading ? (
               <div className="text-center py-12">
                 <p className="text-fifth/70">Loading shows...</p>
