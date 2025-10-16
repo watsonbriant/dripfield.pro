@@ -297,7 +297,7 @@ export function Discography() {
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-fifth">{album.title}</h3>
+                      <h3 className="text-[1.125rem] leading-[1.125rem] font-semibold text-fifth pb-1.5">{album.title}</h3>
                       <p className="text-fifth/70 font-medium text-sm">{album.artist}</p>
                       {album.releaseDate && (
                         <p className="text-fifth/70 text-xs mb-2">
