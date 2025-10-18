@@ -461,7 +461,7 @@ export default function FullSetlistDisplay({
           </div>
         )}
         {setlist.length > 0 && (
-          <div className="space-y-4 max-md:pb-4">
+          <div className="space-y-4">
             <ShowStats 
               setlist={setlist} 
               show_canonid={show.show_canonid}
