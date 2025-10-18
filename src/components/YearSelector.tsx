@@ -36,24 +36,41 @@ export function YearSelector({ years, currentYear, onYearChange }: YearSelectorP
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
     
     if (isDropdownOpen && dropdownListRef.current) {
       const currentYearButton = dropdownListRef.current.querySelector(`button[key="${currentYear}"]`);
-      if (currentYearButton) {
-        currentYearButton.scrollIntoView({ block: 'center' });
-      } else {
+      let targetButton = currentYearButton;
+      
+      if (!targetButton) {
         const buttons = dropdownListRef.current.querySelectorAll('button');
         for (const button of buttons) {
           if (button.textContent?.trim() === currentYear) {
-            button.scrollIntoView({ block: 'center' });
+            targetButton = button;
             break;
           }
         }
       }
+      
+      if (targetButton) {
+        // Calculate the scroll position to center the current year button
+        const dropdownContainer = dropdownListRef.current;
+        const buttonElement = targetButton as HTMLElement;
+        const buttonTop = buttonElement.offsetTop;
+        const buttonHeight = buttonElement.offsetHeight;
+        const containerHeight = dropdownContainer.clientHeight;
+        const scrollTop = buttonTop - (containerHeight / 2) + (buttonHeight / 2);
+        
+        // Scroll within the dropdown container only
+        dropdownContainer.scrollTop = Math.max(0, scrollTop);
+      }
     }
     
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isDropdownOpen, currentYear]);
 
   return (
