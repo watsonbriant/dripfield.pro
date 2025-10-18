@@ -5,7 +5,7 @@ import { ShowsTable } from './ShowsTable';
 import { ToursSection } from './ToursSection';
 import { GroupFilters } from './GroupFilters';
 import { useYearsData } from '../hooks/useYearsData';
-import { useShowsData } from '../hooks/useShowsData';
+import { useShowsDataByYear } from '../hooks/useShowsDataByYear';
 import { useToursData } from '../hooks/useToursData';
 import { useGroupsData } from '../hooks/useGroupsData';
 import { useAttendeeData } from '../hooks/useAttendeeData';
@@ -40,7 +40,7 @@ export function Years() {
 
   // Custom hooks for data fetching
   const { years, loading: yearsLoading } = useYearsData();
-  const { shows, loading: showsLoading } = useShowsData(currentYear);
+  const { shows, loading: showsLoading } = useShowsDataByYear(currentYear);
   const { tours } = useToursData(currentYear);
   const { groups } = useGroupsData(shows);
   const { attendeeCounts } = useAttendeeData(filteredShows);

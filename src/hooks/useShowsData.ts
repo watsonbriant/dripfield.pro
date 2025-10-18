@@ -18,6 +18,7 @@ interface Show {
   venue_id?: string;
   attended?: boolean;
   show_wl_link?: string | null;
+  formatted_show_date: string;
 }
 
 interface ShowResponse {
@@ -40,10 +41,18 @@ interface ShowResponse {
   };
 }
 
-export function useShowsData(currentYear: string) {
+export function useShowsData() {
   const { user } = useAuth();
-  const [shows, setShows] = useState<Show[]>([]);
+  const [recentShows, setRecentShows] = useState<Show[]>([]);
+  const [upcomingShows, setUpcomingShows] = useState<Show[]>([]);
+  const [historicalShows, setHistoricalShows] = useState<Show[]>([]);
+  const [mostRecentShow, setMostRecentShow] = useState<Show | null>(null);
+  const [setlist, setSetlist] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingUpcoming, setLoadingUpcoming] = useState(true);
+  const [loadingHistorical, setLoadingHistorical] = useState(true);
+  const [loadingMostRecent, setLoadingMostRecent] = useState(true);
+  const [loadingSetlist, setLoadingSetlist] = useState(true);
   const [attendedShowIds, setAttendedShowIds] = useState<string[]>([]);
 
   // Fetch attended shows for current user
@@ -72,11 +81,9 @@ export function useShowsData(currentYear: string) {
     fetchAttendedShows();
   }, [user]);
 
-  // Fetch shows - only when currentYear is set
+  // Fetch recent shows (last 5 - actually 2nd-6th most recent)
   useEffect(() => {
-    if (!currentYear) return;
-
-    async function fetchShows() {
+    const fetchRecentShows = async () => {
       try {
         const { data, error } = await supabase
           .from('shows')
@@ -99,10 +106,11 @@ export function useShowsData(currentYear: string) {
               )
             )
           `)
-          .eq('show_year', currentYear)
-          .order('show_date', { ascending: true })
+          .lt('show_date', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+          .order('show_date', { ascending: false })
           .order('show_canonid', { ascending: true, nullsFirst: true })
-          .order('show_group', { ascending: true });
+          .order('show_group', { ascending: true })
+          .range(1, 5); // Skip first (most recent), get next 5
 
         if (error) throw error;
 
@@ -110,19 +118,261 @@ export function useShowsData(currentYear: string) {
           ...show,
           venue_id: show.subvenues?.venues?.venue_id,
           attended: attendedShowIds.includes(show.show_id),
-          venue_location: null // Add missing property
+          venue_location: show.show_venue_location,
+          formatted_show_date: new Date(show.show_date + 'T00:00:00').toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: '2-digit'
+          }).replace(/\//g, '.')
         }));
 
-        setShows(processedData || []);
+        setRecentShows(processedData || []);
       } catch (error) {
-        console.error('Error fetching shows:', error);
+        console.error('Error fetching recent shows:', error);
+        setRecentShows([]);
       } finally {
         setLoading(false);
       }
+    };
+
+    fetchRecentShows();
+  }, [attendedShowIds]);
+
+  // Fetch upcoming shows (next 5)
+  useEffect(() => {
+    const fetchUpcomingShows = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('shows')
+          .select<any, ShowResponse>(`
+            show_iscanon,
+            show_tour,
+            show_id,
+            show_date,
+            show_group,
+            show_subvenue,
+            show_detail,
+            show_alert,
+            show_canonid,
+            show_subvenue_venue,
+            show_venue_location,
+            show_wl_link,
+            subvenues:show_subvenue(
+              venues:subvenue_venue(
+                venue_id
+              )
+            )
+          `)
+          .gte('show_date', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+          .order('show_date', { ascending: true })
+          .order('show_canonid', { ascending: true, nullsFirst: true })
+          .order('show_group', { ascending: true })
+          .limit(5);
+
+        if (error) throw error;
+
+        const processedData = data?.map(show => ({
+          ...show,
+          venue_id: show.subvenues?.venues?.venue_id,
+          attended: attendedShowIds.includes(show.show_id),
+          venue_location: show.show_venue_location,
+          formatted_show_date: new Date(show.show_date + 'T00:00:00').toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: '2-digit'
+          }).replace(/\//g, '.')
+        }));
+
+        setUpcomingShows(processedData || []);
+      } catch (error) {
+        console.error('Error fetching upcoming shows:', error);
+        setUpcomingShows([]);
+      } finally {
+        setLoadingUpcoming(false);
+      }
+    };
+
+    fetchUpcomingShows();
+  }, [attendedShowIds]);
+
+  // Fetch historical shows (this day in history)
+  useEffect(() => {
+    const fetchHistoricalShows = async () => {
+      try {
+        const today = new Date();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        
+        // Get all shows and filter client-side for now
+        const { data, error } = await supabase
+          .from('shows')
+          .select<any, ShowResponse>(`
+            show_iscanon,
+            show_tour,
+            show_id,
+            show_date,
+            show_group,
+            show_subvenue,
+            show_detail,
+            show_alert,
+            show_canonid,
+            show_subvenue_venue,
+            show_venue_location,
+            show_wl_link,
+            subvenues:show_subvenue(
+              venues:subvenue_venue(
+                venue_id
+              )
+            )
+          `)
+          .order('show_date', { ascending: false })
+          .order('show_canonid', { ascending: true, nullsFirst: true })
+          .order('show_group', { ascending: true });
+
+        if (error) throw error;
+
+        // Filter shows that occurred on the same month and day
+        const filteredData = data?.filter(show => {
+          const showDate = new Date(show.show_date + 'T00:00:00');
+          const showMonth = String(showDate.getMonth() + 1).padStart(2, '0');
+          const showDay = String(showDate.getDate()).padStart(2, '0');
+          return showMonth === month && showDay === day;
+        });
+
+        const processedData = filteredData?.map(show => ({
+          ...show,
+          venue_id: show.subvenues?.venues?.venue_id,
+          attended: attendedShowIds.includes(show.show_id),
+          venue_location: show.show_venue_location,
+          formatted_show_date: new Date(show.show_date + 'T00:00:00').toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: '2-digit'
+          }).replace(/\//g, '.')
+        }));
+
+        setHistoricalShows(processedData || []);
+      } catch (error) {
+        console.error('Error fetching historical shows:', error);
+        setHistoricalShows([]);
+      } finally {
+        setLoadingHistorical(false);
+      }
+    };
+
+    fetchHistoricalShows();
+  }, [attendedShowIds]);
+
+  // Fetch most recent show
+  useEffect(() => {
+    const fetchMostRecentShow = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('shows')
+          .select<any, ShowResponse>(`
+            show_iscanon,
+            show_tour,
+            show_id,
+            show_date,
+            show_group,
+            show_subvenue,
+            show_detail,
+            show_alert,
+            show_canonid,
+            show_subvenue_venue,
+            show_venue_location,
+            show_wl_link,
+            subvenues:show_subvenue(
+              venues:subvenue_venue(
+                venue_id
+              )
+            )
+          `)
+          .lt('show_date', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+          .order('show_date', { ascending: false })
+          .order('show_canonid', { ascending: true, nullsFirst: true })
+          .order('show_group', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (error) throw error;
+
+        const processedShow = data ? {
+          ...data,
+          venue_id: data.subvenues?.venues?.venue_id,
+          attended: attendedShowIds.includes(data.show_id),
+          venue_location: data.show_venue_location,
+          formatted_show_date: new Date(data.show_date).toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: '2-digit'
+          }).replace(/\//g, '.')
+        } : null;
+
+        setMostRecentShow(processedShow);
+      } catch (error) {
+        console.error('Error fetching most recent show:', error);
+        setMostRecentShow(null);
+      } finally {
+        setLoadingMostRecent(false);
+      }
+    };
+
+    fetchMostRecentShow();
+  }, [attendedShowIds]);
+
+  // Fetch setlist for most recent show
+  useEffect(() => {
+    if (!mostRecentShow) {
+      setSetlist([]);
+      setLoadingSetlist(false);
+      return;
     }
 
-    fetchShows();
-  }, [currentYear, attendedShowIds]);
+    const fetchSetlist = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('setlist_entries')
+          .select(`
+            entry_song,
+            entry_short,
+            entry_segue,
+            entry_placement,
+            entry_setorder,
+            entry_set,
+            entry_setnum,
+            songs:entry_song(
+              song_id
+            )
+          `)
+          .eq('entry_show', mostRecentShow.show_id)
+          .order('entry_set', { ascending: true })
+          .order('entry_setnum', { ascending: true });
 
-  return { shows, loading };
+        if (error) throw error;
+
+        setSetlist(data || []);
+      } catch (error) {
+        console.error('Error fetching setlist:', error);
+        setSetlist([]);
+      } finally {
+        setLoadingSetlist(false);
+      }
+    };
+
+    fetchSetlist();
+  }, [mostRecentShow]);
+
+  return { 
+    recentShows, 
+    upcomingShows, 
+    historicalShows, 
+    mostRecentShow, 
+    setlist,
+    loading, 
+    loadingUpcoming, 
+    loadingHistorical, 
+    loadingMostRecent, 
+    loadingSetlist 
+  };
 }

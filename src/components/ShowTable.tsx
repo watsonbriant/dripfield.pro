@@ -5,7 +5,7 @@ import gooseGif from '../img/Goose.gif';
 
 interface ShowTableProps {
   title: string;
-  shows: Show[];
+  shows: Show[] | undefined;
   loading: boolean;
   emptyMessage?: string;
 }
@@ -40,7 +40,7 @@ export const ShowTable: React.FC<ShowTableProps> = ({
     );
   }
 
-  if (shows.length === 0) {
+  if (!shows || shows.length === 0) {
     return (
       <div className="bg-primary border border-secondary rounded-lg p-3">
         <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">{title}</h2>
@@ -51,13 +51,18 @@ export const ShowTable: React.FC<ShowTableProps> = ({
     );
   }
 
+  // Reverse the order for "Last 5 Shows" and "This Day in Goose History" to show oldest first
+  const displayShows = (title === "Last 5 Shows" || title === "This Day in Goose History") 
+    ? [...shows].reverse() 
+    : shows;
+
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3">
       <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.25 rounded-lg border border-secondary mb-2">{title}</h2>
       <div className="overflow-x-auto relative">
         <table className="w-full border-collapse">
           <tbody className="divide-y divide-white/5">
-            {shows.map((show, index) => (
+            {displayShows.map((show, index) => (
               <tr
                 key={show.show_id}
                 className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
