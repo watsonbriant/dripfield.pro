@@ -1,3 +1,12 @@
+export interface ShowData {
+  show_id: string;
+  show_date: string;
+  show_group: string;
+  show_subvenue: string;
+  show_venue_location: string;
+  show_canonid: number | null;
+}
+
 export interface SetlistEntryData {
   entry_id: string;
   entry_set: string | null;
