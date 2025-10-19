@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Plus, Trash2, ChevronUp, ChevronDown, Share, Check } from 'lucide-react';
+import { X, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import domtoimage from 'dom-to-image';
 
 interface SongSelectionModalProps {
   isOpen: boolean;
@@ -111,45 +110,9 @@ export function SongSelectionModal({
 
   const [rawPointsTotal, setRawPointsTotal] = useState<number>(0);
   const [actualSetlist, setActualSetlist] = useState<SetlistEntry[]>([]);
-  const [loadingSetlist, setLoadingSetlist] = useState(false);
   const [showActualSetlist, setShowActualSetlist] = useState(false);
   
-  // New state for sharing functionality
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [shareError, setShareError] = useState<string | null>(null);
-  const shareableImageRef = useRef<HTMLDivElement>(null);
-  const [username, setUsername] = useState<string>('');
-  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
-  const [clipboardSuccess, setClipboardSuccess] = useState<boolean>(false);
 
-  // Fetch username on component mount
-  useEffect(() => {
-    async function fetchUsername() {
-      if (!user) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('id', user.id)
-          .single();
-          
-        if (error) {
-          console.error('Error fetching username:', error);
-          return;
-        }
-        
-        if (data && data.username) {
-          setUsername(data.username);
-        }
-      } catch (err) {
-        console.error('Error in fetch username:', err);
-      }
-    }
-    
-    fetchUsername();
-  }, [user]);
 
   // Function to calculate time remaining that can be called repeatedly
   const calculateTimeRemaining = useCallback((showTime: string): { 
@@ -188,7 +151,7 @@ export function SongSelectionModal({
     if (viewMode && existingPicks && existingPicks.length > 0) {
       
       // Check if any picks have showcloser_correct flag
-      const hasShowCloser = existingPicks.some(pick => pick.showcloser_correct);
+      // const hasShowCloser = existingPicks.some(pick => (pick as any).showcloser_correct);
       
       // Get unique sets from existing picks, sorted in correct order
       const uniqueSets = [...new Set(existingPicks.map(pick => pick.set))].sort((a, b) => {
@@ -225,8 +188,8 @@ export function SongSelectionModal({
         placement: pick.placement,
         score: pick.score,
         result: pick.result,
-        showcloser_correct: pick.showcloser_correct,  // Ensure this property is copied over
-        showopener_correct: pick.showopener_correct
+        showcloser_correct: (pick as any).showcloser_correct,  // Ensure this property is copied over
+        showopener_correct: (pick as any).showopener_correct
       }));
       
       // Combine breaks and picks
@@ -251,7 +214,7 @@ export function SongSelectionModal({
       if (!show.show_id || !viewMode || !show.show_scored) return;
       
       try {
-        setLoadingSetlist(true);
+        // setLoadingSetlist(true);
         
         const { data, error } = await supabase
           .from('setlist_entries')
@@ -271,7 +234,7 @@ export function SongSelectionModal({
       } catch (err) {
         console.error('Error in fetch setlist:', err);
       } finally {
-        setLoadingSetlist(false);
+        // setLoadingSetlist(false);
       }
     }
     
@@ -385,9 +348,6 @@ export function SongSelectionModal({
   };
   
   // Helper function to get unique sets from actual setlist
-  const getActualSetlist = () => {
-    return actualSetlist;
-  };
 
   // Toggle switch component for mobile view
   const ToggleSwitch = () => {
@@ -412,43 +372,7 @@ export function SongSelectionModal({
   };
 
   // Function to get a combined array of all sets from both user picks and actual setlist
-  const getAllSets = (): string[] => {
-    // Get sets from user's picks
-    const userSets = new Set(songPicks.map(pick => pick.set));
-    
-    // Get sets from actual setlist
-    const actualSets = new Set(actualSetlist.map(entry => entry.entry_set));
-    
-    // Combine both sets
-    const allSetsSet = new Set([...userSets, ...actualSets]);
-    
-    // Order them correctly (numeric sets first, then encore sets)
-    const numericSets = Array.from(allSetsSet)
-      .filter(set => !set.startsWith('E'))
-      .sort((a, b) => parseInt(a) - parseInt(b));
-      
-    const encoreSets = Array.from(allSetsSet)
-      .filter(set => set.startsWith('E'))
-      .sort((a, b) => parseInt(a.substring(1)) - parseInt(b.substring(1)));
-      
-    return [...numericSets, ...encoreSets];
-  };
 
-  // Get unique sets from actual setlist
-  const getUniqueActualSets = (): string[] => {
-    const setsInActual = new Set(actualSetlist.map(entry => entry.entry_set));
-    
-    // Order them correctly (numeric sets first, then encore sets)
-    const numericSets = Array.from(setsInActual)
-      .filter(set => !set.startsWith('E'))
-      .sort((a, b) => parseInt(a) - parseInt(b));
-      
-    const encoreSets = Array.from(setsInActual)
-      .filter(set => set.startsWith('E'))
-      .sort((a, b) => parseInt(a.substring(1)) - parseInt(b.substring(1)));
-      
-    return [...numericSets, ...encoreSets];
-  };
   
   // Get songs for a specific set from actual setlist
   const getSongsForActualSet = (set: string): SetlistEntry[] => {
@@ -1254,7 +1178,7 @@ export function SongSelectionModal({
           if (picksDeleteError) {
             throw picksDeleteError;
           }
-        } catch (deleteError) {
+        } catch (deleteError: any) {
           setError(`Error deleting existing picks: ${deleteError.message || 'Unknown error'}`);
           return;
         }
@@ -1271,7 +1195,7 @@ export function SongSelectionModal({
           if (updateError) {
             throw updateError;
           }
-        } catch (updateError) {
+        } catch (updateError: any) {
           setError(`Error updating submission: ${updateError.message || 'Unknown error'}`);
           return;
         }
@@ -1301,7 +1225,7 @@ export function SongSelectionModal({
           }
           
           submissionId = submissionData.submission_id;
-        } catch (insertError) {
+        } catch (insertError: any) {
           if (insertError.code === '23505') { // PostgreSQL unique constraint violation
             setError(`Duplicate entry: You already have picks for this show. Please refresh the page.`);
           } else {
@@ -1312,7 +1236,7 @@ export function SongSelectionModal({
       }
       
       // Group songs by set for proper numbering
-      const setGroups = {};
+      const setGroups: Record<string, SongPick[]> = {};
       const realPicks = songPicks.filter(pick => !pick.isBreak);
       
       // Group songs by set
@@ -1324,7 +1248,7 @@ export function SongSelectionModal({
       });
       
       // Prepare picks with correct set-specific numbering
-      const picksToInsert = [];
+      const picksToInsert: any[] = [];
       
       // Process each set to create properly numbered picks
       Object.keys(setGroups).forEach(setId => {
@@ -1353,7 +1277,7 @@ export function SongSelectionModal({
         if (picksError) {
           throw picksError;
         }
-      } catch (picksInsertError) {
+      } catch (picksInsertError: any) {
         setError(`Error inserting picks: ${picksInsertError.message || 'Unknown error'}`);
         return;
       }
@@ -1366,7 +1290,7 @@ export function SongSelectionModal({
         // Refresh the page to update the UI
         window.location.reload();
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       // For any other errors that weren't caught by specific handlers
       let errorMessage = 'Failed to submit picks. Please try again.';
       
@@ -1382,167 +1306,6 @@ export function SongSelectionModal({
     }
   };
 
-  // Generate preview image
-  const generatePreviewImage = async () => {
-    if (!shareableImageRef.current) {
-      setShareError('Unable to generate image. Please try again.');
-      return null;
-    }
-    
-    try {
-      setIsGeneratingImage(true);
-      setShareError(null);
-      
-      // Force a layout render before capturing
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Use dom-to-image to convert the div to a PNG
-      const dataUrl = await domtoimage.toPng(shareableImageRef.current, {
-        width: 450,
-        height: shareableImageRef.current.offsetHeight,
-        bgcolor: '#f1d8b8', // Match the site's background color
-        style: {
-          margin: '0',
-          padding: '0'
-        }
-      });
-      
-      return dataUrl;
-    } catch (error) {
-      console.error('Error generating preview image:', error);
-      setShareError('Failed to generate image preview. Please try again.');
-      return null;
-    } finally {
-      setIsGeneratingImage(false);
-    }
-  };
-
-  const copyImageToClipboard = async () => {
-    try {
-      setIsGeneratingImage(true);
-      setShareError(null);
-      
-      // Generate image if it doesn't exist yet
-      let imageUrl = previewImageUrl;
-      if (!imageUrl) {
-        imageUrl = await generatePreviewImage();
-        if (!imageUrl) {
-          throw new Error('Failed to generate image');
-        }
-      }
-      
-      // Convert data URL to blob
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      
-      // Try to use the clipboard API to copy the image
-      try {
-        // Use the Clipboard API's write method for better image support
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            [blob.type]: blob
-          })
-        ]);
-        
-        // Show success message by changing button state
-        setClipboardSuccess(true);
-        setTimeout(() => setClipboardSuccess(false), 2000); // Revert after 2 seconds
-        
-      } catch (clipboardError) {
-        console.error('Clipboard API write failed:', clipboardError);
-        
-        // Fallback to legacy method for older browsers
-        try {
-          // For browsers that don't support ClipboardItem
-          await navigator.clipboard.writeText('Setlist picks image copied to clipboard');
-          
-          // Still show success message
-          setClipboardSuccess(true);
-          setTimeout(() => setClipboardSuccess(false), 2000);
-          
-          setShareError('Your browser doesn\'t fully support clipboard images, but the image has been copied as text.');
-        } catch (fallbackError) {
-          console.error('Fallback clipboard method failed:', fallbackError);
-          
-          // If all clipboard methods fail, fall back to download
-          const link = document.createElement('a');
-          link.download = `echo-of-a-set-${formatDate(show.show_date)}.png`;
-          link.href = imageUrl;
-          link.click();
-          
-          setShareError('Unable to copy to clipboard. Image has been downloaded instead.');
-        }
-      }
-    } catch (error) {
-      console.error('Error copying image to clipboard:', error);
-      setShareError('Failed to copy image. Please try again.');
-    } finally {
-      setIsGeneratingImage(false);
-    }
-  };
-
-  // Toggle preview
-  const handleTogglePreview = async () => {
-    if (showPreview) {
-      // Hide preview
-      setShowPreview(false);
-      return;
-    }
-    
-    // Generate and show preview
-    const imageUrl = await generatePreviewImage();
-    if (imageUrl) {
-      setPreviewImageUrl(imageUrl);
-      setShowPreview(true);
-    }
-  };
-  
-  // Download image
-  const handleDownloadImage = async () => {
-    try {
-      // Use existing preview or generate new image
-      let imageUrl = previewImageUrl;
-      
-      if (!imageUrl) {
-        setIsGeneratingImage(true);
-        imageUrl = await generatePreviewImage();
-        setIsGeneratingImage(false);
-      }
-      
-      if (!imageUrl) {
-        throw new Error('Failed to generate image');
-      }
-      
-      // Check if the Web Share API is available (modern mobile browsers)
-      if (navigator.share) {
-        // Convert the data URL to a blob for sharing
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const file = new File([blob], `echo-of-a-set-${formatDate(show.show_date)}.png`, { type: 'image/png' });
-        
-        try {
-          await navigator.share({
-            title: 'My Setlist Picks',
-            text: `My setlist picks for ${formatDate(show.show_date)} at ${show.show_subvenue}`,
-            files: [file]
-          });
-          return;
-        } catch (shareError) {
-          // Fall back to download if sharing fails
-        }
-      }
-      
-      // Fall back to traditional download for desktop or unsupported browsers
-      const link = document.createElement('a');
-      link.download = `echo-of-a-set-${formatDate(show.show_date)}.png`;
-      link.href = imageUrl;
-      link.click();
-      
-    } catch (error) {
-      console.error('Error downloading/sharing image:', error);
-      setShareError('Failed to download/share image. Please try again.');
-    }
-  };
 
   // Format date for display (MM.DD.YY)
   const formatDate = (dateString: string) => {
@@ -1663,7 +1426,7 @@ export function SongSelectionModal({
           visibility: tooltipPosition.x === 0 && tooltipPosition.y === 0 ? 'hidden' : 'visible',
         }}
         dangerouslySetInnerHTML={{ 
-          __html: getResultDescription(result, pick?.showcloser_correct ?? false, pick?.showopener_correct ?? false)
+          __html: getResultDescription(result, (pick as any)?.showcloser_correct ?? false, (pick as any)?.showopener_correct ?? false)
         }}
       />,
       document.body
@@ -1690,104 +1453,6 @@ export function SongSelectionModal({
     );
   });
 
-  // Hidden shareable image component that will be rendered to an image
-  const ShareableImageComponent = () => (
-    <div 
-      ref={shareableImageRef} 
-      className="bg-[#0c1d27] p-2" 
-      style={{ 
-        width: '450px', 
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        boxSizing: 'border-box'
-      }}
-    >
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="mt-3 ml-4">
-          <h1 className="text-xl font-mohr text-fifth">Echo of a Show</h1>
-          <h2 className="text-xs font-semibold text-[#a9682e]">A Setlist Game for Goose the Band</h2>
-        </div>
-        {/* Logo */}
-        <img 
-          src="/src/img/Logo_Text.png" 
-          alt="Goose Logo" 
-          className="w-48"
-        />
-      </div>
-      
-      {/* Show Info */}
-      <div className="mb-3 ml-4 pb-3 border-b border-white/10">
-        <h3 className="text-lg font-mohr text-fifth/90">
-          {formatDate(show.show_date)} — {show.show_subvenue}
-        </h3>
-        <p className="text-[#a9682e]/70 text-sm">
-          {show.show_venue_location}
-        </p>
-        {show.show_detail && (
-          <p className="text-[#a9682e] text-xs mt-1">
-            {show.show_detail}
-          </p>
-        )}
-        <p className="text-fifth/90 text-sm mt-2">
-          Picks by: <span className="font-semibold">{username || 'My Picks'}</span>
-        </p>
-      </div>
-      
-      {/* Picks */}
-      <div className="space-y-3 ml-4">
-        {getUniqueSets().map(setId => (
-          <div key={setId} className="mb-2">
-            <h4 className="text-base font-mohr text-fifth mb-1">
-              {getSetDisplayName(setId)}
-            </h4>
-            <div className="space-y-1">
-              {getSongsForSet(setId).map((pick, index) => (
-                <div 
-                  key={pick.id} 
-                  className="flex items-center rounded-md px-1 py-1 bg-[#0e151b]/20 text-[#fce7ca]/90"
-                >
-                  <span 
-                    className="text-primary text-center text-xs rounded font-semibold w-6 h-5 flex items-center justify-center mr-2"
-                    style={{ backgroundColor: getPlacementColor(pick.placement) }}
-                  >
-                    {index + 1}
-                  </span>
-                  <span className="text-sm text-fifth ml-2 font-medium">
-                    {cleanSongName(pick.song)}
-                  </span>
-                  
-                  {/* Show score if available */}
-                  {show.show_scored && pick.score !== undefined && (
-                    <div className="ml-auto">
-                      {pick.result === 'not_played' ? (
-                        <span className="text-red-500">✕</span>
-                      ) : (
-                        <span className="text-xs font-semibold text-green-500">
-                          +{pick.score}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {/* Footer - only show for scored shows */}
-      {show.show_scored && (
-        <div className="mt-4 pt-3 border-t border-white/10 text-center">
-          <div className="text-primary font-bold">
-            {submissionDetails?.totalScore} points
-          </div>
-          <div className="text-xs text-[#fce7ca]/70 mt-1">
-            dripfield.pro — Setlist Game
-          </div>
-        </div>
-      )}
-    </div>
-  );
 
   if (!isOpen) return null;
 
@@ -1887,7 +1552,7 @@ export function SongSelectionModal({
                       {/* Goose Songs Section */}
                       <optgroup label="Goose Songs">
                         {songs
-                          .filter(song => song.category_type === 'Goose' && !song.song.includes("[New") && !song.song_placeholder)
+                          .filter(song => song.category_type === 'Goose' && !song.song.includes("[New") && !(song as any).song_placeholder)
                           .map((song) => (
                             <option key={song.song_id} value={song.song}>
                               {song.song}
@@ -1898,7 +1563,7 @@ export function SongSelectionModal({
                       {/* Cover Songs Section */}
                       <optgroup label="Cover Songs">
                         {songs
-                          .filter(song => song.category_type === 'Cover Songs' && !song.song.includes("[New") && !song.song_placeholder)
+                          .filter(song => song.category_type === 'Cover Songs' && !song.song.includes("[New") && !(song as any).song_placeholder)
                           .map((song) => (
                             <option key={song.song_id} value={song.song}>
                               {song.song}
@@ -1984,7 +1649,7 @@ export function SongSelectionModal({
                         
                         {/* Desktop view: Two column layout */}
                         <div className="hidden md:block">
-                          {getAllSets().map(setId => (
+                          {getUniqueSets().map(setId => (
                             <div key={setId} className="border border-secondary rounded-lg overflow-hidden mb-5">
                               <div className="flex items-center px-3 py-2 bg-black">
                                 <h4 className="text-base font-medium text-primary flex-1">
@@ -2077,7 +1742,7 @@ export function SongSelectionModal({
                         
                         {/* Mobile view: Single column based on toggle state */}
                         <div className="md:hidden">
-                          {getAllSets().map(setId => (
+                          {getUniqueSets().map(setId => (
                             <div key={setId} className="border border-secondary rounded-lg overflow-hidden mb-5">
                               <div className="flex items-center px-3 py-2 bg-black">
                                 <h4 className="text-base font-medium text-primary flex-1">
@@ -2266,29 +1931,6 @@ export function SongSelectionModal({
           )}
         </div>
         
-        {/* Hidden component that will be rendered to an image */}
-        <div className="fixed left-[-9999px] top-0">
-          <ShareableImageComponent />
-        </div>
-        
-        {/* Preview section */}
-        {showPreview && previewImageUrl && (
-          <div className="p-3 bg-[#0e151b] border-t border-white/10">
-            <div className="flex flex-col items-center">
-              <h3 className="text-primary font-semibold mb-2">Image Preview</h3>
-              <div className="border border-white/20 rounded-lg overflow-hidden mb-3 max-w-full">
-                <img 
-                  src={previewImageUrl} 
-                  alt="Shareable setlist preview" 
-                  className="max-w-full h-auto" 
-                />
-              </div>
-              <p className="text-[#fce7ca]/70 text-xs text-center">
-                This is how your image will look when downloaded.
-              </p>
-            </div>
-          </div>
-        )}
         
         {/* Footer actions */}
         <div className="p-3 border-t bg-canvas border-secondary rounded-b-lg">
@@ -2328,12 +1970,6 @@ export function SongSelectionModal({
                 </button>
               </div>
               
-              {/* Share error message */}
-              {shareError && (
-                <div className="mt-2 text-red-500 text-xs text-center">
-                  {shareError}
-                </div>
-              )}
             </div>
           ) : (
             <>
@@ -2361,35 +1997,6 @@ export function SongSelectionModal({
                     </button>
                   )}
                   
-                  {/* Share button for edit mode */}
-                  {songPicks.length > 0 && (
-                    <button
-                      onClick={copyImageToClipboard}
-                      disabled={isGeneratingImage || clipboardSuccess}
-                      className={`px-3 py-2 font-medium rounded-md transition-colors border border-secondary flex items-center gap-1 ${
-                        clipboardSuccess 
-                          ? 'bg-green-600 hover:bg-green-700 text-primary' 
-                          : 'bg-blue-600 hover:bg-blue-600/80 text-primary disabled:bg-black/50 disabled:cursor-not-allowed'
-                      }`}
-                    >
-                      {isGeneratingImage ? (
-                        <>
-                          <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                          <span>...</span>
-                        </>
-                      ) : clipboardSuccess ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Share className="w-4 h-4" />
-                          <span>Share</span>
-                        </>
-                      )}
-                    </button>
-                  )}
                   
                   <button
                     onClick={handleSubmit}
@@ -2435,35 +2042,6 @@ export function SongSelectionModal({
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  {/* Share button for edit mode */}
-                  {songPicks.length > 0 && (
-                    <button
-                      onClick={copyImageToClipboard}
-                      disabled={isGeneratingImage || clipboardSuccess}
-                      className={`px-3 py-2 font-medium rounded-md border border-secondary transition-colors flex items-center gap-1 ${
-                        clipboardSuccess 
-                          ? 'bg-green-600 hover:bg-green-700 text-primary' 
-                          : 'bg-blue-600 hover:bg-blue-600/80 text-primary disabled:bg-black/50 disabled:cursor-not-allowed'
-                      }`}
-                    >
-                      {isGeneratingImage ? (
-                        <>
-                          <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                          <span>Generating...</span>
-                        </>
-                      ) : clipboardSuccess ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Share className="w-4 h-4" />
-                          <span>Share Picks</span>
-                        </>
-                      )}
-                    </button>
-                  )}
                   <button
                     onClick={handleSubmit}
                     disabled={songPicks.length === 0 || submitting || success}
@@ -2485,12 +2063,6 @@ export function SongSelectionModal({
                 </div>
               </div>
               
-              {/* Share error message for edit mode */}
-              {shareError && (
-                <div className="mt-2 text-red-500 text-xs text-center">
-                  {shareError}
-                </div>
-              )}
             </>
           )}
         </div>
