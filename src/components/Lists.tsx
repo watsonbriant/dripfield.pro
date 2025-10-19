@@ -74,9 +74,9 @@
             </h2>
             <div className="text-fourth text-sm font-medium">
               {songLists.length > 0 ? (
-                songLists.map((list) => (
+                songLists.map((list, index) => (
                   <button
-                    key={list.id}
+                    key={`song-${list.id || index}`}
                     onClick={() => handleListClick(list.list_id)}
                     className="block w-full text-left hover:underline transition-colors cursor-pointer"
                   >
@@ -84,7 +84,7 @@
                   </button>
                 ))
               ) : (
-                <div className="text-gray-500">No song lists available</div>
+                <div key="no-songs" className="text-gray-500">No song lists available</div>
               )}
             </div>
           </div>
@@ -95,9 +95,9 @@
             </h2>
             <div className="text-fourth text-sm font-medium">
               {showLists.length > 0 ? (
-                showLists.map((list) => (
+                showLists.map((list, index) => (
                   <button
-                    key={list.id}
+                    key={`show-${list.id || index}`}
                     onClick={() => handleListClick(list.list_id)}
                     className="block w-full text-left hover:underline transition-colors cursor-pointer"
                   >
@@ -105,7 +105,7 @@
                   </button>
                 ))
               ) : (
-                <div className="text-gray-500">No show lists available</div>
+                <div key="no-shows" className="text-gray-500">No show lists available</div>
               )}
             </div>
           </div>
