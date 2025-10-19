@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Search, Save, Edit, Plus } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import { useSongsData } from '../hooks/useSongsData';
+import { transformSongForUpdate, updateSong } from '../utils/songUtils';
+import { SongDropdown } from './SongDropdown';
+import { SongDetailsForm } from './SongDetailsForm';
 import SongModal from './SongModal';
 
 interface SongData {
@@ -12,18 +15,8 @@ interface SongData {
   song_coachnotes: string | null;
 }
 
-interface CategoryData {
-  category: string;
-}
-
-interface ArtistData {
-  artist: string;
-}
-
 export const AdminSong: React.FC = () => {
-  const [allSongs, setAllSongs] = useState<SongData[]>([]);
-  const [categories, setCategories] = useState<CategoryData[]>([]);
-  const [artists, setArtists] = useState<ArtistData[]>([]);
+  const { allSongs, categories, artists, refetchSongs } = useSongsData();
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<SongData | null>(null);
@@ -32,111 +25,6 @@ export const AdminSong: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [isNewSong, setIsNewSong] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const mountedRef = useRef(false);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Only fetch data once on mount
-  useEffect(() => {
-    if (!mountedRef.current) {
-      fetchAllSongs();
-      fetchCategories();
-      fetchArtists();
-      mountedRef.current = true;
-    }
-  }, []);
-
-  async function fetchAllSongs() {
-    try {
-      // First get the total count
-      const { count, error: countError } = await supabase
-        .from('songs')
-        .select('*', { count: 'exact', head: true });
-      
-      if (countError) {
-        console.error('Error fetching count:', countError);
-        throw countError;
-      }
-      
-      // Fetch in batches of 1000
-      const batchSize = 1000;
-      const totalBatches = Math.ceil((count || 0) / batchSize);
-      let allData: any[] = [];
-      
-      for (let i = 0; i < totalBatches; i++) {
-        const start = i * batchSize;
-        const end = Math.min(start + batchSize - 1, (count || 0) - 1);
-        
-        const { data, error } = await supabase
-          .from('songs')
-          .select('song, song_id, song_category, song_originalartist, song_categoryorder, song_coachnotes')
-          .order('song', { ascending: true })
-          .range(start, end);
-        
-        if (error) {
-          console.error(`Error fetching batch ${i + 1}:`, error);
-          throw error;
-        }
-        
-        if (data) {
-          allData = [...allData, ...data];
-        }
-      }
-      
-      if (allData.length > 0) {
-        setAllSongs(allData);
-      } else {
-        console.warn('No songs returned from query');
-        setAllSongs([]);
-      }
-    } catch (error) {
-      console.error('Error fetching songs:', error);
-      setAllSongs([]);
-    }
-  }
-
-  async function fetchCategories() {
-    try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('category')
-        .order('category', { ascending: true });
-  
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  }
-
-  async function fetchArtists() {
-    try {
-      const { data, error } = await supabase
-        .from('artists')
-        .select('artist')
-        .order('artist', { ascending: true });
-  
-      if (error) throw error;
-      setArtists(data || []);
-    } catch (error) {
-      console.error('Error fetching artists:', error);
-    }
-  }
-
-  const filteredSongs = React.useMemo(() => {
-    return allSongs.filter(song =>
-      song.song.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [allSongs, searchTerm]);
 
   const handleSongSelect = (song: SongData) => {
     setSelectedSong(song);
@@ -158,9 +46,9 @@ export const AdminSong: React.FC = () => {
     });
   };
 
-  const toggleEdit = () => {
+  const toggleEdit = async () => {
     if (isEditing) {
-      handleSaveChanges();
+      await handleSaveChanges();
     } else {
       setIsEditing(true);
     }
@@ -172,37 +60,13 @@ export const AdminSong: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Create a copy of editedSong with empty strings converted to null
-      const songToUpdate = {
-        ...editedSong,
-        song_category: editedSong.song_category === '' ? null : editedSong.song_category,
-        song_originalartist: editedSong.song_originalartist === '' ? null : editedSong.song_originalartist,
-        song_coachnotes: editedSong.song_coachnotes === '' ? null : editedSong.song_coachnotes
-      };
+      const songToUpdate = transformSongForUpdate(editedSong);
+      const updatedSong = await updateSong(songToUpdate);
       
-      // Use the RPC function you created in Supabase
-      const { error } = await supabase.rpc('update_song', {
-        song_id_param: songToUpdate.song_id,
-        song_param: songToUpdate.song,
-        song_category_param: songToUpdate.song_category,
-        song_originalartist_param: songToUpdate.song_originalartist,
-        song_categoryorder_param: songToUpdate.song_categoryorder,
-        song_coachnotes_param: songToUpdate.song_coachnotes
-      });
-      
-      if (error) {
-        console.error('Error updating song:', error);
-        throw error;
-      }
-      
-      // Update local state with the values that include nulls instead of empty strings
-      setSelectedSong(songToUpdate);
-      setEditedSong(songToUpdate);
+      setSelectedSong(updatedSong);
+      setEditedSong(updatedSong);
       setIsEditing(false);
-      
-      // Refresh the songs list
-      fetchAllSongs();
-      
+      refetchSongs();
     } catch (error) {
       console.error('Error updating song:', error);
     } finally {
@@ -215,15 +79,8 @@ export const AdminSong: React.FC = () => {
     setIsSongModalOpen(true);
   };
 
-  const handleOpenEditSongModal = () => {
-    if (selectedSong) {
-      setIsNewSong(false);
-      setIsSongModalOpen(true);
-    }
-  };
-
   const handleSongModalSave = () => {
-    fetchAllSongs();
+    refetchSongs();
     setIsSongModalOpen(false);
   };
 
@@ -231,7 +88,9 @@ export const AdminSong: React.FC = () => {
     <div>
       {/* Header with buttons and dropdown */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Song Management</h3>
+        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+          Song Management
+        </h3>
         
         <div className="flex items-center gap-2">
           {/* Add New Song button */}
@@ -243,165 +102,29 @@ export const AdminSong: React.FC = () => {
           </button>
           
           {/* Song Dropdown */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
-            >
-              Song
-              <ChevronDown className="w-4 h-4" />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
-                <div className="p-2">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search songs..."
-                      className="w-full px-2 py-1.5  pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
-                    />
-                    <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
-                  </div>
-                </div>
-                <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
-                  {filteredSongs.map((song) => (
-                    <button
-                      key={song.song_id}
-                      onClick={() => handleSongSelect(song)}
-                      className="w-full text-left px-2 py-1 font-medium text-xs text-fifth hover:bg-canvas transition-colors"
-                    >
-                      {song.song}
-                    </button>
-                  ))}
-                  {filteredSongs.length === 0 && (
-                    <div className="px-4 py-2 text-sm text-fifth/60 italic">
-                      No songs found
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          <SongDropdown
+            songs={allSongs}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            isOpen={isDropdownOpen}
+            setIsOpen={setIsDropdownOpen}
+            onSongSelect={handleSongSelect}
+          />
         </div>
       </div>
 
       {/* Song details section */}
       {selectedSong && (
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <h4 className="text-lg text-fifth font-medium">{selectedSong.song}</h4>
-            <button
-              onClick={toggleEdit}
-              disabled={isSubmitting}
-              className="px-2 py-1.5  font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-primary border-secondary hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
-            >
-              {isEditing ? (
-                <>
-                  <Save className="w-4 h-4" />
-                  Save
-                </>
-              ) : (
-                <>
-                  <Edit className="w-4 h-4" />
-                  Edit
-                </>
-              )}
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Song Title</label>
-              <input
-                type="text"
-                name="song"
-                value={editedSong?.song || ''}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
-              />
-            </div>
-            
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Category</label>
-              {isEditing ? (
-                <select
-                  name="song_category"
-                  value={editedSong?.song_category || ''}
-                  onChange={handleInputChange}
-                  className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
-                >
-                  <option value="">-- Select Category --</option>
-                  {categories.map((cat) => (
-                    <option key={cat.category} value={cat.category}>
-                      {cat.category}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={editedSong?.song_category || ''}
-                  readOnly
-                  className="w-full px-2 py-1.5 rounded-md border font-light border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
-                />
-              )}
-            </div>
-            
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Original Artist</label>
-              {isEditing ? (
-                <select
-                  name="song_originalartist"
-                  value={editedSong?.song_originalartist || ''}
-                  onChange={handleInputChange}
-                  className="w-full px-2 py-1.5 rounded-md border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
-                >
-                  <option value="">-- Select Artist --</option>
-                  {artists.map((artist) => (
-                    <option key={artist.artist} value={artist.artist}>
-                      {artist.artist}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={editedSong?.song_originalartist || ''}
-                  readOnly
-                  className="w-full px-2 py-1.5 rounded-md font-light border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
-                />
-              )}
-            </div>
-            
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Category Order</label>
-              <input
-                type="number"
-                name="song_categoryorder"
-                value={editedSong?.song_categoryorder === null ? '' : editedSong?.song_categoryorder}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
-              />
-            </div>
-            
-            <div className="space-y-1 md:col-span-2">
-              <label className="block text-sm font-medium text-fifth">Coach's Notes</label>
-              <textarea
-                name="song_coachnotes"
-                value={editedSong?.song_coachnotes || ''}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                rows={4}
-                className={`w-full px-2 py-1.5 rounded-md font-light border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
-              />
-            </div>
-          </div>
-        </div>
+        <SongDetailsForm
+          selectedSong={selectedSong}
+          editedSong={editedSong}
+          isEditing={isEditing}
+          isSubmitting={isSubmitting}
+          categories={categories}
+          artists={artists}
+          onToggleEdit={toggleEdit}
+          onInputChange={handleInputChange}
+        />
       )}
 
       {/* Song Modal for creating or editing songs */}
