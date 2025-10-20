@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { FileMusic, AudioLines } from 'lucide-react';
 import gooseLogo from '../img/Goose.png';
 import wlImage from '../img/WL.png';
@@ -33,6 +34,9 @@ interface HomeShowTableProps {
 
 export function HomeShowTable({ title, shows, loading, emptyMessage, showsWithSetlists = new Set(), showsWithReleases = new Set() }: HomeShowTableProps) {
   const navigate = useNavigate();
+  const [hoveredVenue, setHoveredVenue] = useState<string | null>(null);
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   if (loading) {
     return (
       <div className="bg-primary border border-secondary rounded-lg p-3">
@@ -79,7 +83,19 @@ export function HomeShowTable({ title, shows, loading, emptyMessage, showsWithSe
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
                   } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="w-20 px-3 py-0.5 text-fifth whitespace-nowrap text-left">
+                  <td 
+                    className="w-20 px-3 py-0.5 text-fifth whitespace-nowrap text-left cursor-pointer"
+                    onMouseEnter={(e) => {
+                      setHoveredDate(show.show_id);
+                      setMousePosition({ x: e.clientX, y: e.clientY });
+                    }}
+                    onMouseMove={(e) => {
+                      setMousePosition({ x: e.clientX, y: e.clientY });
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredDate(null);
+                    }}
+                  >
                     <span className="font-medium">
                       <Link
                         to={`/setlist/${show.show_id}`}
@@ -92,9 +108,52 @@ export function HomeShowTable({ title, shows, loading, emptyMessage, showsWithSe
                           .join('.')}
                       </Link>
                     </span>
+                    {hoveredDate === show.show_id && (
+                      <div 
+                        className="fixed text-xs bg-tertiary font-medium text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
+                        style={{
+                          left: `${mousePosition.x + 10}px`,
+                          top: `${mousePosition.y - 10}px`
+                        }}
+                      >
+                        <div className="font-medium">{show.show_group}</div>
+                        <div className="font-light">{show.show_tour}</div>
+                        {show.show_detail && (
+                          <div className="font-light">{show.show_detail}</div>
+                        )}
+                      </div>
+                    )}
                   </td>
-                  <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-left">
+                  <td 
+                    className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-left cursor-pointer hover:underline transition-colors"
+                    onMouseEnter={(e) => {
+                      setHoveredVenue(show.show_id);
+                      setMousePosition({ x: e.clientX, y: e.clientY });
+                    }}
+                    onMouseMove={(e) => {
+                      setMousePosition({ x: e.clientX, y: e.clientY });
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredVenue(null);
+                    }}
+                    onClick={() => {
+                      if (show.venue_id) {
+                        navigate(`/venue/${show.venue_id}`);
+                      }
+                    }}
+                  >
                     {show.show_venue_location}
+                    {hoveredVenue === show.show_id && (
+                      <div 
+                        className="fixed text-xs bg-tertiary font-medium text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999]"
+                        style={{
+                          left: `${mousePosition.x + 10}px`,
+                          top: `${mousePosition.y - 10}px`
+                        }}
+                      >
+                        {show.show_subvenue}
+                      </div>
+                    )}
                   </td>
                   <td className="w-6 text-center align-middle">
                     {showsWithSetlists.has(show.show_id) && (
