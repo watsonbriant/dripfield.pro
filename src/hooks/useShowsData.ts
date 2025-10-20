@@ -126,7 +126,7 @@ export function useShowsData() {
           }).replace(/\//g, '.')
         }));
 
-        setRecentShows(processedData || []);
+        setRecentShows((processedData || []).reverse());
       } catch (error) {
         console.error('Error fetching recent shows:', error);
         setRecentShows([]);
@@ -251,7 +251,7 @@ export function useShowsData() {
           }).replace(/\//g, '.')
         }));
 
-        setHistoricalShows(processedData || []);
+        setHistoricalShows((processedData || []).reverse());
       } catch (error) {
         console.error('Error fetching historical shows:', error);
         setHistoricalShows([]);

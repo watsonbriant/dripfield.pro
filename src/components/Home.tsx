@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import coverImage from '../img/Cover.jpg';
 import cover2 from '../img/Cover2.jpg';
-import { ShowTable } from './ShowTable';
+import { HomeShowTable } from './HomeShowTable';
 import { MostRecentShow } from './MostRecentShow';
 import { StatsSection } from './StatsSection';
 import { useShowsData } from '../hooks/useShowsData';
 import { useStatsData } from '../hooks/useStatsData';
+import { useShowMetadata } from '../hooks/useShowMetadata';
 
 export function Home() {
   const [selectedYear, setSelectedYear] = useState<number | string>(new Date().getFullYear());
@@ -33,6 +34,10 @@ export function Home() {
     notPlayedSongs,
     isAnyStatLoading
   } = useStatsData(selectedYear);
+
+  // Get metadata for all shows (recent, upcoming, historical)
+  const allShows = [...recentShows, ...upcomingShows, ...historicalShows];
+  const { showsWithSetlists, showsWithReleases } = useShowMetadata(allShows, selectedYear.toString());
 
   useEffect(() => {
     const testConnection = async () => {
@@ -74,30 +79,36 @@ export function Home() {
             />
           </div>
 
-          <ShowTable
+          <HomeShowTable
             title="Last 5 Shows"
             shows={recentShows}
             loading={loading}
+            showsWithSetlists={showsWithSetlists}
+            showsWithReleases={showsWithReleases}
           />
 
           <MostRecentShow
-            mostRecentShow={mostRecentShow}
+            mostRecentShow={mostRecentShow as any}
             setlist={setlist}
             loadingMostRecent={loadingMostRecent}
             loadingSetlist={loadingSetlist}
           />
 
-          <ShowTable
+          <HomeShowTable
             title="Next 5 Shows"
             shows={upcomingShows}
             loading={loadingUpcoming}
+            showsWithSetlists={showsWithSetlists}
+            showsWithReleases={showsWithReleases}
           />
 
-          <ShowTable
+          <HomeShowTable
             title="This Day in Goose History"
             shows={historicalShows}
             loading={loadingHistorical}
             emptyMessage="No shows occurred on this date in Goose history."
+            showsWithSetlists={showsWithSetlists}
+            showsWithReleases={showsWithReleases}
           />
         </div>
 
