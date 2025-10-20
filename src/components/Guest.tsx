@@ -13,7 +13,7 @@ export function Guest() {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [selectedSong, setSelectedSong] = useState<string | null>(null);
   
-  const { guest, performances, loading, songShowMap } = useGuestData(PersonnelID);
+  const { guest, performances, loading, songShowMap, songs, songSpreadData, loadingProgress } = useGuestData(PersonnelID);
 
   // Handle group selection
   const handleGroupClick = (group: string) => {
@@ -66,6 +66,9 @@ export function Guest() {
               selectedSong={selectedSong}
               onSongClick={handleSongClick}
               cleanSongName={cleanSongName}
+              songs={songs}
+              songSpreadData={songSpreadData}
+              loadingProgress={loadingProgress}
             />
           )}
 

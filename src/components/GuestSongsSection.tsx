@@ -8,6 +8,9 @@ interface GuestSongsSectionProps {
   selectedSong: string | null;
   onSongClick: (song: string) => void;
   cleanSongName: (songName: string) => string;
+  songs: any[];
+  songSpreadData: any[];
+  loadingProgress: number;
 }
 
 export const GuestSongsSection: React.FC<GuestSongsSectionProps> = ({
@@ -15,7 +18,10 @@ export const GuestSongsSection: React.FC<GuestSongsSectionProps> = ({
   isLoading,
   selectedSong,
   onSongClick,
-  cleanSongName
+  cleanSongName,
+  songs,
+  songSpreadData,
+  loadingProgress
 }) => {
   return (
     <div className="h-full">
@@ -29,6 +35,9 @@ export const GuestSongsSection: React.FC<GuestSongsSectionProps> = ({
             onSongClick={onSongClick}
             CircularProgress={CircularProgress}
             cleanSongName={cleanSongName}
+            songs={songs}
+            songSpreadData={songSpreadData}
+            loadingProgress={loadingProgress}
           />
         </div>
       </div>

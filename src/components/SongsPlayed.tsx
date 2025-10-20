@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
 import { ChartBarDecreasing } from '../components/icons/ChartBarDecreasing';
 import { Modal } from './Modal';
+import { CircularProgress } from './ui/CircularProgress';
 
 interface SongCount {
   song: string;
   play_count: number;
   category?: string;
   category_canonid?: number;
+  original_artist?: string;
 }
 
 interface SongsPlayedProps {
@@ -15,8 +16,11 @@ interface SongsPlayedProps {
   isLoading: boolean;
   selectedSong: string | null;
   onSongClick: (song: string) => void;
-  CircularProgress?: React.FC<{ value: number }>; // Added prop to receive CircularProgress component
+  CircularProgress?: React.FC<{ value: number }>;
   cleanSongName?: (songName: string) => string;
+  songs: SongCount[];
+  songSpreadData: any[];
+  loadingProgress: number;
 }
 
 interface SongSpreadItem {
@@ -31,245 +35,22 @@ interface SongSpreadItem {
   }[];
 }
 
-// Default CircularProgress component if one isn't passed in
-const DefaultCircularProgress = ({ value }: { value: number }) => {
-  const radius = 30; // Smaller for this component
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - value / 100);
-  
-  return (
-    <div className="relative inline-flex justify-center items-center">
-      <svg className="w-16 h-16" viewBox="0 0 100 100">
-        {/* Background circle */}
-        <circle 
-          cx="50" 
-          cy="50" 
-          r={radius} 
-          fill="transparent" 
-          stroke="#b4b2b2" 
-          strokeWidth="8"
-          strokeOpacity="0.3"
-        />
-        {/* Progress circle */}
-        <circle 
-          cx="50" 
-          cy="50" 
-          r={radius} 
-          fill="transparent" 
-          stroke="#8ec1b6" 
-          strokeWidth="8" 
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          transform="rotate(-90 50 50)"
-          className="transition-all duration-300 ease-in-out"
-        />
-      </svg>
-      <div className="absolute text-sm font-bold text-fifth">
-        {Math.round(value)}%
-      </div>
-    </div>
-  );
-};
-
 export function SongsPlayed({ 
   PersonnelID, 
   isLoading, 
   selectedSong, 
   onSongClick,
-  CircularProgress = DefaultCircularProgress,
-  cleanSongName
+  CircularProgress = CircularProgress,
+  cleanSongName,
+  songs,
+  songSpreadData,
+  loadingProgress
 }: SongsPlayedProps) {
-  const [songs, setSongs] = useState<SongCount[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'song' | 'count'>('count');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [isSpreadModalOpen, setIsSpreadModalOpen] = useState(false);
-  const [songSpreadData, setSongSpreadData] = useState<SongSpreadItem[]>([]);
 
-  useEffect(() => {
-    async function fetchSongs() {
-      if (!PersonnelID) return;
-      
-      try {
-        setLoading(true);
-        setLoadingProgress(5);
-        
-        // Use the same pagination approach as in the Guest component
-        let allEntries = [];
-        let page = 0;
-        let hasMore = true;
-        const pageSize = 1000;
-        
-        while (hasMore) {
-          
-          const { data, error, count } = await supabase
-            .from('setlist_entry_guests')
-            .select(`
-              setlist_entry_id,
-              setlist_entries:setlist_entry_id(
-                entry_song,
-                songs:entry_song(
-                  song,
-                  song_category,
-                  song_originalartist,
-                  categories:song_category(
-                    category_canonid
-                  )
-                )
-              )
-            `, { count: 'exact' })
-            .eq('guest_id', PersonnelID)
-            .range(page * pageSize, (page + 1) * pageSize - 1);
-            
-          if (error) throw error;
-          
-          if (data && data.length > 0) {
-            allEntries = [...allEntries, ...data];
-            page++;
-            
-            // Update progress based on pagination
-            // Reserve 5-70% of progress for this step
-            const paginationProgress = 5 + (page * 15);
-            setLoadingProgress(Math.min(70, paginationProgress));
-            
-            // If we got fewer records than the page size, we're done
-            hasMore = data.length === pageSize;
-          } else {
-            hasMore = false;
-          }
-        }
-        
-        setLoadingProgress(75);
-        
-        // Process data to count song occurrences and get song categories
-        const songData: Record<string, { 
-          count: number, 
-          category: string, 
-          categoryCanonId?: number,
-          originalArtist?: string 
-        }> = {};
-        
-        allEntries.forEach(item => {
-          if (item.setlist_entries?.songs?.song) {
-            const songName = item.setlist_entries.songs.song;
-            const category = item.setlist_entries.songs.song_category;
-            const categoryCanonId = item.setlist_entries.songs.categories?.category_canonid;
-            const originalArtist = item.setlist_entries.songs.song_originalartist;
-            
-            if (!songData[songName]) {
-              songData[songName] = { 
-                count: 0, 
-                category, 
-                categoryCanonId,
-                originalArtist: originalArtist || undefined
-              };
-            }
-            songData[songName].count += 1;
-          }
-        });
-
-        setLoadingProgress(85);
-
-        // Get category_canonid for each song category
-        const categories = [...new Set(Object.values(songData).map(data => data.category))];
-        
-        let categoryCanonIds: Record<string, number> = {};
-        if (categories.length > 0) {
-          const { data: categoryData, error: categoryError } = await supabase
-            .from('categories')
-            .select('category, category_canonid')
-            .in('category', categories);
-            
-          if (!categoryError && categoryData) {
-            categoryCanonIds = categoryData.reduce((acc, cat) => {
-              acc[cat.category] = cat.category_canonid;
-              return acc;
-            }, {});
-          }
-        }
-
-        let categoryArtwork: Record<string, string | null> = {};
-        if (categories.length > 0) {
-          const { data: artworkData, error: artworkError } = await supabase
-            .from('categories')
-            .select('category, category_artwork')
-            .in('category', categories);
-            
-          if (!artworkError && artworkData) {
-            categoryArtwork = artworkData.reduce((acc, cat) => {
-              acc[cat.category] = cat.category_artwork;
-              return acc;
-            }, {});
-          }
-        }
-        
-        // Convert to array format with category information
-        const songsArray = Object.entries(songData).map(([song, data]) => ({
-          song,
-          play_count: data.count,
-          category: data.category,
-          category_canonid: data.categoryCanonId || categoryCanonIds[data.category] || 9999, // Default high value for sorting unknown categories last
-          original_artist: data.originalArtist
-        }));
-        
-        setSongs(songsArray);
-        setLoadingProgress(95);
-        
-        // Prepare data for song spread visualization
-        const categorySongs: Record<string, Array<{song: string, playCount: number, artist?: string}>> = {};
-        const categoryTotalPerformances: Record<string, number> = {};
-        
-        // Group songs by category and track total performances
-        songsArray.forEach(songData => {
-          const category = songData.category || 'Uncategorized';
-          
-          if (!categorySongs[category]) {
-            categorySongs[category] = [];
-            categoryTotalPerformances[category] = 0;
-          }
-          
-          categorySongs[category].push({
-            song: songData.song,
-            playCount: songData.play_count,
-            artist: songData.original_artist
-          });
-          
-          // Sum the play counts for total performances in this category
-          categoryTotalPerformances[category] += songData.play_count;
-        });
-        
-        // Convert to sorted array for the spread chart
-        const spreadData = Object.keys(categoryTotalPerformances).map(category => ({
-          category,
-          count: categoryTotalPerformances[category],
-          canonid: categoryCanonIds[category] || 9999,
-          artwork: categoryArtwork[category],
-          songs: categorySongs[category].sort((a, b) => b.playCount - a.playCount)
-        })).sort((a, b) => {
-          if (b.count !== a.count) {
-            return b.count - a.count;
-          }
-          return a.canonid - b.canonid;
-        });
-        
-        setSongSpreadData(spreadData);
-        setLoadingProgress(100);
-        
-        // Small delay before removing the loading screen for smooth transition
-        setTimeout(() => setLoading(false), 500);
-      } catch (error) {
-        console.error('Error fetching songs data:', error);
-        setLoadingProgress(100);
-        setTimeout(() => setLoading(false), 500);
-      }
-    }
-    
-    fetchSongs();
-  }, [PersonnelID]);
-  
   // Handle sorting
   const handleSortClick = (column: 'song' | 'count') => {
     if (sortBy === column) {
@@ -321,7 +102,7 @@ export function SongsPlayed({
     }
   });
   
-  if (isLoading || loading) {
+  if (isLoading) {
     return (
       <div className="max-h-[320px] overflow-y-auto">
         <div className="flex items-center justify-center py-6">
