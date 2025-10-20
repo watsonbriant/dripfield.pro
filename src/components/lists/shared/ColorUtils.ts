@@ -76,7 +76,8 @@ export const getGapColor = (value: string | null): string => {
     return `rgb(${r}, ${g}, ${b})`;
 };
 
-export const formatShowLength = (length: string): string => {
+export const formatShowLength = (length: string | null): string => {
+    if (!length) return '';
     const parts = length.split(':');
     if (parts.length === 3) {
         const hours = parseInt(parts[0], 10);

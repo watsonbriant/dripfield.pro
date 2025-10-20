@@ -3,158 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { TicketPlus, Plus } from 'lucide-react';
+import { TicketPlus } from 'lucide-react';
 import AttendShowManager from './AttendShowManager';
-
-interface AttendedShow {
-  id: string;
-  user_id: string;
-  show_id: string;
-  created_at: string;
-  show?: {
-    show_id: string;
-    show_date: string;
-    show_group: string;
-    show_subvenue: string;
-    show_venue_location: string;
-    show_subvenue_venue: string;
-    show_tour: string | null;
-    show_canonid: string | null;
-    tours: {
-      tour_id: string;
-    } | null;
-    show_detail: string | null;
-    show_alert: string | null;
-    show_length?: string | null;
-    show_rarity?: string | null;
-    show_gap?: string | null;
-  };
-}
-
-const getRarityColor = (percentage: string | null): string => {
-  if (!percentage || percentage === '-') return 'transparent';
-  
-  const numericPercentage = parseFloat(percentage.replace('%', ''));
-  
-  if (isNaN(numericPercentage)) return 'transparent';
-  
-  const colorStops = [
-    { percent: 0, color: { r: 156, g: 12, b: 12 } },
-    { percent: 12, color: { r: 230, g: 81, b: 0 } },
-    { percent: 24, color: { r: 179, g: 135, b: 0 } },
-    { percent: 50, color: { r: 46, g: 125, b: 50 } },
-    { percent: 100, color: { r: 13, g: 71, b: 161 } }
-  ];
-  
-  let lowerStop = colorStops[0];
-  let upperStop = colorStops[colorStops.length - 1];
-  
-  for (let i = 0; i < colorStops.length - 1; i++) {
-    if (numericPercentage >= colorStops[i].percent && numericPercentage <= colorStops[i + 1].percent) {
-      lowerStop = colorStops[i];
-      upperStop = colorStops[i + 1];
-      break;
-    }
-  }
-  
-  const range = upperStop.percent - lowerStop.percent;
-  const factor = range !== 0 ? (numericPercentage - lowerStop.percent) / range : 0;
-  
-  const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
-  const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
-  const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
-  
-  return `rgb(${r}, ${g}, ${b})`;
-};
-
-const getGapColor = (value: string | null): string => {
-  if (!value || value === '-') return 'transparent';
-
-  const numericValue = parseFloat(value);
-
-  if (isNaN(numericValue)) return 'transparent';
-
-  const cappedValue = Math.min(numericValue, 100);
-
-  const colorStops = [
-    { percent: 0, color: { r: 13, g: 71, b: 161 } },
-    { percent: 12, color: { r: 46, g: 125, b: 50 } },
-    { percent: 24, color: { r: 179, g: 135, b: 0 } },
-    { percent: 50, color: { r: 230, g: 81, b: 0 } },
-    { percent: 100, color: { r: 156, g: 12, b: 12 } }
-  ];
-
-  let lowerStop = colorStops[0];
-  let upperStop = colorStops[colorStops.length - 1];
-
-  for (let i = 0; i < colorStops.length - 1; i++) {
-    if (cappedValue >= colorStops[i].percent && cappedValue <= colorStops[i + 1].percent) {
-      lowerStop = colorStops[i];
-      upperStop = colorStops[i + 1];
-      break;
-    }
-  }
-
-  const range = upperStop.percent - lowerStop.percent;
-  const factor = range !== 0 ? (cappedValue - lowerStop.percent) / range : 0;
-
-  const r = Math.round(lowerStop.color.r + factor * (upperStop.color.r - lowerStop.color.r));
-  const g = Math.round(lowerStop.color.g + factor * (upperStop.color.g - lowerStop.color.g));
-  const b = Math.round(lowerStop.color.b + factor * (upperStop.color.b - lowerStop.color.b));
-
-  return `rgb(${r}, ${g}, ${b})`;
-};
-
-// Helper function to format show length without leading zeros in hours
-const formatShowLength = (length: string | null): string => {
-  if (!length) return '';
-  const parts = length.split(':');
-  if (parts.length === 3) {
-    const hours = parseInt(parts[0], 10);
-    return `${hours}:${parts[1]}:${parts[2]}`;
-  }
-  return length;
-};
-
-// CircularProgress component
-const CircularProgress = ({ value }: { value: number }) => {
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - value / 100);
-  
-  return (
-    <div className="relative inline-flex justify-center items-center">
-      <svg className="w-24 h-24" viewBox="0 0 100 100">
-        {/* Background circle */}
-        <circle 
-          cx="50" 
-          cy="50" 
-          r={radius} 
-          fill="transparent" 
-          stroke="#e5e5e5" 
-          strokeWidth="8"
-        />
-        {/* Progress circle */}
-        <circle 
-          cx="50" 
-          cy="50" 
-          r={radius} 
-          fill="transparent" 
-          stroke="#8e6c7a" 
-          strokeWidth="8" 
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          transform="rotate(-90 50 50)"
-          className="transition-all duration-300 ease-in-out"
-        />
-      </svg>
-      <div className="absolute text-lg font-bold text-fifth">
-        {Math.round(value)}%
-      </div>
-    </div>
-  );
-};
+import { CircularProgress } from './ui/CircularProgress';
+import { getRarityColor, getGapColor, formatShowLength } from './lists/shared/ColorUtils';
+import { fetchAttendedShows, type AttendedShow } from '../utils/showUtils';
 
 interface AttendedShowsProps {
   userId?: string;
@@ -218,162 +71,16 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
   }, [userId, isOwnProfile]);
 
   useEffect(() => {
-    const fetchAttendedShows = async () => {
+    const loadAttendedShows = async () => {
       if (!effectiveUserId) return;
 
       try {
         setLoading(true);
-        setLoadingProgress(5);
+        const shows = await fetchAttendedShows(effectiveUserId, setLoadingProgress);
+        setAttendedShows(shows);
         
-        // Get the basic attended show records with pagination
-        let allAttendanceData = [];
-        let page = 0;
-        let hasMore = true;
-        const pageSize = 1000;
-        
-        while (hasMore) {
-          
-          const { data, error } = await supabase
-            .from('user_attended_shows')
-            .select('*')
-            .eq('user_id', effectiveUserId)
-            .range(page * pageSize, (page + 1) * pageSize - 1);
-          
-          if (error) throw error;
-          
-          if (data && data.length > 0) {
-            allAttendanceData = [...allAttendanceData, ...data];
-            page++;
-            
-            // Update progress based on pagination (5-25%)
-            setLoadingProgress(Math.min(25, 5 + (page * 5)));
-            
-            // If we got fewer records than the page size, we're done
-            hasMore = data.length === pageSize;
-          } else {
-            hasMore = false;
-          }
-        }
-        
-        // If the user hasn't attended any shows, return early
-        if (allAttendanceData.length === 0) {
-          setAttendedShows([]);
-          setLoadingProgress(100);
-          setTimeout(() => setLoading(false), 500);
-          return;
-        }
-        
-        // Extract the show IDs
-        const showIds = allAttendanceData.map(show => show.show_id);
-        
-        setLoadingProgress(30);
-        
-        // Split showIds into chunks for batch processing
-        const showIdChunks = [];
-        const chunkSize = 200; // Supabase has limits on IN clause size
-        
-        for (let i = 0; i < showIds.length; i += chunkSize) {
-          showIdChunks.push(showIds.slice(i, i + chunkSize));
-        }
-        
-        // Fetch the show details for each attended show with pagination and chunking
-        let allShowData = [];
-        
-        for (let i = 0; i < showIdChunks.length; i++) {
-          const currentChunk = showIdChunks[i];
-          page = 0;
-          hasMore = true;
-          
-          while (hasMore) {
-            
-            const { data, error } = await supabase
-              .from('shows')
-              .select(`
-                show_id,
-                show_date,
-                show_group,
-                show_subvenue,
-                show_venue_location,
-                show_subvenue_venue,
-                show_tour,
-                show_canonid,
-                show_length,
-                show_rarity,
-                show_gap,
-                tours!show_tour(
-                  tour_id
-                ),
-                show_detail,
-                show_alert
-              `)
-              .in('show_id', currentChunk)
-              .range(page * pageSize, (page + 1) * pageSize - 1);
-            
-            if (error) throw error;
-            
-            if (data && data.length > 0) {
-              allShowData = [...allShowData, ...data];
-              page++;
-              
-              // Update progress based on pagination and chunks (30-75%)
-              const progressPerChunk = 45 / showIdChunks.length;
-              const chunkProgress = (i / showIdChunks.length) * 45;
-              const pageProgress = (page * progressPerChunk) / Math.ceil(currentChunk.length / pageSize);
-              setLoadingProgress(Math.min(75, 30 + chunkProgress + pageProgress));
-              
-              // If we got fewer records than the page size, we're done with this chunk
-              hasMore = data.length === pageSize;
-            } else {
-              hasMore = false;
-            }
-          }
-        }
-        setLoadingProgress(80);
-        
-        // Combine the attendance records with the show details and format the values
-        const combinedData = allAttendanceData.map(attendedShow => {
-          const showDetails = allShowData?.find(show => show.show_id === attendedShow.show_id);
-          
-          let showWithFormattedValues = { ...showDetails };
-          
-          if (showDetails) {
-            // Format rarity with % symbol if it exists
-            const show_rarity = showDetails.show_rarity !== null && showDetails.show_rarity !== undefined
-              ? `${showDetails.show_rarity.toFixed(2)}%`
-              : null;
-            
-            // Format gap as string with 2 decimal places if it exists
-            const show_gap = showDetails.show_gap !== null && showDetails.show_gap !== undefined
-              ? showDetails.show_gap.toFixed(2)
-              : null;
-            
-            showWithFormattedValues = {
-              ...showDetails,
-              show_rarity,
-              show_gap
-            };
-          }
-          
-          return {
-            ...attendedShow,
-            show: showWithFormattedValues
-          };
-        });
-        
-        setLoadingProgress(90);
-        
-        // Sort by date, oldest first
-        const sortedShows = combinedData.sort((a, b) => {
-          if (!a.show?.show_date || !b.show?.show_date) return 0;
-          return new Date(a.show.show_date).getTime() - new Date(b.show.show_date).getTime();
-        });
-        
-        setAttendedShows(sortedShows);
-        setLoadingProgress(100);
-
         // Small delay before removing the loading screen for smooth transition
         setTimeout(() => setLoading(false), 500);
-
       } catch (error) {
         console.error('Error fetching attended shows:', error);
         setLoadingProgress(100);
@@ -381,7 +88,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
       }
     };
 
-    fetchAttendedShows();
+    loadAttendedShows();
   }, [effectiveUserId, isManageMode]);
 
   if (!effectiveUserId) {
@@ -416,16 +123,6 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
     );
   }
 
-  // Get the appropriate title based on whose profile we're viewing
-  const getTitle = () => {
-    if (isOwnProfile) {
-      return "Shows You've Attended";
-    } else if (username) {
-      return `Shows Attended`;
-    } else {
-      return "Shows Attended";
-    }
-  };
 
   // Get the empty state message based on whose profile we're viewing
   const getEmptyMessage = () => {
@@ -531,7 +228,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                   </td>
                   <td className="px-4 py-0.5 font-light text-center whitespace-nowrap">
                     <span className="text-fifth">
-                      {formatShowLength(attendedShow.show?.show_length)}
+                      {formatShowLength(attendedShow.show?.show_length ?? null)}
                     </span>
                   </td>
                   <td className="px-4 text-center whitespace-nowrap">
