@@ -18,7 +18,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({ value }) => {
           cy="50" 
           r={radius} 
           fill="transparent" 
-          stroke="#b4b2b2" 
+          stroke="#dad0bc" 
           strokeWidth="8"
         />
         {/* Progress circle */}
