@@ -1,0 +1,185 @@
+import React from 'react';
+import { Home, Calendar, MapPin, Music, Users, Building2, Disc, ShieldCheck, Search, Bug, FileWarning, ListMusic, Trophy, List } from 'lucide-react';
+
+export interface NavItem {
+  name: string;
+  icon: React.ReactNode;
+  desktopIcon?: React.ReactNode;
+  path: string;
+  adminOnly?: boolean;
+  mobileOnly?: boolean;
+  action?: () => void;
+  badge?: number | null;
+  newBadge?: boolean;
+}
+
+export const getNavigationItems = (bugCount: number | null, openShowModal?: () => void): NavItem[] => [
+  { 
+    name: 'Home', 
+    icon: <Home className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Home className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Home</span>
+      </div>
+    ),
+    path: '/',
+    mobileOnly: true 
+  },
+  { 
+    name: 'Years', 
+    icon: <Calendar className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Calendar className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Years</span>
+      </div>
+    ),
+    path: '/years' 
+  },
+  { 
+    name: 'Tours', 
+    icon: <MapPin className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <MapPin className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Tours</span>
+      </div>
+    ),
+    path: '/tours' 
+  },
+  { 
+    name: 'Songs', 
+    icon: <Music className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Music className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Songs</span>
+      </div>
+    ),
+    path: '/songs' 
+  },
+  { 
+    name: 'Personnel', 
+    icon: <Users className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Users className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Personnel</span>
+      </div>
+    ),
+    path: '/personnel' 
+  },
+  { 
+    name: 'Venues', 
+    icon: <Building2 className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Building2 className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Venues</span>
+      </div>
+    ),
+    path: '/venues' 
+  },
+  { 
+    name: 'Discography', 
+    icon: <Disc className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Disc className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Discography</span>
+      </div>
+    ),
+    path: '/discography' 
+  },
+  { 
+    name: 'Lists', 
+    icon: <List className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <List className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Lists</span>
+      </div>
+    ),
+    path: '/lists' 
+  },
+  { 
+    name: 'Setlist Game', 
+    icon: <ListMusic className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <ListMusic className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Setlist Game</span>
+      </div>
+    ),
+    path: '/setlistgame'
+  },
+  { 
+    name: 'Jam of the Year', 
+    icon: <Trophy className="w-5 h-5" />,
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Trophy className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Jam of the Year</span>
+      </div>
+    ),
+    path: '/joty'
+  },
+  { 
+    name: 'Submit', 
+    icon: <FileWarning className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <FileWarning className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Submit</span>
+      </div>
+    ),
+    path: '/submit' 
+  },
+  // Admin-only items
+  { 
+    name: 'Admin Panel', 
+    icon: <ShieldCheck className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <ShieldCheck className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Admin Panel</span>
+      </div>
+    ),
+    path: '/admin', 
+    adminOnly: true 
+  },
+  { 
+    name: 'Bug Tracker', 
+    icon: <Bug className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Bug className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Bug Tracker</span>
+      </div>
+    ),
+    path: '/bugs', 
+    adminOnly: true,
+    badge: bugCount
+  },
+  { 
+    name: 'Find', 
+    icon: <Search className="w-5 h-5" />, 
+    desktopIcon: (
+      <div className="flex items-center gap-1 px-2 py-1 bg-primary text-[#272727] rounded-lg border border-[#272727] transition-all duration-300 hover:bg-[#272727] hover:border-primary hover:text-primary hover:drop-shadow-[3px_3px_0px_rgba(39,39,39,1)]">
+        <Search className="w-4 h-4 flex-shrink-0" />
+        <span className="font-trad text-[1.125rem] leading-[1rem] tracking-tight mb-0.5">Find</span>
+      </div>
+    ),
+    path: '#', 
+    action: openShowModal,
+    adminOnly: true
+  },
+  { 
+    name: 'Donate', 
+    icon: null,
+    path: '#',
+    action: () => window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank'),
+    mobileOnly: true 
+  },
+];
