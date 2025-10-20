@@ -114,7 +114,7 @@ export function HomeShowTable({ title, shows, loading, emptyMessage, showsWithSe
                     {showsWithReleases.has(show.show_id) && (
                       <div className="flex justify-center items-center h-full">
                         <button
-                          onClick={() => navigate(`/setlist/${show.show_id}`)}
+                          onClick={() => navigate(`/setlist/${show.show_id}`, { state: { scrollToReleases: true } })}
                           className="text-[#7c2128] hover:text-primary hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
                         >
                           <AudioLines size={14.5} strokeWidth={2} />

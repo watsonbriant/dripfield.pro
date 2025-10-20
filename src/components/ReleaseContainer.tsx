@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ArrowLeft, ArrowRight, MoveRight, AudioLines } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NugsIcon from '../../public/src/img/nugs.png';
@@ -18,6 +18,8 @@ interface Release {
 
 interface ReleaseContainerProps {
   showId: string;
+  highlightOnMount?: boolean;
+  className?: string;
 }
 
 // Function to get the appropriate icon based on service name
@@ -92,12 +94,13 @@ const convertToYouTubeEmbed = (youtubeUrl: string): string => {
   return youtubeUrl; // Return original if can't parse
 };
 
-const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
+const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOnMount = false, className = "" }) => {
   const [releases, setReleases] = useState<Release[]>([]);
   const [currentReleaseIndex, setCurrentReleaseIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [embeddedReleaseIndex, setEmbeddedReleaseIndex] = useState<number | null>(null);
   const [albumId, setAlbumId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Memoize the fetch function
   const fetchReleases = useCallback(async () => {
@@ -192,6 +195,13 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
     };
   }, [showId, fetchReleases]);
 
+  // Handle highlight effect on mount - now handled by CSS animation class
+  useEffect(() => {
+    if (highlightOnMount) {
+      // Highlight animation is handled by CSS class
+    }
+  }, [highlightOnMount]);
+
   if (isLoading) {
     return <div className="bg-primary border border-secondary rounded-lg p-3 mb-4 text-center">
       <p className="text-black">Loading releases...</p>
@@ -204,7 +214,10 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId }) => {
   }
   
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 mb-4 relative">
+    <div 
+      ref={containerRef}
+      className={`border border-secondary rounded-lg p-3 mb-4 relative bg-primary ${className}`}
+    >
       {/* AudioLines icon positioned in bottom right */}
       <AudioLines className="absolute bottom-3 right-3 text-fifth w-5 h-5" />
       

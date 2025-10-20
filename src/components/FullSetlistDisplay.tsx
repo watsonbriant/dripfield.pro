@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ShowStats from './ShowStats';
 import SongSpread from './SongSpread';
 import { Pen, User, MoveRight } from 'lucide-react';
@@ -101,6 +101,7 @@ interface FullSetlistDisplayProps {
   openChangesModal?: boolean;
   setOpenChangesModal?: (open: boolean) => void;
   showLengthRank?: number | null;
+  scrollToReleases?: boolean;
 }
 
 const cleanSongName = (songName: string): string => {
@@ -175,13 +176,16 @@ export default function FullSetlistDisplay({
   showId,
   openChangesModal,
   setOpenChangesModal,
-  showLengthRank
+  showLengthRank,
+  scrollToReleases = false
 }: FullSetlistDisplayProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [hoveredEntry, setHoveredEntry] = useState<string | null>(null);
   const [hoveredSong, setHoveredSong] = useState<string | null>(null);
+  const [shouldHighlightReleases, setShouldHighlightReleases] = useState(false);
   const [hoveredPersonnel, setHoveredPersonnel] = useState<string | null>(null);
   const [guestGroups, setGuestGroups] = useState<GuestGroup[]>([]);
   const [showPosition, setShowPosition] = useState<{ 
@@ -222,6 +226,38 @@ export default function FullSetlistDisplay({
   useEffect(() => {
     setIndividualToggles({});
   }, [showCoachNotes]);
+
+  // Handle scroll to releases functionality
+  useEffect(() => {
+    if (scrollToReleases) {
+      // Set highlight flag
+      setShouldHighlightReleases(true);
+      
+      // Scroll to releases section after a delay to ensure component is rendered
+      const scrollTimer = setTimeout(() => {
+        const releaseContainer = document.querySelector('[data-release-container]');
+        if (releaseContainer) {
+          releaseContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 500); // Increased delay to ensure component is fully rendered
+      
+      // Clear the highlight after 2 seconds
+      const highlightTimer = setTimeout(() => {
+        setShouldHighlightReleases(false);
+      }, 2000);
+      
+      // Clear the navigation state to prevent re-triggering
+      navigate(location.pathname, { replace: true, state: {} });
+      
+      return () => {
+        clearTimeout(scrollTimer);
+        clearTimeout(highlightTimer);
+      };
+    }
+  }, [scrollToReleases, navigate, location.pathname]);
 
   const toggleIndividualCoachNote = (entryId: string) => {
     setIndividualToggles(prev => ({
@@ -1020,8 +1056,12 @@ export default function FullSetlistDisplay({
                     </div>
                     
                     {showId && (
-                      <div className="lg:hidden [&_img]:object-contain">
-                        <ReleaseContainer showId={showId} />
+                      <div className="lg:hidden [&_img]:object-contain" data-release-container>
+                        <ReleaseContainer 
+                          showId={showId} 
+                          highlightOnMount={shouldHighlightReleases}
+                          className={shouldHighlightReleases ? 'highlight-releases' : ''}
+                        />
                       </div>
                     )}
                   </div>
@@ -1094,8 +1134,12 @@ export default function FullSetlistDisplay({
                   )}
 
                   {showId && (
-                    <div className="[&_img]:object-contain">
-                      <ReleaseContainer showId={showId} />
+                    <div className="[&_img]:object-contain" data-release-container>
+                      <ReleaseContainer 
+                        showId={showId} 
+                        highlightOnMount={shouldHighlightReleases}
+                        className={shouldHighlightReleases ? 'highlight-releases' : ''}
+                      />
                     </div>
                   )}
                 </div>
@@ -1142,7 +1186,7 @@ export default function FullSetlistDisplay({
                 </div>
               </div>
             )}
-            {showId && <ReleaseContainer showId={showId} />}
+            {showId && <div data-release-container><ReleaseContainer showId={showId} highlightOnMount={shouldHighlightReleases} className={shouldHighlightReleases ? 'highlight-releases' : ''} /></div>}
           </div>
         </div>
       </div>

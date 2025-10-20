@@ -114,6 +114,13 @@ export function Setlist() {
     }
   }, [location]);
 
+  // Clear scrollToReleases state after component mounts
+  React.useEffect(() => {
+    if (location.state?.scrollToReleases) {
+      // Don't clear the state immediately - let FullSetlistDisplay handle it
+    }
+  }, [location.state?.scrollToReleases]);
+
   const hasCoachNotes = React.useMemo(() => {
     return setlist.some(entry => entry.entry_coachnotes);
   }, [setlist]);
@@ -608,6 +615,7 @@ export function Setlist() {
         openChangesModal={openChangesModal}
         setOpenChangesModal={setOpenChangesModal}
         showLengthRank={showLengthRank}
+        scrollToReleases={location.state?.scrollToReleases}
       />
     </div>
   );

@@ -263,3 +263,31 @@ html {
 .iris-effect:hover .iris-reveal {
   clip-path: circle(100% at 50% 50%);
 }
+
+/* Highlight animation for releases */
+@keyframes highlight {
+  0% {
+    background-color: #fdfdfd;
+    transform: scale(1);
+  }
+  10% {
+    background-color: #8ec1b6;
+    transform: scale(1.02);
+  }
+  50% {
+    background-color: #7ab3a6;
+    transform: scale(1.02);
+  }
+  90% {
+    background-color: #8ec1b6;
+    transform: scale(1.01);
+  }
+  100% {
+    background-color: #fdfdfd;
+    transform: scale(1);
+  }
+}
+
+.highlight-releases {
+  animation: highlight 2s ease-in-out;
+}
