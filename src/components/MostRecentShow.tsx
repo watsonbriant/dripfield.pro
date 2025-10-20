@@ -77,7 +77,11 @@ export const MostRecentShow: React.FC<MostRecentShowProps> = ({
               onClick={() => navigate(`/setlist/${mostRecentShow.show_id}`)}
               className="transition-colors table-link"
             >
-              {mostRecentShow.formatted_show_date}
+              {mostRecentShow.show_date
+                .split('-')
+                .slice(1)
+                .concat(mostRecentShow.show_date.substring(2, 4))
+                .join('.')}
             </button>
             {" — "}
             <button

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import coverImage from '../img/Cover.jpg';
 import cover2 from '../img/Cover2.jpg';
@@ -36,7 +36,7 @@ export function Home() {
   } = useStatsData(selectedYear);
 
   // Get metadata for all shows (recent, upcoming, historical)
-  const allShows = [...recentShows, ...upcomingShows, ...historicalShows];
+  const allShows = useMemo(() => [...recentShows, ...upcomingShows, ...historicalShows], [recentShows, upcomingShows, historicalShows]);
   const { showsWithSetlists, showsWithReleases } = useShowMetadata(allShows, selectedYear.toString());
 
   useEffect(() => {

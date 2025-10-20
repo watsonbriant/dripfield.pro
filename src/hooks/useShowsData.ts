@@ -54,6 +54,27 @@ export function useShowsData() {
   const [loadingMostRecent, setLoadingMostRecent] = useState(true);
   const [loadingSetlist, setLoadingSetlist] = useState(true);
   const [attendedShowIds, setAttendedShowIds] = useState<string[]>([]);
+  
+  // Create a date state that updates daily
+  const [currentDate, setCurrentDate] = useState(() => new Date().toDateString());
+
+  // Update date daily
+  useEffect(() => {
+    const updateDate = () => {
+      const today = new Date().toDateString();
+      if (today !== currentDate) {
+        setCurrentDate(today);
+      }
+    };
+
+    // Check immediately
+    updateDate();
+
+    // Set up interval to check every hour
+    const interval = setInterval(updateDate, 60 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [currentDate]);
 
   // Fetch attended shows for current user
   useEffect(() => {
@@ -85,6 +106,10 @@ export function useShowsData() {
   useEffect(() => {
     const fetchRecentShows = async () => {
       try {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowString = tomorrow.toISOString().split('T')[0];
+        
         const { data, error } = await supabase
           .from('shows')
           .select<any, ShowResponse>(`
@@ -106,7 +131,7 @@ export function useShowsData() {
               )
             )
           `)
-          .lt('show_date', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+          .lt('show_date', tomorrowString)
           .order('show_date', { ascending: false })
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true })
@@ -136,12 +161,16 @@ export function useShowsData() {
     };
 
     fetchRecentShows();
-  }, [attendedShowIds]);
+  }, [attendedShowIds, currentDate]);
 
   // Fetch upcoming shows (next 5)
   useEffect(() => {
     const fetchUpcomingShows = async () => {
       try {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowString = tomorrow.toISOString().split('T')[0];
+        
         const { data, error } = await supabase
           .from('shows')
           .select<any, ShowResponse>(`
@@ -163,7 +192,7 @@ export function useShowsData() {
               )
             )
           `)
-          .gte('show_date', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+          .gte('show_date', tomorrowString)
           .order('show_date', { ascending: true })
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true })
@@ -193,7 +222,7 @@ export function useShowsData() {
     };
 
     fetchUpcomingShows();
-  }, [attendedShowIds]);
+  }, [attendedShowIds, currentDate]);
 
   // Fetch historical shows (this day in history)
   useEffect(() => {
@@ -261,7 +290,7 @@ export function useShowsData() {
     };
 
     fetchHistoricalShows();
-  }, [attendedShowIds]);
+  }, [attendedShowIds, currentDate]);
 
   // Fetch most recent show
   useEffect(() => {
@@ -288,7 +317,7 @@ export function useShowsData() {
               )
             )
           `)
-          .lt('show_date', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+          .lt('show_date', new Date().toISOString().split('T')[0])
           .order('show_date', { ascending: false })
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true })
@@ -319,7 +348,7 @@ export function useShowsData() {
     };
 
     fetchMostRecentShow();
-  }, [attendedShowIds]);
+  }, [attendedShowIds, currentDate]);
 
   // Fetch setlist for most recent show
   useEffect(() => {
