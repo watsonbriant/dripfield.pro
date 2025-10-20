@@ -4,7 +4,7 @@ import { YearSelector } from './YearSelector';
 import { ShowsTable } from './ShowsTable';
 import { ToursSection } from './ToursSection';
 import { GroupFilters } from './GroupFilters';
-import { useYearsData } from '../hooks/useYearsData';
+import { useYearsDataForYears } from '../hooks/useYearsDataForYears';
 import { useShowsDataByYear } from '../hooks/useShowsDataByYear';
 import { useToursData } from '../hooks/useToursData';
 import { useGroupsData } from '../hooks/useGroupsData';
@@ -39,7 +39,7 @@ export function Years() {
   const [previousYearId, setPreviousYearId] = useState<string | null>(null);
 
   // Custom hooks for data fetching
-  const { years, loading: yearsLoading } = useYearsData();
+  const { years, loading: yearsLoading } = useYearsDataForYears();
   const { shows, loading: showsLoading } = useShowsDataByYear(currentYear);
   const { tours } = useToursData(currentYear);
   const { groups } = useGroupsData(shows);
