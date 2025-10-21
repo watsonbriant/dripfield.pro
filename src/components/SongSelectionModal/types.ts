@@ -5,7 +5,7 @@ export interface SongSelectionModalProps {
     show_id: string;
     show_date: string;
     show_subvenue: string;
-    show_detail: string;
+    show_detail?: string | null;
     show_venue_location: string;
     show_time: string;
     show_tour: string;
