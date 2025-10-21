@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+
+// Move static data outside component to prevent recreation on every render
+const EXCLUDED_TERMS = ['fake', 'tease', 'reprise'];
 
 // Update the interface to match the structure we actually have
 interface SetlistEntry {
@@ -29,9 +32,6 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [categoryArtwork, setCategoryArtwork] = useState<Record<string, string>>({});
   
-  // Create a set of songs that should be excluded
-  const excludedTerms = ['fake', 'tease', 'reprise'];
-  
   // Use useMemo to calculate songsToExclude only when setlist changes
   const songsToExclude = useMemo(() => {
     const excluded = new Set<string>();
@@ -49,8 +49,8 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     Object.entries(songEntries).forEach(([songName, entries]) => {
       const allEntriesHaveExcludedTerms = entries.every(entry => 
         entry.entry_short && 
-        excludedTerms.some(term => 
-          entry.entry_short.toLowerCase().includes(term.toLowerCase())
+        EXCLUDED_TERMS.some(term => 
+          entry.entry_short!.toLowerCase().includes(term.toLowerCase())
         )
       );
       
@@ -62,24 +62,26 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     return excluded;
   }, [setlist]);
   
+  // Memoize unique categories to optimize useEffect dependency
+  const uniqueCategories = useMemo(() => {
+    return [...new Set(
+      setlist
+        .filter(entry => !songsToExclude.has(entry.entry_song))
+        .map(entry => entry.songs?.song_category)
+        .filter(Boolean)
+    )];
+  }, [setlist, songsToExclude]);
+
   // Fetch artwork for categories directly from the database
   useEffect(() => {
     const fetchCategoryArtwork = async () => {
       try {
-        // Extract unique category names from the setlist (excluding filtered songs)
-        const categories = [...new Set(
-          setlist
-            .filter(entry => !songsToExclude.has(entry.entry_song))
-            .map(entry => entry.songs?.song_category)
-            .filter(Boolean)
-        )];
-        
-        if (categories.length > 0) {
+        if (uniqueCategories.length > 0) {
           // Fetch artwork for these categories from the categories table
           const { data, error } = await supabase
             .from('categories')
             .select('category, category_artwork')
-            .in('category', categories);
+            .in('category', uniqueCategories);
             
           if (error) {
             console.error('Error fetching category artwork:', error);
@@ -102,102 +104,125 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     };
     
     fetchCategoryArtwork();
-  }, [setlist]); // Removed songsToExclude from dependencies
+  }, [uniqueCategories]); // Only run when unique categories change
 
-  // Count unique songs per category and collect songs for each category
-  const categoryData = setlist.reduce((acc, entry) => {
-    // Skip excluded songs
-    if (songsToExclude.has(entry.entry_song)) {
+  // Memoize expensive calculations to prevent recalculation on every render
+  const categoryData = useMemo(() => {
+    return setlist.reduce((acc, entry) => {
+      // Skip excluded songs
+      if (songsToExclude.has(entry.entry_song)) {
+        return acc;
+      }
+      
+      const category = entry.songs?.song_category || 'undefined';
+      
+      const songKey = `${entry.entry_song}-${category}`;
+      
+      // Only count each unique song once
+      if (!acc.songsSeen.has(songKey)) {
+        acc.songsSeen.add(songKey);
+        acc.counts[category] = (acc.counts[category] || 0) + 1;
+        
+        // Initialize songs array if it doesn't exist
+        if (!acc.songs[category]) {
+          acc.songs[category] = [];
+        }
+        
+        // Add song to category's song list with original artist if applicable
+        const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
+        const originalArtist = entry.songs?.song_originalartist;
+        
+        const songWithArtist = hasArtist && originalArtist
+          ? { 
+              song: entry.entry_song,
+              artist: originalArtist,
+              isSpecialCategory: true
+            }
+          : { 
+              song: entry.entry_song,
+              isSpecialCategory: false
+            };
+        
+        const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
+        
+        if (!songExists) {
+          acc.songs[category].push(songWithArtist);
+        }
+      }
+      
       return acc;
-    }
-    
-    const category = entry.songs?.song_category || 'undefined';
-    
-    const songKey = `${entry.entry_song}-${category}`;
-    
-    // Only count each unique song once
-    if (!acc.songsSeen.has(songKey)) {
-      acc.songsSeen.add(songKey);
-      acc.counts[category] = (acc.counts[category] || 0) + 1;
-      
-      // Initialize songs array if it doesn't exist
-      if (!acc.songs[category]) {
-        acc.songs[category] = [];
+    }, { 
+      counts: {} as Record<string, number>, 
+      songs: {} as Record<string, any[]>, 
+      songsSeen: new Set<string>()
+    });
+  }, [setlist, songsToExclude]);
+
+  // Memoize category canonids calculation
+  const categoryCanonIds = useMemo(() => {
+    return setlist.reduce((acc, entry) => {
+      // Skip excluded songs
+      if (songsToExclude.has(entry.entry_song)) {
+        return acc;
       }
       
-      // Add song to category's song list with original artist if applicable
-      const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
-      const originalArtist = entry.songs?.song_originalartist;
+      // Determine the correct category
+      const category = entry.songs?.song_category || 'undefined';
       
-      const songWithArtist = hasArtist && originalArtist
-        ? { 
-            song: entry.entry_song,
-            artist: originalArtist,
-            isSpecialCategory: true
-          }
-        : { 
-            song: entry.entry_song,
-            isSpecialCategory: false
-          };
-      
-      const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
-      
-      if (!songExists) {
-        acc.songs[category].push(songWithArtist);
+      // Try to find the canonid in multiple possible locations
+      if (category !== 'undefined') {
+        // Direct canonid property
+        if (entry.songs?.categories?.category_canonid !== undefined) {
+          acc[category] = entry.songs.categories.category_canonid;
+        } else if (entry.category_canonid !== undefined) {
+          acc[category] = entry.category_canonid;
+        }
       }
-    }
-    
-    return acc;
-  }, { 
-    counts: {} as Record<string, number>, 
-    songs: {} as Record<string, any[]>, 
-    songsSeen: new Set<string>()
-  });
-
-  // Sort songs alphabetically within each category
-  Object.keys(categoryData.songs).forEach(category => {
-    categoryData.songs[category].sort((a, b) => a.song.localeCompare(b.song));
-  });
-
-  // Create a map of categories to their canonids
-  const categoryCanonIds = setlist.reduce((acc, entry) => {
-    // Skip excluded songs
-    if (songsToExclude.has(entry.entry_song)) {
       return acc;
-    }
-    
-    // Determine the correct category
-    const category = entry.songs?.song_category || 'undefined';
-    
-    // Try to find the canonid in multiple possible locations
-    if (category !== 'undefined') {
-      // Direct canonid property
-      if (entry.songs?.categories?.category_canonid !== undefined) {
-        acc[category] = entry.songs.categories.category_canonid;
-      } else if (entry.category_canonid !== undefined) {
-        acc[category] = entry.category_canonid;
-      }
-    }
-    return acc;
-  }, {} as Record<string, number>);
+    }, {} as Record<string, number>);
+  }, [setlist, songsToExclude]);
 
-  // Convert to array and sort by count (descending) then by canonid (ascending)
-  const sortedCategories = Object.entries(categoryData.counts)
-    .map(([category, count]) => ({
-      category,
-      count,
-      canonid: categoryCanonIds[category] || 0,
-      artwork: categoryArtwork[category] || null,
-      songs: categoryData.songs[category]
-    }))
-    .sort((a, b) => {
-      if (b.count !== a.count) {
-        return b.count - a.count;
-      }
-      return a.canonid - b.canonid;
+  // Memoize sorted categories and max count calculation
+  const { sortedCategories, maxCount } = useMemo(() => {
+    // Sort songs alphabetically within each category
+    Object.keys(categoryData.songs).forEach(category => {
+      categoryData.songs[category].sort((a, b) => a.song.localeCompare(b.song));
     });
 
-  const maxCount = Math.max(...Object.values(categoryData.counts));
+    // Convert to array and sort by count (descending) then by canonid (ascending)
+    const sorted = Object.entries(categoryData.counts)
+      .map(([category, count]) => ({
+        category,
+        count,
+        canonid: categoryCanonIds[category] || 0,
+        artwork: categoryArtwork[category] || null,
+        songs: categoryData.songs[category]
+      }))
+      .sort((a, b) => {
+        if (b.count !== a.count) {
+          return b.count - a.count;
+        }
+        return a.canonid - b.canonid;
+      });
+
+    const max = Math.max(...Object.values(categoryData.counts));
+    
+    return { sortedCategories: sorted, maxCount: max };
+  }, [categoryData, categoryCanonIds, categoryArtwork]);
+
+  // Optimize mouse event handlers to prevent recreation on every render
+  const handleMouseEnter = useCallback((category: string, e: React.MouseEvent) => {
+    setHoveredCategory(category);
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredCategory(null);
+  }, []);
 
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3">
@@ -207,27 +232,17 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
           <div key={category}>
             <div 
               className="text-fifth text-sm font-medium cursor-pointer"
-              onMouseEnter={(e) => {
-                setHoveredCategory(category);
-                setMousePosition({ x: e.clientX, y: e.clientY });
-              }}
-              onMouseMove={(e) => {
-                setMousePosition({ x: e.clientX, y: e.clientY });
-              }}
-              onMouseLeave={() => setHoveredCategory(null)}
+              onMouseEnter={(e) => handleMouseEnter(category, e)}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
             >
               {category}
             </div>
             <div 
               className="h-5 rounded overflow-hidden cursor-pointer"
-              onMouseEnter={(e) => {
-                setHoveredCategory(category);
-                setMousePosition({ x: e.clientX, y: e.clientY });
-              }}
-              onMouseMove={(e) => {
-                setMousePosition({ x: e.clientX, y: e.clientY });
-              }}
-              onMouseLeave={() => setHoveredCategory(null)}
+              onMouseEnter={(e) => handleMouseEnter(category, e)}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
             >
               <div 
                 className="h-full bg-secondary rounded border border-secondary relative flex items-center"
@@ -277,4 +292,5 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
   );
 };
 
-export default SongSpread;
+// Wrap component in React.memo to prevent unnecessary re-renders when props haven't changed
+export default React.memo(SongSpread);
