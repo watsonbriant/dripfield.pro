@@ -151,14 +151,11 @@ const ShowStats: React.FC<ShowStatsProps> = ({
 }) => {
   const [rankHovered, setRankHovered] = React.useState(false);
   
-  // Early return checks - do these first to avoid unnecessary computations
+  // Calculate conditions for early return
   const hasLength = setlist.some(entry => entry.entry_length !== null);
   const shouldShowLength = hasLength;
   const shouldShowRarity = show_canonid && setlist.length > 0;
   const shouldShowGap = show_canonid && setlist.length > 0;
-  
-  // Early return if no stats should be shown
-  if (!shouldShowLength && !shouldShowRarity && !shouldShowGap) return null;
 
   const totalLength = React.useMemo(() => {
     if (!shouldShowLength) return null;
@@ -208,6 +205,9 @@ const ShowStats: React.FC<ShowStatsProps> = ({
       average: show_gap.toFixed(2)
     };
   }, [shouldShowGap, show_gap]);
+
+  // Early return if no stats should be shown - must be after all hooks
+  if (!shouldShowLength && !shouldShowRarity && !shouldShowGap) return null;
 
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3 mb-4">
