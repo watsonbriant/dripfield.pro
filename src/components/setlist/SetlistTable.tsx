@@ -48,8 +48,8 @@ export const SetlistTable: React.FC<SetlistTableProps> = ({
                 <div 
                   className="px-2 py-0.5 rounded-md text-center font-medium"
                   style={{ 
-                    backgroundColor: getPlacementColor(entry.entry_placement),
-                    color: getPlacementColor(entry.entry_placement) !== 'transparent' ? 'white' : 'black'
+                    backgroundColor: getPlacementColor(entry.entry_placement || ''),
+                    color: getPlacementColor(entry.entry_placement || '') !== 'transparent' ? 'white' : 'black'
                   }}
                 >
                   {entry.entry_placement || ""}

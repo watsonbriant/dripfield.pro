@@ -34,10 +34,14 @@ export const ShowDropdown: React.FC<ShowDropdownProps> = ({
   // Filter shows based on search term
   const filteredShows = React.useMemo(() => {
     return shows.filter(show => {
-      const formattedDate = formatDate(show.show_date);
-      const canonidText = show.show_canonid ? `[${show.show_canonid}]` : '';
-      const displayText = `${formattedDate} ${canonidText} [${show.show_group} — ${show.show_venue_location}]`;
-      return displayText.toLowerCase().includes(searchTerm.toLowerCase());
+      const searchLower = searchTerm.toLowerCase();
+      const dateStr = formatDate(show.show_date);
+      return (
+        dateStr.includes(searchLower) ||
+        show.show_canonid?.toString().includes(searchLower) ||
+        show.show_group.toLowerCase().includes(searchLower) ||
+        show.show_venue_location?.toLowerCase().includes(searchLower)
+      );
     });
   }, [shows, searchTerm]);
 
@@ -73,8 +77,8 @@ export const ShowDropdown: React.FC<ShowDropdownProps> = ({
           </div>
           <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
             {loading && loadingProgress < 100 ? (
-              <div className="flex flex-col justify-center items-center p-4 h-16">
-                <div className="animate-spin rounded-lg h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
+              <div className="flex flex-col justify-center items-center p-3 h-16">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
                 <p className="text-xs text-fifth/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
               </div>
             ) : (
@@ -88,12 +92,12 @@ export const ShowDropdown: React.FC<ShowDropdownProps> = ({
                     <span className="font-medium">
                       {formatDate(show.show_date)}
                     </span>
-                      {show.show_canonid ? ` [${show.show_canonid}]` : ''} 
-                      &nbsp;[{show.show_group} — {show.show_venue_location}]
+                    {show.show_canonid ? ` [${show.show_canonid}]` : ''} 
+                    &nbsp;[{show.show_group} – {show.show_venue_location}]
                   </button>
                 ))}
                 {filteredShows.length === 0 && !loading && (
-                  <div className="px-2 py-1 text-sm text-fifth/60 italic">
+                  <div className="px-4 py-2 text-sm text-fifth/60 italic">
                     No shows found
                   </div>
                 )}
