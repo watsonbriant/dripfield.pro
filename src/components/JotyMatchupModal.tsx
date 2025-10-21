@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Team {
   seed: number;
@@ -9,8 +10,11 @@ interface Team {
   date?: string;
   venue?: string;
   entryShort?: string | null; 
-  subvenue?: string | null;  // Add this line
-  fullDate?: string;  // Add this line
+  subvenue?: string | null;
+  fullDate?: string;
+  songId?: string | null;
+  showId?: string | null;
+  venueId?: string | null;
 }
 
 interface JotyMatchupModalProps {
@@ -32,6 +36,8 @@ export default function JotyMatchupModal({
   team1Color,
   team2Color
 }: JotyMatchupModalProps) {
+  const navigate = useNavigate();
+  
   if (!isOpen) return null;
 
   // Clean song names for display - same function as in Tours component
@@ -44,6 +50,25 @@ export default function JotyMatchupModal({
       .replace(/–/g, '-')
       .replace(/…/g, '...')
       .replace(/∆/g, 'a');
+  };
+
+  // Navigation handlers
+  const handleSongClick = (songId: string | null) => {
+    if (songId) {
+      navigate(`/song/${songId}`);
+    }
+  };
+
+  const handleShowClick = (showId: string | null) => {
+    if (showId) {
+      navigate(`/setlist/${showId}`);
+    }
+  };
+
+  const handleVenueClick = (venueId: string | null) => {
+    if (venueId) {
+      navigate(`/venue/${venueId}`);
+    }
   };
 
   // Use specific colors if provided, otherwise use regionColor
@@ -78,8 +103,13 @@ export default function JotyMatchupModal({
                 <span className={`${team1DisplayColor} w-9 text-center text-primary py-1 rounded font-semibold`}>
                     {team1.seed}
                 </span>
-                <h3 className="text-lg font-trad text-[1.5rem] leading-[1.5rem] text-fifth pb-0.5 flex items-center">
-                    <span>{cleanSongName(team1.name)}</span>
+                <h3 className="font-trad text-[1.375rem] leading-[1.5rem] text-fifth pb-0.5 flex items-center">
+                    <span 
+                      className={`${team1.songId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                      onClick={() => handleSongClick(team1.songId)}
+                    >
+                      {cleanSongName(team1.name)}
+                    </span>
                     {team1.entryShort && (
                     <span className="text-red-600 ml-2 text-base font-[Rubik] font-[500] text-sm pt-1 pl-1">[{team1.entryShort}]</span>
                     )}
@@ -89,14 +119,29 @@ export default function JotyMatchupModal({
             </div>
             {team1.fullDate && (
                 <div className="text-sm text-fifth">
-                <p className="font-semibold text-base">{team1.fullDate}</p>
+                <p 
+                  className={`font-semibold text-base ${team1.showId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                  onClick={() => handleShowClick(team1.showId)}
+                >
+                  {team1.fullDate}
+                </p>
                 {team1.subvenue ? (
                     <>
-                    <p className="mt-1 font-medium">{team1.subvenue}</p>
+                    <p 
+                      className={`mt-1 font-medium ${team1.venueId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                      onClick={() => handleVenueClick(team1.venueId)}
+                    >
+                      {team1.subvenue}
+                    </p>
                     <p className="font-light">{team1.venue}</p>
                     </>
                 ) : (
-                    <p className="font-light">{team1.venue}</p>
+                    <p 
+                      className={`font-light ${team1.venueId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                      onClick={() => handleVenueClick(team1.venueId)}
+                    >
+                      {team1.venue}
+                    </p>
                 )}
                 </div>
             )}
@@ -109,8 +154,13 @@ export default function JotyMatchupModal({
                 <span className={`${team2DisplayColor} w-9 text-center text-primary py-1 rounded font-semibold`}>
                     {team2.seed}
                 </span>
-                <h3 className="text-lg font-trad text-[1.5rem] leading-[1.5rem] text-fifth pb-0.5 flex items-center">
-                    <span>{cleanSongName(team2.name)}</span>
+                <h3 className="font-trad text-[1.375rem] leading-[1.5rem] text-fifth pb-0.5 flex items-center">
+                    <span 
+                      className={`${team2.songId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                      onClick={() => handleSongClick(team2.songId)}
+                    >
+                      {cleanSongName(team2.name)}
+                    </span>
                     {team2.entryShort && (
                     <span className="text-red-600 ml-2 text-base font-[Rubik] font-[500] text-sm pt-1 pl-1">[{team2.entryShort}]</span>
                     )}
@@ -120,14 +170,29 @@ export default function JotyMatchupModal({
             </div>
             {team2.fullDate && (
                 <div className="text-sm text-fifth">
-                <p className="font-semibold text-base">{team2.fullDate}</p>
+                <p 
+                  className={`font-semibold text-base ${team2.showId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                  onClick={() => handleShowClick(team2.showId)}
+                >
+                  {team2.fullDate}
+                </p>
                 {team2.subvenue ? (
                     <>
-                    <p className="mt-1 font-medium">{team2.subvenue}</p>
+                    <p 
+                      className={`mt-1 font-medium ${team2.venueId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                      onClick={() => handleVenueClick(team2.venueId)}
+                    >
+                      {team2.subvenue}
+                    </p>
                     <p className="font-light">{team2.venue}</p>
                     </>
                 ) : (
-                    <p className="font-light">{team2.venue}</p>
+                    <p 
+                      className={`font-light ${team2.venueId ? 'cursor-pointer hover:underline transition-all' : ''}`}
+                      onClick={() => handleVenueClick(team2.venueId)}
+                    >
+                      {team2.venue}
+                    </p>
                 )}
                 </div>
             )}

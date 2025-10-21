@@ -10,6 +10,9 @@ interface Team {
   entryShort?: string | null; 
   subvenue?: string | null;
   fullDate?: string;
+  songId?: string | null;
+  showId?: string | null;
+  venueId?: string | null;
 }
 
 interface MatchupProps {

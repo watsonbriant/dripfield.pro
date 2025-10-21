@@ -76,20 +76,40 @@ export function Joty() {
             entry_id,
             entry_song,
             entry_short,
+            songs:entry_song(
+              song_id
+            ),
             shows!inner(
+              show_id,
               show_date,
               show_venue_location,
-              show_subvenue
+              show_subvenue,
+              subvenues(
+                subvenue_venue,
+                venues(
+                  venue_id
+                )
+              )
             )
           ),
           entry2:setlist_entries!joty_matchups_joty_entry2_fkey(
             entry_id,
             entry_song,
             entry_short,
+            songs:entry_song(
+              song_id
+            ),
             shows!inner(
+              show_id,
               show_date,
               show_venue_location,
-              show_subvenue
+              show_subvenue,
+              subvenues(
+                subvenue_venue,
+                venues(
+                  venue_id
+                )
+              )
             )
           )
         `)
@@ -140,7 +160,10 @@ export function Joty() {
                 venue: match.entry1?.shows?.show_venue_location || '',
                 entryShort: match.entry1?.entry_short || null,
                 subvenue: match.entry1?.shows?.show_subvenue || null,
-                fullDate: formatFullDate(match.entry1)
+                fullDate: formatFullDate(match.entry1),
+                songId: match.entry1?.songs?.song_id || null,
+                showId: match.entry1?.shows?.show_id || null,
+                venueId: match.entry1?.shows?.subvenues?.venues?.venue_id || null
               },
               team2: {
                 seed: match.joty_entry2_rank || 16,
@@ -151,7 +174,10 @@ export function Joty() {
                 venue: match.entry2?.shows?.show_venue_location || '',
                 entryShort: match.entry2?.entry_short || null,
                 subvenue: match.entry2?.shows?.show_subvenue || null,
-                fullDate: formatFullDate(match.entry2)
+                fullDate: formatFullDate(match.entry2),
+                songId: match.entry2?.songs?.song_id || null,
+                showId: match.entry2?.shows?.show_id || null,
+                venueId: match.entry2?.shows?.subvenues?.venues?.venue_id || null
               }
             };
           });
