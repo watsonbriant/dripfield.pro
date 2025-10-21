@@ -232,36 +232,57 @@ export function useShowsData() {
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         
-        // Get all shows and filter client-side for now
-        const { data, error } = await supabase
-          .from('shows')
-          .select<any, ShowResponse>(`
-            show_iscanon,
-            show_tour,
-            show_id,
-            show_date,
-            show_group,
-            show_subvenue,
-            show_detail,
-            show_alert,
-            show_canonid,
-            show_subvenue_venue,
-            show_venue_location,
-            show_wl_link,
-            subvenues:show_subvenue(
-              venues:subvenue_venue(
-                venue_id
+        // Use date range filtering with pagination to ensure all records are retrieved
+        const startDate = `1900-${month}-${day}`;
+        const endDate = `2099-${month}-${day}`;
+        
+        let allShowsData: any[] = [];
+        let page = 0;
+        let hasMore = true;
+        const pageSize = 1000;
+        
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('shows')
+            .select<any, ShowResponse>(`
+              show_iscanon,
+              show_tour,
+              show_id,
+              show_date,
+              show_group,
+              show_subvenue,
+              show_detail,
+              show_alert,
+              show_canonid,
+              show_subvenue_venue,
+              show_venue_location,
+              show_wl_link,
+              subvenues:show_subvenue(
+                venues:subvenue_venue(
+                  venue_id
+                )
               )
-            )
-          `)
-          .order('show_date', { ascending: false })
-          .order('show_canonid', { ascending: true, nullsFirst: true })
-          .order('show_group', { ascending: true });
+            `)
+            .gte('show_date', startDate)
+            .lte('show_date', endDate)
+            .order('show_date', { ascending: false })
+            .order('show_canonid', { ascending: true, nullsFirst: true })
+            .order('show_group', { ascending: true })
+            .range(page * pageSize, (page + 1) * pageSize - 1);
+          
+          if (error) throw error;
+          
+          if (data && data.length > 0) {
+            allShowsData = [...allShowsData, ...data];
+            page++;
+            hasMore = data.length === pageSize;
+          } else {
+            hasMore = false;
+          }
+        }
 
-        if (error) throw error;
-
-        // Filter shows that occurred on the same month and day
-        const filteredData = data?.filter(show => {
+        // Filter to only include shows on the exact month and day
+        const filteredData = allShowsData?.filter(show => {
           const showDate = new Date(show.show_date + 'T00:00:00');
           const showMonth = String(showDate.getMonth() + 1).padStart(2, '0');
           const showDay = String(showDate.getDate()).padStart(2, '0');
