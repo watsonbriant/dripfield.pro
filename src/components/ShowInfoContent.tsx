@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { formatInTimeZone } from 'date-fns-tz';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Link, Pencil } from 'lucide-react';
@@ -6,14 +6,19 @@ import ShowAttendButton from './ShowAttendButton';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import wlImage from '../img/WL.png';
-import ShowImageGenerator from './ShowImageGenerator';
-import StarRating from './StarRating';
+
+// Lazy load heavy components
+const ShowImageGenerator = lazy(() => import('./ShowImageGenerator'));
+const StarRating = lazy(() => import('./StarRating'));
 
 interface SetlistEntry {
   entry_id: string;
   entry_song: string;
   entry_short: string | null;
   entry_segue: string | null;
+  entry_set: string;
+  entry_placement: string;
+  entry_coachnotes?: string | null;
 }
 
 interface ShowPosition {
@@ -57,15 +62,26 @@ const ShowInfoContent = React.memo(({
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdminLoading, setIsAdminLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
   const [wlHovered, setWlHovered] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Check if user is admin
+  // Check if user is admin with caching
   useEffect(() => {
     async function checkAdminStatus() {
       if (!user) {
         setIsAdmin(false);
+        setIsAdminLoading(false);
+        return;
+      }
+      
+      // Check cache first
+      const cacheKey = `admin_status_${user.id}`;
+      const cachedStatus = sessionStorage.getItem(cacheKey);
+      
+      if (cachedStatus !== null) {
+        setIsAdmin(cachedStatus === 'true');
+        setIsAdminLoading(false);
         return;
       }
       
@@ -79,13 +95,20 @@ const ShowInfoContent = React.memo(({
         if (error) {
           console.error('Error checking admin status:', error);
           setIsAdmin(false);
+          setIsAdminLoading(false);
           return;
         }
         
-        setIsAdmin(data?.is_admin || false);
+        const adminStatus = data?.is_admin || false;
+        setIsAdmin(adminStatus);
+        setIsAdminLoading(false);
+        
+        // Cache the result for this session
+        sessionStorage.setItem(cacheKey, adminStatus.toString());
       } catch (error) {
         console.error('Error in admin check:', error);
         setIsAdmin(false);
+        setIsAdminLoading(false);
       }
     }
     
@@ -93,7 +116,7 @@ const ShowInfoContent = React.memo(({
   }, [user]);
 
   // Handle copying show ID to clipboard
-  const handleCopyLink = async () => {
+  const handleCopyLink = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(show.show_id);
       setLinkCopied(true);
@@ -101,21 +124,29 @@ const ShowInfoContent = React.memo(({
     } catch (err) {
       console.error('Failed to copy:', err);
     }
-  };
+  }, [show.show_id]);
 
   // Handle navigation to admin with this show selected
-  const handleEditShow = () => {
+  const handleEditShow = useCallback(() => {
     // Store the show ID in localStorage so AdminSetlist can pick it up
     localStorage.setItem('adminSelectedShowId', show.show_id);
     // Set the active tab to Setlist
     localStorage.setItem('adminActiveTab', 'Setlist');
     // Navigate to admin
     navigate('/admin');
-  };
+  }, [show.show_id, navigate]);
 
-  const handleWlMouseMove = (e: React.MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
-  };
+  const handleWlMouseMove = useCallback((_e: React.MouseEvent) => {
+    // Mouse position tracking removed as it's not used
+  }, []);
+
+  const handleWlMouseEnter = useCallback((_e: React.MouseEvent) => {
+    setWlHovered(true);
+  }, []);
+
+  const handleWlMouseLeave = useCallback(() => {
+    setWlHovered(false);
+  }, []);
   
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3">
@@ -136,14 +167,11 @@ const ShowInfoContent = React.memo(({
         {show.show_wl_link && (
           <div className="relative">
             <button
-              onClick={() => window.open(show.show_wl_link, '_blank')}
+              onClick={() => show.show_wl_link && window.open(show.show_wl_link, '_blank')}
               className="p-1 rounded hover:border border border-primary text-fifth hover:border-[#78b1a1] hover:bg-[#78b1a1]/30 transition-colors"
-              onMouseEnter={(e) => {
-                setWlHovered(true);
-                setMousePosition({ x: e.clientX, y: e.clientY });
-              }}
+              onMouseEnter={handleWlMouseEnter}
               onMouseMove={handleWlMouseMove}
-              onMouseLeave={() => setWlHovered(false)}
+              onMouseLeave={handleWlMouseLeave}
               title="Chat on WysteriaLane.org!"
             >
               <img 
@@ -173,12 +201,14 @@ const ShowInfoContent = React.memo(({
             </span>
           </p>
         )}
-        <StarRating 
-          showId={show.show_id} 
-          isVisible={show.rating_visibility || false}
-          showDate={show.show_date}
-          showVenueLocation={show.show_venue_location}
-        />
+        <Suspense fallback={<div className="w-4 h-4 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>}>
+          <StarRating 
+            showId={show.show_id} 
+            isVisible={show.rating_visibility || false}
+            showDate={show.show_date}
+            showVenueLocation={show.show_venue_location}
+          />
+        </Suspense>
       </div>
 
       {/* Rest of component */}
@@ -250,7 +280,7 @@ const ShowInfoContent = React.memo(({
                     </button>
                   </div>
                   {/* Admin buttons - centered below navigation */}
-                  {(isAdmin || user?.id === '8f13a985-ef21-44dc-a381-d6e80c43803f') && (
+                  {!isAdminLoading && (isAdmin || user?.id === '8f13a985-ef21-44dc-a381-d6e80c43803f') && (
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={handleCopyLink}
@@ -263,7 +293,9 @@ const ShowInfoContent = React.memo(({
                       >
                         <Link size={16} />
                       </button>
-                      <ShowImageGenerator show={show} setlist={setlist} />
+                      <Suspense fallback={<div className="w-6 h-6 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>}>
+                        <ShowImageGenerator show={show} setlist={setlist} />
+                      </Suspense>
                       {isAdmin && (
                         <button
                           onClick={handleEditShow}
@@ -282,7 +314,7 @@ const ShowInfoContent = React.memo(({
                     {show.show_canonid ? "Show information loading..." : "Non-canonical show"}
                   </p>
                   {/* Admin buttons - centered below text */}
-                  {(isAdmin || user?.id === '8f13a985-ef21-44dc-a381-d6e80c43803f') && (
+                  {!isAdminLoading && (isAdmin || user?.id === '8f13a985-ef21-44dc-a381-d6e80c43803f') && (
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={handleCopyLink}
@@ -295,7 +327,9 @@ const ShowInfoContent = React.memo(({
                       >
                         <Link size={16} />
                       </button>
-                      <ShowImageGenerator show={show} setlist={setlist} className="bg-tertiary" />
+                      <Suspense fallback={<div className="w-6 h-6 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>}>
+                        <ShowImageGenerator show={show} setlist={setlist} className="bg-tertiary" />
+                      </Suspense>
                       {isAdmin && (
                         <button
                           onClick={handleEditShow}
