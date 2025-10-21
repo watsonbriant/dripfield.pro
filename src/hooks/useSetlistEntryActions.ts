@@ -188,15 +188,22 @@ export const useSetlistEntryActions = () => {
         
         // Save guest associations
         await saveGuestAssociations(entryToSave.entry_id, selectedGuestIds);
-        
-        // Update statistics after successful update
-        await updateStatistics();
       }
       
+      // Refresh table data immediately after database operations
       onSave(); // Trigger refetch of entries
+      
+      // Update statistics in background (RPC call)
+      await updateStatistics();
+      
+      // Set success status after everything is complete
+      setSaveStatus('done');
+      onSaveStatusUpdate('done');
     } catch (error) {
       setSaveStatus('error');
       onSaveStatusUpdate('error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

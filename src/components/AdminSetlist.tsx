@@ -61,15 +61,20 @@ export const AdminSetlist: React.FC = () => {
     }
     setIsEntryModalOpen(false);
     
-    // Reset status after 2 seconds
-    setTimeout(() => {
-      setSaveStatus('idle');
-    }, 2000);
+    // Don't automatically reset status - let the save operation handle it
+    // The status will be updated by handleSaveStatusUpdate from the modal
   };
   
   // Handle save status updates from modal
   const handleSaveStatusUpdate = (status: 'idle' | 'processing' | 'done' | 'error') => {
     setSaveStatus(status);
+    
+    // If status is 'done', reset to 'idle' after 2 seconds
+    if (status === 'done') {
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 2000);
+    }
   };
 
   return (

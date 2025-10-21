@@ -176,9 +176,9 @@ export const getHeaderStyle = (saveStatus: 'idle' | 'processing' | 'done' | 'err
     case 'processing':
       return 'bg-black text-primary';
     case 'done':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-600 text-primary';
     case 'error':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-600 text-primary';
     default:
       return 'bg-fourth text-primary';
   }
