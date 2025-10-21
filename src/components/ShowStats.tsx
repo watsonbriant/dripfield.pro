@@ -1,7 +1,7 @@
 import React from 'react';
 import { Clock, Flame, Space } from 'lucide-react';
 
-// Add the getRarityColor function
+// Move color calculation functions outside component to prevent recreation on every render
 const getRarityColor = (percentage: string | null): string => {
   // If percentage is null or not a valid percentage string, return transparent
   if (!percentage || percentage === '-') return 'transparent';
@@ -89,6 +89,42 @@ const getGapColor = (value: string | null): string => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
+// Move formatting functions outside component to prevent recreation on every render
+const getOrdinalSuffix = (num: number): string => {
+  const j = num % 10;
+  const k = num % 100;
+  if (j === 1 && k !== 11) return num + "st";
+  if (j === 2 && k !== 12) return num + "nd";
+  if (j === 3 && k !== 13) return num + "rd";
+  return num + "th";
+};
+
+const getRankingText = (rank: number): string => {
+  if (rank === 1) return "Longest Goose show of all-time.";
+  
+  const wordMap: { [key: number]: string } = {
+    2: "Second",
+    3: "Third",
+    4: "Fourth",
+    5: "Fifth",
+    6: "Sixth",
+    7: "Seventh",
+    8: "Eighth",
+    9: "Ninth"
+  };
+  
+  if (rank >= 2 && rank <= 9) {
+    return `${wordMap[rank]}-longest Goose show of all-time.`;
+  }
+  
+  return `${getOrdinalSuffix(rank)}-longest Goose show of all-time.`;
+};
+
+const formatTimeUnit = (value: number, unit: string): string | null => {
+  if (value === 0) return null;
+  return `${value} ${unit}${value === 1 ? '' : 's'}`;
+};
+
 interface Entry {
   entry_length: string | null;
   times_played_num: string | null;
@@ -115,47 +151,17 @@ const ShowStats: React.FC<ShowStatsProps> = ({
 }) => {
   const [rankHovered, setRankHovered] = React.useState(false);
   
+  // Early return checks - do these first to avoid unnecessary computations
   const hasLength = setlist.some(entry => entry.entry_length !== null);
+  const shouldShowLength = hasLength;
+  const shouldShowRarity = show_canonid && setlist.length > 0;
+  const shouldShowGap = show_canonid && setlist.length > 0;
   
-  // Function to get ordinal suffix (1st, 2nd, 3rd, etc.)
-  const getOrdinalSuffix = (num: number): string => {
-    const j = num % 10;
-    const k = num % 100;
-    if (j === 1 && k !== 11) return num + "st";
-    if (j === 2 && k !== 12) return num + "nd";
-    if (j === 3 && k !== 13) return num + "rd";
-    return num + "th";
-  };
-  
-  // Function to get ranking text for show length
-  const getRankingText = (rank: number): string => {
-    if (rank === 1) return "Longest Goose show of all-time.";
-    
-    const wordMap: { [key: number]: string } = {
-      2: "Second",
-      3: "Third",
-      4: "Fourth",
-      5: "Fifth",
-      6: "Sixth",
-      7: "Seventh",
-      8: "Eighth",
-      9: "Ninth"
-    };
-    
-    if (rank >= 2 && rank <= 9) {
-      return `${wordMap[rank]}-longest Goose show of all-time.`;
-    }
-    
-    return `${getOrdinalSuffix(rank)}-longest Goose show of all-time.`;
-  };
-  
-  const formatTimeUnit = (value: number, unit: string): string | null => {
-    if (value === 0) return null;
-    return `${value} ${unit}${value === 1 ? '' : 's'}`;
-  };
+  // Early return if no stats should be shown
+  if (!shouldShowLength && !shouldShowRarity && !shouldShowGap) return null;
 
   const totalLength = React.useMemo(() => {
-    if (!hasLength) return null;
+    if (!shouldShowLength) return null;
     
     let totalSeconds = 0;
     
@@ -185,30 +191,23 @@ const ShowStats: React.FC<ShowStatsProps> = ({
     ].filter(Boolean);
     
     return timeComponents.join(' ');
-  }, [setlist, hasLength]);
+  }, [setlist, shouldShowLength]);
 
   const rarityStats = React.useMemo(() => {
-    if (!show_canonid || show_rarity === null || show_rarity === undefined) return null;
+    if (!shouldShowRarity || show_rarity === null || show_rarity === undefined) return null;
     
     return {
       percentage: show_rarity.toFixed(2)
     };
-  }, [show_canonid, show_rarity]);
+  }, [shouldShowRarity, show_rarity]);
 
   const averageShowGap = React.useMemo(() => {
-    if (!show_canonid || show_gap === null || show_gap === undefined) return null;
+    if (!shouldShowGap || show_gap === null || show_gap === undefined) return null;
     
     return {
       average: show_gap.toFixed(2)
     };
-  }, [show_canonid, show_gap]);
-
-  // Check if we should show any stats at all
-  const shouldShowLength = hasLength;
-  const shouldShowRarity = show_canonid && setlist.length > 0;
-  const shouldShowGap = show_canonid && setlist.length > 0;
-  
-  if (!shouldShowLength && !shouldShowRarity && !shouldShowGap) return null;
+  }, [shouldShowGap, show_gap]);
 
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3 mb-4">
@@ -299,4 +298,5 @@ const ShowStats: React.FC<ShowStatsProps> = ({
   );
 };
 
-export default ShowStats;
+// Wrap component in React.memo to prevent unnecessary re-renders when props haven't changed
+export default React.memo(ShowStats);
