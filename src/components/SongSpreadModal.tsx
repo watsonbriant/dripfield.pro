@@ -1,17 +1,6 @@
 import React from 'react';
 import { Modal } from './Modal';
-
-interface SongSpreadItem {
-  category: string;
-  count: number;
-  canonid: number;
-  artwork: string | null;
-  songs: {
-    song: string;
-    playCount: number;
-    artist?: string;
-  }[];
-}
+import { SongSpreadItem } from '../utils/songSpreadUtils';
 
 interface SongSpreadModalProps {
   isOpen: boolean;
@@ -35,7 +24,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
     >
       <div className="bg-primary">
         <div className="space-y-1.5">
-          {songSpreadData.map(({ category, count, songs, artwork }) => (
+          {songSpreadData.map(({ category, count, artwork }) => (
             <div key={category}>
               <div className="text-fifth text-sm font-medium">
                 {category}

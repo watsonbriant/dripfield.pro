@@ -115,3 +115,42 @@ export const placementColors: Record<string, string> = {
   'Encore 2': '#f43f5e',
   'Encore 3': '#f43f5e'
 };
+
+export const groupShowsByYear = (shows: Array<any>) => {
+  if (!shows || shows.length === 0) return [];
+  
+  const yearGroups = [];
+  let currentYear = '';
+  let currentGroup = [];
+  
+  shows.forEach((show, index) => {
+    const year = new Date(show.show_date).getFullYear().toString();
+    
+    if (year !== currentYear) {
+      if (currentGroup.length > 0) {
+        yearGroups.push({
+          year: currentYear,
+          shows: currentGroup,
+          startIndex: index - currentGroup.length,
+          endIndex: index - 1
+        });
+      }
+      currentYear = year;
+      currentGroup = [show];
+    } else {
+      currentGroup.push(show);
+    }
+  });
+  
+  // Add the last group
+  if (currentGroup.length > 0) {
+    yearGroups.push({
+      year: currentYear,
+      shows: currentGroup,
+      startIndex: shows.length - currentGroup.length,
+      endIndex: shows.length - 1
+    });
+  }
+  
+  return yearGroups;
+};
