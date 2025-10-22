@@ -114,6 +114,28 @@ export const getUniqueSets = (songPicks: SongPick[]): string[] => {
   return [...numericSets, ...encoreSets];
 };
 
+export const getAllUniqueSets = (songPicks: SongPick[], actualSetlist: SetlistEntry[]): string[] => {
+  // Get sets from user picks
+  const userSets = new Set(songPicks.map(pick => pick.set));
+  
+  // Get sets from actual setlist
+  const actualSets = new Set(actualSetlist.map(entry => entry.entry_set));
+  
+  // Combine both sets
+  const allSets = new Set([...userSets, ...actualSets]);
+  
+  // Order them correctly (numeric sets first, then encore sets)
+  const numericSets = Array.from(allSets)
+    .filter(set => !set.startsWith('E'))
+    .sort((a, b) => parseInt(a) - parseInt(b));
+    
+  const encoreSets = Array.from(allSets)
+    .filter(set => set.startsWith('E'))
+    .sort((a, b) => parseInt(a.substring(1)) - parseInt(b.substring(1)));
+    
+  return [...numericSets, ...encoreSets];
+};
+
 export const getSongsForSet = (songPicks: SongPick[], set: string): SongPick[] => {
   return songPicks
     .filter(pick => pick.set === set && !pick.isBreak)

@@ -6,6 +6,7 @@ import {
   getPlacementColor, 
   getSetDisplayName, 
   getUniqueSets, 
+  getAllUniqueSets,
   getSongsForSet, 
   getSongsForActualSet 
 } from './utils';
@@ -39,7 +40,11 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
   onMoveSongDown,
   onRemoveSet
 }) => {
-  const uniqueSets = getUniqueSets(songPicks);
+  // Use getAllUniqueSets when in view mode for scored shows to show all sets
+  // Otherwise use getUniqueSets for regular editing mode
+  const uniqueSets = (viewMode && show_scored) 
+    ? getAllUniqueSets(songPicks, actualSetlist)
+    : getUniqueSets(songPicks);
 
   if (songPicks.length === 0) {
     return (
