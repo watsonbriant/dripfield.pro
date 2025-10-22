@@ -210,7 +210,7 @@ export default function FullSetlistDisplay({
                     </div>
                     
                     {showId && (
-                      <div className="lg:hidden [&_img]:object-contain" data-release-container>
+                      <div className="lg:hidden" data-release-container>
                         <ReleaseContainer 
                           showId={showId} 
                           highlightOnMount={shouldHighlightReleases}
@@ -235,7 +235,7 @@ export default function FullSetlistDisplay({
                   />
 
                   {showId && (
-                    <div className="[&_img]:object-contain" data-release-container>
+                    <div data-release-container>
                       <ReleaseContainer 
                         showId={showId} 
                         highlightOnMount={shouldHighlightReleases}

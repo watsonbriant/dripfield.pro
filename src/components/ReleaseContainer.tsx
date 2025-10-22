@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { ArrowLeft, ArrowRight, MoveRight, AudioLines } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { MoveRight, AudioLines, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NugsIcon from '../../public/src/img/nugs.png';
 import { FaYoutube } from "react-icons/fa6";
@@ -7,18 +7,18 @@ import { SiBandcamp } from "react-icons/si";
 import { FaSpotify } from "react-icons/fa";
 
 // Move utility functions outside component to prevent recreation on every render
-const getServiceIcon = (serviceName: string | null) => {
+const getServiceIcon = (serviceName: string | null, isHovered: boolean = false) => {
   if (!serviceName) return null;
   
   switch (serviceName.toLowerCase()) {
     case 'youtube':
-      return <FaYoutube className="inline-block" size="1.25rem" />;
+      return <FaYoutube className={`inline-block ${isHovered ? 'text-[#FF0033]' : ''}`} size="1rem" />;
     case 'bandcamp':
-      return <SiBandcamp className="inline-block" size="1.25rem" />;
+      return <SiBandcamp className={`inline-block ${isHovered ? 'text-[#1b96bb]' : ''}`} size="1rem" />;
     case 'nugs':
-      return <img src={NugsIcon} alt="nugs" className="inline-block h-5 w-auto" />;
+      return <img src={NugsIcon} alt="nugs" className="inline-block h-4 w-auto" />;
     case 'spotify':
-      return <FaSpotify className="inline-block" size="1.25rem" />;
+      return <FaSpotify className={`inline-block ${isHovered ? 'text-[#1ed760]' : ''}`} size="1rem" />;
     default:
       return null;
   }
@@ -35,7 +35,7 @@ const renderDisplayName = (displayName: string | null, release: string) => {
           <React.Fragment key={index}>
             {part.trim()}
             {index < parts.length - 1 && (
-              <MoveRight className="inline-block mx-1 text-red-600" size={16} />
+              <MoveRight className="inline-block mx-1 text-red-600 h-3" size={16} strokeWidth={3} />
             )}
           </React.Fragment>
         ))}
@@ -93,58 +93,69 @@ interface ReleaseContainerProps {
 
 const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOnMount = false, className = "" }) => {
   const [releases, setReleases] = useState<Release[]>([]);
-  const [currentReleaseIndex, setCurrentReleaseIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [embeddedReleaseIndex, setEmbeddedReleaseIndex] = useState<number | null>(null);
   const [albumId, setAlbumId] = useState<string | null>(null);
+  const [loadingReleaseIndex, setLoadingReleaseIndex] = useState<number | null>(null);
+  const [hoveredReleaseIndex, setHoveredReleaseIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Memoize derived state to prevent recalculation on every render
-  const currentRelease = useMemo((): Release | null => {
-    return releases[currentReleaseIndex] || null;
-  }, [releases, currentReleaseIndex]);
+  // Helper functions for embed state
+  const isEmbedded = useCallback((index: number) => {
+    return embeddedReleaseIndex === index;
+  }, [embeddedReleaseIndex]);
 
-  const isEmbedded = useMemo(() => {
-    return embeddedReleaseIndex === currentReleaseIndex;
-  }, [embeddedReleaseIndex, currentReleaseIndex]);
+  const hasEmbeddedContent = useCallback((release: Release, index: number) => {
+    return isEmbedded(index) && (albumId || release?.release_service?.toLowerCase() === 'youtube');
+  }, [isEmbedded, albumId]);
 
-  const hasEmbeddedContent = useMemo(() => {
-    return isEmbedded && (albumId || currentRelease?.release_service?.toLowerCase() === 'youtube');
-  }, [isEmbedded, albumId, currentRelease?.release_service]);
+  const isLoadingEmbed = useCallback((index: number) => {
+    return loadingReleaseIndex === index;
+  }, [loadingReleaseIndex]);
 
   // Optimize event handlers to prevent recreation on every render
-  const handleStreamingClick = useCallback(async (e: React.MouseEvent) => {
+  const handleStreamingClick = useCallback(async (e: React.MouseEvent, release: Release, index: number) => {
     e.preventDefault();
     
-    const service = currentRelease?.release_service?.toLowerCase();
+    const service = release?.release_service?.toLowerCase();
     
-    if (service === 'bandcamp' && currentRelease?.release_link) {
-      const fetchedAlbumId = await fetchBandcampAlbumId(currentRelease.release_link);
-      if (fetchedAlbumId) {
-        setAlbumId(fetchedAlbumId);
-        setEmbeddedReleaseIndex(currentReleaseIndex);
-      }
-    } else if (service === 'youtube' && currentRelease?.release_link) {
-      // For YouTube, we don't need to fetch anything - just set the embed state
-      setAlbumId(null); // Clear any previous Bandcamp album ID
-      setEmbeddedReleaseIndex(currentReleaseIndex);
+    // If this release is already embedded, close it
+    if (embeddedReleaseIndex === index) {
+      setEmbeddedReleaseIndex(null);
+      setAlbumId(null);
+      setLoadingReleaseIndex(null);
+      return;
     }
-  }, [currentRelease, currentReleaseIndex]);
-
-  const handlePreviousRelease = useCallback(() => {
-    setCurrentReleaseIndex(prev => (prev - 1 + releases.length) % releases.length);
+    
+    // Close any existing embed and open this one
     setEmbeddedReleaseIndex(null);
-  }, [releases.length]);
+    setAlbumId(null);
+    setLoadingReleaseIndex(index); // Show loading state
+    
+    if (service === 'bandcamp' && release?.release_link) {
+      try {
+        const fetchedAlbumId = await fetchBandcampAlbumId(release.release_link);
+        if (fetchedAlbumId) {
+          setAlbumId(fetchedAlbumId);
+          setEmbeddedReleaseIndex(index);
+        }
+      } catch (error) {
+        console.error('Error loading Bandcamp embed:', error);
+      } finally {
+        setLoadingReleaseIndex(null); // Hide loading state
+      }
+    } else if (service === 'youtube' && release?.release_link) {
+      // For YouTube, we don't need to fetch anything - just set the embed state
+      // Add a small delay to show loading state briefly
+      setTimeout(() => {
+        setEmbeddedReleaseIndex(index);
+        setLoadingReleaseIndex(null);
+      }, 300);
+    } else {
+      setLoadingReleaseIndex(null);
+    }
+  }, [embeddedReleaseIndex]);
 
-  const handleNextRelease = useCallback(() => {
-    setCurrentReleaseIndex(prev => (prev + 1) % releases.length);
-    setEmbeddedReleaseIndex(null);
-  }, [releases.length]);
-
-  const handleReleaseSelect = useCallback((index: number) => {
-    setCurrentReleaseIndex(index);
-    setEmbeddedReleaseIndex(null);
-  }, []);
 
   // Fetch releases when showId changes - remove fetchReleases from dependencies to prevent infinite loops
   useEffect(() => {
@@ -160,8 +171,8 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
       }
       
       setIsLoading(true);
-      setCurrentReleaseIndex(0);
       setEmbeddedReleaseIndex(null);
+      setLoadingReleaseIndex(null);
       
       try {
         // Updated query to join tables and include release_order
@@ -249,158 +260,180 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
   return (
     <div 
       ref={containerRef}
-      className={`border border-secondary rounded-lg p-3 mb-4 relative bg-primary ${className}`}
+      className={`border border-secondary rounded-lg p-3 mb-4 relative bg-fifth ${className}`}
     >
-      {/* AudioLines icon positioned in bottom right */}
-      <AudioLines className="absolute bottom-3 right-3 text-fifth w-5 h-5" />
+      {/* AudioLines icon positioned in top right */}
+      <AudioLines className="absolute top-3 right-3 text-primary w-[1rem] h-[1rem]" />
       
-      <div className="flex flex-col items-center">
-        {currentRelease && (
-          <div className="flex flex-col items-center w-full">
-            {hasEmbeddedContent ? (
-              <div className="relative w-full mx-auto mb-3 flex justify-center">
-                {currentRelease.release_service?.toLowerCase() === 'bandcamp' && albumId ? (
-                  <iframe 
-                    style={{ 
-                      border: 0, 
-                      width: 'min(245px, 100%)', 
-                      height: '390px' 
-                    }}
-                    src={`https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/`}
-                    seamless
-                    title={currentRelease.release_displayname || currentRelease.release}
-                  />
-                ) : currentRelease.release_service?.toLowerCase() === 'youtube' ? (
-                  <iframe 
-                    className="lg:!h-[138px]"
-                    style={{ 
-                      border: 0, 
-                      width: 'min(560px, 100%)', 
-                      height: '200px' 
-                    }}
-                    src={convertToYouTubeEmbed(currentRelease.release_link!)}
-                    title={currentRelease.release_displayname || currentRelease.release}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                  />
-                ) : null}
-              </div>
-            ) : currentRelease?.release_link ? (
-              currentRelease.release_service?.toLowerCase() === 'bandcamp' || currentRelease.release_service?.toLowerCase() === 'youtube' ? (
-                <div 
-                  onClick={handleStreamingClick}
-                  className="relative w-full mx-auto mb-3 block cursor-pointer bg-canvas rounded-lg"
-                >
-                  <img 
-                    src={currentRelease.release_artwork} 
-                    alt={currentRelease.release_displayname || currentRelease.release}
-                    className="w-full h-auto rounded-lg border border-secondary hover:opacity-70 transition-opacity"
-                    onError={(e) => {
-                      // Handle error silently
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                </div>
-              ) : (
-                <a 
-                  href={currentRelease.release_link}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="relative w-full mx-auto mb-3 block cursor-pointer bg-canvas rounded-lg"
-                >
-                  <img 
-                    src={currentRelease.release_artwork} 
-                    alt={currentRelease.release_displayname || currentRelease.release}
-                    className="w-full h-auto rounded-lg border border-secondary hover:opacity-70 transition-opacity"
-                    onError={(e) => {
-                      // Handle error silently
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                </a>
-              )
-            ) : (        
-              <div className="relative w-full mx-auto mb-4">
-                <img 
-                  src={currentRelease.release_artwork} 
-                  alt={currentRelease.release_displayname || currentRelease.release}
-                  className="w-full h-auto rounded-lg border border-secondary"
-                  onError={(e) => {
-                    // Handle error silently
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                  }}
-                />
-              </div>
-            )}
-            <div className="text-center">
-              <h3 className="text-sm font-medium text-black leading-4 mb-1">
-                {renderDisplayName(currentRelease?.release_displayname, currentRelease?.release)}
-              </h3>
-              {currentRelease?.release_link && (
-                <div className="flex justify-center">
-                  {currentRelease.release_service?.toLowerCase() === 'bandcamp' || currentRelease.release_service?.toLowerCase() === 'youtube' ? (
-                    <div 
-                      onClick={handleStreamingClick}
-                      className="flex items-center justify-center gap-1 text-black hover:underline font-normal text-xs transition-colors text-center cursor-pointer"
-                    >
-                      {getServiceIcon(currentRelease.release_service)}
-                      <span>{currentRelease.release_service || "Streaming Service"}</span>
-                    </div>
+      <div className="space-y-1.5">
+        {releases.map((release, index) => (
+          <React.Fragment key={release.release_id}>
+            <div className="relative">
+              <div className="flex items-center gap-3">
+                {/* Square artwork */}
+                <div className="flex-shrink-0">
+                  {release?.release_link ? (
+                    release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
+                      <div 
+                        onClick={(e) => handleStreamingClick(e, release, index)}
+                        className="cursor-pointer"
+                        onMouseEnter={() => setHoveredReleaseIndex(index)}
+                        onMouseLeave={() => setHoveredReleaseIndex(null)}
+                      >
+                        <img 
+                          src={release.release_artwork} 
+                          alt={release.release_displayname || release.release}
+                          className="w-12 h-12 rounded object-cover hover:opacity-70 transition-opacity"
+                          onError={(e) => {
+                            // Handle error silently
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <a 
+                        href={release.release_link}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="block"
+                        onMouseEnter={() => setHoveredReleaseIndex(index)}
+                        onMouseLeave={() => setHoveredReleaseIndex(null)}
+                      >
+                        <img 
+                          src={release.release_artwork} 
+                          alt={release.release_displayname || release.release}
+                          className="w-12 h-12 rounded object-cover hover:opacity-70 transition-opacity"
+                          onError={(e) => {
+                            // Handle error silently
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                      </a>
+                    )
                   ) : (
-                    <a 
-                      href={currentRelease.release_link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1 text-black hover:underline font-normal text-xs transition-colors text-center"
-                    >
-                      {getServiceIcon(currentRelease.release_service)}
-                      <span>{currentRelease.release_service || "Streaming Service"}</span>
-                    </a>
+                    <img 
+                      src={release.release_artwork} 
+                      alt={release.release_displayname || release.release}
+                      className="w-12 h-12 rounded object-cover"
+                      onError={(e) => {
+                        // Handle error silently
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
                   )}
+                </div>
+                
+                {/* Release info */}
+                <div className={`flex-1 min-w-0 ${index === 0 ? 'pr-6' : ''}`}>
+                    {release?.release_link ? (
+                      release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
+                        <h3 
+                          onClick={(e) => handleStreamingClick(e, release, index)}
+                          className="text-[13px] font-medium text-primary leading-[13px] cursor-pointer hover:underline"
+                          onMouseEnter={() => setHoveredReleaseIndex(index)}
+                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                        >
+                          {renderDisplayName(release?.release_displayname, release?.release)}
+                        </h3>
+                      ) : (
+                        <a 
+                          href={release.release_link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[13px] font-medium text-primary leading-[13px] hover:underline block"
+                          onMouseEnter={() => setHoveredReleaseIndex(index)}
+                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                        >
+                          {renderDisplayName(release?.release_displayname, release?.release)}
+                        </a>
+                      )
+                    ) : (
+                      <h3 className="text-[13px] font-medium text-primary leading-[13px]">
+                        {renderDisplayName(release?.release_displayname, release?.release)}
+                      </h3>
+                    )}
+                  {release?.release_link && (
+                    <div className="flex items-center">
+                      {release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
+                        <div 
+                          onClick={(e) => handleStreamingClick(e, release, index)}
+                          className="flex items-center gap-1 text-primary hover:underline font-normal text-[10px] leading-[10px] pt-0.5 transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredReleaseIndex(index)}
+                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                        >
+                          {getServiceIcon(release.release_service, hoveredReleaseIndex === index)}
+                          {release.release_service || "Streaming Service"}
+                        </div>
+                      ) : (
+                        <a 
+                          href={release.release_link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-primary hover:underline font-normal text-[10px] leading-[10px] transition-colors"
+                          onMouseEnter={() => setHoveredReleaseIndex(index)}
+                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                        >
+                          {getServiceIcon(release.release_service, hoveredReleaseIndex === index)}
+                          {release.release_service || "Streaming Service"}
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Loading state - spans full width below both columns */}
+              {isLoadingEmbed(index) && (
+                <div className="mt-3 flex justify-center items-center py-1">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-xs">Loading...</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Embedded content - spans full width below both columns */}
+              {hasEmbeddedContent(release, index) && (
+                <div className="mt-3 flex justify-center">
+                  {release.release_service?.toLowerCase() === 'bandcamp' && albumId ? (
+                    <iframe 
+                      style={{ 
+                        border: 0, 
+                        width: 'min(245px, 100%)', 
+                        height: '390px' 
+                      }}
+                      src={`https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/`}
+                      seamless
+                      title={release.release_displayname || release.release}
+                    />
+                  ) : release.release_service?.toLowerCase() === 'youtube' ? (
+                    <iframe 
+                      className="lg:!h-[138px]"
+                      style={{ 
+                        border: 0, 
+                        width: 'min(560px, 100%)', 
+                        height: '200px' 
+                      }}
+                      src={convertToYouTubeEmbed(release.release_link!)}
+                      title={release.release_displayname || release.release}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    />
+                  ) : null}
                 </div>
               )}
             </div>
             
-            {/* Navigation arrows - only show if there are multiple releases */}
-            {releases.length > 1 && (
-              <div className="flex justify-center items-center mt-2 gap-4">
-                <button
-                  onClick={handlePreviousRelease}
-                  className="p-1 rounded-full border text-black bg-tertiary border-secondary hover:bg-primary hover:text-black transition-colors"
-                  aria-label="Previous release"
-                >
-                  <ArrowLeft size={12} />
-                </button>
-                <div className="flex items-center gap-2">
-                  {releases.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleReleaseSelect(index)}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        currentReleaseIndex === index 
-                          ? 'bg-black' 
-                          : 'bg-tertiary border border-secondary hover:bg-primary'
-                      }`}
-                      aria-label={`Go to release ${index + 1}`}
-                      aria-current={currentReleaseIndex === index ? 'true' : 'false'}
-                    />
-                  ))}
-                </div>
-                <button
-                  onClick={handleNextRelease}
-                  className="p-1 rounded-full border text-black bg-tertiary border-secondary hover:bg-primary hover:text-black transition-colors"
-                  aria-label="Next release"
-                >
-                  <ArrowRight size={12} />
-                </button>
-              </div>
+            {/* Divider - only show between releases, not after the last one */}
+            {index < releases.length - 1 && (
+              <div className="h-px bg-secondary/20" />
             )}
-          </div>
-        )}
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );
