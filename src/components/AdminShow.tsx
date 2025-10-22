@@ -18,7 +18,7 @@ export const AdminShow: React.FC = () => {
     // Custom hooks
     const { allShows, loading, loadingProgress, groups, tours, subvenues, years, songs, fetchAllShows } = useShowData();
     const { showReleases, loadingReleases, fetchShowReleases } = useShowReleases();
-    const { selectedShow, isEditing, editedShow, isSubmitting, handleShowSelect, handleInputChange, toggleEdit } = useShowActions(allShows, fetchAllShows);
+    const { selectedShow, isEditing, editedShow, isSubmitting, handleShowSelect, handleInputChange, toggleEdit } = useShowActions(allShows, fetchAllShows, fetchShowReleases);
     const {
         isShowModalOpen,
         isNewShow,

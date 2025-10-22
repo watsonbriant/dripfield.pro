@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { ShowData } from '../types/showTypes';
 import { convertFromEasternToUTC } from '../utils/showUtils';
 
-export const useShowActions = (allShows: ShowData[], fetchAllShows: () => void) => {
+export const useShowActions = (allShows: ShowData[], fetchAllShows: () => void, fetchShowReleases?: (showId: string) => void) => {
     const [selectedShow, setSelectedShow] = useState<ShowData | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedShow, setEditedShow] = useState<ShowData | null>(null);
@@ -24,6 +24,10 @@ export const useShowActions = (allShows: ShowData[], fetchAllShows: () => void) 
                     if (storedShow) {
                         setSelectedShow(storedShow);
                         setEditedShow(storedShow);
+                        // Also fetch releases for the stored show
+                        if (fetchShowReleases) {
+                            fetchShowReleases(storedShow.show_id);
+                        }
                     }
                 }
             } catch (error) {
