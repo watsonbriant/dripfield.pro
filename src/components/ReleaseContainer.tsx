@@ -13,13 +13,13 @@ const getServiceIcon = (serviceName: string | null, isHovered: boolean = false) 
   
   switch (serviceName.toLowerCase()) {
     case 'youtube':
-      return <FaYoutube className={`inline-block ${isHovered ? 'text-[#FF0033]' : ''}`} size="1rem" />;
+      return <FaYoutube className={`inline-block ${isHovered ? '' : 'text-[#FF0033]'}`} size="1rem" />;
     case 'bandcamp':
-      return <SiBandcamp className={`inline-block ${isHovered ? 'text-[#1b96bb]' : ''}`} size="1rem" />;
+      return <SiBandcamp className={`inline-block ${isHovered ? '' : 'text-[#1b96bb]'}`} size="1rem" />;
     case 'nugs':
-      return <img src={isHovered ? NugsColorIcon : NugsIcon} alt="nugs" className="inline-block h-4 w-auto" />;
+      return <img src={isHovered ? NugsIcon : NugsColorIcon} alt="nugs" className="inline-block h-4 w-auto" />;
     case 'spotify':
-      return <FaSpotify className={`inline-block ${isHovered ? 'text-[#1ed760]' : ''}`} size="1rem" />;
+      return <FaSpotify className={`inline-block ${isHovered ? '' : 'text-[#1ed760]'}`} size="1rem" />;
     default:
       return null;
   }
