@@ -38,7 +38,7 @@ export default function SongTourPerformancesModal({
       <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[650px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-secondary bg-canvas rounded-t-lg">
             <div className="flex items-center flex-1">
-                <h2 className="text-xl font-trad bg-tertiary text-fifth inline-block px-3 pb-0.5 rounded-lg border border-secondary mr-4">{cleanSongName(songName)}</h2>
+                <h2 className="text-[1.25rem] leading-[1.25rem] font-trad bg-tertiary text-fifth inline-block px-3 pt-0.5 pb-1.5 rounded-lg border border-secondary mr-4">{cleanSongName(songName)}</h2>
                 {tourName && (
                 <span className="text-xs font-medium bg-secondary text-fifth px-3 py-1 rounded-full border border-secondary whitespace-nowrap mr-4">
                     {tourName}
