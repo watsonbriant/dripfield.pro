@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MoveRight, AudioLines, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import NugsIcon from '../../public/src/img/nugs.png';
+import NugsIcon from '../../public/src/img/nugs1.png';
+import NugsColorIcon from '../../public/src/img/NugsColor.png';
 import { FaYoutube } from "react-icons/fa6";
 import { SiBandcamp } from "react-icons/si";
 import { FaSpotify } from "react-icons/fa";
@@ -16,7 +17,7 @@ const getServiceIcon = (serviceName: string | null, isHovered: boolean = false) 
     case 'bandcamp':
       return <SiBandcamp className={`inline-block ${isHovered ? 'text-[#1b96bb]' : ''}`} size="1rem" />;
     case 'nugs':
-      return <img src={NugsIcon} alt="nugs" className="inline-block h-4 w-auto" />;
+      return <img src={isHovered ? NugsColorIcon : NugsIcon} alt="nugs" className="inline-block h-4 w-auto" />;
     case 'spotify':
       return <FaSpotify className={`inline-block ${isHovered ? 'text-[#1ed760]' : ''}`} size="1rem" />;
     default:
