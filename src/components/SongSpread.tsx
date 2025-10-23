@@ -33,6 +33,20 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [categoryArtwork, setCategoryArtwork] = useState<Record<string, string>>({});
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Use useMemo to calculate songsToExclude only when setlist changes
   const songsToExclude = useMemo(() => {
@@ -220,19 +234,40 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
 
   // Optimize mouse event handlers to prevent recreation on every render
   const handleMouseEnter = useCallback((category: string, e: React.MouseEvent) => {
-    setHoveredCategory(category);
-    setMousePosition({ x: e.clientX, y: e.clientY });
-    onCategoryHover?.(category);
-  }, [onCategoryHover]);
+    if (!isMobile) {
+      setHoveredCategory(category);
+      setMousePosition({ x: e.clientX, y: e.clientY });
+      onCategoryHover?.(category);
+    }
+  }, [onCategoryHover, isMobile]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
-  }, []);
+    if (!isMobile) {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    }
+  }, [isMobile]);
 
   const handleMouseLeave = useCallback(() => {
-    setHoveredCategory(null);
-    onCategoryHover?.(null);
-  }, [onCategoryHover]);
+    if (!isMobile) {
+      setHoveredCategory(null);
+      onCategoryHover?.(null);
+    }
+  }, [onCategoryHover, isMobile]);
+
+  // Handle click on mobile devices
+  const handleClick = useCallback((category: string) => {
+    if (isMobile) {
+      if (selectedCategory === category) {
+        // If clicking the same category, deselect it
+        setSelectedCategory(null);
+        onCategoryHover?.(null);
+      } else {
+        // Select the new category
+        setSelectedCategory(category);
+        onCategoryHover?.(category);
+      }
+    }
+  }, [isMobile, selectedCategory, onCategoryHover]);
 
   // Sort categories by canonid for vertical chart
   const verticalSortedCategories = useMemo(() => {
@@ -267,6 +302,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
                   onMouseEnter={(e) => handleMouseEnter(category, e)}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
+                  onClick={() => handleClick(category)}
                 >
                   {/* Empty space above the filled portion - only render if not 100% height */}
                   {barHeight < 200 && (
@@ -295,15 +331,15 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
                         backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        filter: hoveredCategory === category ? 'none' : 'grayscale(100%) brightness(0.5)',
-                        opacity: hoveredCategory === category ? '1' : '1',
+                        filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(100%) brightness(0.5)',
+                        opacity: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? '1' : '1',
                         backgroundColor: !artwork || !loadedImages.has(category) ? '#594e5f' : undefined // bg-tertiary fallback
                       }}
                     />
                     
                     {/* Content overlay */}
                     <div className="relative z-10 w-full h-full flex items-start justify-center">
-                      {hoveredCategory === category && (
+                      {(hoveredCategory === category || (isMobile && selectedCategory === category)) && (
                         <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
                       )}
                     </div>
@@ -316,6 +352,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
                   onMouseEnter={(e) => handleMouseEnter(category, e)}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
+                  onClick={() => handleClick(category)}
                 >
                   {artwork && loadedImages.has(category) && (
                     <img 
@@ -334,8 +371,8 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
           })}
         </div>
         
-        {/* Tooltip */}
-        {hoveredCategory && (
+        {/* Tooltip - disabled on mobile */}
+        {hoveredCategory && !isMobile && (
           <div 
             className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
             style={{

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ShowStats from './ShowStats';
 import SongSpread from './SongSpread';
@@ -57,6 +57,11 @@ export default function FullSetlistDisplay({
   
   // State for category hover highlighting
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  
+  // Handle category hover from SongSpread
+  const handleCategoryHover = useCallback((category: string | null) => {
+    setHoveredCategory(category);
+  }, []);
 
   // Early return if show is undefined
   if (!show) {
@@ -193,7 +198,7 @@ export default function FullSetlistDisplay({
                     </div>
                     <SongSpread 
                       setlist={adaptSetlistForSongSpread(setlist)} 
-                      onCategoryHover={setHoveredCategory}
+                      onCategoryHover={handleCategoryHover}
                     />
                   </div>
                   
@@ -233,7 +238,7 @@ export default function FullSetlistDisplay({
                 <div className="md:hidden space-y-4">
                   <SongSpread 
                     setlist={adaptSetlistForSongSpread(setlist)} 
-                    onCategoryHover={setHoveredCategory}
+                    onCategoryHover={handleCategoryHover}
                   />
                   
                   {showId && <ShowChanges showId={showId} />}
