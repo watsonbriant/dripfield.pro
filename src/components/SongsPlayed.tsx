@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChartBarDecreasing } from '../components/icons/ChartBarDecreasing';
 import { Modal } from './Modal';
-import { CircularProgress } from './ui/CircularProgress';
+import { CircularProgress as CircularProgressComponent } from './ui/CircularProgress';
 
 interface SongCount {
   song: string;
@@ -19,7 +19,7 @@ interface SongsPlayedProps {
   CircularProgress?: React.FC<{ value: number }>;
   cleanSongName?: (songName: string) => string;
   songs: SongCount[];
-  songSpreadData: any[];
+  songSpreadData: SongSpreadItem[];
   loadingProgress: number;
 }
 
@@ -40,7 +40,7 @@ export function SongsPlayed({
   isLoading, 
   selectedSong, 
   onSongClick,
-  CircularProgress = CircularProgress,
+  CircularProgress = CircularProgressComponent,
   cleanSongName,
   songs,
   songSpreadData,
@@ -50,6 +50,74 @@ export function SongsPlayed({
   const [sortBy, setSortBy] = useState<'song' | 'count'>('count');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [isSpreadModalOpen, setIsSpreadModalOpen] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Preload images to ensure they're ready before display
+  useEffect(() => {
+    const preloadImages = () => {
+      songSpreadData.forEach(({ artwork, category }) => {
+        if (artwork && !loadedImages.has(category)) {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => {
+              // Only update if the image isn't already loaded
+              if (!prev.has(category)) {
+                return new Set([...prev, category]);
+              }
+              return prev;
+            });
+          };
+          img.onerror = () => {
+            console.error(`Failed to load image for ${category}:`, artwork);
+          };
+          img.src = artwork;
+        }
+      });
+    };
+
+    preloadImages();
+  }, [songSpreadData, loadedImages]);
+
+  // Optimize mouse event handlers to prevent recreation on every render
+  const handleMouseEnter = useCallback((category: string) => {
+    if (!isMobile) {
+      setHoveredCategory(category);
+    }
+  }, [isMobile]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!isMobile) {
+      setHoveredCategory(null);
+    }
+  }, [isMobile]);
+
+  // Handle click on mobile devices
+  const handleClick = useCallback((category: string) => {
+    if (isMobile) {
+      if (selectedCategory === category) {
+        // If clicking the same category, deselect it
+        setSelectedCategory(null);
+      } else {
+        // Select the new category
+        setSelectedCategory(category);
+      }
+    }
+  }, [isMobile, selectedCategory]);
 
   // Handle sorting
   const handleSortClick = (column: 'song' | 'count') => {
@@ -83,8 +151,8 @@ export function SongsPlayed({
           : b.play_count - a.play_count;
       }
       // If counts are equal, use the default secondary and tertiary sort
-      if (a.category_canonid !== b.category_canonid) {
-        return a.category_canonid - b.category_canonid;
+      if ((a.category_canonid || 0) !== (b.category_canonid || 0)) {
+        return (a.category_canonid || 0) - (b.category_canonid || 0);
       }
       return a.song.localeCompare(b.song);
     } else {
@@ -94,8 +162,8 @@ export function SongsPlayed({
         return b.play_count - a.play_count;
       }
       // 2. Category canonid (ascending)
-      if (a.category_canonid !== b.category_canonid) {
-        return a.category_canonid - b.category_canonid;
+      if ((a.category_canonid || 0) !== (b.category_canonid || 0)) {
+        return (a.category_canonid || 0) - (b.category_canonid || 0);
       }
       // 3. Song name (A-Z)
       return a.song.localeCompare(b.song);
@@ -112,8 +180,10 @@ export function SongsPlayed({
     );
   }
   
-  // Calculate max count for song spread bars
-  const maxCount = Math.max(...songSpreadData.map(cat => cat.count));
+  // Memoize max count calculation
+  const maxCount = useMemo(() => {
+    return Math.max(...songSpreadData.map(cat => cat.count), 1);
+  }, [songSpreadData]);
   
   return (
     <div>
@@ -196,39 +266,112 @@ export function SongsPlayed({
         isOpen={isSpreadModalOpen}
         onClose={() => setIsSpreadModalOpen(false)}
         title="Song Category Spread"
+        maxWidth="1050px"
       >
-        <div className="space-y-1.5 max-h-[80vh] overflow-y-auto p-1">
-          {songSpreadData.map(({ category, count, songs, artwork }) => (
-            <div key={category}>
-              <div className="text-fifth text-sm font-medium">
-                {category}
-              </div>
-              <div className="h-5 rounded overflow-hidden">
-                <div 
-                  className="h-full bg-secondary border-secondary rounded relative flex items-center"
-                  style={{ 
-                    width: `${(count / maxCount) * 100}%`,
-                    minWidth: count < 10 ? '42px' : count < 100 ? '51px' : count < 1000 ? '60px' : '69px'
-                  }}
-                >
-                  {artwork && (
-                    <img 
-                      src={artwork} 
-                      alt=""
-                      onError={(e) => {
-                        console.error(`Failed to load image for ${category}:`, artwork);
-                        e.currentTarget.style.display = 'none';
+        <div className="bg-primary">
+          <div className="flex items-end gap-1 w-full">
+            {songSpreadData.map(({ category, count, artwork }) => {
+              const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+              
+              return (
+                <div key={`vertical-${category}`} className="flex flex-col items-center flex-1">
+                  {/* Vertical bar container - always full height */}
+                  <div 
+                    className="cursor-pointer relative w-full transition-all duration-300"
+                    style={{ 
+                      height: '200px'
+                    }}
+                    onMouseEnter={() => handleMouseEnter(category)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleClick(category)}
+                  >
+                    {/* Empty space above the filled portion - only render if not 100% height */}
+                    {barHeight < 200 && (
+                      <div 
+                        className="w-full border-l border-r border-t border-secondary rounded-t"
+                        style={{ 
+                          height: `${200 - barHeight}px`,
+                          backgroundColor: '#d8d7d7' // bg-secondary color
+                        }}
+                      />
+                    )}
+                    
+                    {/* Filled portion with artwork - positioned on top */}
+                    <div 
+                      className={`w-full border border-secondary relative overflow-hidden ${
+                        barHeight < 200 ? 'rounded-b' : 'rounded'
+                      }`}
+                      style={{ 
+                        height: `${barHeight}px`
                       }}
-                      className="h-4 w-4 ml-0.5 object-cover rounded-sm"
-                    />
-                  )}
-                  <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                    <span className="text-fifth text-sm font-semibold">{count}</span>
+                    >
+                      {/* Artwork background - separate from border, clipped to container shape */}
+                      <div 
+                        className="w-full h-full flex items-start justify-center absolute inset-0"
+                        style={{ 
+                          backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(100%) brightness(0.5)',
+                          opacity: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? '1' : '1',
+                          backgroundColor: !artwork || !loadedImages.has(category) ? '#594e5f' : undefined // bg-tertiary fallback
+                        }}
+                      />
+                      
+                      {/* Content overlay */}
+                      <div className="relative z-10 w-full h-full flex items-start justify-center">
+                        {(hoveredCategory === category || (isMobile && selectedCategory === category)) && (
+                          <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Artwork underneath bar */}
+                  <div 
+                    className="mt-2 flex justify-center cursor-pointer"
+                    onMouseEnter={() => handleMouseEnter(category)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleClick(category)}
+                  >
+                    {artwork && loadedImages.has(category) && (
+                      <img 
+                        src={artwork} 
+                        alt=""
+                        onError={(e) => {
+                          console.error(`Failed to load image for ${category}. URL was:`, artwork);
+                          e.currentTarget.style.display = 'none';
+                        }}
+                        className="h-8 w-8 object-cover rounded border border-secondary"
+                      />
+                    )}
                   </div>
                 </div>
+              );
+            })}
+          </div>
+          
+          {/* Tooltip underneath bar chart */}
+          {(hoveredCategory || selectedCategory) && (
+            <div className="mt-4 flex justify-center">
+              <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+                <div className="font-semibold text-sm mb-1">{hoveredCategory || selectedCategory}</div>
+                {songSpreadData
+                  .find(cat => cat.category === (hoveredCategory || selectedCategory))
+                  ?.songs
+                  .sort((a: any, b: any) => a.song.localeCompare(b.song))
+                  .map((song: any, index: number) => (
+                    <div key={index}>
+                      <span className="font-medium">{song.song}</span>
+                      {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory || selectedCategory || '') && (
+                        <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
+                      )}
+                      &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
+                    </div>
+                  ))}
               </div>
             </div>
-          ))}
+          )}
         </div>
       </Modal>
     </div>

@@ -290,6 +290,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
         isOpen={isSpreadModalOpen}
         onClose={() => setIsSpreadModalOpen(false)}
         songSpreadData={songSpreadData}
+        maxWidth="1050px"
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Modal } from './Modal';
 import { SongSpreadItem } from '../utils/songSpreadUtils';
 
@@ -6,56 +6,201 @@ interface SongSpreadModalProps {
   isOpen: boolean;
   onClose: () => void;
   songSpreadData: SongSpreadItem[];
+  maxWidth?: string;
 }
 
 export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
   isOpen,
   onClose,
-  songSpreadData
+  songSpreadData,
+  maxWidth
 }) => {
-  // Calculate max count for song spread bars
-  const maxCount = Math.max(...songSpreadData.map(cat => cat.count), 1);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+
+  // Memoize max count calculation
+  const maxCount = useMemo(() => {
+    return Math.max(...songSpreadData.map(cat => cat.count), 1);
+  }, [songSpreadData]);
+
+  // Preload images to ensure they're ready before display
+  useEffect(() => {
+    const preloadImages = () => {
+      songSpreadData.forEach(({ artwork, category }) => {
+        if (artwork && !loadedImages.has(category)) {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => {
+              // Only update if the image isn't already loaded
+              if (!prev.has(category)) {
+                return new Set([...prev, category]);
+              }
+              return prev;
+            });
+          };
+          img.onerror = () => {
+            console.error(`Failed to load image for ${category}:`, artwork);
+          };
+          img.src = artwork;
+        }
+      });
+    };
+
+    preloadImages();
+  }, [songSpreadData, loadedImages]);
+
+  // Optimize mouse event handlers to prevent recreation on every render
+  const handleMouseEnter = useCallback((category: string) => {
+    if (!isMobile) {
+      setHoveredCategory(category);
+    }
+  }, [isMobile]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!isMobile) {
+      setHoveredCategory(null);
+    }
+  }, [isMobile]);
+
+  // Handle click on mobile devices
+  const handleClick = useCallback((category: string) => {
+    if (isMobile) {
+      if (selectedCategory === category) {
+        // If clicking the same category, deselect it
+        setSelectedCategory(null);
+      } else {
+        // Select the new category
+        setSelectedCategory(category);
+      }
+    }
+  }, [isMobile, selectedCategory]);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title="Song Spread"
+      maxWidth={maxWidth}
     >
       <div className="bg-primary">
-        <div className="space-y-1.5">
-          {songSpreadData.map(({ category, count, artwork }) => (
-            <div key={category}>
-              <div className="text-fifth text-sm font-medium">
-                {category}
-              </div>
-              <div className="h-5 rounded overflow-hidden">
+        <div className="flex items-end gap-1 w-full">
+          {songSpreadData.map(({ category, count, artwork }) => {
+            const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+            
+            return (
+              <div key={`vertical-${category}`} className="flex flex-col items-center flex-1">
+                {/* Vertical bar container - always full height */}
                 <div 
-                  className="h-full bg-secondary rounded border border-secondary relative flex items-center"
+                  className="cursor-pointer relative w-full transition-all duration-300"
                   style={{ 
-                    width: `${(count / maxCount) * 100}%`,
-                    minWidth: '48px'
+                    height: '200px'
                   }}
+                  onMouseEnter={() => handleMouseEnter(category)}
+                  onMouseLeave={handleMouseLeave}
+                  onClick={() => handleClick(category)}
                 >
-                  {artwork && (
+                  {/* Empty space above the filled portion - only render if not 100% height */}
+                  {barHeight < 200 && (
+                    <div 
+                      className="w-full border-l border-r border-t border-secondary rounded-t"
+                      style={{ 
+                        height: `${200 - barHeight}px`,
+                        backgroundColor: '#d8d7d7' // bg-secondary color
+                      }}
+                    />
+                  )}
+                  
+                  {/* Filled portion with artwork - positioned on top */}
+                  <div 
+                    className={`w-full border border-secondary relative overflow-hidden ${
+                      barHeight < 200 ? 'rounded-b' : 'rounded'
+                    }`}
+                    style={{ 
+                      height: `${barHeight}px`
+                    }}
+                  >
+                    {/* Artwork background - separate from border, clipped to container shape */}
+                    <div 
+                      className="w-full h-full flex items-start justify-center absolute inset-0"
+                      style={{ 
+                        backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(100%) brightness(0.5)',
+                        opacity: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? '1' : '1',
+                        backgroundColor: !artwork || !loadedImages.has(category) ? '#594e5f' : undefined // bg-tertiary fallback
+                      }}
+                    />
+                    
+                    {/* Content overlay */}
+                    <div className="relative z-10 w-full h-full flex items-start justify-center">
+                      {(hoveredCategory === category || (isMobile && selectedCategory === category)) && (
+                        <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Artwork underneath bar */}
+                <div 
+                  className="mt-2 flex justify-center cursor-pointer"
+                  onMouseEnter={() => handleMouseEnter(category)}
+                  onMouseLeave={handleMouseLeave}
+                  onClick={() => handleClick(category)}
+                >
+                  {artwork && loadedImages.has(category) && (
                     <img 
                       src={artwork} 
                       alt=""
                       onError={(e) => {
-                        console.error(`Failed to load image for ${category}:`, artwork);
+                        console.error(`Failed to load image for ${category}. URL was:`, artwork);
                         e.currentTarget.style.display = 'none';
                       }}
-                      className="h-4 w-4 ml-0.5 object-cover rounded-sm"
+                      className="h-8 w-8 object-cover rounded border border-secondary"
                     />
                   )}
-                  <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                    <span className="text-fifth text-sm font-semibold">{count}</span>
-                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+        
+        {/* Tooltip underneath bar chart */}
+        {(hoveredCategory || selectedCategory) && (
+          <div className="mt-4 flex justify-center">
+            <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+              <div className="font-semibold text-sm mb-1">{hoveredCategory || selectedCategory}</div>
+              {songSpreadData
+                .find(cat => cat.category === (hoveredCategory || selectedCategory))
+                ?.songs
+                .sort((a, b) => a.song.localeCompare(b.song))
+                .map((song, index) => (
+                  <div key={index}>
+                    <span className="font-medium">{song.song}</span>
+                    {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory || selectedCategory || '') && (
+                      <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
+                    )}
+                    &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   );

@@ -74,12 +74,7 @@ export const prepareSongSpreadData = async (
     canonid: categoryCanonIds[category] || 9999,
     artwork: categoryArtwork[category] || null,
     songs: categorySongs[category].sort((a, b) => a.song.localeCompare(b.song)) // Sort alphabetically like TourSongSpread
-  })).sort((a, b) => {
-    if (b.count !== a.count) {
-      return b.count - a.count;
-    }
-    return a.canonid - b.canonid;
-  });
+  })).sort((a, b) => a.canonid - b.canonid);
   
   return spreadData;
 };
