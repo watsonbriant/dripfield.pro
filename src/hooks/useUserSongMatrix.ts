@@ -381,12 +381,7 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
       canonid: categoryCanonIds[category] || 9999,
       artwork: categoryArtwork[category] || null,
       songs: categorySongs[category].sort((a, b) => b.playCount - a.playCount)
-    })).sort((a, b) => {
-      if (b.count !== a.count) {
-        return b.count - a.count;
-      }
-      return a.canonid - b.canonid;
-    });
+    })).sort((a, b) => a.canonid - b.canonid);
     
     setSongSpreadData(spreadData);
   };

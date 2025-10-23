@@ -305,12 +305,7 @@ async function processSongData(allEntries: any[]): Promise<{
     canonid: categoryCanonIds[category] || 9999,
     artwork: categoryArtwork[category],
     songs: categorySongs[category].sort((a, b) => b.playCount - a.playCount)
-  })).sort((a, b) => {
-    if (b.count !== a.count) {
-      return b.count - a.count;
-    }
-    return a.canonid - b.canonid;
-  });
+  })).sort((a, b) => a.canonid - b.canonid);
 
   return { songs: songsArray, songSpreadData };
 }

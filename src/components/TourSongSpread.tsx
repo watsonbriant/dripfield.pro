@@ -299,7 +299,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
           })}
         </div>
         
-        {/* Tooltip - disabled on mobile */}
+        {/* Desktop tooltip - follows mouse */}
         {hoveredCategory && !isMobile && (
           <div 
             className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
@@ -316,12 +316,34 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               .map((song, index) => (
                 <div key={index}>
                   <span className="font-medium">{song.song}</span>
-                  {song.artist && (
+                  {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory) && (
                     <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
                   )}
                   &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
                 </div>
               ))}
+          </div>
+        )}
+        
+        {/* Mobile tooltip - underneath chart */}
+        {selectedCategory && isMobile && (
+          <div className="mt-4 flex justify-center">
+            <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+              <div className="font-semibold text-sm mb-1">{selectedCategory}</div>
+              {sortedCategories
+                .find(cat => cat.category === selectedCategory)
+                ?.songs
+                .sort((a, b) => a.song.localeCompare(b.song))
+                .map((song, index) => (
+                  <div key={index}>
+                    <span className="font-medium">{song.song}</span>
+                    {song.artist && ['Cover Songs', 'Live Collaborations'].includes(selectedCategory) && (
+                      <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
+                    )}
+                    &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </div>

@@ -79,6 +79,7 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
         isOpen={isSpreadModalOpen}
         onClose={() => setIsSpreadModalOpen(false)}
         songSpreadData={songSpreadData}
+        maxWidth="1050px"
       />
     </div>
   );
