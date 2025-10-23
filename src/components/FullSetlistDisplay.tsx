@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ShowStats from './ShowStats';
 import SongSpread from './SongSpread';
@@ -53,6 +54,9 @@ export default function FullSetlistDisplay({
   const hoverStates = useHoverStates();
   const { modalSongData, setModalSongData } = useModalState();
   const { copiedEntries, handleNumberClick } = useCopiedEntries();
+  
+  // State for category hover highlighting
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
   // Early return if show is undefined
   if (!show) {
@@ -163,6 +167,7 @@ export default function FullSetlistDisplay({
                 toggleIndividualCoachNote={toggleIndividualCoachNote}
                 getGuestColor={(entry) => getGuestColor(entry, guestGroups)}
                 hoverStates={hoverStates}
+                hoveredCategory={hoveredCategory}
                 onSongClick={handleSongClick}
                 onLastShowClick={handleLastShowClick}
                 onGuestClick={handleGuestClick}
@@ -186,7 +191,10 @@ export default function FullSetlistDisplay({
                       <JiveCompleteBadge showJiveComplete={show.show_jivecomplete || false} />
                       <DripfieldCompleteBadge showDripfieldComplete={show.show_dripfieldcomplete || false} />
                     </div>
-                    <SongSpread setlist={adaptSetlistForSongSpread(setlist)} />
+                    <SongSpread 
+                      setlist={adaptSetlistForSongSpread(setlist)} 
+                      onCategoryHover={setHoveredCategory}
+                    />
                   </div>
                   
                   <div className="space-y-4">
@@ -223,7 +231,10 @@ export default function FullSetlistDisplay({
 
                 {/* Mobile layout - stacked */}
                 <div className="md:hidden space-y-4">
-                  <SongSpread setlist={adaptSetlistForSongSpread(setlist)} />
+                  <SongSpread 
+                    setlist={adaptSetlistForSongSpread(setlist)} 
+                    onCategoryHover={setHoveredCategory}
+                  />
                   
                   {showId && <ShowChanges showId={showId} />}
                   

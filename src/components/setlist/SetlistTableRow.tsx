@@ -39,6 +39,7 @@ interface SetlistTableRowProps {
     setHoveredSong: (id: string | null) => void;
     setHoveredPersonnel: (id: string | null) => void;
   };
+  hoveredCategory: string | null;
   onSongClick: (songName: string) => void;
   onLastShowClick: (showId: string) => void;
   onGuestClick: (guestId: string) => void;
@@ -60,6 +61,7 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
   toggleIndividualCoachNote,
   getGuestColor,
   hoverStates,
+  hoveredCategory,
   onSongClick,
   onLastShowClick,
   onGuestClick,
@@ -108,10 +110,16 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
     }
   }
 
+  // Determine if this row should be dimmed or highlighted based on hovered category
+  const shouldDimRow = hoveredCategory && entry.song_category !== hoveredCategory;
+  const shouldHighlightRow = hoveredCategory && entry.song_category === hoveredCategory;
+  
   elements.push(
     <div 
       key={entry.entry_id}
-      className={`${getGridClass(show.show_canonid)} grid-auto-columns-min-content text-fifth text-sm hover:bg-tertiary/40 transition-colors pr-2 py-[1px] items-start bg-primary relative`}
+      className={`${getGridClass(show.show_canonid)} grid-auto-columns-min-content text-fifth text-sm hover:bg-tertiary/40 transition-all duration-200 pr-2 py-[1px] items-start bg-primary relative ${
+        shouldDimRow ? 'opacity-25' : shouldHighlightRow ? 'bg-tertiary/40' : 'opacity-100'
+      }`}
     >
       {/* Number column with absolute positioned background */}
       <div

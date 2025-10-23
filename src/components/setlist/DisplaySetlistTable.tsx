@@ -22,6 +22,7 @@ interface DisplaySetlistTableProps {
     setHoveredSong: (id: string | null) => void;
     setHoveredPersonnel: (id: string | null) => void;
   };
+  hoveredCategory: string | null;
   onSongClick: (songName: string) => void;
   onLastShowClick: (showId: string) => void;
   onGuestClick: (guestId: string) => void;
@@ -39,6 +40,7 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   toggleIndividualCoachNote,
   getGuestColor,
   hoverStates,
+  hoveredCategory,
   onSongClick,
   onLastShowClick,
   onGuestClick,
@@ -100,6 +102,7 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
               toggleIndividualCoachNote={toggleIndividualCoachNote}
               getGuestColor={getGuestColor}
               hoverStates={hoverStates}
+              hoveredCategory={hoveredCategory}
               onSongClick={onSongClick}
               onLastShowClick={onLastShowClick}
               onGuestClick={onGuestClick}

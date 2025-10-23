@@ -73,8 +73,8 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
     return (
         <>
             <div className={`bg-primary border border-secondary rounded-lg p-3 text-sm ${className}`}>
-                <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-lg font-medium text-fifth mb-2">
+                <div className="flex justify-between items-center mb-1">
+                    <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth mb-1">
                         Setlist Changes
                     </h2>
                     {setlistUrl && (
@@ -83,7 +83,7 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                             className="bg-tertiary hover:bg-primary border border-secondary rounded p-1.5 transition-colors"
                         >
                             <FileMusic
-                                className="h-5 w-5 text-fifth"
+                                className="h-4 w-4 text-fifth"
                             />
                         </button>
                     )}

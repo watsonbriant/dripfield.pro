@@ -25,12 +25,14 @@ interface SetlistEntry {
 
 interface SongSpreadProps {
   setlist: SetlistEntry[];
+  onCategoryHover?: (category: string | null) => void;
 }
 
-const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
+const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [categoryArtwork, setCategoryArtwork] = useState<Record<string, string>>({});
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   
   // Use useMemo to calculate songsToExclude only when setlist changes
   const songsToExclude = useMemo(() => {
@@ -77,6 +79,9 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     const fetchCategoryArtwork = async () => {
       try {
         if (uniqueCategories.length > 0) {
+          // Reset loaded images when categories change
+          setLoadedImages(new Set());
+          
           // Fetch artwork for these categories from the categories table
           const { data, error } = await supabase
             .from('categories')
@@ -105,6 +110,32 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     
     fetchCategoryArtwork();
   }, [uniqueCategories]); // Only run when unique categories change
+
+  // Preload images to ensure they're ready before display
+  useEffect(() => {
+    const preloadImages = () => {
+      Object.entries(categoryArtwork).forEach(([category, artworkUrl]) => {
+        if (artworkUrl && !loadedImages.has(category)) {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => {
+              // Only update if the image isn't already loaded
+              if (!prev.has(category)) {
+                return new Set([...prev, category]);
+              }
+              return prev;
+            });
+          };
+          img.onerror = () => {
+            console.error(`Failed to load image for ${category}:`, artworkUrl);
+          };
+          img.src = artworkUrl;
+        }
+      });
+    };
+
+    preloadImages();
+  }, [categoryArtwork]); // Removed loadedImages from dependencies to prevent loops
 
   // Memoize expensive calculations to prevent recalculation on every render
   const categoryData = useMemo(() => {
@@ -182,39 +213,17 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
     }, {} as Record<string, number>);
   }, [setlist, songsToExclude]);
 
-  // Memoize sorted categories and max count calculation
-  const { sortedCategories, maxCount } = useMemo(() => {
-    // Sort songs alphabetically within each category
-    Object.keys(categoryData.songs).forEach(category => {
-      categoryData.songs[category].sort((a, b) => a.song.localeCompare(b.song));
-    });
-
-    // Convert to array and sort by count (descending) then by canonid (ascending)
-    const sorted = Object.entries(categoryData.counts)
-      .map(([category, count]) => ({
-        category,
-        count,
-        canonid: categoryCanonIds[category] || 0,
-        artwork: categoryArtwork[category] || null,
-        songs: categoryData.songs[category]
-      }))
-      .sort((a, b) => {
-        if (b.count !== a.count) {
-          return b.count - a.count;
-        }
-        return a.canonid - b.canonid;
-      });
-
-    const max = Math.max(...Object.values(categoryData.counts));
-    
-    return { sortedCategories: sorted, maxCount: max };
-  }, [categoryData, categoryCanonIds, categoryArtwork]);
+  // Memoize max count calculation
+  const maxCount = useMemo(() => {
+    return Math.max(...Object.values(categoryData.counts));
+  }, [categoryData]);
 
   // Optimize mouse event handlers to prevent recreation on every render
   const handleMouseEnter = useCallback((category: string, e: React.MouseEvent) => {
     setHoveredCategory(category);
     setMousePosition({ x: e.clientX, y: e.clientY });
-  }, []);
+    onCategoryHover?.(category);
+  }, [onCategoryHover]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
@@ -222,75 +231,153 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist }) => {
 
   const handleMouseLeave = useCallback(() => {
     setHoveredCategory(null);
-  }, []);
+    onCategoryHover?.(null);
+  }, [onCategoryHover]);
+
+  // Sort categories by canonid for vertical chart
+  const verticalSortedCategories = useMemo(() => {
+    return Object.entries(categoryData.counts)
+      .map(([category, count]) => ({
+        category,
+        count,
+        canonid: categoryCanonIds[category] || 0,
+        artwork: categoryArtwork[category] || null,
+        songs: categoryData.songs[category]
+      }))
+      .sort((a, b) => a.canonid - b.canonid);
+  }, [categoryData, categoryCanonIds, categoryArtwork]);
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <h2 className="text-lg font-medium text-fifth mb-2">Song Spread</h2>
-      <div className="space-y-1.5">
-        {sortedCategories.map(({ category, count, songs, artwork }) => (
-          <div key={category}>
-            <div 
-              className="text-fifth text-sm font-medium cursor-pointer"
-              onMouseEnter={(e) => handleMouseEnter(category, e)}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              {category}
-            </div>
-            <div 
-              className="h-5 rounded overflow-hidden cursor-pointer"
-              onMouseEnter={(e) => handleMouseEnter(category, e)}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div 
-                className="h-full bg-secondary rounded border border-secondary relative flex items-center"
-                style={{ 
-                  width: `${(count / maxCount) * 100}%`,
-                  minWidth: '48px'
-                }}
-              >
-                {artwork && (
-                  <img 
-                    src={artwork} 
-                    alt=""
-                    onError={(e) => {
-                      console.error(`Failed to load image for ${category}. URL was:`, artwork);
-                      e.currentTarget.style.display = 'none';
+    <div className="bg-primary border border-secondary rounded-lg p-3" key="song-spread">
+      <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth mb-1.5">Song Spread</h2>
+      
+      <div>
+        <div className="flex items-end gap-1 w-full">
+          {verticalSortedCategories.map(({ category, count, songs, artwork }) => {
+            const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+            
+            return (
+              <div key={`vertical-${category}`} className="flex flex-col items-center flex-1">
+                {/* Vertical bar container - always full height */}
+                <div 
+                  className="cursor-pointer relative w-full transition-all duration-300"
+                  style={{ 
+                    height: '200px'
+                  }}
+                  onMouseEnter={(e) => handleMouseEnter(category, e)}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {/* Empty space above the filled portion - only render if not 100% height */}
+                  {barHeight < 200 && (
+                    <div 
+                      className="w-full border-l border-r border-t border-secondary rounded-t"
+                      style={{ 
+                        height: `${200 - barHeight}px`,
+                        backgroundColor: '#d8d7d7' // bg-secondary color
+                      }}
+                    />
+                  )}
+                  
+                  {/* Filled portion with artwork - positioned on top */}
+                  <div 
+                    className={`w-full border border-secondary relative overflow-hidden ${
+                      barHeight < 200 ? 'rounded-b' : 'rounded'
+                    }`}
+                    style={{ 
+                      height: `${barHeight}px`
                     }}
-                    className="h-4 w-4 ml-0.5 object-cover rounded-sm"
-                  />
-                )}
-                <div className="absolute right-0 top-0 h-full flex items-center pr-2">
-                  <span className="text-fifth text-sm font-semibold">{count}</span>
+                  >
+                    {/* Artwork background - separate from border, clipped to container shape */}
+                    <div 
+                      className="w-full h-full flex items-start justify-center absolute inset-0"
+                      style={{ 
+                        backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        filter: hoveredCategory === category ? 'none' : 'grayscale(100%) brightness(0.5)',
+                        opacity: hoveredCategory === category ? '1' : '1',
+                        backgroundColor: !artwork || !loadedImages.has(category) ? '#594e5f' : undefined // bg-tertiary fallback
+                      }}
+                    />
+                    
+                    {/* Content overlay */}
+                    <div className="relative z-10 w-full h-full flex items-start justify-center">
+                      {hoveredCategory === category && (
+                        <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Artwork underneath bar */}
+                <div 
+                  className="mt-2 flex justify-center cursor-pointer"
+                  onMouseEnter={(e) => handleMouseEnter(category, e)}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {artwork && loadedImages.has(category) && (
+                    <img 
+                      src={artwork} 
+                      alt=""
+                      onError={(e) => {
+                        console.error(`Failed to load image for ${category}. URL was:`, artwork);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      className="h-8 w-8 object-cover rounded border border-secondary"
+                    />
+                  )}
                 </div>
               </div>
-            </div>
-            {hoveredCategory === category && (
-              <div 
-                className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-xs"
-                style={{
-                  left: `${mousePosition.x + 10}px`,
-                  top: `${mousePosition.y - 10}px`
-                }}
-              >
-                {songs.map((song, index) => (
-                  <div key={index}>
-                    <span className="font-medium">{song.song}</span>
-                    {song.isSpecialCategory && song.artist && (
-                      <>&nbsp;&nbsp;[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            );
+          })}
+        </div>
+        
+        {/* Tooltip */}
+        {hoveredCategory && (
+          <div 
+            className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
+            style={{
+              left: `${mousePosition.x + 10}px`,
+              top: `${mousePosition.y - 10}px`
+            }}
+          >
+            <div className="font-semibold text-sm mb-0.5">{hoveredCategory}</div>
+            {verticalSortedCategories
+              .find(cat => cat.category === hoveredCategory)
+              ?.songs
+              .sort((a, b) => a.song.localeCompare(b.song))
+              .map((song, index) => (
+                <div key={index}>
+                  <span className="font-medium">{song.song}</span>
+                  {song.isSpecialCategory && song.artist && (
+                    <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
+                  )}
+                </div>
+              ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
 };
 
 // Wrap component in React.memo to prevent unnecessary re-renders when props haven't changed
-export default React.memo(SongSpread);
+export default React.memo(SongSpread, (prevProps, nextProps) => {
+  // Only re-render if the setlist actually changes
+  // Compare setlist length and first few entries to determine if it's truly different
+  if (prevProps.setlist.length !== nextProps.setlist.length) {
+    return false; // Different lengths, need to re-render
+  }
+  
+  // Check if the first few entries are the same to avoid deep comparison
+  const maxCheck = Math.min(5, prevProps.setlist.length);
+  for (let i = 0; i < maxCheck; i++) {
+    if (prevProps.setlist[i]?.entry_song !== nextProps.setlist[i]?.entry_song) {
+      return false; // Different content, need to re-render
+    }
+  }
+  
+  return true; // Same content, skip re-render
+});
