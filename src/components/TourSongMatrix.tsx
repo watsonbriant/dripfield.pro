@@ -66,7 +66,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
     <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
         <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">
-          {songMatrix.songs.length} Songs Played
+          {songMatrix.songs.length} Songs Played1
         </h2>
       )}
       

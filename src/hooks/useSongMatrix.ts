@@ -43,6 +43,7 @@ export const useSongMatrix = (shows: Array<any>, sortMode: 'alphabetical' | 'chr
             entry_placement,
             entry_set,
             entry_setnum,
+            entry_short,
             shows(show_date),
             songs:entry_song(
               song,
@@ -58,9 +59,6 @@ export const useSongMatrix = (shows: Array<any>, sortMode: 'alphabetical' | 'chr
 
         if (error) throw error;
 
-        // Extract unique songs and sort alphabetically
-        const uniqueSongs = Array.from(new Set(entriesData.map(entry => entry.entry_song))).sort();
-        
         // Create song category mapping for song spread
         const categoryMap: Record<string, { category: string, canonid: number, artist?: string }> = {};
         entriesData.forEach(entry => {
@@ -93,6 +91,45 @@ export const useSongMatrix = (shows: Array<any>, sortMode: 'alphabetical' | 'chr
             'MM.dd'
           )
         }));
+
+        // First, sort entries by show date, then set and setnum to process chronologically
+        const sortedEntries = [...entriesData].sort((a, b) => {
+          const showDateA = showDateMap.get(a.entry_show) || "";
+          const showDateB = showDateMap.get(b.entry_show) || "";
+          
+          // First sort by show date
+          if (showDateA !== showDateB) {
+            return new Date(showDateA).getTime() - new Date(showDateB).getTime();
+          }
+          
+          // Then by set
+          if (a.entry_set !== b.entry_set) {
+            return a.entry_set.localeCompare(b.entry_set);
+          }
+          
+          // Finally by setnum
+          return a.entry_setnum - b.entry_setnum;
+        });
+        
+        const skipShorts = ["fake", "tease", "reprise", "aborted"];
+
+        // Group entries by show to identify valid songs (same logic as TourSongStats)
+        const showEntriesMap = new Map<string, any[]>();
+        sortedEntries.forEach(entry => {
+          const showId = entry.entry_show;
+          if (!showEntriesMap.has(showId)) {
+            showEntriesMap.set(showId, []);
+          }
+          showEntriesMap.get(showId)?.push(entry);
+        });
+
+        // Filter out short entries directly (simpler approach for matrix)
+        const validEntries = sortedEntries.filter(entry => {
+          return !entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase());
+        });
+
+        // Extract unique songs from valid entries only (after filtering)
+        const uniqueSongs = Array.from(new Set(validEntries.map(entry => entry.entry_song))).sort();
 
         // Build data structure for matrix
         const matrixData: Record<string, Array<{ 
@@ -129,28 +166,9 @@ export const useSongMatrix = (shows: Array<any>, sortMode: 'alphabetical' | 'chr
         uniqueSongs.forEach(song => {
           songVenueAppearances.set(song, 0);
         });
-        
-        // First, sort entries by show date, then set and setnum to process chronologically
-        const sortedEntries = [...entriesData].sort((a, b) => {
-          const showDateA = showDateMap.get(a.entry_show) || "";
-          const showDateB = showDateMap.get(b.entry_show) || "";
-          
-          // First sort by show date
-          if (showDateA !== showDateB) {
-            return new Date(showDateA).getTime() - new Date(showDateB).getTime();
-          }
-          
-          // Then by set
-          if (a.entry_set !== b.entry_set) {
-            return a.entry_set.localeCompare(b.entry_set);
-          }
-          
-          // Finally by setnum
-          return a.entry_setnum - b.entry_setnum;
-        });
-        
-        // Process entries to build the matrix data
-        sortedEntries.forEach(entry => {
+
+        // Process valid entries to build the matrix data
+        validEntries.forEach(entry => {
           const song = entry.entry_song;
           const showId = entry.entry_show;
           const placement = entry.entry_placement;

@@ -125,9 +125,6 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
         }
         
         setLoadingProgress(85);
-
-        // Extract unique songs and sort alphabetically
-        const uniqueSongs = Array.from(new Set(allEntriesData.map(entry => entry.entry_song))).sort();
         
         // Create song category mapping for song spread
         const categoryMap: Record<string, { category: string, canonid: number, artist?: string }> = {};
@@ -183,19 +180,11 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
           entrySetnum: number
         }> = {};
         
-        // Initialize all songs with empty arrays
-        uniqueSongs.forEach(song => {
-          matrixData[song] = [];
-        });
-        
         // Group entries by show and song to count occurrences
         const songShowCountMap = new Map();
         
         // Keep track of sequential appearances for each song across shows
         const songVenueAppearances = new Map();
-        uniqueSongs.forEach(song => {
-          songVenueAppearances.set(song, 0);
-        });
         
         setLoadingProgress(90);
         
@@ -219,34 +208,23 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
 
         const skipShorts = ["fake", "tease", "reprise", "aborted"];
 
-        // Group entries by show to identify valid songs
-        const showEntriesMap = new Map<string, any[]>();
-        sortedEntries.forEach(entry => {
-          const showId = entry.entry_show;
-          if (!showEntriesMap.has(showId)) {
-            showEntriesMap.set(showId, []);
-          }
-          showEntriesMap.get(showId)?.push(entry);
+        // Filter out short entries directly (simpler approach for matrix)
+        const validEntries = sortedEntries.filter(entry => {
+          return !entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase());
         });
 
-        // Process each show to find valid songs
-        const validEntries: any[] = [];
-        showEntriesMap.forEach((showEntries) => {
-          const validSongs = new Set<string>();
-          showEntries.forEach(entry => {
-            if (!entry.entry_short || !skipShorts.includes(entry.entry_short.toLowerCase())) {
-              validSongs.add(entry.entry_song);
-            }
-          });
-          
-          showEntries.forEach(entry => {
-            if (validSongs.has(entry.entry_song)) {
-              validEntries.push(entry);
-            }
-          });
+        // Extract unique songs from valid entries only (after filtering)
+        const uniqueSongs = Array.from(new Set(validEntries.map(entry => entry.entry_song))).sort();
+
+        // Initialize all songs with empty arrays
+        uniqueSongs.forEach(song => {
+          matrixData[song] = [];
         });
 
-        // Process entries to build the matrix data
+        // Initialize song venue appearances
+        uniqueSongs.forEach(song => {
+          songVenueAppearances.set(song, 0);
+        });
         validEntries.forEach(entry => {
           const song = entry.entry_song;
           const showId = entry.entry_show;
