@@ -238,7 +238,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                       className="w-full border-l border-r border-t border-secondary rounded-t"
                       style={{ 
                         height: `${200 - barHeight}px`,
-                        backgroundColor: '#d8d7d7' // bg-secondary color
+                        backgroundColor: '#ededed' // bg-secondary color
                       }}
                     />
                   )}
@@ -259,7 +259,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                         backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(100%) brightness(0.5)',
+                        filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(20%) brightness(0.5)',
                         opacity: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? '1' : '1',
                         backgroundColor: !artwork || !loadedImages.has(category) ? '#594e5f' : undefined // bg-tertiary fallback
                       }}

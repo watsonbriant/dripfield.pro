@@ -310,7 +310,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
                       className="w-full border-l border-r border-t border-secondary rounded-t"
                       style={{ 
                         height: `${200 - barHeight}px`,
-                        backgroundColor: '#d8d7d7' // bg-secondary color
+                        backgroundColor: '#ededed' // bg-secondary color
                       }}
                     />
                   )}
@@ -331,7 +331,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
                         backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(100%) brightness(0.5)',
+                        filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(20%) brightness(0.5)',
                         opacity: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? '1' : '1',
                         backgroundColor: !artwork || !loadedImages.has(category) ? '#594e5f' : undefined // bg-tertiary fallback
                       }}
@@ -371,7 +371,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
           })}
         </div>
         
-        {/* Tooltip - disabled on mobile */}
+        {/* Desktop tooltip - follows mouse */}
         {hoveredCategory && !isMobile && (
           <div 
             className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
@@ -393,6 +393,27 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
                   )}
                 </div>
               ))}
+          </div>
+        )}
+        
+        {/* Mobile tooltip - underneath chart */}
+        {selectedCategory && isMobile && (
+          <div className="mt-4 flex justify-center">
+            <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+              <div className="font-semibold text-sm mb-1">{selectedCategory}</div>
+              {verticalSortedCategories
+                .find(cat => cat.category === selectedCategory)
+                ?.songs
+                .sort((a, b) => a.song.localeCompare(b.song))
+                .map((song, index) => (
+                  <div key={index}>
+                    <span className="font-medium">{song.song}</span>
+                    {song.isSpecialCategory && song.artist && (
+                      <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
+                    )}
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </div>
