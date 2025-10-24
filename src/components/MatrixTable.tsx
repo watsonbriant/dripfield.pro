@@ -91,8 +91,8 @@ const MatrixTable: React.FC<MatrixTableProps> = ({
                       style={{ backgroundColor: bgColor, borderColor: 'rgb(180, 178, 178)' }}
                     >
                       {performance && (
-                        <div className="w-full h-full flex items-center justify-center text-white text-xs font-medium">
-                          {performance.tourAppearanceCount}
+                        <div className="w-full h-full flex items-center justify-center text-primary text-xs font-medium">
+                          {performance.venueAppearanceCount}
                         </div>
                       )}
                     </td>

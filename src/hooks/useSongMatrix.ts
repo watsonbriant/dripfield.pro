@@ -14,8 +14,9 @@ export interface SongMatrixData {
   }>>;
 }
 
-export const useSongMatrix = (shows: Array<any>) => {
+export const useSongMatrix = (shows: Array<any>, sortMode: 'alphabetical' | 'chronological' | 'playcount' = "alphabetical") => {
   const [songMatrix, setSongMatrix] = useState<SongMatrixData>({ songs: [], showDates: [], data: {} });
+  const [sortedSongs, setSortedSongs] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [songSpreadData, setSongSpreadData] = useState<any[]>([]);
@@ -101,6 +102,20 @@ export const useSongMatrix = (shows: Array<any>) => {
           venueAppearanceCount: number
         }>> = {};
         
+        // Store first appearance data for sorting
+        const songFirstAppearance: Record<string, {
+          showDate: string,
+          entrySet: string,
+          entrySetnum: number
+        }> = {};
+        
+        // Store last appearance data for 'Most Played' sorting
+        const songLastAppearanceDetails: Record<string, {
+          showDate: string,
+          entrySet: string,
+          entrySetnum: number
+        }> = {};
+        
         // Initialize all songs with empty arrays
         uniqueSongs.forEach(song => {
           matrixData[song] = [];
@@ -152,6 +167,26 @@ export const useSongMatrix = (shows: Array<any>) => {
             // This is the first time this song appears in this show
             venueAppearanceCount += 1;
             songVenueAppearances.set(song, venueAppearanceCount);
+            
+            // Store first appearance data for chronological sorting
+            if (!songFirstAppearance[song]) {
+              const showDate = showDateMap.get(showId);
+              songFirstAppearance[song] = {
+                showDate: showDate || "",
+                entrySet: entry.entry_set || "",
+                entrySetnum: entry.entry_setnum || 0
+              };
+            }
+            
+            // Update last appearance data for 'Most Played' sorting
+            const showDate = showDateMap.get(showId);
+            if (showDate) {
+              songLastAppearanceDetails[song] = {
+                showDate: showDate,
+                entrySet: entry.entry_set || "",
+                entrySetnum: entry.entry_setnum || 0
+              };
+            }
           }
           
           // Increment the within-show count
@@ -185,6 +220,75 @@ export const useSongMatrix = (shows: Array<any>) => {
           data: matrixData
         });
         
+        // Sort songs based on sortMode
+        let sortedSongsArray: string[];
+        switch (sortMode) {
+          case "alphabetical":
+            sortedSongsArray = [...uniqueSongs].sort();
+            break;
+          case "playcount":
+            sortedSongsArray = [...uniqueSongs].sort((a, b) => {
+              // Count unique shows where the song was played, not total play count
+              const uniqueShowsA = matrixData[a]?.length || 0;
+              const uniqueShowsB = matrixData[b]?.length || 0;
+              
+              // Primary sort: Descending order of unique shows
+              if (uniqueShowsA !== uniqueShowsB) {
+                return uniqueShowsB - uniqueShowsA;
+              }
+              
+              // Secondary sort: Ascending order of show date when final count was reached
+              const lastA = songLastAppearanceDetails[a];
+              const lastB = songLastAppearanceDetails[b];
+              
+              if (!lastA || !lastB) return 0; // Should not happen if songs are in matrixData
+              
+              const dateA = new Date(lastA.showDate).getTime();
+              const dateB = new Date(lastB.showDate).getTime();
+              
+              if (dateA !== dateB) {
+                return dateA - dateB; // Earlier date first
+              }
+              
+              // Tertiary sort: Ascending order of entry_set
+              const setComparison = (lastA.entrySet || "").localeCompare(lastB.entrySet || "");
+              if (setComparison !== 0) {
+                return setComparison;
+              }
+              
+              // Quaternary sort: Ascending order of entry_setnum
+              return (lastA.entrySetnum || 0) - (lastB.entrySetnum || 0);
+            });
+            break;
+          case "chronological":
+            sortedSongsArray = [...uniqueSongs].sort((a, b) => {
+              const firstA = songFirstAppearance[a];
+              const firstB = songFirstAppearance[b];
+              
+              if (!firstA || !firstB) return 0;
+              
+              // First sort by show date
+              const dateComparison = new Date(firstA.showDate).getTime() - new Date(firstB.showDate).getTime();
+              if (dateComparison !== 0) {
+                return dateComparison;
+              }
+              
+              // If same date, sort by set (Set 1, Set 2, etc.)
+              const setComparison = firstA.entrySet.localeCompare(firstB.entrySet);
+              if (setComparison !== 0) {
+                return setComparison;
+              }
+              
+              // If same set, sort by setnum (position within the set)
+              return firstA.entrySetnum - firstB.entrySetnum;
+            });
+            break;
+          default:
+            sortedSongsArray = [...uniqueSongs].sort();
+        }
+        
+        setSortedSongs(sortedSongsArray);
+        
         // Prepare song spread data
         const spreadData = await prepareSongSpreadData(matrixData, categoryMap);
         setSongSpreadData(spreadData);
@@ -202,10 +306,11 @@ export const useSongMatrix = (shows: Array<any>) => {
     } else {
       setIsLoading(false);
     }
-  }, [shows]);
+  }, [shows, sortMode]);
 
   return {
     songMatrix,
+    sortedSongs,
     isLoading,
     errorMessage,
     songSpreadData,

@@ -38,6 +38,16 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [songSpreadData, setSongSpreadData] = useState<SongSpreadItem[]>([]);
   const [songCategoryMap, setSongCategoryMap] = useState<Record<string, { category: string, canonid: number, artist?: string }>>({});
+  const [songFirstAppearance, setSongFirstAppearance] = useState<Record<string, {
+    showDate: string,
+    entrySet: string,
+    entrySetnum: number
+  }>>({});
+  const [songLastAppearance, setSongLastAppearance] = useState<Record<string, {
+    showDate: string,
+    entrySet: string,
+    entrySetnum: number
+  }>>({});
 
   useEffect(() => {
     async function buildSongMatrix() {
@@ -159,6 +169,20 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
           venueAppearanceCount: number
         }>> = {};
         
+        // Store first appearance data for sorting
+        const songFirstAppearance: Record<string, {
+          showDate: string,
+          entrySet: string,
+          entrySetnum: number
+        }> = {};
+        
+        // Store last appearance data for 'Most Played' sorting
+        const songLastAppearanceDetails: Record<string, {
+          showDate: string,
+          entrySet: string,
+          entrySetnum: number
+        }> = {};
+        
         // Initialize all songs with empty arrays
         uniqueSongs.forEach(song => {
           matrixData[song] = [];
@@ -236,6 +260,26 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
           if (currentCount === 0) {
             venueAppearanceCount += 1;
             songVenueAppearances.set(song, venueAppearanceCount);
+            
+            // Store first appearance data for chronological sorting
+            if (!songFirstAppearance[song]) {
+              const showDate = showDateMap.get(showId);
+              songFirstAppearance[song] = {
+                showDate: showDate || "",
+                entrySet: entry.entry_set || "",
+                entrySetnum: entry.entry_setnum || 0
+              };
+            }
+            
+            // Update last appearance data for 'Most Played' sorting
+            const showDate = showDateMap.get(showId);
+            if (showDate) {
+              songLastAppearanceDetails[song] = {
+                showDate: showDate,
+                entrySet: entry.entry_set || "",
+                entrySetnum: entry.entry_setnum || 0
+              };
+            }
           }
           
           songShowCountMap.set(songShowKey, currentCount + 1);
@@ -265,6 +309,10 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
           showDates: showDates.map(s => s.displayDate),
           data: matrixData
         });
+        
+        // Store first appearance data for sorting
+        setSongFirstAppearance(songFirstAppearance);
+        setSongLastAppearance(songLastAppearanceDetails);
         
         // Prepare song spread data
         await prepareSongSpreadData(matrixData, categoryMap);
@@ -300,29 +348,64 @@ export const useUserSongMatrix = (shows: Array<any>, sortMode: MatrixSortMode) =
         break;
       case 'chronological':
         sorted = sorted.sort((a, b) => {
-          const aPerformances = songMatrix.data[a] || [];
-          const bPerformances = songMatrix.data[b] || [];
+          const firstA = songFirstAppearance[a];
+          const firstB = songFirstAppearance[b];
           
-          const aFirstShowId = aPerformances.length > 0 ? aPerformances[0].showId : '';
-          const bFirstShowId = bPerformances.length > 0 ? bPerformances[0].showId : '';
+          if (!firstA || !firstB) return 0;
           
-          const aShowIndex = shows.findIndex(show => show.show_id === aFirstShowId);
-          const bShowIndex = shows.findIndex(show => show.show_id === bFirstShowId);
+          // First sort by show date
+          const dateComparison = new Date(firstA.showDate).getTime() - new Date(firstB.showDate).getTime();
+          if (dateComparison !== 0) {
+            return dateComparison;
+          }
           
-          return aShowIndex - bShowIndex;
+          // If same date, sort by set (Set 1, Set 2, etc.)
+          const setComparison = firstA.entrySet.localeCompare(firstB.entrySet);
+          if (setComparison !== 0) {
+            return setComparison;
+          }
+          
+          // If same set, sort by setnum (position within the set)
+          return firstA.entrySetnum - firstB.entrySetnum;
         });
         break;
       case 'playcount':
         sorted = sorted.sort((a, b) => {
           const aCount = songMatrix.data[a]?.length || 0;
           const bCount = songMatrix.data[b]?.length || 0;
-          return bCount - aCount;
+          
+          // Primary sort: Descending order of unique shows
+          if (aCount !== bCount) {
+            return bCount - aCount;
+          }
+          
+          // Secondary sort: Ascending order of show date when final count was reached
+          const lastA = songLastAppearance[a];
+          const lastB = songLastAppearance[b];
+          
+          if (!lastA || !lastB) return 0;
+          
+          const dateA = new Date(lastA.showDate).getTime();
+          const dateB = new Date(lastB.showDate).getTime();
+          
+          if (dateA !== dateB) {
+            return dateA - dateB; // Earlier date first
+          }
+          
+          // Tertiary sort: Ascending order of entry_set
+          const setComparison = (lastA.entrySet || "").localeCompare(lastB.entrySet || "");
+          if (setComparison !== 0) {
+            return setComparison;
+          }
+          
+          // Quaternary sort: Ascending order of entry_setnum
+          return (lastA.entrySetnum || 0) - (lastB.entrySetnum || 0);
         });
         break;
     }
     
     setSortedSongs(sorted);
-  }, [songMatrix, sortMode, shows]);
+  }, [songMatrix, sortMode, shows, songFirstAppearance, songLastAppearance]);
   
   // Function to prepare song spread data
   const prepareSongSpreadData = async (
