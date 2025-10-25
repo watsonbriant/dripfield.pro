@@ -301,11 +301,16 @@ export function Discography() {
                       <p className="text-fifth/70 font-medium text-sm">{album.artist}</p>
                       {album.releaseDate && (
                         <p className="text-fifth/70 text-xs mb-2">
-                          {new Date(album.releaseDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
+                          {(() => {
+                            // Parse the date string to avoid timezone issues
+                            const [year, month, day] = album.releaseDate.split('-').map(Number);
+                            const date = new Date(year, month - 1, day);
+                            return date.toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            });
+                          })()}
                         </p>
                       )}
                       {!album.releaseDate && <div className="mb-2" />}
