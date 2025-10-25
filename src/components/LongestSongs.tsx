@@ -175,7 +175,7 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
                         <img
                           src={song.category_artwork}
                           alt={`${song.entry_song} artwork`}
-                          className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
+                          className="w-5 h-5 rounded object-cover border border-secondary ml-3"
                           onError={(e) => {
                             // Hide the image if it fails to load
                             (e.target as HTMLImageElement).style.display = 'none';

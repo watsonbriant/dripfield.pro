@@ -61,7 +61,7 @@ export const StatsSection: React.FC<StatsSectionProps> = ({
                       <img
                         src={item.category_artwork}
                         alt={`${getDisplayName(item)} artwork`}
-                        className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
+                        className="w-5 h-5 rounded object-cover border border-secondary ml-3"
                         onError={(e) => {
                           (e.target as HTMLImageElement).style.display = 'none';
                         }}

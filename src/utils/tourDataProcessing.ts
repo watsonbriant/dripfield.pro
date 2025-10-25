@@ -2,11 +2,10 @@
 
 import { SongEntryWithId, SlotData } from '../types/tourTypes';
 
-export const processTourDataWithCategories = (
+export const processTourDataWithCategories = async (
   entries: Array<{ entry_placement: string; entry_song: string; entry_show?: string }>,
-  songCategoryMap: Record<string, number>,
-  songArtworkMap: Record<string, string>
-): SlotData[] => {
+  showIds: string[]
+): Promise<SlotData[]> => {
   const showOpeners: Record<string, number> = {};
   const setOpeners: Record<string, number> = {};
   const setClosers: Record<string, number> = {};
@@ -51,23 +50,43 @@ export const processTourDataWithCategories = (
     return [];
   }
 
+  // Fetch artwork data directly like LongestSongs does
+  const { supabase } = await import('../lib/supabase');
+  const uniqueSongs = [...new Set([
+    ...Object.keys(showOpeners),
+    ...Object.keys(setOpeners), 
+    ...Object.keys(setClosers),
+    ...Object.keys(encores)
+  ])];
+
+  const { data: songsData } = await supabase
+    .from('songs')
+    .select(`
+      song,
+      categories!inner(
+        category_artwork
+      )
+    `)
+    .in('song', uniqueSongs);
+
+  const songArtworkMap: Record<string, string> = {};
+  songsData?.forEach(song => {
+    if (song.categories?.category_artwork) {
+      songArtworkMap[song.song] = song.categories.category_artwork;
+    }
+  });
+
   const formatSlotData = (data: Record<string, number>, title: string): SlotData => {
     const sortedData = Object.entries(data)
       .map(([song, count]) => ({
         song,
         count,
-        categoryCanonId: songCategoryMap[song] || 999,
         artwork: songArtworkMap[song] || undefined
       }))
       .sort((a, b) => {
         if (a.count !== b.count) {
           return b.count - a.count;
         }
-
-        if (a.categoryCanonId !== b.categoryCanonId) {
-          return a.categoryCanonId - b.categoryCanonId;
-        }
-
         return a.song.localeCompare(b.song);
       })
       .slice(0, 8)

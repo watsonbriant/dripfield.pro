@@ -5,7 +5,7 @@ import SongTourPerformancesModal from './SongTourPerformancesModal';
 interface SlotItem {
   left: string;
   right: string | number;
-  artwork?: string; // Added artwork property
+  artwork?: string;
 }
 
 interface SlotData {
@@ -150,12 +150,17 @@ const TopSlotsCarousel = ({
                           <img
                             src={item.artwork}
                             alt={`${item.left} artwork`}
-                            className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
+                            className="w-5 h-5 rounded object-cover border border-secondary ml-3"
                             onError={(e) => {
-                              // Hide the image if it fails to load
+                              console.log(`Failed to load artwork for ${item.left}:`, item.artwork);
                               (e.target as HTMLImageElement).style.display = 'none';
                             }}
                           />
+                        )}
+                        {!item.artwork && (
+                          <div className="w-5 h-5 rounded bg-gray-500 border border-secondary ml-3 flex items-center justify-center text-xs text-white">
+                            ?
+                          </div>
                         )}
                       </div>
                     </td>
@@ -238,12 +243,17 @@ const TopSlotsCarousel = ({
                             <img
                               src={item.artwork}
                               alt={`${item.left} artwork`}
-                              className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
+                              className="w-5 h-5 rounded object-cover border border-secondary ml-3"
                               onError={(e) => {
-                                // Hide the image if it fails to load
+                                console.log(`Failed to load artwork for ${item.left}:`, item.artwork);
                                 (e.target as HTMLImageElement).style.display = 'none';
                               }}
                             />
+                          )}
+                          {!item.artwork && (
+                            <div className="w-5 h-5 rounded bg-gray-500 border border-secondary ml-3 flex items-center justify-center text-xs text-white">
+                              ?
+                            </div>
                           )}
                         </div>
                       </td>

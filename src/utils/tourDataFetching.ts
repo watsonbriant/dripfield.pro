@@ -231,7 +231,7 @@ export const fetchMainTourData = async (currentTour: string) => {
 };
 
 export const fetchPlacementData = async (showIds: string[]) => {
-  if (showIds.length === 0) return { entries: [], songs: [] };
+  if (showIds.length === 0) return { entries: [] };
 
   const { data: entriesData, error: entriesError } = await supabase
     .from('setlist_entries')
@@ -245,21 +245,5 @@ export const fetchPlacementData = async (showIds: string[]) => {
 
   if (entriesError) throw entriesError;
 
-  const uniqueSongs = [...new Set(entriesData?.map(entry => entry.entry_song) || [])];
-
-  const { data: songsData, error: songsError } = await supabase
-    .from('songs')
-    .select(`
-      song,
-      song_category,
-      categories (
-        category_canonid,
-        category_artwork
-      )
-    `)
-    .in('song', uniqueSongs);
-
-  if (songsError) throw songsError;
-
-  return { entries: entriesData || [], songs: songsData || [] };
+  return { entries: entriesData || [] };
 };

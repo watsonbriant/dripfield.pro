@@ -206,7 +206,7 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
                           <img
                             src={song.category_artwork}
                             alt={`${song.song} artwork`}
-                            className="w-5 h-5 rounded-lg object-cover border border-secondary ml-3"
+                            className="w-5 h-5 rounded object-cover border border-secondary ml-3"
                             onError={(e) => {
                               // Hide the image if it fails to load
                               (e.target as HTMLImageElement).style.display = 'none';

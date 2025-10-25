@@ -272,19 +272,9 @@ export function useTourData() {
 
         if (showIds.length === 0) return;
 
-        const { entries: entriesData, songs: songsData } = await fetchPlacementData(showIds);
+        const { entries: entriesData } = await fetchPlacementData(showIds);
 
-        const songCategoryMap: Record<string, number> = {};
-        const songArtworkMap: Record<string, string> = {};
-
-        songsData?.forEach(song => {
-          songCategoryMap[song.song] = song.categories?.[0]?.category_canonid || 999;
-          if (song.categories?.[0]?.category_artwork) {
-            songArtworkMap[song.song] = song.categories[0].category_artwork;
-          }
-        });
-
-        const processedTopSlots = processTourDataWithCategories(entriesData || [], songCategoryMap, songArtworkMap);
+        const processedTopSlots = await processTourDataWithCategories(entriesData || [], showIds);
         setTopSlots(processedTopSlots);
       } catch (error) {
         console.error('Error fetching placement data:', error);
