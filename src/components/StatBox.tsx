@@ -111,7 +111,7 @@ const StatBox: React.FC<StatBoxProps> = ({
                         <img
                           src={item.category_artwork}
                           alt={`${item[songNameKey]} artwork`}
-                          className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
+                          className="w-5 h-5 rounded object-cover border border-secondary ml-3"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = 'none';
                           }}
