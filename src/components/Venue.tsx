@@ -256,11 +256,11 @@ export function Venue() {
     <div className="max-w-[936px] mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center space-x-2 mb-1 mr-2">
-          <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
+          <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
             {venue.venue}
           </h2>
           {venue.venue_location && (
-            <div className="bg-secondary text-fifth text-xs font-medium px-2 py-1 rounded-lg border border-secondary">
+            <div className="bg-secondary text-fifth text-xs font-medium px-2 py-1 rounded-lg border border-secondary whitespace-nowrap">
               {venue.venue_location}
             </div>
           )}

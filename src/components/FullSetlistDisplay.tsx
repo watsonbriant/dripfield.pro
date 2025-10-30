@@ -145,7 +145,7 @@ export default function FullSetlistDisplay({
               show_length_rank={showLengthRank}
             />
             {/* Show ONLY on mobile (below lg breakpoint) */}
-            <div className="md:hidden space-y-4">
+            <div className="md:hidden space-y-4 pb-4">
               <CategoryCompleteBadge categoryName={show.show_listcategorycomplete || null} />
               <JiveCompleteBadge showJiveComplete={show.show_jivecomplete || false} />
               <DripfieldCompleteBadge showDripfieldComplete={show.show_dripfieldcomplete || false} />

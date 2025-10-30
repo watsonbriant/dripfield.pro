@@ -54,6 +54,10 @@ export function SongsPlayed({
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [isMobile, setIsMobile] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isScrollable, setIsScrollable] = useState(false);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
+  const chartContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Check if device is mobile
   useEffect(() => {
@@ -118,6 +122,43 @@ export function SongsPlayed({
       }
     }
   }, [isMobile, selectedCategory]);
+
+  // Check scroll position and update fade visibility
+  const updateScrollFades = useCallback(() => {
+    if (chartContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = chartContainerRef.current;
+      const isScrollable = scrollWidth > clientWidth;
+      
+      setIsScrollable(isScrollable);
+      
+      if (isScrollable) {
+        // Show left fade if not at the start (with small threshold)
+        setShowLeftFade(scrollLeft > 1);
+        // Show right fade if not at the end (with small threshold)
+        setShowRightFade(scrollLeft < scrollWidth - clientWidth - 1);
+      } else {
+        setShowLeftFade(false);
+        setShowRightFade(false);
+      }
+    }
+  }, []);
+
+  // Check if the chart is scrollable and update fades
+  useEffect(() => {
+    updateScrollFades();
+    window.addEventListener('resize', updateScrollFades);
+
+    return () => window.removeEventListener('resize', updateScrollFades);
+  }, [songSpreadData, updateScrollFades]);
+
+  // Add scroll event listener to update fades dynamically
+  useEffect(() => {
+    const container = chartContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', updateScrollFades);
+      return () => container.removeEventListener('scroll', updateScrollFades);
+    }
+  }, [updateScrollFades]);
 
   // Handle sorting
   const handleSortClick = (column: 'song' | 'count') => {
@@ -269,12 +310,47 @@ export function SongsPlayed({
         maxWidth="1050px"
       >
         <div className="bg-primary">
-          <div className="flex items-end gap-1 w-full">
-            {songSpreadData.map(({ category, count, artwork }) => {
-              const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
-              
-              return (
-                <div key={`vertical-${category}`} className="flex flex-col items-center flex-1">
+          <div className="relative">
+            {/* Left fade overlay - only show when not scrolled all the way left */}
+            {showLeftFade && (
+              <div 
+                className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(to right, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
+                }}
+              />
+            )}
+            
+            {/* Right fade overlay - only show when not scrolled all the way right */}
+            {showRightFade && (
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(to left, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
+                }}
+              />
+            )}
+            
+            <div 
+              ref={chartContainerRef}
+              className="overflow-x-auto songs-played-scrollbar"
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              <style>{`
+                .songs-played-scrollbar::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
+              <div className="flex items-end gap-1" style={{ minWidth: 'fit-content' }}>
+                {songSpreadData.map(({ category, count, artwork }) => {
+                  const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+                  
+                  return (
+                    <div key={`vertical-${category}`} className="flex flex-col items-center" style={{ minWidth: '2rem', flex: '1 1 2rem' }}>
                   {/* Vertical bar container - always full height */}
                   <div 
                     className="cursor-pointer relative w-full transition-all duration-300"
@@ -349,6 +425,8 @@ export function SongsPlayed({
                 </div>
               );
             })}
+              </div>
+            </div>
           </div>
           
           {/* Tooltip underneath bar chart */}
