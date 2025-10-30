@@ -28,6 +28,10 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [isMobile, setIsMobile] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isScrollable, setIsScrollable] = useState(false);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
+  const chartContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Check if device is mobile
   useEffect(() => {
@@ -208,19 +212,90 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
     }
   }, [isMobile, selectedCategory]);
 
+  // Check scroll position and update fade visibility
+  const updateScrollFades = useCallback(() => {
+    if (chartContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = chartContainerRef.current;
+      const isScrollable = scrollWidth > clientWidth;
+      
+      setIsScrollable(isScrollable);
+      
+      if (isScrollable) {
+        // Show left fade if not at the start (with small threshold)
+        setShowLeftFade(scrollLeft > 1);
+        // Show right fade if not at the end (with small threshold)
+        setShowRightFade(scrollLeft < scrollWidth - clientWidth - 1);
+      } else {
+        setShowLeftFade(false);
+        setShowRightFade(false);
+      }
+    }
+  }, []);
+
+  // Check if the chart is scrollable and update fades
+  useEffect(() => {
+    updateScrollFades();
+    window.addEventListener('resize', updateScrollFades);
+
+    return () => window.removeEventListener('resize', updateScrollFades);
+  }, [sortedCategories, updateScrollFades]);
+
+  // Add scroll event listener to update fades dynamically
+  useEffect(() => {
+    const container = chartContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', updateScrollFades);
+      return () => container.removeEventListener('scroll', updateScrollFades);
+    }
+  }, [updateScrollFades]);
+
   return (
     <div className="bg-primary border border-secondary rounded-lg p-3" key="tour-song-spread">
       <h2 className="text-lg font-semibold bg-fourth text-primary inline-block px-3 rounded-lg border border-secondary mb-2">
         Song Spread
       </h2>
       
-      <div>
-        <div className="flex items-end gap-1 w-full">
-          {sortedCategories.map(({ category, count, artwork }) => {
-            const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
-            
-            return (
-              <div key={`vertical-${category}`} className="flex flex-col items-center flex-1">
+      <div className="relative">
+        {/* Left fade overlay - only show when not scrolled all the way left */}
+        {showLeftFade && (
+          <div 
+            className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to right, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
+            }}
+          />
+        )}
+        
+        {/* Right fade overlay - only show when not scrolled all the way right */}
+        {showRightFade && (
+          <div 
+            className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to left, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
+            }}
+          />
+        )}
+        
+        <div 
+          ref={chartContainerRef}
+          className="overflow-x-auto tour-song-spread-scrollbar"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
+          <style>{`
+            .tour-song-spread-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+          <div className="flex items-end gap-1" style={{ minWidth: 'fit-content' }}>
+            {sortedCategories.map(({ category, count, artwork }) => {
+              const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+              
+              return (
+                <div key={`vertical-${category}`} className="flex flex-col items-center" style={{ minWidth: '2rem', flex: '1 1 2rem' }}>
                 {/* Vertical bar container - always full height */}
                 <div 
                   className="cursor-pointer relative w-full transition-all duration-300"
@@ -297,56 +372,57 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               </div>
             );
           })}
+          </div>
         </div>
+      </div>
         
-        {/* Desktop tooltip - follows mouse */}
-        {hoveredCategory && !isMobile && (
-          <div 
-            className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
-            style={{
-              left: `${mousePosition.x + 10}px`,
-              top: `${mousePosition.y - 10}px`
-            }}
-          >
-            <div className="font-semibold text-sm mb-0.5">{hoveredCategory}</div>
+      {/* Desktop tooltip - follows mouse */}
+      {hoveredCategory && !isMobile && (
+        <div 
+          className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
+          style={{
+            left: `${mousePosition.x + 10}px`,
+            top: `${mousePosition.y - 10}px`
+          }}
+        >
+          <div className="font-semibold text-sm mb-0.5">{hoveredCategory}</div>
+          {sortedCategories
+            .find(cat => cat.category === hoveredCategory)
+            ?.songs
+            .sort((a, b) => a.song.localeCompare(b.song))
+            .map((song, index) => (
+              <div key={index}>
+                <span className="font-medium">{song.song}</span>
+                {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory) && (
+                  <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
+                )}
+                &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
+              </div>
+            ))}
+        </div>
+      )}
+      
+      {/* Mobile tooltip - underneath chart */}
+      {selectedCategory && isMobile && (
+        <div className="mt-4 flex justify-center">
+          <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+            <div className="font-semibold text-[0.875rem] leading-[0.875rem] mb-1">{selectedCategory}</div>
             {sortedCategories
-              .find(cat => cat.category === hoveredCategory)
+              .find(cat => cat.category === selectedCategory)
               ?.songs
               .sort((a, b) => a.song.localeCompare(b.song))
               .map((song, index) => (
                 <div key={index}>
                   <span className="font-medium">{song.song}</span>
-                  {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory) && (
+                  {song.artist && ['Cover Songs', 'Live Collaborations'].includes(selectedCategory) && (
                     <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
                   )}
                   &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
                 </div>
               ))}
           </div>
-        )}
-        
-        {/* Mobile tooltip - underneath chart */}
-        {selectedCategory && isMobile && (
-          <div className="mt-4 flex justify-center">
-            <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
-              <div className="font-semibold text-[0.875rem] leading-[0.875rem] mb-1">{selectedCategory}</div>
-              {sortedCategories
-                .find(cat => cat.category === selectedCategory)
-                ?.songs
-                .sort((a, b) => a.song.localeCompare(b.song))
-                .map((song, index) => (
-                  <div key={index}>
-                    <span className="font-medium">{song.song}</span>
-                    {song.artist && ['Cover Songs', 'Live Collaborations'].includes(selectedCategory) && (
-                      <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
-                    )}
-                    &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
