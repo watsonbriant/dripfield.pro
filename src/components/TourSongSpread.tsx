@@ -329,7 +329,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
         {selectedCategory && isMobile && (
           <div className="mt-4 flex justify-center">
             <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
-              <div className="font-semibold text-sm mb-1">{selectedCategory}</div>
+              <div className="font-semibold text-[0.875rem] leading-[0.875rem] mb-1">{selectedCategory}</div>
               {sortedCategories
                 .find(cat => cat.category === selectedCategory)
                 ?.songs

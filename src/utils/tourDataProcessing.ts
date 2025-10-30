@@ -63,17 +63,20 @@ export const processTourDataWithCategories = async (
     .from('songs')
     .select(`
       song,
+      song_categoryorder,
       categories!inner(
-        category_artwork
+        category_artwork,
+        category_canonid
       )
     `)
     .in('song', uniqueSongs);
 
-  const songArtworkMap: Record<string, string> = {};
+  const songMetaMap: Record<string, { artwork?: string; categoryCanonId?: number; categoryOrder?: number }> = {};
   songsData?.forEach(song => {
-    if (song.categories?.category_artwork) {
-      songArtworkMap[song.song] = song.categories.category_artwork;
-    }
+    const artwork = song.categories?.category_artwork || undefined;
+    const categoryCanonId = song.categories?.category_canonid ?? undefined;
+    const categoryOrder = song.song_categoryorder ?? undefined;
+    songMetaMap[song.song] = { artwork, categoryCanonId, categoryOrder };
   });
 
   const formatSlotData = (data: Record<string, number>, title: string): SlotData => {
@@ -81,11 +84,23 @@ export const processTourDataWithCategories = async (
       .map(([song, count]) => ({
         song,
         count,
-        artwork: songArtworkMap[song] || undefined
+        artwork: songMetaMap[song]?.artwork,
+        categoryCanonId: songMetaMap[song]?.categoryCanonId,
+        categoryOrder: songMetaMap[song]?.categoryOrder
       }))
       .sort((a, b) => {
         if (a.count !== b.count) {
           return b.count - a.count;
+        }
+        const aCanon = a.categoryCanonId ?? Number.MAX_SAFE_INTEGER;
+        const bCanon = b.categoryCanonId ?? Number.MAX_SAFE_INTEGER;
+        if (aCanon !== bCanon) {
+          return aCanon - bCanon;
+        }
+        const aOrder = a.categoryOrder ?? Number.MAX_SAFE_INTEGER;
+        const bOrder = b.categoryOrder ?? Number.MAX_SAFE_INTEGER;
+        if (aOrder !== bOrder) {
+          return aOrder - bOrder;
         }
         return a.song.localeCompare(b.song);
       })
