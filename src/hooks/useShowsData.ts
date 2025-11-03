@@ -317,6 +317,10 @@ export function useShowsData() {
   useEffect(() => {
     const fetchMostRecentShow = async () => {
       try {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowString = tomorrow.toISOString().split('T')[0];
+        
         const { data, error } = await supabase
           .from('shows')
           .select<any, ShowResponse>(`
@@ -338,7 +342,7 @@ export function useShowsData() {
               )
             )
           `)
-          .lt('show_date', new Date().toISOString().split('T')[0])
+          .lt('show_date', tomorrowString)
           .order('show_date', { ascending: false })
           .order('show_canonid', { ascending: true, nullsFirst: true })
           .order('show_group', { ascending: true })
