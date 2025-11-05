@@ -90,7 +90,7 @@ interface PlacementSectionProps {
 export function PlacementSection({ title, bgColor, songs, cleanSongName }: PlacementSectionProps) {
     return (
         <div>
-            <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3 bg-[#047857]">
+            <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3" style={{ backgroundColor: bgColor }}>
                 {title}
             </h3>
             <PlacementTable songs={songs} cleanSongName={cleanSongName} />
