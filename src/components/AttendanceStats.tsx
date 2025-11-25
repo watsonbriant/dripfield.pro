@@ -57,8 +57,8 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
   }, [userId, isOwnProfile, user]);
 
   return (
-    <div className="bg-primary p-3 rounded-lg border border-secondary">
-      <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">{texts.getTitle()}</h3>
+    <div className="bg-primary p-3 rounded-lg border border-fourth">
+      <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">{texts.getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">
@@ -69,17 +69,17 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
         <div className="md:space-y-2">
           {/* Desktop view - cards */}
           <div className="hidden md:grid grid-cols-3 gap-4">
-            <div className="bg-canvas p-3 rounded-md relative border border-secondary">
+            <div className="bg-canvas p-3 rounded-md relative border border-fourth">
               <div className="text-fifth text-sm font-medium">{texts.getShowsLabel()}</div>
               <div className="text-2xl font-semibold text-fifth mt-1">{data.showsCount}</div>
               <Calendar className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
             </div>
-            <div className="bg-canvas p-3 rounded-md relative border border-secondary">
+            <div className="bg-canvas p-3 rounded-md relative border border-fourth">
               <div className="text-fifth text-sm font-medium">{texts.getVenuesLabel()}</div>
               <div className="text-2xl font-semibold text-fifth mt-1">{data.venuesCount}</div>
               <Building2 className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
             </div>
-            <div className="bg-canvas p-3 rounded-md relative border border-secondary">
+            <div className="bg-canvas p-3 rounded-md relative border border-fourth">
               <div className="text-fifth text-sm font-medium">{texts.getSongsLabel()}</div>
               <div className="text-2xl font-semibold text-fifth mt-1">{data.songsCount}</div>
               <Music className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
@@ -108,7 +108,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           </div>
           
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2 mt-2">{texts.getToursLabel()}</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2 mt-2">{texts.getToursLabel()}</h3>
             <div className="space-y-1 max-h-64 overflow-y-auto pr-2">
               {data.tourCounts.length === 0 ? (
                 <p className="text-fifth/60 italic">{texts.getNoToursMessage()}</p>

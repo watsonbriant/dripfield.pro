@@ -23,17 +23,6 @@ interface SeguePerformancesModalProps {
   sandwichSongs?: string[]; // Array of all song names in the sandwich
 }
 
-const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
-
 export default function SeguePerformancesModal({
   isOpen,
   onClose,
@@ -414,6 +403,28 @@ export default function SeguePerformancesModal({
     }
   };
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      // Lock body scroll
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        // Restore scroll position when modal closes
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const isSandwich = sandwichSongs && sandwichSongs.length > 0;
@@ -422,125 +433,127 @@ export default function SeguePerformancesModal({
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/50 z-50"
+        className="fixed inset-0 bg-black/50 z-[9998]"
         onClick={onClose}
       />
       
-      {/* Modal */}
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[650px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-3 border-b border-secondary bg-primary rounded-t-lg">
-          <div className="flex items-center flex-1 gap-4 min-w-0">
-            <h2 className="text-xl font-trad bg-tertiary text-fifth px-3 pb-0.5 rounded-lg border border-secondary whitespace-nowrap flex-shrink-0">
-              {isSandwich ? 'Reprise Lookup' : 'Segue Lookup'}
-            </h2>
-            <div className="text-xs font-medium bg-secondary text-fifth px-3 py-1 rounded-full border border-secondary min-w-0" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-              {isSandwich ? (
-                <>
-                  {sandwichSongs!.map((song, index) => (
-                    <React.Fragment key={index}>
-                      {index > 0 && (
-                        <>
-                          {' '}
-                          <MoveRight className="text-red-500 w-3 h-3 inline-block mx-1" style={{ verticalAlign: 'middle' }} />
-                          {' '}
-                        </>
-                      )}
-                      <span style={{ display: 'inline' }}>{cleanSongName(song)}</span>
-                    </React.Fragment>
-                  ))}
-                </>
-              ) : (
-                <>
-                  <span style={{ display: 'inline' }}>{cleanSongName(sourceSongName)}</span>
-                  {' '}
-                  <MoveRight className="text-red-500 w-3 h-3 inline-block mx-1" style={{ verticalAlign: 'middle' }} />
-                  {' '}
-                  <span style={{ display: 'inline' }}>{cleanSongName(destinationSongName)}</span>
-                </>
-              )}
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors flex-shrink-0 ml-4"
-          >
-            <X className="w-5 h-5 text-fifth" />
-          </button>
-        </div>
-        
-        <div className="p-4">
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-                <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-                <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+      {/* Custom Modal - centered in viewport */}
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+        <div className="bg-primary border border-fourth shadow-xl flex flex-col max-w-[650px] w-full max-h-[90vh] overflow-y-auto pointer-events-auto">
+          <div className="flex items-center justify-between px-0.5 py-0.5 bg-tertiary text-fifth">
+            <div className="flex items-center flex-1 gap-4 min-w-0">
+              <h2 className="text-sm font-semibold ml-1.5 whitespace-nowrap flex-shrink-0">
+                {isSandwich ? 'Reprise Lookup' : 'Segue Lookup'}
+              </h2>
+              <div className="text-xs font-medium bg-canvas text-fifth px-2 py-0.5 rounded border border-fourth mr-4 min-w-0 break-words">
+                {isSandwich ? (
+                  <>
+                    {sandwichSongs!.map((song, index) => (
+                      <React.Fragment key={index}>
+                        {index > 0 && (
+                          <>
+                            {' '}
+                            <MoveRight className="text-red-500 w-3 h-3 inline-block mx-1" style={{ verticalAlign: 'middle' }} />
+                            {' '}
+                          </>
+                        )}
+                        <span style={{ display: 'inline' }}>{song}</span>
+                      </React.Fragment>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <span style={{ display: 'inline' }}>{sourceSongName}</span>
+                    {' '}
+                    <MoveRight className="text-red-500 w-3 h-3 inline-block mx-1" style={{ verticalAlign: 'middle' }} />
+                    {' '}
+                    <span style={{ display: 'inline' }}>{destinationSongName}</span>
+                  </>
+                )}
               </div>
-              <p className="text-fifth mt-4">Loading {isSandwich ? 'sandwich' : 'segue'} performances...</p>
             </div>
-          ) : performances.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-fifth">No performances found for this {isSandwich ? 'sandwich' : 'segue'}.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse min-w-max">
-                <thead>
-                  <tr className="bg-canvas border-y border-secondary">
-                    <th className="px-4 py-2 text-center text-s font-semibold text-fifth whitespace-nowrap">
-                      Show
-                    </th>
-                    <th className="px-4 py-2 text-left text-s font-semibold text-fifth whitespace-nowrap">
-                      Location
-                    </th>
-                    <th className="px-4 py-2 text-center text-s font-semibold text-fifth whitespace-nowrap">
-                      Length
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/5">
-                  {performances.map((perf, index) => (
-                    <tr 
-                      key={`${perf.show_id}-${index}`}
-                      className="bg-primary hover:bg-tertiary/40 transition-colors text-xs"
-                    >
-                      <td className="px-3 py-1 text-fifth whitespace-nowrap text-center">
-                        <span className="font-medium">
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-white rounded border border-fourth bg-red-500 transition-colors flex-shrink-0"
+            >
+              <X className="w-4 h-4 text-fifth" />
+            </button>
+          </div>
+          
+          <div>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
+                  <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
+                  <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+                </div>
+                <p className="text-fifth mt-4">Loading {isSandwich ? 'sandwich' : 'segue'} performances...</p>
+              </div>
+            ) : performances.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-fifth">No performances found for this {isSandwich ? 'sandwich' : 'segue'}.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse min-w-max">
+                  <thead>
+                    <tr className="bg-canvas">
+                      <th className="px-2 py-1 text-center text-xs font-semibold text-fifth whitespace-nowrap">
+                        Show
+                      </th>
+                      <th className="px-2 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap">
+                        Location
+                      </th>
+                      <th className="px-2 py-1 text-center text-xs font-semibold text-fifth whitespace-nowrap">
+                        Length
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {performances.map((perf, index) => (
+                      <tr 
+                        key={`${perf.show_id}-${index}`}
+                        className="bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]"
+                      >
+                        <td className="px-2 py-0.5 text-fifth whitespace-nowrap text-center">
+                          <span className="font-medium">
+                            <button
+                              onClick={() => {
+                                navigate(`/setlist/${perf.show_id}`);
+                                onClose();
+                              }}
+                              className="hover:underline transition-colors table-link"
+                            >
+                              {formatInTimeZone(
+                                new Date(perf.show_date),
+                                'UTC',
+                                'MM.dd.yy'
+                              )}
+                            </button>
+                          </span>
+                        </td>
+                        <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
                           <button
                             onClick={() => {
-                              navigate(`/setlist/${perf.show_id}`);
+                              navigateToVenue(perf);
                               onClose();
                             }}
-                            className="hover:underline transition-colors table-link"
+                            className="hover:underline font-light transition-colors"
                           >
-                            {formatInTimeZone(
-                              new Date(perf.show_date),
-                              'UTC',
-                              'MM.dd.yy'
-                            )}
+                            {perf.show_venue_location}
                           </button>
-                        </span>
-                      </td>
-                      <td className="px-4 py-1 text-fifth whitespace-nowrap">
-                        <button
-                          onClick={() => {
-                            navigateToVenue(perf);
-                            onClose();
-                          }}
-                          className="hover:underline font-light transition-colors"
-                        >
-                          {perf.show_venue_location}
-                        </button>
-                      </td>
-                      <td className="px-4 py-1 text-fifth whitespace-nowrap font-light text-center">
-                        {perf.combined_length ? formatLength(perf.combined_length) : ''}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                        </td>
+                        <td className="px-2 py-0.5 text-fifth whitespace-nowrap font-light text-center">
+                          {perf.combined_length ? formatLength(perf.combined_length) : ''}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

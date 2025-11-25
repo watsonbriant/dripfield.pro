@@ -30,10 +30,9 @@ interface Sandwich {
 
 interface UnfinishedTableProps {
     items: PlaceholderItem[];
-    cleanSongName: (songName: string) => string;
 }
 
-export function UnfinishedTable({ items, cleanSongName }: UnfinishedTableProps) {
+export function UnfinishedTable({ items }: UnfinishedTableProps) {
     const navigate = useNavigate();
 
     // Calculate rankings with tie handling
@@ -63,27 +62,27 @@ export function UnfinishedTable({ items, cleanSongName }: UnfinishedTableProps) 
                         return (
                             <tr
                                 key={item.item_id}
-                                className={`${item.bgGroup && item.bgGroup % 2 === 0 ? 'bg-canvas' : 'bg-primary'
+                                className={`${item.bgGroup && item.bgGroup % 2 === 0 ? 'bg-primary' : 'bg-primary'
                                     } hover:bg-tertiary/40 transition-colors text-xs ${
                                     showBorderBottom ? 'border-b border-white/10' : ''
                                 }`}
                             >
-                                <td className="pl-2 pr-1 w-[30px] text-center font-semibold text-[0.875rem] text-fifth">
+                                <td className="pl-2 pr-1 w-[24px] text-center font-semibold text-[0.625rem] text-fifth">
                                     {item.displayRank !== null ? item.displayRank : ''}
                                 </td>
                                 <td className="pl-2 text-fifth">
                                     <div className="flex items-center justify-between">
                                         <button
                                             onClick={() => navigate(`/song/${item.item_id}`)}
-                                            className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
+                                            className="font-medium text-fifth hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left"
                                         >
-                                            {cleanSongName(item.item_name)}
+                                            {item.item_name}
                                         </button>
                                         {item.category_artwork && (
                                             <img
                                                 src={item.category_artwork}
                                                 alt={`${item.item_name} artwork`}
-                                                className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
+                                                className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                                                 onError={(e) => {
                                                     (e.target as HTMLImageElement).style.display = 'none';
                                                 }}
@@ -91,7 +90,7 @@ export function UnfinishedTable({ items, cleanSongName }: UnfinishedTableProps) 
                                         )}
                                     </div>
                                 </td>
-                                <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                                <td className="pr-2 w-[30px] text-center text-[0.625rem] font-medium text-fifth">
                                     {item.count}
                                 </td>
                             </tr>
@@ -106,10 +105,9 @@ export function UnfinishedTable({ items, cleanSongName }: UnfinishedTableProps) 
 interface SandwichTableProps {
     sandwiches: Sandwich[];
     onOpenSandwichModal: (sandwichSongs: string[]) => void;
-    cleanSongName: (songName: string) => string;
 }
 
-export function SandwichTable({ sandwiches, onOpenSandwichModal, cleanSongName }: SandwichTableProps) {
+export function SandwichTable({ sandwiches, onOpenSandwichModal }: SandwichTableProps) {
     // Calculate rankings with tie handling
     let currentRank = 1;
     let currentBgGroup = 0;
@@ -138,12 +136,12 @@ export function SandwichTable({ sandwiches, onOpenSandwichModal, cleanSongName }
                         return (
                             <tr
                                 key={sandwich.sandwich_key}
-                                className={`${sandwich.bgGroup && sandwich.bgGroup % 2 === 0 ? 'bg-canvas' : 'bg-primary'
+                                className={`${sandwich.bgGroup && sandwich.bgGroup % 2 === 0 ? 'bg-primary' : 'bg-primary'
                                     } hover:bg-tertiary/40 transition-colors text-xs ${
                                     showBorderBottom ? 'border-b border-black/20' : ''
                                     } ${showRegularBorder ? 'border-b border-white/5' : ''}`}
                             >
-                                <td className="pl-2 pr-1 w-[30px] text-center font-semibold text-[0.875rem] text-fifth">
+                                <td className="pl-2 pr-1 w-[24px] text-center font-semibold text-[0.625rem] text-fifth">
                                     {sandwich.displayRank !== null ? sandwich.displayRank : ''}
                                 </td>
                                 <td className="pl-2 text-fifth">
@@ -161,20 +159,20 @@ export function SandwichTable({ sandwiches, onOpenSandwichModal, cleanSongName }
                                         {sandwich.songs.map((song, songIndex) => (
                                             <React.Fragment key={`${sandwich.sandwich_key}-${songIndex}`}>
                                                 {songIndex > 0 && (
-                                                    <MoveRight className="text-red-500 inline w-4 h-4 mr-1" style={{ verticalAlign: 'middle' }} />
+                                                    <MoveRight className="text-red-500 inline w-3.5 h-3.5 mr-1" style={{ verticalAlign: 'middle' }} />
                                                 )}
                                                 <span
-                                                    className={`text-fifth text-[1rem] leading-[0.875rem] font-trad transition-colors table-link inline ${songIndex < sandwich.songs.length - 1 ? 'mr-1' : ''
+                                                    className={`text-fifth font-medium hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left transition-colors table-link inline ${songIndex < sandwich.songs.length - 1 ? 'mr-1' : ''
                                                         }`}
                                                     style={{ verticalAlign: 'middle' }}
                                                 >
-                                                    {cleanSongName(song.song_name)}
+                                                    {song.song_name}
                                                 </span>
                                             </React.Fragment>
                                         ))}
                                     </div>
                                 </td>
-                                <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                                <td className="pr-2 w-[30px] text-center text-[0.625rem] font-medium text-fifth">
                                     {sandwich.count}
                                 </td>
                             </tr>

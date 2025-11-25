@@ -7,17 +7,17 @@ export const getChangeIcon = (changeType: string) => {
     
     switch (changeType) {
         case 'move':
-            return { icon: <MoveVertical className="w-4 h-4 text-yellow-600" strokeWidth={strokeWidth} /> };
+            return { icon: <MoveVertical className="w-3 h-3 text-yellow-600" strokeWidth={strokeWidth} /> };
         case 'replace':
-            return { icon: <RefreshCw className="w-4 h-4 text-orange-600" strokeWidth={strokeWidth} /> };
+            return { icon: <RefreshCw className="w-3 h-3 text-orange-600" strokeWidth={strokeWidth} /> };
         case 'add':
-            return { icon: <Plus className="w-4 h-4 text-green-600" strokeWidth={strokeWidth} /> };
+            return { icon: <Plus className="w-3 h-3 text-green-600" strokeWidth={strokeWidth} /> };
         case 'swap':
-            return { icon: <ArrowDownUp className="w-4 h-4 text-yellow-600" strokeWidth={strokeWidth} /> };
+            return { icon: <ArrowDownUp className="w-3 h-3 text-yellow-600" strokeWidth={strokeWidth} /> };
         case 'cut':
-            return { icon: <Minus className="w-4 h-4 text-red-600" strokeWidth={strokeWidth} /> };
+            return { icon: <Minus className="w-3 h-3 text-red-600" strokeWidth={strokeWidth} /> };
         case 'pick':
-            return { icon: <SquareCheckBig className="w-4 h-4 text-green-600" strokeWidth={strokeWidth} /> };
+            return { icon: <SquareCheckBig className="w-3 h-3 text-green-600" strokeWidth={strokeWidth} /> };
         default:
             return { icon: null };
     }
@@ -39,7 +39,7 @@ export const renderChangeText = (changeHtml: string) => {
                     <React.Fragment key={index}>
                         <span dangerouslySetInnerHTML={{ __html: part.trim() }} />
                         {index < parts.length - 1 && (
-                            <MoveRight className="inline-block mx-1 text-red-600" size={16} />
+                            <MoveRight className="inline-block mx-1 text-red-600" size={11} />
                         )}
                     </React.Fragment>
                 ))}

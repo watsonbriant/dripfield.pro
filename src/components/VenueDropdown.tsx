@@ -50,14 +50,14 @@ export const VenueDropdown: React.FC<VenueDropdownProps> = ({
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={onToggle}
-                className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
+                className="flex items-center gap-2 bg-fourth text-white px-4 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
             >
                 Venue
                 <ChevronDown className="w-4 h-4" />
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
+                <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
                     <div className="p-2">
                         <div className="relative">
                             <input
@@ -65,7 +65,7 @@ export const VenueDropdown: React.FC<VenueDropdownProps> = ({
                                 value={searchTerm}
                                 onChange={(e) => onSearchChange(e.target.value)}
                                 placeholder="Search venues..."
-                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                             />
                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                         </div>
@@ -73,7 +73,7 @@ export const VenueDropdown: React.FC<VenueDropdownProps> = ({
                     <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
                         {loading && loadingProgress < 100 ? (
                             <div className="flex flex-col justify-center items-center p-3 h-16">
-                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-fourth"></div>
                                 <p className="text-xs text-fifth/70 mt-2">Loading venues ({Math.round(loadingProgress)}%)</p>
                             </div>
                         ) : (

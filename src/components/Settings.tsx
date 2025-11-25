@@ -133,11 +133,11 @@ export const Settings: React.FC = () => {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Settings</h1>
+      <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">Settings</h1>
       
       {/* Profile Section */}
-      <div className="mt-8 bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Your Profile</h2>
+      <div className="mt-8 bg-primary border border-fourth rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Your Profile</h2>
         
         {message && (
           <p className="text-sm bg-green-100 text-green-800 px-2 py-1.5 rounded-full border border-green-300 mb-4">{message}</p>
@@ -200,7 +200,7 @@ export const Settings: React.FC = () => {
             type="button"
             onClick={updateProfile}
             disabled={profileLoading}
-            className={`px-2 py-1 rounded-lg text-sm font-medium transition-colors border border-secondary ${
+            className={`px-2 py-1 rounded-lg text-sm font-medium transition-colors border border-fourth ${
               profileLoading
               ? 'bg-tertiary/50 cursor-not-allowed'
               : 'bg-tertiary hover:bg-tertiary/80'
@@ -212,8 +212,8 @@ export const Settings: React.FC = () => {
       </div>
       
       {/* Password Section */}
-      <div className="mt-8 bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Update Password</h2>
+      <div className="mt-8 bg-primary border border-fourth rounded-lg p-3">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Update Password</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -251,7 +251,7 @@ export const Settings: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`px-2 py-1 rounded-lg text-sm font-medium transition-colors border border-secondary ${
+            className={`px-2 py-1 rounded-lg text-sm font-medium transition-colors border border-fourth ${
               loading
               ? 'bg-tertiary/50 cursor-not-allowed'
               : 'bg-tertiary hover:bg-tertiary/80'

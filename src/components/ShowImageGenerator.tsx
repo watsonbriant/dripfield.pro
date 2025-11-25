@@ -87,27 +87,27 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
         <>
             <button
                 onClick={handleGenerateImage}
-                className={`p-1.5 rounded border transition-all duration-200 ${
+                className={`p-0.5 rounded border transition-all duration-200 ${
                     imageCopied 
                         ? 'bg-green-500 text-white border-green-600' 
-                        : 'bg-tertiary text-fifth border-secondary hover:bg-white'
+                        : 'bg-tertiary text-fifth border-fourth hover:bg-fourth hover:text-white'
                 } ${className}`}
                 title="Generate Show Image"
             >
-                <Share size={16} />
+                <Share size={13} />
             </button>
             
             {/* Image Modal */}
             {showModal && generatedImageUrl && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
-                    <div className="bg-primary border border-secondary rounded-lg p-4 max-w-4xl max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-primary border border-fourth rounded-lg p-4 max-w-4xl max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+                            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
                                 Generated Setlist Image
                             </h3>
                             <button 
                                 onClick={() => setShowModal(false)}
-                                className="flex items-center justify-center w-10 h-10 rounded-md bg-red-600 hover:bg-primary transition-colors border border-secondary"
+                                className="flex items-center justify-center w-10 h-10 rounded-md bg-red-600 hover:bg-primary transition-colors border border-fourth"
                             >
                                 <X className="w-6 h-6 text-fifth" />
                             </button>
@@ -120,16 +120,16 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
                                 className={`flex items-center gap-2 px-3 py-1 rounded-lg border transition-all duration-200 ${
                                     imageCopied 
                                         ? 'bg-green-500 text-white font-medium border-green-600' 
-                                        : 'bg-tertiary text-fifth font-medium border-secondary hover:bg-white'
+                                        : 'bg-tertiary text-fifth font-medium border-fourth hover:bg-white'
                                 }`}
                                 title="Copy to Clipboard (Desktop) / Download (Mobile)"
                             >
-                                <Copy size={16} />
+                                <Copy size={14} />
                                 {imageCopied ? 'Success!' : 'Copy/Download'}
                             </button>
                         </div>
                         
-                        <img src={generatedImageUrl} alt="Generated show image" className="max-w-full h-auto border border-secondary" />
+                        <img src={generatedImageUrl} alt="Generated show image" className="max-w-full h-auto border border-fourth" />
                     </div>
                 </div>
             )}

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { TableHeader } from './TableHeader';
 import { ShowRow } from './ShowRow';
@@ -55,7 +54,6 @@ export function ShowsTable({
   onClearFilters,
   loading
 }: ShowsTableProps) {
-  const navigate = useNavigate();
   const [sortColumn, setSortColumn] = useState<string>('show_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -138,17 +136,10 @@ export function ShowsTable({
     });
   };
 
-  const navigateToVenue = (show: Show) => {
-    if (show.venue_id) {
-      navigate(`/venue/${show.venue_id}`);
-    } else if (show.show_subvenue_venue) {
-      navigate(`/venue/${encodeURIComponent(show.show_subvenue_venue)}`);
-    }
-  };
 
   if (loading) {
     return (
-      <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+      <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
         <div className="flex items-center justify-center space-x-2">
           <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
           <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
@@ -161,7 +152,7 @@ export function ShowsTable({
 
   if (shows.length === 0) {
     return (
-      <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+      <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
         <p className="text-fifth">
           {selectedGroups.length === 0 
             ? `No shows found for ${currentYear}` 
@@ -179,15 +170,15 @@ export function ShowsTable({
   }
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+    <div className="bg-primary border border-fourth">
+      <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
+        <h2 className="text-sm font-semibold">
           {currentYear} Shows
         </h2>
         {selectedGroups.length > 0 && (
           <button
             onClick={onClearFilters}
-            className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-secondary hover:bg-red-600 transition-colors text-xs font-semibold"
+            className="flex items-center gap-2 bg-white text-red-500 px-1 border border-fourth hover:bg-red-500 hover:text-white transition-colors text-xs font-semibold"
           >
             Clear Filters
           </button>
@@ -200,7 +191,7 @@ export function ShowsTable({
             sortDirection={sortDirection}
             onSort={handleSort}
           />
-          <tbody className="divide-y divide-white/5">
+          <tbody>
             {sortData(shows).map((show, index) => (
               <ShowRow
                 key={show.show_id}
@@ -211,7 +202,6 @@ export function ShowsTable({
                 showRatings={showRatings}
                 showsWithSetlists={showsWithSetlists}
                 showsWithReleases={showsWithReleases}
-                onNavigateToVenue={navigateToVenue}
               />
             ))}
           </tbody>

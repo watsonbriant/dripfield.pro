@@ -171,14 +171,14 @@ const ShowModal: React.FC<ShowModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3">
-      <div className="bg-primary rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-secondary">
-        <div className="sticky top-0 bg-primary border-b border-secondary p-3 flex justify-between items-center">
+      <div className="bg-primary rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-fourth">
+        <div className="sticky top-0 bg-primary border-b border-fourth p-3 flex justify-between items-center">
           <h2 className="text-xl font-semibold text-fifth">
             {isNewShow ? 'Add New Show' : 'Edit Show'}
           </h2>
           <button
             onClick={onClose}
-            className="text-fifth bg-red-600 p-2 rounded-lg border border-secondary hover:bg-red-600/70 transition-colors"
+            className="text-fifth bg-red-600 p-2 rounded-lg border border-fourth hover:bg-red-600/70 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -289,7 +289,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                   name="show_iscanon"
                   checked={formData.show_iscanon || false}
                   onChange={handleChange}
-                  className="rounded border-secondary focus:ring-fourth"
+                  className="rounded border-fourth focus:ring-fourth"
                 />
                 Is Canon?
               </label>
@@ -302,7 +302,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                   name="show_issetlistgame"
                   checked={formData.show_issetlistgame || false}
                   onChange={handleChange}
-                  className="rounded border-secondary focus:ring-fourth"
+                  className="rounded border-fourth focus:ring-fourth"
                 />
                 Is Setlist Game?
               </label>
@@ -341,7 +341,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 value={formData.show_detail || ''}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                 placeholder="Enter any additional details..."
               />
             </div>
@@ -351,14 +351,14 @@ const ShowModal: React.FC<ShowModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-fifth bg-canvas hover:bg-black/30 rounded-md transition-colors border border-secondary"
+              className="px-4 py-2 text-sm font-medium text-fifth bg-canvas hover:bg-black/30 rounded-md transition-colors border border-fourth"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-primary bg-green-600 hover:bg-green-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Saving...' : 'Save Show'}
             </button>

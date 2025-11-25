@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Check } from 'lucide-react';
 import { SongPick, SongSelectionModalProps } from './types';
 
 interface FooterProps {
@@ -36,19 +36,19 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="w-full flex flex-col items-center">
         {/* Show raw points and penalties for scored shows */}
         {viewMode && show_scored && (
-          <div className="w-full text-center mb-3">
+          <div className="w-full text-center my-1">
             {/* Raw score display */}
-            <div className="text-sm text-fifth font-semibold">
-              Selection score: <span className="font-medium text-primary bg-green-600 rounded-lg py-1 px-1.5 ml-1.5">{rawPointsTotal} points</span>
+            <div className="text-xs text-fifth font-semibold">
+              Selection score: <span className="font-medium text-white bg-green-600 rounded py-0.5 px-1 ml-1">{rawPointsTotal} points</span>
             </div>
             
             {/* Penalty information - now positioned below raw score */}
             {submissionDetails && submissionDetails.songsPicked > submissionDetails.songsPlayed && (
-              <div className="text-xs text-fifth font-semibold mt-2">
+              <div className="text-[0.625rem] text-fifth font-semibold mt-1">
                 {` ${submissionDetails.songsPicked - submissionDetails.songsPlayed === 1 
                   ? "1 extra song picked" 
                   : `${submissionDetails.songsPicked - submissionDetails.songsPlayed} extra songs picked`}:`}
-                <span className="font-medium text-primary bg-red-600 rounded-lg py-1 px-1.5 ml-1.5">
+                <span className="font-medium text-white bg-red-600 rounded py-0.5 px-1 ml-1">
                   {`-${(submissionDetails.songsPicked - submissionDetails.songsPlayed) * 3} points`}
                 </span>
               </div>
@@ -57,13 +57,13 @@ export const Footer: React.FC<FooterProps> = ({
         )}
         
         {/* View Mode Footer Buttons */}
-        <div className="flex space-x-3">
+        <div className="flex gap-2 justify-center">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="px-3 py-1 bg-red-600 hover:bg-red-600/80 text-primary flex items-center gap-2 font-medium rounded-md transition-colors border border-secondary"
+            className="px-2 py-0.5 bg-red-600 hover:bg-primary text-white hover:text-fifth flex items-center gap-1 font-medium rounded border border-fourth transition-colors text-xs"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3" />
             <span>Close</span>
           </button>
         </div>
@@ -72,83 +72,47 @@ export const Footer: React.FC<FooterProps> = ({
   }
 
   return (
-    <>
-      {/* Mobile view: stacked layout */}
-      <div className="block md:hidden w-full">
-        <div className="flex justify-center mb-3">
-          <div className="text-fifth font-semibold text-sm">
-            {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
-          </div>
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2">
+        <div className="text-fifth font-semibold text-xs">
+          {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
         </div>
-        <div className="flex justify-center items-center space-x-2">
-          {songPicks.length > 0 && (
-            <button
-              onClick={onClearSelections}
-              className="px-3 py-2 bg-red-600 border border-secondary hover:bg-red-700 text-primary font-medium rounded-md transition-colors flex items-center gap-1"
-            >
-              <Trash2 className="w-4 h-4" />
-              <span>Clear</span>
-            </button>
-          )}
-          
+        {songPicks.length > 0 && (
           <button
-            onClick={onSubmit}
-            disabled={songPicks.length === 0 || submitting || success}
-            className="px-3 py-2 bg-green-600 border border-secondary hover:bg-green-600/80 text-primary font-medium rounded-md transition-colors disabled:bg-black/50 disabled:cursor-not-allowed flex items-center gap-1"
+            onClick={onClearSelections}
+            className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white border border-fourth font-medium rounded transition-colors flex items-center gap-1 text-xs"
           >
-            {submitting ? (
-              <>
-                <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                <span>...</span>
-              </>
-            ) : success ? (
-              <span>Done!</span>
-            ) : (
-              <>
-                <span>{isEditing ? 'Update' : 'Submit'}</span>
-              </>
-            )}
+            <Trash2 className="w-3 h-3" />
+            <span className="hidden md:inline">Clear Selections</span>
+            <span className="md:hidden">Clear</span>
           </button>
-        </div>
+        )}
       </div>
-      
-      {/* Desktop view: remains the same */}
-      <div className="hidden md:flex md:justify-between md:items-center">
-        <div className="flex items-center gap-3">
-          <div className="text-fifth font-semibold text-sm">
-            {totalSongsSelected} song{totalSongsSelected !== 1 ? 's' : ''} selected
-          </div>
-          {songPicks.length > 0 && (
-            <button
-              onClick={onClearSelections}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-primary border border-secondary font-medium rounded-md transition-colors flex items-center gap-2"
-            >
-              <Trash2 className="w-4 h-4" />
-              <span>Clear Selections</span>
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onSubmit}
-            disabled={songPicks.length === 0 || submitting || success}
-            className="px-4 py-2 bg-green-600 hover:bg-green-600/80 border border-secondary text-primary font-medium rounded-md transition-colors disabled:bg-green-600/50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {submitting ? (
-              <>
-                <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                <span>Submitting...</span>
-              </>
-            ) : success ? (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onSubmit}
+          disabled={songPicks.length === 0 || submitting || success}
+          className="px-2 py-1 bg-green-600 hover:bg-green-600/80 border border-fourth text-white font-medium rounded transition-colors disabled:bg-green-600/50 disabled:cursor-not-allowed flex items-center gap-1 text-xs"
+        >
+          {submitting ? (
+            <>
+              <div className="w-3 h-3 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+              <span>Submitting...</span>
+            </>
+          ) : success ? (
+            <>
+              <Check className="w-3 h-3" />
               <span>Submitted!</span>
-            ) : (
-              <>
-                <span>{isEditing ? 'Update Picks' : 'Submit Picks'}</span>
-              </>
-            )}
-          </button>
-        </div>
+            </>
+          ) : (
+            <>
+              <Check className="w-3 h-3" />
+              <span className="hidden md:inline">{isEditing ? 'Update Picks' : 'Submit Picks'}</span>
+              <span className="md:hidden">{isEditing ? 'Update' : 'Submit'}</span>
+            </>
+          )}
+        </button>
       </div>
-    </>
+    </div>
   );
 };

@@ -8,11 +8,15 @@ interface SongHeaderProps {
 
 export function SongHeader({ songName }: SongHeaderProps) {
   return (
-    <div className="flex justify-between">
-      <h2 className="text-2xl font-trad bg-tertiary text-fifth inline-block mr-4 px-4 pt-0.5 pb-1.5 rounded-lg border border-secondary mb-6">
-        {cleanSongName(songName)}
-      </h2>
-      <SongSearch />
+    <div className="mb-4">
+      <div className="bg-primary border border-fourth">
+        <div className="bg-fourth text-white py-0.5 pr-1 flex justify-between items-center">
+          <h2 className="text-sm font-semibold pl-2">
+            {cleanSongName(songName)}
+          </h2>
+          <SongSearch />
+        </div>
+      </div>
     </div>
   );
 }

@@ -45,7 +45,7 @@ export const SubvenueForm: React.FC<SubvenueFormProps> = ({
                     value={editedSubvenue?.subvenue || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                     placeholder="Enter subvenue name"
                 />
             </div>
@@ -68,7 +68,7 @@ export const SubvenueForm: React.FC<SubvenueFormProps> = ({
                         type="text"
                         value={getSelectedVenueDisplay()}
                         readOnly
-                        className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                        className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                     />
                 )}
             </div>
@@ -81,7 +81,7 @@ export const SubvenueForm: React.FC<SubvenueFormProps> = ({
                     value={editedSubvenue?.subvenue_startdate || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
 
@@ -93,7 +93,7 @@ export const SubvenueForm: React.FC<SubvenueFormProps> = ({
                     value={editedSubvenue?.subvenue_enddate || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
         </div>

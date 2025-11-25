@@ -13,8 +13,8 @@ export const cleanSongName = (songName: string): string => {
 
 export const getGridClass = (showCanonId: number | null): string => {
   return showCanonId !== null 
-    ? "grid grid-cols-[32px_minmax(200px,1fr)_50px_60px_55px_50px_30px] gap-4"
-    : "grid grid-cols-[32px_minmax(200px,1fr)_50px_30px] gap-4";
+    ? "grid grid-cols-[32px_max-content_50px_60px_55px_50px_30px_minmax(150px,1fr)] gap-4"
+    : "grid grid-cols-[32px_max-content_50px_30px_minmax(150px,1fr)] gap-4";
 };
 
 export const createMarkup = (htmlContent: string) => {
@@ -172,15 +172,15 @@ export const formatDate = (dateString: string): string => {
 export const getHeaderStyle = (saveStatus: 'idle' | 'processing' | 'done' | 'error'): string => {
   switch (saveStatus) {
     case 'idle':
-      return 'bg-fourth text-primary';
+      return 'bg-fourth text-white';
     case 'processing':
-      return 'bg-black text-primary';
+      return 'bg-black text-white';
     case 'done':
-      return 'bg-green-600 text-primary';
+      return 'bg-green-600 text-white';
     case 'error':
-      return 'bg-red-600 text-primary';
+      return 'bg-red-600 text-white';
     default:
-      return 'bg-fourth text-primary';
+      return 'bg-fourth text-white';
   }
 };
 

@@ -112,12 +112,12 @@ export const ShowTable: React.FC<ShowTableProps> = ({
                     onClick={() => onAttendanceToggle(show)}
                     className={`p-0.5 rounded-md transition-all ${
                       show.attended
-                        ? 'bg-green-600 hover:bg-red-600 text-primary'
-                        : 'text-primary border-secondary/80 hover:bg-green-600 hover:text-primary'
+                        ? 'bg-green-600 hover:bg-red-600 text-white'
+                        : 'text-white border-secondary/80 hover:bg-green-600 hover:text-white'
                     }`}
                     title={show.attended ? "Remove from attended shows" : "Mark as attended"}
                   >
-                    <Check size={14} className={show.attended ? "text-primary" : "text-fifth/60"} />
+                    <Check size={14} className={show.attended ? "text-white" : "text-fifth/60"} />
                   </button>
                 </td>
                 <td className="px-4 py-0.5 text-fifth whitespace-nowrap">

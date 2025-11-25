@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUp, ArrowDown } from 'lucide-react';
 import { ChartPerformance, HoveredPerformance, SortDirection } from './types';
 import { shouldHighlight, shouldHighlightForSong, formatDateForDisplay } from './utils';
 
@@ -34,18 +33,6 @@ export default function TableView({
   mousePosition
 }: TableViewProps) {
   const navigate = useNavigate();
-
-  const getSortIcon = (column: string) => {
-    if (sortColumn !== column) {
-      return null;
-    }
-    
-    return sortDirection === 'asc' ? (
-      <ArrowUp className="w-4 h-4 inline-block ml-1 text-fifth" />
-    ) : (
-      <ArrowDown className="w-4 h-4 inline-block ml-1 text-fifth" />
-    );
-  };
 
   const navigateToVenue = (perf: ChartPerformance) => {
     if (perf.venue_id) {
@@ -98,42 +85,30 @@ export default function TableView({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse min-w-max">
         <thead>
-          <tr className="bg-canvas border-y border-secondary">
+          <tr className="bg-fourth border-y border-fourth">
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="pl-2 pr-3 py-0.5 text-center text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => onSort('show_date')}
             >
-              <div className="flex items-center gap-1">
-                Date
-                {getSortIcon('show_date')}
-              </div>
+              Date
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => onSort('show_group')}
             >
-              <div className="flex items-center gap-1">
-                Group
-                {getSortIcon('show_group')}
-              </div>
+              Group
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => onSort('show_tour')}
             >
-              <div className="flex items-center gap-1">
-                Tour
-                {getSortIcon('show_tour')}
-              </div>
+              Tour
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => onSort('show_venue_location')}
             >
-              <div className="flex items-center gap-1">
-                Location
-                {getSortIcon('show_venue_location')}
-              </div>
+              Location
             </th>
           </tr>
         </thead>
@@ -146,16 +121,14 @@ export default function TableView({
               <tr 
                 key={`${perf.show_id}-${index}`}
                 className={`${
-                  index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                } hover:bg-tertiary/40 transition-colors text-xs ${
-                  isHighlighted ? 'border border-secondary bg-tertiary/40' : ''
-                } ${
-                  isHighlightedForSong ? 'bg-tertiary/40' : ''
+                  index % 2 === 0 ? 'bg-canvas/40' : 'bg-canvas'
+                } hover:bg-tertiary/40 transition-colors text-[0.625rem] ${
+                  isHighlighted || isHighlightedForSong ? 'bg-tertiary/40' : ''
                 } ${
                   (selectedGroup && !isHighlighted) || (selectedSong && !isHighlightedForSong) ? 'opacity-30' : 'opacity-100'
                 }`}
               >
-                <td className="px-4 py-1 text-fifth whitespace-nowrap">
+                <td className="pl-2 pr-3 py-0.5 text-fifth whitespace-nowrap text-center">
                   <span className="font-medium">
                     <button
                       onClick={() => navigate(`/setlist/${perf.show_id}`)}
@@ -165,8 +138,8 @@ export default function TableView({
                     </button>
                   </span>
                 </td>
-                <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
-                <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                   {perf.show_tour ? (
                     <button
                       onClick={() => {
@@ -183,7 +156,7 @@ export default function TableView({
                   )}
                 </td>
                 <td 
-                  className="px-4 py-1 text-fifth font-light whitespace-nowrap"
+                  className="px-2 py-0.5 text-fifth whitespace-nowrap font-light"
                   onMouseEnter={(e) => {
                     if (perf.show_subvenue) {
                       onHover(perf, e);
@@ -200,7 +173,7 @@ export default function TableView({
                   </button>
                   {hoveredPerformance?.show_id === perf.show_id && (
                   <div 
-                    className="fixed bg-tertiary font-medium text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
+                    className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-fourth"
                     style={{
                         left: `${mousePosition.x + 10}px`,
                         top: `${mousePosition.y - 10}px`,

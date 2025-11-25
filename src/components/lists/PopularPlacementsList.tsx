@@ -19,59 +19,75 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
     return (
         <div>
             {/* Desktop view - 2x2 grid */}
-            <div className="hidden md:grid md:grid-cols-2 gap-4">
-                <PlacementSection 
-                    title="Top Show Openers" 
-                    bgColor="#047857" 
-                    songs={showOpeners} 
-                    cleanSongName={cleanSongName} 
-                />
-                <PlacementSection 
-                    title="Top Set Openers" 
-                    bgColor="#10b981" 
-                    songs={setOpeners} 
-                    cleanSongName={cleanSongName} 
-                />
-                <PlacementSection 
-                    title="Top Set Closers" 
-                    bgColor="#3b82f6" 
-                    songs={setClosers} 
-                    cleanSongName={cleanSongName} 
-                />
-                <PlacementSection 
-                    title="Top Encores" 
-                    bgColor="#be123c" 
-                    songs={encores} 
-                    cleanSongName={cleanSongName} 
-                />
+            <div className="hidden md:grid md:grid-cols-2">
+                <div className="border-r border-b border-fourth">
+                    <PlacementSection 
+                        title="Top Show Openers" 
+                        bgColor="#047857" 
+                        songs={showOpeners} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
+                <div className="border-b border-fourth">
+                    <PlacementSection 
+                        title="Top Set Openers" 
+                        bgColor="#10b981" 
+                        songs={setOpeners} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
+                <div className="border-r border-fourth">
+                    <PlacementSection 
+                        title="Top Set Closers" 
+                        bgColor="#3b82f6" 
+                        songs={setClosers} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
+                <div>
+                    <PlacementSection 
+                        title="Top Encores" 
+                        bgColor="#be123c" 
+                        songs={encores} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
             </div>
 
             {/* Mobile view - stacked vertically */}
-            <div className="md:hidden space-y-6">
-                <PlacementSection 
-                    title="Top Show Openers" 
-                    bgColor="#047857" 
-                    songs={showOpeners} 
-                    cleanSongName={cleanSongName} 
-                />
-                <PlacementSection 
-                    title="Top Set Openers" 
-                    bgColor="#10b981" 
-                    songs={setOpeners} 
-                    cleanSongName={cleanSongName} 
-                />
-                <PlacementSection 
-                    title="Top Set Closers" 
-                    bgColor="#3b82f6" 
-                    songs={setClosers} 
-                    cleanSongName={cleanSongName} 
-                />
-                <PlacementSection 
-                    title="Top Encores" 
-                    bgColor="#be123c" 
-                    songs={encores} 
-                    cleanSongName={cleanSongName} 
-                />
+            <div className="md:hidden">
+                <div className="border-b border-fourth">
+                    <PlacementSection 
+                        title="Top Show Openers" 
+                        bgColor="#047857" 
+                        songs={showOpeners} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
+                <div className="border-b border-fourth">
+                    <PlacementSection 
+                        title="Top Set Openers" 
+                        bgColor="#10b981" 
+                        songs={setOpeners} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
+                <div className="border-b border-fourth">
+                    <PlacementSection 
+                        title="Top Set Closers" 
+                        bgColor="#3b82f6" 
+                        songs={setClosers} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
+                <div>
+                    <PlacementSection 
+                        title="Top Encores" 
+                        bgColor="#be123c" 
+                        songs={encores} 
+                        cleanSongName={cleanSongName} 
+                    />
+                </div>
             </div>
         </div>
     );

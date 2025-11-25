@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Check, FileMusic, Users, Star, AudioLines } from 'lucide-react';
 import wlImage from '../img/WL.png';
@@ -38,7 +38,6 @@ interface ShowRowProps {
   showRatings: Record<string, number>;
   showsWithSetlists: Set<string>;
   showsWithReleases: Set<string>;
-  onNavigateToVenue: (show: Show) => void;
 }
 
 export function ShowRow({
@@ -48,10 +47,8 @@ export function ShowRow({
   attendeeCounts,
   showRatings,
   showsWithSetlists,
-  showsWithReleases,
-  onNavigateToVenue
+  showsWithReleases
 }: ShowRowProps) {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [hoveredTour, setHoveredTour] = useState<string | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -64,8 +61,8 @@ export function ShowRow({
   return (
     <tr
       className={`${
-        index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-      } hover:bg-tertiary/40 transition-colors text-xs`}
+        index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+      } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
     >
       <td 
         style={{ 
@@ -84,7 +81,7 @@ export function ShowRow({
       >
         {hoveredTour === show.show_tour && (
           <div 
-            className="fixed bg-tertiary text-fifth px-3 py-1 rounded border border-secondary min-w-max z-[9999]"
+            className="fixed bg-canvas text-fifth px-2 py-1 border border-fourth min-w-max z-[9999]"
             style={{
               left: `${mousePosition.x + 10}px`,
               top: `${mousePosition.y - 10}px`
@@ -94,10 +91,10 @@ export function ShowRow({
           </div>
         )}
       </td>
-      <td className="px-3 py-0.5 text-fifth whitespace-nowrap">
+      <td className="px-2 py-0.5 text-fifth whitespace-nowrap text-center">
         <span className="font-medium">
-          <button
-            onClick={() => navigate(`/setlist/${show.show_id}`)}
+          <Link
+            to={`/setlist/${show.show_id}`}
             className="transition-colors table-link"
           >
             {show.show_date
@@ -105,15 +102,15 @@ export function ShowRow({
               .slice(1)
               .concat(show.show_date.substring(2, 4))
               .join('.')}
-          </button>
+          </Link>
         </span>
       </td>
       {user && (
-        <td className="w-8 text-center">
+        <td className="text-center">
           {show.attended && (
             <div className="flex justify-center items-center h-full">
               <div className="rounded-full p-0.5 bg-green-600">
-                <Check size={12} className="text-white" strokeWidth={3} />
+                <Check size={10} className="text-white" strokeWidth={3} />
               </div>
             </div>
           )}
@@ -121,17 +118,28 @@ export function ShowRow({
       )}
       <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_group}</td>
       <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
-        <button
-          onClick={() => onNavigateToVenue(show)}
+        {show.venue_id ? (
+          <Link
+            to={`/venue/${show.venue_id}`}
+            className="hover:underline transition-colors"
+          >
+            {show.show_subvenue}
+          </Link>
+        ) : show.show_subvenue_venue ? (
+          <Link
+            to={`/venue/${encodeURIComponent(show.show_subvenue_venue)}`}
           className="hover:underline transition-colors"
         >
           {show.show_subvenue}
-        </button>
+          </Link>
+        ) : (
+          <span>{show.show_subvenue}</span>
+        )}
       </td>
       <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{show.show_venue_location}</td>
       <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
         <div className="relative flex items-center group">
-          <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
+          <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-10' : ''}`}>
             {[1, 2, 3, 4, 5].map((starNumber) => {
               const rating = showRatings[show.show_id] || 0;
               const fillPercentage = Math.min(Math.max(rating - starNumber + 1, 0), 1);
@@ -139,8 +147,8 @@ export function ShowRow({
               return (
                 <div key={starNumber} className="relative">
                   <Star
-                    size={16}
-                    className="text-secondary"
+                    size={12}
+                    className="text-fourth"
                     fill="none"
                     stroke="currentColor"
                   />
@@ -149,8 +157,8 @@ export function ShowRow({
                     style={{ width: `${fillPercentage * 100}%` }}
                   >
                     <Star
-                      size={16}
-                      className="text-tertiary"
+                      size={12}
+                      className="text-fourth"
                       fill="currentColor"
                       stroke="currentColor"
                     />
@@ -166,45 +174,44 @@ export function ShowRow({
           )}
         </div>
       </td>
-      <td className="w-8 text-center align-middle">
+      <td className="text-center align-middle">
         {showsWithSetlists.has(show.show_id) && (
           <div className="flex justify-center items-center h-full">
-            <button
-              onClick={() => {
-                navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
-              }}
-              className="text-[#006400] hover:text-primary hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+            <Link
+              to={`/setlist/${show.show_id}`}
+              state={{ openChangesModal: true }}
+              className="text-[#006400] hover:text-white hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
             >
-              <FileMusic size={14.5} strokeWidth={2} />
-            </button>
+              <FileMusic size={12} strokeWidth={2} />
+            </Link>
           </div>
         )}
       </td>
-      <td className="w-8 text-center align-middle">
+      <td className="text-center align-middle">
         {showsWithReleases.has(show.show_id) && (
           <div className="flex justify-center items-center h-full">
-            <button
-              onClick={() => navigate(`/setlist/${show.show_id}`)}
-              className="text-[#7c2128] hover:text-primary hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+            <Link
+              to={`/setlist/${show.show_id}`}
+              className="text-[#7c2128] hover:text-white hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
             >
-              <AudioLines size={14.5} strokeWidth={2} />
-            </button>
+              <AudioLines size={12} strokeWidth={2} />
+            </Link>
           </div>
         )}
       </td>
-      <td className="w-8 text-center text-fifth">
+      <td className="text-center text-fifth">
         {attendeeCounts[show.show_id] > 0 && (
-          <span className="text-xs font-medium">{attendeeCounts[show.show_id]}</span>
+          <span className="text-[0.625rem] font-medium">{attendeeCounts[show.show_id]}</span>
         )}
       </td>
-      <td className="w-8 text-center align-middle">
+      <td className="text-center align-middle">
         {show.show_wl_link && (
           <div className="flex justify-center items-center h-full">
             <button
               onClick={() => window.open(show.show_wl_link, '_blank')}
               className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
             >
-              <img src={wlImage} alt="WysteriaLane" className="w-[14.5px] h-[14.5px]" />
+              <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
             </button>
           </div>
         )}

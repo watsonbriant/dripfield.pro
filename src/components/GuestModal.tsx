@@ -149,14 +149,14 @@ const GuestModal: React.FC<GuestModalProps> = ({
         className="fixed inset-0 bg-black/50 z-50"
         onClick={onClose}
       />
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-md md:w-full z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-3 border-b border-secondary">
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-md md:w-full z-50 bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
+        <div className="flex items-center justify-between p-3 border-b border-fourth">
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
             {isNewGuest ? 'Add New Guest' : 'Edit Guest'}
           </h2>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
+            className="p-2 hover:bg-tertiary rounded-lg border border-fourth bg-red-500 transition-colors"
           >
             <X className="w-5 h-5 text-fifth" />
           </button>
@@ -180,7 +180,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 required
               />
             </div>
@@ -195,7 +195,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest_displayname || ''}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               />
             </div>
             
@@ -209,7 +209,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest_instrument || ''}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               />
             </div>
             
@@ -222,7 +222,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 name="guest_category"
                 value={formData.guest_category || ''}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 required
               >
                 <option value="">-- Select Category --</option>
@@ -244,14 +244,14 @@ const GuestModal: React.FC<GuestModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-2 py-1.5 rounded-lg border border-secondary bg-canvas text-fifth hover:bg-black/20 transition-colors text-sm"
+                className="px-2 py-1.5 rounded-lg border border-fourth bg-canvas text-fifth hover:bg-black/20 transition-colors text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-2 py-1.5 rounded-lg border border-secondary bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2 py-1.5 rounded-lg border border-fourth bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Saving...' : isNewGuest ? 'Add Guest' : 'Save Changes'}
               </button>

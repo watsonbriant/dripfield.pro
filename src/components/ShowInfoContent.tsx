@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { formatInTimeZone } from 'date-fns-tz';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Link, Pencil } from 'lucide-react';
+import { Link, Pencil } from 'lucide-react';
 import ShowAttendButton from './ShowAttendButton';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -149,23 +148,10 @@ const ShowInfoContent = React.memo(({
   }, []);
   
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      {/* Top row: Date/Group on left, WL image on right */}
-      <div className="flex justify-between items-start mb-2">
-        <div>
-          <div className="text-xl font-medium text-fifth">
-            {formatInTimeZone(
-              new Date(show.show_date),
-              'UTC',
-              'MM.dd.yy'
-            )}
-          </div>
-          <p className="text-2xl font-trad text-fifth leading-5">{show.show_group}</p>
-        </div>
-        
+    <div className="bg-primary border border-fourth rounded-lg p-3">
         {/* WL Image - always visible if show_wl_link exists */}
         {show.show_wl_link && (
-          <div className="relative">
+        <div className="relative mb-2">
             <button
               onClick={() => show.show_wl_link && window.open(show.show_wl_link, '_blank')}
               className="p-1 rounded hover:border border border-primary text-fifth hover:border-[#78b1a1] hover:bg-[#78b1a1]/30 transition-colors"
@@ -181,13 +167,12 @@ const ShowInfoContent = React.memo(({
               />
             </button>
             {wlHovered && (
-              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-medium bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg whitespace-nowrap z-[9999]">
+              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-medium bg-tertiary text-fifth px-3 py-1 rounded border border-fourth shadow-lg whitespace-nowrap z-[9999]">
                 Chat on WysteriaLane.org!
               </div>
             )}
           </div>
         )}
-      </div>
 
       {/* Bottom section: Detail, Alert, and Rating */}
       <div className="space-y-1">
@@ -213,26 +198,10 @@ const ShowInfoContent = React.memo(({
 
       {/* Rest of component */}
       <div className="mt-2 space-y-2">
-        <hr className="border-secondary" />
-        <div className="space-y-0">
-          <p className="text-md font-medium text-fifth leading-5 text-left w-full">
-            {navigateToVenue ? (
-              <button 
-                onClick={navigateToVenue}
-                className="hover:underline transition-colors cursor-pointer text-left w-full"
-              >
-                {show.show_subvenue}
-              </button>
-            ) : (
-              <span className="text-left w-full">{show.show_subvenue}</span>
-            )}
-          </p>
-          <p className="text-sm font-light text-fifth text-left w-full">{show.show_venue_location}</p>
-        </div>
         {/* Tour information with horizontal divider */}
         {show.show_tour && (
           <>
-            <hr className="border-secondary" />
+            <hr className="border-fourth" />
             <div className="space-y-0">
               <p className="text-md font-medium text-fifth leading-5 text-center">
                 <span 
@@ -244,40 +213,10 @@ const ShowInfoContent = React.memo(({
               </p>
               {showPosition ? (
                 <div className="space-y-2">
-                  <div className="flex justify-center items-center pt-0.5 gap-4">
-                    <button 
-                      className={`p-1 rounded-full border ${
-                        showPosition.prevShowId 
-                          ? 'text-fifth bg-tertiary hover:bg-primary border border-secondary' 
-                          : 'text-secondary border-secondary cursor-not-allowed'
-                      } transition-colors`}
-                      onClick={() => {
-                        if (showPosition.prevShowId) {
-                          navigate(`/setlist/${showPosition.prevShowId}`);
-                        }
-                      }}
-                      disabled={!showPosition.prevShowId}
-                    >
-                      <ArrowLeft size={12} />
-                    </button>
+                  <div className="flex justify-center items-center pt-0.5">
                     <span className="text-sm text-fifth font-light">
                       Show {showPosition.current} of {showPosition.total}
                     </span>
-                    <button 
-                      className={`p-1 rounded-full border ${
-                        showPosition.nextShowId 
-                          ? 'text-fifth bg-tertiary hover:bg-primary border border-secondary' 
-                          : 'text-secondary border-secondary cursor-not-allowed'
-                      } transition-colors`}
-                      onClick={() => {
-                        if (showPosition.nextShowId) {
-                          navigate(`/setlist/${showPosition.nextShowId}`);
-                        }
-                      }}
-                      disabled={!showPosition.nextShowId}
-                    >
-                      <ArrowRight size={12} />
-                    </button>
                   </div>
                   {/* Admin buttons - centered below navigation */}
                   {!isAdminLoading && (isAdmin || user?.id === '8f13a985-ef21-44dc-a381-d6e80c43803f') && (
@@ -286,8 +225,8 @@ const ShowInfoContent = React.memo(({
                         onClick={handleCopyLink}
                         className={`p-1.5 rounded border transition-all duration-200 ${
                           linkCopied 
-                            ? 'bg-green-500 text-primary border-green-600' 
-                            : 'bg-tertiary text-fifth border-secondary hover:bg-primary'
+                            ? 'bg-green-500 text-white border-green-600' 
+                            : 'bg-tertiary text-fifth border-fourth hover:bg-primary'
                         }`}
                         title="Copy Show ID"
                       >
@@ -299,7 +238,7 @@ const ShowInfoContent = React.memo(({
                       {isAdmin && (
                         <button
                           onClick={handleEditShow}
-                          className="p-1.5 rounded bg-tertiary text-fifth border border-secondary hover:bg-primary transition-colors"
+                          className="p-1.5 rounded bg-tertiary text-fifth border border-fourth hover:bg-primary transition-colors"
                           title="Edit Show"
                         >
                           <Pencil size={16} />
@@ -320,8 +259,8 @@ const ShowInfoContent = React.memo(({
                         onClick={handleCopyLink}
                         className={`p-1.5 rounded border transition-all duration-200 ${
                           linkCopied 
-                            ? 'bg-green-500 text-primary border-green-600' 
-                            : 'bg-tertiary text-fifth border-secondary hover:bg-primary'
+                            ? 'bg-green-500 text-white border-green-600' 
+                            : 'bg-tertiary text-fifth border-fourth hover:bg-primary'
                         }`}
                         title="Copy Show ID"
                       >
@@ -333,7 +272,7 @@ const ShowInfoContent = React.memo(({
                       {isAdmin && (
                         <button
                           onClick={handleEditShow}
-                          className="p-1.5 rounded bg-tertiary text-fifth border border-secondary hover:bg-primary transition-colors"
+                          className="p-1.5 rounded bg-tertiary text-fifth border border-fourth hover:bg-primary transition-colors"
                           title="Edit Show"
                         >
                           <Pencil size={16} />
@@ -347,7 +286,7 @@ const ShowInfoContent = React.memo(({
           </>
         )}
         {/* Attendance information with horizontal divider */}
-        <hr className="border-secondary" />
+        <hr className="border-fourth" />
         <div className="flex justify-center items-center space-x-4">
           <ShowAttendButton 
             showId={show.show_id} 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { cleanSongName, getColumnBackgroundColor } from '../utils/songMatrixUtils';
+import { getColumnBackgroundColor } from '../utils/songMatrixUtils';
+// import { cleanSongName, getColumnBackgroundColor } from '../utils/songMatrixUtils';
 
 interface MatrixTableProps {
   songMatrix: {
@@ -10,7 +11,7 @@ interface MatrixTableProps {
       showId: string, 
       placement: string | null,
       count: number,
-      tourAppearanceCount: number
+      venueAppearanceCount: number
     }>>;
     songMetadata: Record<string, {
       totalCount: number,
@@ -36,8 +37,9 @@ const MatrixTable: React.FC<MatrixTableProps> = ({
     <div className="overflow-x-auto" style={{ overflowY: 'auto' }}>
       <table className="w-full border-collapse min-w-max">
         <thead>
-          <tr className="bg-canvas border-y border-secondary">
-            <th className="px-2 py-1 text-left text-xs font-medium text-fifth border-l border-r border-secondary">
+          <tr className="bg-canvas">
+            <th className="px-2 py-1 text-left text-xs font-medium text-fifth border"
+              style={{ borderColor: 'rgb(180, 178, 178)' }}>
               Song
             </th>
             {songMatrix.showDates.map((date, index) => {
@@ -47,12 +49,12 @@ const MatrixTable: React.FC<MatrixTableProps> = ({
               return (
                 <th 
                   key={index} 
-                  className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border-l border-r border-secondary" 
-                  style={{ width: 'min-content' }}
+                  className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border" 
+                  style={{ width: 'min-content', borderColor: 'rgb(180, 178, 178)' }}
                 >
                   <button 
                     onClick={() => navigate(`/setlist/${showId}`)}
-                    className="hover:text-[#a9682e] transition-colors"
+                    className="hover:underline transition-colors"
                   >
                     {date}
                   </button>
@@ -68,15 +70,15 @@ const MatrixTable: React.FC<MatrixTableProps> = ({
             return (
               <tr 
                 key={song} 
-                className={`${songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40`}
+                className={`${songIndex % 2 === 0 ? 'bg-primary' : 'bg-primary'} hover:bg-tertiary/40`}
               >
-                <td className="font-trad text-fifth text-[.875rem] leading-[1rem] pb-1 px-2 whitespace-nowrap font-trad border"
+                <td className="font-medium text-fifth text-[0.625rem] px-2 whitespace-nowrap border"
                   style={{ borderColor: 'rgb(180, 178, 178)' }}>
                   <button 
                     onClick={() => onSongClick(song)}
                     className="hover:underline transition-colors cursor-pointer"
                   >
-                    {cleanSongName(song)}
+                    {song}
                   </button>
                 </td>
                 
@@ -91,7 +93,7 @@ const MatrixTable: React.FC<MatrixTableProps> = ({
                       style={{ backgroundColor: bgColor, borderColor: 'rgb(180, 178, 178)' }}
                     >
                       {performance && (
-                        <div className="w-full h-full flex items-center justify-center text-primary text-xs font-medium">
+                        <div className="w-full h-full flex items-center justify-center text-white text-xs font-medium">
                           {performance.venueAppearanceCount}
                         </div>
                       )}

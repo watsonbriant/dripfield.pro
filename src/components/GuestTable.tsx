@@ -23,8 +23,8 @@ const GuestTable: React.FC<GuestTableProps> = ({ category, guests, count }) => {
   const displayName = categoryDisplayNames[category] || category;
   
   return (
-    <div className="bg-primary p-3 rounded-lg border border-secondary" key={category}>
-      <h2 className="text-lg font-medium bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">{displayName}</h2>
+    <div className="bg-primary p-3 rounded-lg border border-fourth" key={category}>
+      <h2 className="text-lg font-medium bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">{displayName}</h2>
     
       <div className="overflow-x-auto relative">
         <table className="w-full border-collapse table-fixed">

@@ -13,13 +13,13 @@ const getServiceIcon = (serviceName: string | null, isHovered: boolean = false) 
   
   switch (serviceName.toLowerCase()) {
     case 'youtube':
-      return <FaYoutube className={`inline-block ${isHovered ? '' : 'text-[#FF0033]'}`} size="1rem" />;
+      return <FaYoutube className={`inline-block ${isHovered ? '' : 'text-[#FF0033]'}`} size="0.875rem" />;
     case 'bandcamp':
-      return <SiBandcamp className={`inline-block ${isHovered ? '' : 'text-[#1b96bb]'}`} size="1rem" />;
+      return <SiBandcamp className={`inline-block ${isHovered ? '' : 'text-[#1b96bb]'}`} size="0.875rem" />;
     case 'nugs':
-      return <img src={isHovered ? NugsIcon : NugsColorIcon} alt="nugs" className="inline-block h-4 w-auto" />;
+      return <img src={isHovered ? NugsIcon : NugsColorIcon} alt="nugs" className="inline-block h-[0.875rem] w-auto" />;
     case 'spotify':
-      return <FaSpotify className={`inline-block ${isHovered ? '' : 'text-[#1ed760]'}`} size="1rem" />;
+      return <FaSpotify className={`inline-block ${isHovered ? '' : 'text-[#1ed760]'}`} size="0.875rem" />;
     default:
       return null;
   }
@@ -90,9 +90,11 @@ interface ReleaseContainerProps {
   showId: string;
   highlightOnMount?: boolean;
   className?: string;
+  onYouTubeEmbed?: (release: Release | null) => void;
+  onYouTubeLoading?: (loading: boolean) => void;
 }
 
-const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOnMount = false, className = "" }) => {
+const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOnMount = false, className = "", onYouTubeEmbed, onYouTubeLoading }) => {
   const [releases, setReleases] = useState<Release[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [embeddedReleaseIndex, setEmbeddedReleaseIndex] = useState<number | null>(null);
@@ -107,11 +109,13 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
   }, [embeddedReleaseIndex]);
 
   const hasEmbeddedContent = useCallback((release: Release, index: number) => {
-    return isEmbedded(index) && (albumId || release?.release_service?.toLowerCase() === 'youtube');
+    // Only show Bandcamp embeds inline - YouTube embeds are handled by parent
+    return isEmbedded(index) && albumId && release?.release_service?.toLowerCase() === 'bandcamp';
   }, [isEmbedded, albumId]);
 
-  const isLoadingEmbed = useCallback((index: number) => {
-    return loadingReleaseIndex === index;
+  const isLoadingEmbed = useCallback((index: number, release: Release) => {
+    // Only show loading for Bandcamp - YouTube loading is handled by parent
+    return loadingReleaseIndex === index && release?.release_service?.toLowerCase() === 'bandcamp';
   }, [loadingReleaseIndex]);
 
   // Optimize event handlers to prevent recreation on every render
@@ -125,37 +129,68 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
       setEmbeddedReleaseIndex(null);
       setAlbumId(null);
       setLoadingReleaseIndex(null);
+      // Clear YouTube embed if it was this one
+      if (service === 'youtube' && onYouTubeEmbed) {
+        onYouTubeEmbed(null);
+      }
+      if (service === 'youtube' && onYouTubeLoading) {
+        onYouTubeLoading(false);
+      }
       return;
     }
     
-    // Close any existing embed and open this one
-    setEmbeddedReleaseIndex(null);
-    setAlbumId(null);
-    setLoadingReleaseIndex(index); // Show loading state
-    
-    if (service === 'bandcamp' && release?.release_link) {
-      try {
-        const fetchedAlbumId = await fetchBandcampAlbumId(release.release_link);
-        if (fetchedAlbumId) {
-          setAlbumId(fetchedAlbumId);
-          setEmbeddedReleaseIndex(index);
+    // Clear YouTube embed if opening Bandcamp, or clear Bandcamp if opening YouTube
+    if (service === 'bandcamp') {
+      // Clear YouTube embed when opening Bandcamp
+      if (onYouTubeEmbed) {
+        onYouTubeEmbed(null);
+      }
+      if (onYouTubeLoading) {
+        onYouTubeLoading(false);
+      }
+      
+      // Close any existing Bandcamp embed
+      setEmbeddedReleaseIndex(null);
+      setAlbumId(null);
+      
+      // Show loading state for Bandcamp
+      setLoadingReleaseIndex(index);
+      
+      if (release?.release_link) {
+        try {
+          const fetchedAlbumId = await fetchBandcampAlbumId(release.release_link);
+          if (fetchedAlbumId) {
+            setAlbumId(fetchedAlbumId);
+            setEmbeddedReleaseIndex(index);
+          }
+        } catch (error) {
+          console.error('Error loading Bandcamp embed:', error);
+        } finally {
+          setLoadingReleaseIndex(null);
         }
-      } catch (error) {
-        console.error('Error loading Bandcamp embed:', error);
-      } finally {
-        setLoadingReleaseIndex(null); // Hide loading state
+      } else {
+        setLoadingReleaseIndex(null);
       }
     } else if (service === 'youtube' && release?.release_link) {
-      // For YouTube, we don't need to fetch anything - just set the embed state
-      // Add a small delay to show loading state briefly
-      setTimeout(() => {
-        setEmbeddedReleaseIndex(index);
-        setLoadingReleaseIndex(null);
-      }, 300);
-    } else {
-      setLoadingReleaseIndex(null);
+      // Clear Bandcamp embed when opening YouTube
+      setEmbeddedReleaseIndex(null);
+      setAlbumId(null);
+      
+      // Notify parent about YouTube embed
+      if (onYouTubeEmbed) {
+        onYouTubeEmbed(release);
+      }
+      if (onYouTubeLoading) {
+        onYouTubeLoading(true);
+        // Hide loading after a brief delay
+        setTimeout(() => {
+          if (onYouTubeLoading) {
+            onYouTubeLoading(false);
+          }
+        }, 300);
+      }
     }
-  }, [embeddedReleaseIndex]);
+  }, [embeddedReleaseIndex, onYouTubeEmbed, onYouTubeLoading]);
 
 
   // Fetch releases when showId changes - remove fetchReleases from dependencies to prevent infinite loops
@@ -173,7 +208,15 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
       
       setIsLoading(true);
       setEmbeddedReleaseIndex(null);
+      setAlbumId(null);
       setLoadingReleaseIndex(null);
+      // Clear YouTube embed when showId changes
+      if (onYouTubeEmbed) {
+        onYouTubeEmbed(null);
+      }
+      if (onYouTubeLoading) {
+        onYouTubeLoading(false);
+      }
       
       try {
         // Updated query to join tables and include release_order
@@ -237,7 +280,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
     return () => {
       isMounted = false;
     };
-  }, [showId]); // Only depend on showId
+  }, [showId, onYouTubeEmbed, onYouTubeLoading]); // Include callbacks in dependencies
 
   // Handle highlight effect on mount - now handled by CSS animation class
   useEffect(() => {
@@ -248,7 +291,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
 
   // Early return for loading state
   if (isLoading) {
-    return <div className="bg-primary border border-secondary rounded-lg p-3 mb-4 text-center">
+    return <div className="bg-primary border border-fourth rounded-lg p-3 mb-4 text-center">
       <p className="text-black">Loading releases...</p>
     </div>;
   }
@@ -261,16 +304,16 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
   return (
     <div 
       ref={containerRef}
-      className={`border border-secondary rounded-lg p-3 mb-4 relative bg-fifth ${className}`}
+      className={`p-1 mt-2 relative bg-fifth ${className}`}
     >
       {/* AudioLines icon positioned in top right */}
-      <AudioLines className="absolute top-3 right-3 text-primary w-[1rem] h-[1rem]" />
+      <AudioLines className="absolute top-1 right-1 text-white w-3 h-3" />
       
       <div className="space-y-1.5">
         {releases.map((release, index) => (
           <React.Fragment key={release.release_id}>
             <div className="relative">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {/* Square artwork */}
                 <div className="flex-shrink-0">
                   {release?.release_link ? (
@@ -284,7 +327,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                         <img 
                           src={release.release_artwork} 
                           alt={release.release_displayname || release.release}
-                          className="w-12 h-12 rounded object-cover hover:opacity-70 transition-opacity"
+                          className="w-8 h-8 rounded object-cover hover:opacity-70 transition-opacity"
                           onError={(e) => {
                             // Handle error silently
                             const target = e.target as HTMLImageElement;
@@ -304,7 +347,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                         <img 
                           src={release.release_artwork} 
                           alt={release.release_displayname || release.release}
-                          className="w-12 h-12 rounded object-cover hover:opacity-70 transition-opacity"
+                          className="w-8 h-8 rounded object-cover hover:opacity-70 transition-opacity"
                           onError={(e) => {
                             // Handle error silently
                             const target = e.target as HTMLImageElement;
@@ -317,7 +360,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                     <img 
                       src={release.release_artwork} 
                       alt={release.release_displayname || release.release}
-                      className="w-12 h-12 rounded object-cover"
+                      className="w-8 h-8 rounded object-cover"
                       onError={(e) => {
                         // Handle error silently
                         const target = e.target as HTMLImageElement;
@@ -333,7 +376,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                       release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
                         <h3 
                           onClick={(e) => handleStreamingClick(e, release, index)}
-                          className="text-[13px] font-medium text-primary leading-[13px] cursor-pointer hover:underline"
+                          className="text-xs font-medium text-white cursor-pointer hover:underline leading-[0.75rem]"
                           onMouseEnter={() => setHoveredReleaseIndex(index)}
                           onMouseLeave={() => setHoveredReleaseIndex(null)}
                         >
@@ -344,7 +387,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                           href={release.release_link} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-[13px] font-medium text-primary leading-[13px] hover:underline block"
+                          className="text-xs font-medium leading-[0.75rem] text-white hover:underline block"
                           onMouseEnter={() => setHoveredReleaseIndex(index)}
                           onMouseLeave={() => setHoveredReleaseIndex(null)}
                         >
@@ -352,7 +395,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                         </a>
                       )
                     ) : (
-                      <h3 className="text-[13px] font-medium text-primary leading-[13px]">
+                      <h3 className="text-xs font-medium text-white">
                         {renderDisplayName(release?.release_displayname, release?.release)}
                       </h3>
                     )}
@@ -361,7 +404,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                       {release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
                         <div 
                           onClick={(e) => handleStreamingClick(e, release, index)}
-                          className="flex items-center gap-1 text-primary hover:underline font-normal text-[10px] leading-[10px] pt-0.5 transition-colors cursor-pointer"
+                          className="flex items-center gap-1 text-white hover:underline font-normal text-[0.625rem] transition-colors cursor-pointer"
                           onMouseEnter={() => setHoveredReleaseIndex(index)}
                           onMouseLeave={() => setHoveredReleaseIndex(null)}
                         >
@@ -373,7 +416,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                           href={release.release_link} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-primary hover:underline font-normal text-[10px] leading-[10px] transition-colors"
+                          className="flex items-center gap-1 text-white hover:underline font-normal text-[0.625rem] transition-colors"
                           onMouseEnter={() => setHoveredReleaseIndex(index)}
                           onMouseLeave={() => setHoveredReleaseIndex(null)}
                         >
@@ -387,52 +430,31 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
               </div>
               
               {/* Loading state - spans full width below both columns */}
-              {isLoadingEmbed(index) && (
+              {isLoadingEmbed(index, release) && (
                 <div className="mt-3 flex justify-center items-center py-1">
-                  <div className="flex items-center gap-2 text-primary">
+                  <div className="flex items-center gap-2 text-white">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     <span className="text-xs">Loading...</span>
                   </div>
                 </div>
               )}
               
-              {/* Embedded content - spans full width below both columns */}
-              {hasEmbeddedContent(release, index) && (
-                <div className="mt-3 flex justify-center">
-                  {release.release_service?.toLowerCase() === 'bandcamp' && albumId ? (
-                    <iframe 
-                      style={{ 
-                        border: 0, 
-                        width: 'min(245px, 100%)', 
-                        height: '390px' 
-                      }}
-                      src={`https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/`}
-                      seamless
-                      title={release.release_displayname || release.release}
-                    />
-                  ) : release.release_service?.toLowerCase() === 'youtube' ? (
-                    <iframe 
-                      className="lg:!h-[138px]"
-                      style={{ 
-                        border: 0, 
-                        width: 'min(560px, 100%)', 
-                        height: '200px' 
-                      }}
-                      src={convertToYouTubeEmbed(release.release_link!)}
-                      title={release.release_displayname || release.release}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    />
-                  ) : null}
+              {/* Embedded content - only Bandcamp embeds appear here, YouTube embeds are in parent */}
+              {hasEmbeddedContent(release, index) && release.release_service?.toLowerCase() === 'bandcamp' && albumId && (
+                <div className="mt-2 flex justify-center">
+                  <iframe 
+                    style={{ 
+                      border: 0, 
+                      width: 'min(245px, 100%)', 
+                      height: '330px' 
+                    }}
+                    src={`https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/`}
+                    seamless
+                    title={release.release_displayname || release.release}
+                  />
                 </div>
               )}
             </div>
-            
-            {/* Divider - only show between releases, not after the last one */}
-            {index < releases.length - 1 && (
-              <div className="h-px bg-secondary/20" />
-            )}
           </React.Fragment>
         ))}
       </div>

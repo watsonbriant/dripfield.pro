@@ -47,7 +47,7 @@ const PerformanceTooltip: React.FC<PerformanceTooltipProps> = ({
 
   return (
     <div 
-      className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] font-light text-xs tooltip-bubble border border-secondary"
+      className="fixed bg-canvas text-fifth px-1.5 py-1 rounded shadow-lg z-[9999] font-light text-[0.625rem] leading-[0.75rem] tooltip-bubble border border-fourth"
       style={{
         left: `${mousePosition.x + 10}px`,
         top: `${mousePosition.y - 10}px`,
@@ -68,15 +68,15 @@ const PerformanceTooltip: React.FC<PerformanceTooltipProps> = ({
           )}
         </div>
         <div className="hang">
-          <span className='font-medium'>{hoveredPerformance.fullData.show_group}</span>
+          <span className='font-medium pr-2'>{hoveredPerformance.fullData.show_group}</span>
           {hoveredPerformance.fullData.show_tour && ` (${hoveredPerformance.fullData.show_tour})`}
         </div>
         <div className="hang">
-          {hoveredPerformance.fullData.show_subvenue} 
+          <span className='pr-1'>{hoveredPerformance.fullData.show_subvenue}</span> 
           {hoveredPerformance.fullData.show_venue_location && ` (${hoveredPerformance.fullData.show_venue_location})`}
         </div>
         <div className="hang">
-          {hoveredPerformance.fullData.entry_placement}
+          <span className='pr-2'>{hoveredPerformance.fullData.entry_placement}</span>
           {hoveredPerformance.fullData.entry_length && ` (${formatLength(hoveredPerformance.fullData.entry_length)})`}
         </div>
         {hoveredPerformance.fullData.entry_coachnotes && (

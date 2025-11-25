@@ -1,5 +1,4 @@
 import React from 'react';
-import { ListMusic } from 'lucide-react';
 import { ShowTable } from './ShowTable';
 import { GameShow } from '../hooks/useGameShows';
 
@@ -19,13 +18,12 @@ export function ActiveLeagueSection({
   onViewSubmission 
 }: ActiveLeagueSectionProps) {
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
-      <div className="flex items-center gap-2 mb-4">
-        <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
-          <ListMusic className="w-5 h-5 mr-2" />
-          <span>Active League</span>
+    <div className="bg-primary border border-fourth">
+      <div className="bg-tertiary text-fifth px-2 py-0.5 flex gap-2 items-center">
+        <h2 className="text-sm font-semibold">
+          Active League
         </h2>
-        <span className="px-3 py-1 text-sm font-medium rounded-lg bg-secondary text-fifth border border-secondary">
+        <span className="text-fifth font-medium text-[0.625rem] bg-fourth text-white border border-fourth rounded px-1 whitespace-nowrap">
           {activeLeague}
         </span>
       </div>

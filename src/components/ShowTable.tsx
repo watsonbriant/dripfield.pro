@@ -32,20 +32,20 @@ export function ShowTable({ gameShows, user, onSelectSongs, onViewSubmission }: 
     <div className="overflow-x-auto">
       <table className="w-full border-collapse min-w-max">
         <thead>
-          <tr className="bg-canvas border-y border-secondary/10">
-            <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Date</th>
-            <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Venue</th>
-            <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Location</th>
-            <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Detail</th>
-            <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Status</th>
-            <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Players</th>
+          <tr className="bg-canvas border-y border-white/10">
+            <th className="px-2 py-0.5 text-center text-xs font-medium text-fifth whitespace-nowrap">Date</th>
+            <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth whitespace-nowrap">Venue</th>
+            <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth whitespace-nowrap">Location</th>
+            <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth whitespace-nowrap">Detail</th>
+            <th className="px-2 py-0.5 text-center text-xs font-medium text-fifth whitespace-nowrap">Status</th>
+            <th className="px-2 py-0.5 text-center text-xs font-medium text-fifth whitespace-nowrap">Players</th>
             {user && (
-              <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Score</th>
+              <th className="px-2 py-0.5 text-center text-xs font-medium text-fifth whitespace-nowrap">Score</th>
             )}
-            <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap">Picks</th>
+            <th className="px-2 py-0.5 text-center text-xs font-medium text-fifth whitespace-nowrap">Picks</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-black/5">
+        <tbody>
           {gameShows.map((show) => {
             // Sort shows to determine the next upcoming show
             const sortedShows = [...gameShows].sort((a, b) => {
@@ -75,14 +75,14 @@ export function ShowTable({ gameShows, user, onSelectSongs, onViewSubmission }: 
             return (
               <tr
                 key={show.show_id}
-                className={`${bgColor} hover:bg-tertiary/40 transition-colors text-xs`}
+                className="bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]"
               >
-                <td className="px-4 py-0.5 text-fifth whitespace-nowrap text-center">
-                  <span className="font-medium">
+                <td className="px-2 py-0.5 text-center whitespace-nowrap">
+                  <span className="font-medium text-fifth">
                     {user ? (
                       <Link
                         to={`/setlistgame/${show.show_id}`}
-                        className="hover:underline transition-colors table-link"
+                        className="transition-colors table-link"
                       >
                         {show.show_date
                           .split('-')
@@ -101,75 +101,75 @@ export function ShowTable({ gameShows, user, onSelectSongs, onViewSubmission }: 
                     )}
                   </span>
                 </td>
-                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                   {show.show_subvenue}
                 </td>
-                <td className="px-4 py-0.5 text-fifth/70 font-light whitespace-nowrap">
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                   {show.show_venue_location}
                 </td>
-                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                   {show.show_detail || ''}
                 </td>
-                <td className="px-4 py-0.5 whitespace-nowrap font-light text-center">
+                <td className="px-2 py-0.5 whitespace-nowrap font-medium text-center">
                   {show.show_scored ? (
-                    <span className="px-2 py-1 bg-blue-500/20 text-blue-700 rounded-md text-xs border border-blue-500/30">
+                    <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[0.625rem] border border-fourth/30">
                       Scored
                     </span>
                   ) : show.isSelectionClosed ? (
-                    <span className="px-2 py-1 bg-red-500/20 text-red-700 rounded-md text-xs border border-red-500/30">
+                    <span className="px-2 py-0.5 bg-red-600 text-white rounded text-[0.625rem] border border-fourth/30">
                       Closed
                     </span>
                   ) : show.isLessThan24Hours ? (
-                    <span className="px-2 py-1 bg-yellow-500/20 text-yellow-700 rounded-md text-xs border border-yellow-500/30">
+                    <span className="px-2 py-0.5 bg-yellow-600 text-white rounded text-[0.625rem] border border-fourth/30">
                       {show.timeRemaining} left
                     </span>
                   ) : (
-                    <span className="px-2 py-1 bg-green-500/20 text-green-700 rounded-md text-xs border border-green-500/30">
+                    <span className="px-2 py-0.5 bg-green-600 text-white rounded text-[0.625rem] border border-fourth/30">
                       {show.timeRemaining} left
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-0.5 font-light text-center">
-                  <span className="text-fifth/70 text-xs">
+                <td className="px-2 py-0.5 font-light text-center">
+                  <span className="text-fifth font-light">
                     {show.playerCount !== undefined ? show.playerCount : '-'}
                   </span>
                 </td>
                 {user && (
-                  <td className="px-4 py-0.5 text-center">
+                  <td className="px-2 py-0.5 text-center">
                     {user && show.score !== undefined && show.show_scored ? (
                       <span className="text-fourth font-medium">
                         {show.score}
                       </span>
                     ) : (
-                      <span className="text-gray-500"></span>
+                      <span className="text-fifth"></span>
                     )}
                   </td>
                 )}
-                <td className="px-4 py-0.5 text-center">
+                <td className="px-2 py-0.5 text-center">
                   {show.show_scored ? (
                     user && show.submission_id ? (
                       <button
-                        className="px-3 py-1 bg-blue-600 hover:bg-blue-600/70 text-primary text-xs font-medium rounded transition-colors inline-block border border-blue-800"
+                        className="px-2 py-0.5 bg-blue-600 hover:bg-blue-600/70 text-white text-[0.625rem] font-medium rounded transition-colors border border-fourth/30"
                         onClick={() => onViewSubmission(show)}
                       >
                         View Results
                       </button>
                     ) : (
-                      <span className="px-3 py-1 bg-gray-200 text-gray-500 text-xs font-medium rounded inline-block border border-gray-300">
+                      <span className="px-2 py-0.5 bg-gray-200 text-gray-500 text-[0.625rem] font-medium rounded inline-block border border-gray-300">
                         Scored
                       </span>
                     )
                   ) : show.isSelectionClosed ? (
                     user && show.submission_id ? (
                       <button
-                        className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-primary text-xs font-medium rounded transition-colors inline-block border border-gray-800"
+                        className="px-2 py-0.5 bg-gray-600 hover:bg-gray-700 text-white text-[0.625rem] font-medium rounded transition-colors inline-block border border-gray-800"
                         onClick={() => onViewSubmission(show)}
                       >
                         View Picks
                       </button>
                     ) : (
                       <button
-                        className="px-3 py-1 bg-gray-300 text-gray-500 text-xs font-medium rounded cursor-not-allowed inline-block border border-gray-300"
+                        className="px-2 py-0.5 bg-gray-300 text-gray-500 text-[0.625rem] font-medium rounded cursor-not-allowed inline-block border border-gray-300"
                         disabled
                       >
                         Closed
@@ -178,7 +178,7 @@ export function ShowTable({ gameShows, user, onSelectSongs, onViewSubmission }: 
                   ) : (
                     user ? (
                       <button
-                        className="px-3 py-1 bg-tertiary hover:bg-tertiary/70 text-fifth text-xs font-medium rounded transition-colors inline-block border border-secondary"
+                        className="px-2 py-0.5 bg-tertiary hover:bg-tertiary/70 text-fifth text-[0.625rem] font-medium rounded transition-colors inline-block border border-fourth"
                         onClick={() => onSelectSongs(show)}
                       >
                         {show.submission_id ? 'Edit Picks' : 'Make Picks'}

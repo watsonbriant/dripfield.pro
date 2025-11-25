@@ -193,7 +193,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
                   {/* Empty space above the filled portion - only render if not 100% height */}
                   {barHeight < 200 && (
                     <div 
-                      className="w-full border-l border-r border-t border-secondary rounded-t"
+                      className="w-full border-l border-r border-t border-fourth rounded-t"
                       style={{ 
                         height: `${200 - barHeight}px`,
                         backgroundColor: '#ededed' // bg-secondary color
@@ -203,7 +203,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
                   
                   {/* Filled portion with artwork - positioned on top */}
                   <div 
-                    className={`w-full border border-secondary relative overflow-hidden ${
+                    className={`w-full border border-fourth relative overflow-hidden ${
                       barHeight < 200 ? 'rounded-b' : 'rounded'
                     }`}
                     style={{ 
@@ -226,7 +226,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
                     {/* Content overlay */}
                     <div className="relative z-10 w-full h-full flex items-start justify-center">
                       {(hoveredCategory === category || (isMobile && selectedCategory === category)) && (
-                        <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
+                        <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-fourth px-1">{count}</div>
                       )}
                     </div>
                   </div>
@@ -247,7 +247,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
                         console.error(`Failed to load image for ${category}. URL was:`, artwork);
                         e.currentTarget.style.display = 'none';
                       }}
-                      className="h-8 w-8 object-cover rounded border border-secondary"
+                      className="h-8 w-8 object-cover rounded border border-fourth"
                     />
                   )}
                 </div>
@@ -261,7 +261,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
         {/* Tooltip underneath bar chart */}
         {(hoveredCategory || selectedCategory) && (
           <div className="mt-4 flex justify-center">
-            <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+            <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-fourth shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
               <div className="font-semibold text-sm mb-1">{hoveredCategory || selectedCategory}</div>
               {songSpreadData
                 .find(cat => cat.category === (hoveredCategory || selectedCategory))

@@ -10,13 +10,9 @@ export const ShowNotes: React.FC<ShowNotesProps> = ({ show }) => {
   if (!show.show_coachnotes) return null;
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <div className="flex justify-between items-center mb-1">
-        <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth">Show Notes</h2>
-        <Pen className="text-fifth w-[1rem] h-[1rem]" />
-      </div>
+    <div className="bg-tertiary/50 border border-fourth px-1.5 py-1 w-fit max-w-[800px]">
       <div 
-        className="text-fifth font-light text-xs hover:[&_a]:underline [&_a]:font-medium"
+        className="text-fifth font-light text-[0.625rem] leading-[0.75rem] hover:[&_a]:underline [&_a]:font-medium"
         dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}
       />
     </div>

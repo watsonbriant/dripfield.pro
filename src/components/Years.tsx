@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { YearSelector } from './YearSelector';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ShowsTable } from './ShowsTable';
 import { ToursSection } from './ToursSection';
 import { GroupFilters } from './GroupFilters';
@@ -37,6 +36,8 @@ export function Years() {
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [filteredShows, setFilteredShows] = useState<Show[]>([]);
   const [previousYearId, setPreviousYearId] = useState<string | null>(null);
+  const [tableMinWidth, setTableMinWidth] = useState<number | null>(null);
+  const tableRef = useRef<HTMLDivElement>(null);
 
   // Custom hooks for data fetching
   const { years, loading: yearsLoading } = useYearsDataForYears();
@@ -75,6 +76,20 @@ export function Years() {
       setFilteredShows(shows.filter(show => selectedGroups.includes(show.show_group)));
     }
   }, [shows, selectedGroups]);
+
+  // Measure and preserve table width when unfiltered data loads
+  useEffect(() => {
+    if (shows.length > 0 && selectedGroups.length === 0 && tableRef.current && !tableMinWidth && !loading) {
+      // Use requestAnimationFrame to ensure table is fully rendered
+      requestAnimationFrame(() => {
+        const table = tableRef.current?.querySelector('table');
+        if (table && table.offsetWidth > 0) {
+          const width = table.offsetWidth;
+          setTableMinWidth(width);
+        }
+      });
+    }
+  }, [shows, selectedGroups, tableMinWidth, loading]);
   
   // Initialize year from URL or redirect to 2025
   useEffect(() => {
@@ -109,51 +124,68 @@ export function Years() {
     if (year !== previousYearId) {
       setPreviousYearId(year || null);
       setSelectedGroups([]);
+      setTableMinWidth(null); // Reset table width when year changes
     }
   }, [year, previousYearId]);
 
   return (
-    <div className="max-w-[1280px] mx-auto">
-      <div className="flex justify-between mb-6">
-        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Years</h1>
-        <YearSelector 
-          years={years}
-          currentYear={currentYear}
-          onYearChange={handleYearChange}
-        />
+    <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+      {/* Mobile: Header and Year Buttons */}
+      <div className="lg:hidden mb-4">
+        <div className="flex flex-wrap gap-1">
+          {years.map((yearItem) => (
+            <Link
+              key={yearItem.year_id}
+              to={`/years/${yearItem.year_id}`}
+              onClick={() => handleYearChange(yearItem.year_id, yearItem.year)}
+              className={`px-1 py-0.5 border border-fourth rounded-md hover:bg-fourth hover:text-canvas transition-all duration-300 text-xs hover:drop-shadow-[2px_2px_0px_rgba(244,155,29,1)] font-medium ${
+                year === yearItem.year_id ? 'bg-fourth text-canvas' : 'text-fourth bg-primary'
+              }`}
+            >
+              {yearItem.year}
+            </Link>
+          ))}
+        </div>
       </div>
 
-      {/* Shows Table - Full Width */}
-      <div className="mb-8 overflow-x-auto">
-        <ShowsTable
-          shows={filteredShows}
-          tours={tours}
-          attendeeCounts={attendeeCounts}
-          showRatings={showRatings}
-          showsWithSetlists={showsWithSetlists}
-          showsWithReleases={showsWithReleases}
-          currentYear={currentYear}
-          selectedGroups={selectedGroups}
-          onClearFilters={clearGroupFilters}
-          loading={loading}
-        />
-      </div>
+      {/* Desktop Layout: Shows Table on left, Tours/Filters stacked on right */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Shows Table - Tour Dates Container */}
+        <div className="w-auto max-w-full lg:w-auto lg:min-w-0 min-w-0">
+          <div className="overflow-x-auto" ref={tableRef}>
+            <div style={tableMinWidth ? { minWidth: `${tableMinWidth}px` } : undefined}>
+              <ShowsTable
+                shows={filteredShows}
+                tours={tours}
+                attendeeCounts={attendeeCounts}
+                showRatings={showRatings}
+                showsWithSetlists={showsWithSetlists}
+                showsWithReleases={showsWithReleases}
+                currentYear={currentYear}
+                selectedGroups={selectedGroups}
+                onClearFilters={clearGroupFilters}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </div>
 
-      {/* Two Column Layout for Tours and Filters */}
-      <div className="grid grid-cols-1 lg:grid-cols-[35%_calc(65%-1rem)] gap-4">
-        <ToursSection 
-          tours={tours}
-          currentYear={currentYear}
-          loading={loading}
-        />
-        
-        <GroupFilters
-          groups={groups}
-          selectedGroups={selectedGroups}
-          onToggleGroup={toggleGroupSelection}
-          onClearFilters={clearGroupFilters}
-          loading={loading}
-        />
+        {/* Right Side: Tours and Filters stacked vertically */}
+        <div className="w-full lg:w-[250px] flex-shrink-0 space-y-4">
+          <ToursSection 
+            tours={tours}
+            currentYear={currentYear}
+            loading={loading}
+          />
+          
+          <GroupFilters
+            groups={groups}
+            selectedGroups={selectedGroups}
+            onToggleGroup={toggleGroupSelection}
+            onClearFilters={clearGroupFilters}
+            loading={loading}
+          />
+        </div>
       </div>
     </div>
   );

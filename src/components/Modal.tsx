@@ -19,19 +19,19 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = '450px' }: 
         onClick={onClose}
       />
       <div 
-        className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:w-full z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col"
+        className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:w-full z-50 bg-primary border border-fourth shadow-xl flex flex-col"
         style={{ maxWidth: maxWidth }}
       >
-        <div className="flex items-center justify-between p-4 border-b border-secondary">
-          <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">{title}</h2>
+        <div className="flex items-center justify-between p-1 border-b border-fourth bg-tertiary">
+          <h2 className="text-sm font-medium text-fifth inline-block pl-1">{title}</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
+            className="p-0.5 hover:bg-white border border-fourth bg-red-500 transition-colors"
           >
-            <X className="w-5 h-5 text-black" />
+            <X className="w-4 h-4 text-black" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-2">
           {children}
         </div>
       </div>

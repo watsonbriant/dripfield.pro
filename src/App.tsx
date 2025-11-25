@@ -35,10 +35,10 @@ import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 import { Joty } from './components/Joty';
 import sparklePic from './img/sparkle.png';
-import bgPic from './img/bg4.jpg';
+import bgTile from './img/bg_tile.jpg';
 
-import logo from './img/Logo2_Text.png';
-import logo2 from './img/Logo3_Text.jpg';
+import logo from './img/Logo7_Header.jpg';
+import logo2 from './img/Logo4_Text.jpg';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -231,99 +231,22 @@ function App() {
 
   return (
     <div 
-      className="flex flex-col md:h-screen bg-repeat bg-center" 
-      style={{ 
-        backgroundImage: `url(${bgPic})`,
-        backgroundSize: '1400px auto'
-      }}
+      className="flex flex-col md:h-screen lg:min-w-[1500px]"
     >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
-        <header className="z-20 bg-primary border-b border-secondary/15 px-6 md:sticky md:top-0">
-          <div className="flex items-center max-w-[1280px] mx-auto w-full">
-          <button
-            onClick={handleLogoClick}
-            className="focus:outline-none mr-4 relative iris-effect rounded-lg"
-          >
-            <img 
-              src={logo} 
-              alt="Dripfield.pro Logo" 
-              className="h-12 w-auto"
-            />
-            <img 
-              src={logo2} 
-              alt="Dripfield.pro Logo" 
-              className="h-12 w-auto absolute top-0 left-0 iris-reveal"
-            />
-            {/* Sparkle effect for logo - only on desktop */}
-            {logoSparkle.show && !isMobile && (
-              <img 
-                src={sparklePic}
-                alt=""
-                className="sparkle absolute pointer-events-none"
-                style={{
-                  left: `${logoSparkle.x - 10}px`,
-                  top: `${logoSparkle.y - 10}px`,
-                }}
-              />
-            )}
-          </button>
-            <div className="flex-1 flex justify-center">
-              <Sidebar 
-                onNavigate={() => setIsSidebarOpen(false)}
-                openShowModal={openShowModal}
-                isAdmin={isAdmin}
-                isOpen={true}
-                onClose={() => {}}
-                isMobile={false}
-                showAllOnSameLine={true} // New prop to control layout
-              />
-            </div>
-            <div className="ml-4 flex items-center flex-shrink-0">
-              <UserMenu />
-            </div>
-          </div>
-        </header>
-      </div>
-
-      {/* Content container */}
-      <div className="flex-1 flex md:overflow-hidden">
-        {/* Overlay - make sure it's behind the sidebar */}
-        {isSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10 md:hidden"
-            onClick={() => setIsSidebarOpen(false)}
-          />
-        )}
-
-        {/* Mobile Sidebar - ensure it's above the overlay */}
-        <div className={`${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:hidden fixed w-64 h-[calc(100%)] top-[70px] z-30 transition-transform duration-300 ease-in-out`}>
+        <header className="z-20 bg-canvas border-b border-secondary/15 md:sticky md:top-0">
           <Sidebar 
-            onNavigate={() => setIsSidebarOpen(false)} 
+            onNavigate={() => setIsSidebarOpen(false)}
             openShowModal={openShowModal}
             isAdmin={isAdmin}
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            isMobile={true}
-          />
-        </div>
-
-        {/* Main content wrapper */}
-        <div className="flex-1 flex flex-col overflow-auto">
-          {/* Mobile-only header */}
-          <header className="z-20 bg-primary border-b border-white/10 p-4 lg:hidden">
-            <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full">
-              <button
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute left-0 p-2 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-fifth"
-              >
-                <Menu className="w-6 h-6" />
-              </button>
+            onClose={() => {}}
+            isMobile={false}
+            showAllOnSameLine={true}
+            logoElement={
               <button
                 onClick={handleLogoClick}
-                className="focus:outline-none mr-4 relative iris-effect rounded-lg"
+                className="focus:outline-none relative iris-effect rounded-lg p-0 h-12 leading-none block"
               >
                 <img 
                   src={logo} 
@@ -335,6 +258,81 @@ function App() {
                   alt="Dripfield.pro Logo" 
                   className="h-12 w-auto absolute top-0 left-0 iris-reveal"
                 />
+                {/* Sparkle effect for logo - only on desktop */}
+                {logoSparkle.show && !isMobile && (
+                  <img 
+                    src={sparklePic}
+                    alt=""
+                    className="sparkle absolute pointer-events-none"
+                    style={{
+                      left: `${logoSparkle.x - 10}px`,
+                      top: `${logoSparkle.y - 10}px`,
+                    }}
+                  />
+                )}
+              </button>
+            }
+            rightSideElements={<UserMenu />}
+          />
+        </header>
+      </div>
+
+      {/* Content container */}
+      <div className="flex-1 flex md:overflow-x-auto md:overflow-y-hidden">
+        {/* Overlay - make sure it's behind the sidebar */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Mobile Sidebar - ensure it's above the overlay */}
+        <div className={`${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:hidden fixed w-64 h-[calc(100%)] top-[50px] z-[30000] transition-transform duration-300 ease-in-out`}>
+          <Sidebar 
+            onNavigate={() => setIsSidebarOpen(false)} 
+            openShowModal={openShowModal}
+            isAdmin={isAdmin}
+            onClose={() => setIsSidebarOpen(false)}
+            isMobile={true}
+          />
+        </div>
+
+        {/* Main content wrapper */}
+        <div 
+          className="flex-1 flex flex-col overflow-auto relative"
+          style={{
+            backgroundImage: `url(${bgTile})`,
+            backgroundRepeat: 'repeat',
+            backgroundAttachment: 'fixed',
+            backgroundPosition: '0 0'
+          }}
+        >
+          {/* Mobile-only header */}
+          <header className="z-20 bg-canvas border-b border-fourth p-2 lg:hidden">
+            <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full">
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="absolute left-0 p-1 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-fifth"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <button
+                onClick={handleLogoClick}
+                className="focus:outline-none mr-4 relative iris-effect rounded-lg"
+              >
+                <img 
+                  src={logo} 
+                  alt="Dripfield.pro Logo" 
+                  className="h-10 w-auto"
+                />
+                <img 
+                  src={logo2} 
+                  alt="Dripfield.pro Logo" 
+                  className="h-10 w-auto absolute top-0 left-0 iris-reveal"
+                />
               </button>
               <div className="absolute right-0 flex items-center">
                 <UserMenu />
@@ -343,7 +341,7 @@ function App() {
           </header>
 
           {/* Main content */}
-          <main className="flex-1 p-4 md:p-8 w-full">
+          <main className="flex-1 p-4 md:p-4 w-full">
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Home />} />
@@ -397,8 +395,8 @@ function App() {
           </main>
           
           {/* Footer */}
-          <footer className="p-4 md:p-8 pt-0 text-center text-fifth/70 text-[0.625rem]">
-            <div className="bg-primary max-w-[1280px] mx-auto p-2 rounded mt-8 md:mt-0 border border-secondary">
+          <footer className="p-4 md:p-4 pt-0 text-center text-fifth/70 text-[0.625rem]">
+            <div className="bg-primary lg:max-w-none max-w-[1280px] lg:mx-0 mx-auto p-2 mt-8 md:mt-0 border border-fourth">
               <p>All statistical information and computations copyright ©2025, Brian Watson and Dripfield.pro. No portion of this website's content may be reproduced without permission. Song lyrics and titles are the copyright of No Coincidence Records, Factory Underground Records, and their respective publishers, including Lantern Collective, Master Cat Music, Gong Gang, Potato Party, Space Panther Music, and Spun Haus Productions. Show posters and artwork are the copyright of their respective artists.</p>
             </div>
           </footer>
@@ -409,14 +407,14 @@ function App() {
       {isShowModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsShowModalOpen(false)}></div>
-          <div className="relative bg-primary border border-secondary rounded-lg p-4 w-full max-w-md mx-4">
+          <div className="relative bg-primary border border-fourth rounded-lg p-4 w-full max-w-md mx-4">
             <button
               onClick={() => setIsShowModalOpen(false)}
               className="absolute top-4 right-4 rounded-md text-fifth hover:text-tertiary focus:outline-none"
             >
               <X className="w-6 h-6" />
             </button>
-            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-4">Find a Show or User</h2>
+            <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-4">Find a Show or User</h2>
             
             {/* Show search form */}
             <form onSubmit={handleShowSearch} className="space-y-4 mb-4">
@@ -429,14 +427,14 @@ function App() {
                   id="showId"
                   value={showId}
                   onChange={(e) => setShowId(e.target.value)}
-                  className="w-full px-2 py-1.5 bg-canvas border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary font-light text-sm"
+                  className="w-full px-2 py-1.5 bg-canvas border border-fourth rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary font-light text-sm"
                   placeholder="Enter Show ID"
                   autoFocus
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-secondary"
+                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-fourth"
               >
                 Go to Show
               </button>
@@ -453,13 +451,13 @@ function App() {
                   id="userId"
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  className="w-full px-2 py-1.5 bg-canvas border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary font-light text-sm"
+                  className="w-full px-2 py-1.5 bg-canvas border border-fourth rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary font-light text-sm"
                   placeholder="Enter User ID"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-secondary"
+                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-fourth"
               >
                 Go to User
               </button>

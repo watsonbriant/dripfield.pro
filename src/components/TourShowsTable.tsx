@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Check, ArrowUp, ArrowDown, FileMusic, Users, Star, AudioLines } from 'lucide-react';
 import { Show } from '../types/tourTypes';
 import { getRarityColor, getGapColor } from '../utils/tourUtils';
@@ -17,7 +17,6 @@ interface TourShowsTableProps {
   attendeeCounts: Record<string, number>;
   showsWithSetlists: Set<string>;
   showsWithReleases: Set<string>;
-  navigateToVenue: (show: Show) => void;
 }
 
 export function TourShowsTable({
@@ -30,10 +29,8 @@ export function TourShowsTable({
   showRatings,
   attendeeCounts,
   showsWithSetlists,
-  showsWithReleases,
-  navigateToVenue
+  showsWithReleases
 }: TourShowsTableProps) {
-  const navigate = useNavigate();
 
   const getSortIcon = (column: string) => {
     if (sortColumn !== column) {
@@ -48,7 +45,7 @@ export function TourShowsTable({
 
   const columns = [
     { key: 'show_date', label: 'Date' },
-    ...(user ? [{ key: 'attended', label: <Check size={16} className="text-fifth" strokeWidth={4} /> }] : []),
+    ...(user ? [{ key: 'attended', label: <Check size={12} className="text-fifth" strokeWidth={4} /> }] : []),
     { key: 'show_group', label: 'Group' },
     { key: 'show_length', label: 'Length' },
     { key: 'show_rarity', label: 'Rarity' },
@@ -60,8 +57,8 @@ export function TourShowsTable({
       key: 'setlist', 
       label: (
         <div className="flex justify-center items-center">
-          <div className="text-primary bg-[#006400] rounded p-1">
-            <FileMusic size={16} strokeWidth={2} />
+          <div className="text-white bg-[#006400] rounded p-0.5">
+            <FileMusic size={12} strokeWidth={2} />
           </div>
         </div>
       )
@@ -70,25 +67,25 @@ export function TourShowsTable({
       key: 'releases', 
       label: (
         <div className="flex justify-center items-center">
-          <div className="text-primary bg-[#7c2128] rounded p-1">
-            <AudioLines size={16} strokeWidth={2} />
+          <div className="text-white bg-[#7c2128] rounded p-0.5">
+            <AudioLines size={12} strokeWidth={2} />
           </div>
         </div>
       )
     },
-    { key: 'attendees', label: <Users size={16} className="text-fifth" strokeWidth={2} /> },
-    { key: 'wl_link', label: <img src={wlImage} alt="WysteriaLane" className="w-4 h-4" /> },
+    { key: 'attendees', label: <Users size={12} className="text-fifth" strokeWidth={2} /> },
+    { key: 'wl_link', label: <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" /> },
     { key: 'show_detail', label: 'Detail' }
   ];
 
   return (
-    <div className="mt-6">
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+    <div>
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
+          <h2 className="text-sm font-semibold">
             {currentTour}
           </h2>
-          <span className="text-fifth font-semibold text-lg whitespace-nowrap pl-4">
+          <span className="text-fifth font-semibold text-sm whitespace-nowrap">
             {shows.length} {shows.length === 1 ? 'Show' : 'Shows'}
           </span>
         </div>
@@ -102,28 +99,26 @@ export function TourShowsTable({
                     key={key}
                     onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? onSort(key) : null}
                     className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'rating' || key === 'attendees' ? 'text-center' : 'text-left'}
-                      text-s font-semibold text-fifth whitespace-nowrap 
-                      ${key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? 'px-2 py-1 cursor-pointer hover:bg-black/10' : key === 'setlist' || key === 'releases' ? 'w-8 px-1 py-0.5 text-center' : 'w-8 px-1 py-1 text-center'}`}
+                      text-sm font-medium text-fifth whitespace-nowrap 
+                      ${key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? 'px-2 cursor-pointer hover:bg-black/10' : key === 'setlist' || key === 'releases' ? 'w-8 px-1 text-center' : 'w-8 px-1 text-center'}`}
                   >
                     <div className={`flex items-center ${key === 'show_length' || key === 'attended' || key === 'show_rarity' || key === 'show_gap' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'users' || key === 'releases' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
                       {label}
-                      {getSortIcon(key)}
                     </div>
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody>
               {sortedShows.map((show, index) => (
                 <tr
                   key={show.show_id}
-                  className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                    } hover:bg-tertiary/40 transition-colors text-xs`}
+                  className={`bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                 >
                   <td className="px-2 py-0.5 text-center whitespace-nowrap">
                     <span className="font-medium text-fifth">
-                      <button
-                        onClick={() => navigate(`/setlist/${show.show_id}`)}
+                      <Link
+                        to={`/setlist/${show.show_id}`}
                         className="transition-colors table-link"
                       >
                         {show.show_date
@@ -131,15 +126,15 @@ export function TourShowsTable({
                           .slice(1)
                           .concat(show.show_date.substring(2, 4))
                           .join('.')}
-                      </button>
+                      </Link>
                     </span>
                   </td>
                   {user && (
-                    <td className="w-8 text-center">
+                    <td className="text-center">
                       {show.attended && (
                         <div className="flex justify-center items-center h-full">
                           <div className="rounded-full p-0.5 bg-green-600">
-                            <Check size={12} className="text-white" strokeWidth={3} />
+                            <Check size={10} className="text-white" strokeWidth={3} />
                           </div>
                         </div>
                       )}
@@ -152,7 +147,7 @@ export function TourShowsTable({
                   <td className="px-2 py-0 whitespace-nowrap text-center">
                     {show.show_rarity ? (
                       <span
-                        className="text-white font-normal px-1.5 py-0.5 rounded-md inline-block"
+                        className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
                         style={{
                           backgroundColor: getRarityColor(show.show_rarity)
                         }}
@@ -166,7 +161,7 @@ export function TourShowsTable({
                   <td className="px-2 py-0 whitespace-nowrap text-center">
                     {show.show_gap ? (
                       <span
-                        className="text-white font-normal px-1.5 py-0.5 rounded-md inline-block"
+                        className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
                         style={{
                           backgroundColor: getGapColor(show.show_gap)
                         }}
@@ -178,19 +173,23 @@ export function TourShowsTable({
                     )}
                   </td>
                   <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
-                    <button
-                      onClick={() => navigateToVenue(show)}
+                    {show.venue_id ? (
+                      <Link
+                        to={`/venue/${show.venue_id}`}
                       className="hover:underline transition-colors"
                     >
                       {show.show_subvenue}
-                    </button>
+                      </Link>
+                    ) : (
+                      <span>{show.show_subvenue}</span>
+                    )}
                   </td>
                   <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                     {show.show_venue_location}
                   </td>
-                  <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
+                  <td className="px-2 py-0.5 text-fifth whitespace-nowrap text-center">
                     <div className="relative flex items-center justify-center group">
-                      <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
+                      <div className={`flex items-center justify-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-5' : ''}`}>
                         {[1, 2, 3, 4, 5].map((starNumber) => {
                           const rating = showRatings[show.show_id] || 0;
                           const fillPercentage = Math.min(Math.max(rating - starNumber + 1, 0), 1);
@@ -198,8 +197,8 @@ export function TourShowsTable({
                           return (
                             <div key={starNumber} className="relative">
                               <Star
-                                size={16}
-                                className="text-secondary"
+                                size={12}
+                                className="text-fourth"
                                 fill="none"
                                 stroke="currentColor"
                               />
@@ -208,8 +207,8 @@ export function TourShowsTable({
                                 style={{ width: `${fillPercentage * 100}%` }}
                               >
                                 <Star
-                                  size={16}
-                                  className="text-tertiary"
+                                  size={12}
+                                  className="text-fourth"
                                   fill="currentColor"
                                   stroke="currentColor"
                                 />
@@ -225,45 +224,44 @@ export function TourShowsTable({
                       )}
                     </div>
                   </td>
-                  <td className="w-8 text-center align-middle">
+                  <td className="text-center align-middle">
                     {showsWithSetlists.has(show.show_id) && (
                       <div className="flex justify-center items-center h-full">
-                        <button
-                          onClick={() => {
-                            navigate(`/setlist/${show.show_id}`, { state: { openChangesModal: true } });
-                          }}
-                          className="text-[#006400] hover:text-primary hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                        <Link
+                          to={`/setlist/${show.show_id}`}
+                          state={{ openChangesModal: true }}
+                          className="text-[#006400] hover:text-white hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
                         >
-                          <FileMusic size={14.5} strokeWidth={2} />
-                        </button>
+                          <FileMusic size={12} strokeWidth={2} />
+                        </Link>
                       </div>
                     )}
                   </td>
-                  <td className="w-8 text-center align-middle">
+                  <td className="text-center align-middle">
                     {showsWithReleases.has(show.show_id) && (
                       <div className="flex justify-center items-center h-full">
-                        <button
-                          onClick={() => navigate(`/setlist/${show.show_id}`)}
-                          className="text-[#7c2128] hover:text-primary hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px]"
+                        <Link
+                          to={`/setlist/${show.show_id}`}
+                          className="text-[#7c2128] hover:text-white hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
                         >
-                          <AudioLines size={14.5} strokeWidth={2} />
-                        </button>
+                          <AudioLines size={12} strokeWidth={2} />
+                        </Link>
                       </div>
                     )}
                   </td>
-                  <td className="w-8 text-center text-fifth">
-                    <span className="text-xs font-medium">
-                      {attendeeCounts[show.show_id] || 0}
-                    </span>
+                  <td className="text-center text-fifth">
+                    {attendeeCounts[show.show_id] > 0 && (
+                      <span className="text-[0.625rem] font-medium">{attendeeCounts[show.show_id]}</span>
+                    )}
                   </td>
-                  <td className="w-8 text-center align-middle">
+                  <td className="text-center align-middle">
                     {show.show_wl_link && (
                       <div className="flex justify-center items-center h-full">
                         <button
-                          onClick={() => window.open(show.show_wl_link, '_blank')}
+                          onClick={() => show.show_wl_link && window.open(show.show_wl_link, '_blank')}
                           className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
                         >
-                          <img src={wlImage} alt="WysteriaLane" className="w-[14.5px] h-[14.5px]" />
+                          <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
                         </button>
                       </div>
                     )}

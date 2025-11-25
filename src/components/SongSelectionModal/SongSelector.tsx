@@ -37,7 +37,7 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
           <select
             value={selectedSong}
             onChange={(e) => setSelectedSong(e.target.value)}
-            className="w-full px-2 py-2 bg-canvas border border-secondary rounded-md text-fifth font-medium focus:outline-none focus:ring-2 focus:ring-tertiary appearance-none"
+            className="w-full px-2 py-0.5 bg-canvas border border-fourth text-sm text-fifth font-medium focus:outline-none focus:ring-2 focus:ring-tertiary appearance-none"
           >
             <option value="">Select a song...</option>
             
@@ -67,7 +67,7 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
         <button
           onClick={onAddSong}
           disabled={!selectedSong}
-          className="px-4 py-2 bg-tertiary hover:bg-tertiary/40 text-fifth font-semibold rounded-md transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2 border border-secondary"
+          className="px-2 py-0.5 bg-tertiary hover:bg-fourth/40 text-fifth font-semibold text-sm transition-colors disabled:bg-tertiary/50 disabled:cursor-not-allowed flex items-center gap-2 border border-fourth"
         >
           <Plus className="w-4 h-4" />
           <span className="md:inline hidden">Add Song</span>
@@ -76,12 +76,12 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
       </div>
       
       {/* Break controls and special song buttons */}
-      <div className="flex flex-wrap gap-3 justify-between">
-        <div className="flex gap-3">
+      <div className="flex flex-wrap gap-1 justify-between">
+        <div className="flex gap-1">
           <button
             onClick={onAddSetBreak}
             disabled={!canAddSetBreak}
-            className="px-3 py-1 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-fifth font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-fifth/50 disabled:cursor-not-allowed text-sm border border-secondary"
+            className="px-2 py-0.5 bg-[#f9ae37] hover:bg-[#f9ae37]/80 text-fifth font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-fifth/50 disabled:cursor-not-allowed text-xs border border-fourth"
           >
             Add Set Break
           </button>
@@ -89,16 +89,16 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
           <button
             onClick={onAddEncoreBreak}
             disabled={!canAddEncoreBreak}
-            className="px-3 py-1 bg-red-400 hover:bg-red-400/80 text-fifth font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-fifth/50 disabled:cursor-not-allowed text-sm border border-secondary"
+            className="px-2 py-0.5 bg-red-400 hover:bg-red-400/80 text-fifth font-medium rounded-md transition-colors disabled:bg-canvas/50 disabled:text-fifth/50 disabled:cursor-not-allowed text-xs border border-fourth"
           >
             Add Encore Break
           </button>
         </div>
         
-        <div className="flex gap-3">
+        <div className="flex gap-1">
           <button
             onClick={onAddNewOriginalSong}
-            className="px-3 py-1 bg-green-400 hover:bg-green-400/80 text-fifth font-medium rounded-md transition-colors border border-secondary text-sm flex items-center gap-1"
+            className="px-2 py-0.5 bg-green-400 hover:bg-green-400/80 text-fifth font-medium rounded-md transition-colors border border-fourth text-xs flex items-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
             <span className="md:inline hidden">New Original Song</span>
@@ -107,7 +107,7 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
           
           <button
             onClick={onAddNewCoverSong}
-            className="px-3 py-1 bg-blue-400 hover:bg-blue-400/80 text-fifth font-medium rounded-md transition-colors border border-secondary text-sm flex items-center gap-1"
+            className="px-2 py-0.5 bg-blue-400 hover:bg-blue-400/80 text-fifth font-medium rounded-md transition-colors border border-fourth text-xs flex items-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
             <span className="md:inline hidden">New Cover Song</span>
@@ -117,7 +117,7 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
       </div>
       
       {error && (
-        <div className="bg-red-500/20 text-red-700 px-4 py-3 rounded-lg text-sm border border-red-500/30">
+        <div className="bg-red-500 text-white px-2 py-1 text-xs font-medium border border-fourth/30">
           {error}
         </div>
       )}

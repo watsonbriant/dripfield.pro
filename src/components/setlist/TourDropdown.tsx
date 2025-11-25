@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, MapPin } from 'lucide-react';
-import { Modal } from '../Modal';
+import { ChevronDown } from 'lucide-react';
 
 interface Tour {
   tour: string;
@@ -20,13 +19,20 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
   onTourSelect
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownListRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(target) &&
+        dropdownListRef.current &&
+        !dropdownListRef.current.contains(target)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -35,16 +41,27 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Effect for auto-scrolling in the Tours dropdown
+  // Effect for auto-scrolling in the Tours dropdown and positioning
   useEffect(() => {
-    // Scroll to the current tour when dropdown opens
-    if (isDropdownOpen && dropdownListRef.current && currentTour) {
-      // Find the button for the current tour
-      const buttons = dropdownListRef.current.querySelectorAll('button');
-      for (const button of buttons) {
-        if (button.textContent?.trim() === currentTour) {
-          button.scrollIntoView({ block: 'center' });
-          break;
+    if (isDropdownOpen) {
+      // Calculate position for fixed positioning
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 8, // 8px for mt-2 equivalent
+          left: rect.left + window.scrollX
+        });
+      }
+      
+      // Scroll to the current tour when dropdown opens
+      if (dropdownListRef.current && currentTour) {
+        // Find the button for the current tour
+        const buttons = dropdownListRef.current.querySelectorAll('button');
+        for (const button of buttons) {
+          if (button.textContent?.trim() === currentTour) {
+            button.scrollIntoView({ block: 'center' });
+            break;
+          }
         }
       }
     }
@@ -53,61 +70,33 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
   const handleTourSelect = (tourId: string) => {
     onTourSelect(tourId);
     setIsDropdownOpen(false);
-    setIsModalOpen(false);
   };
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Mobile Modal */}
-      <div className="md:hidden">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
-        >
-          <MapPin className="w-6 h-6" />
-        </button>
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title="Select Tour"
-        >
-          <div className="space-y-0">
-            <div className="divide-y divide-black/10">
-              {tours.map((tour) => (
-                <button
-                  key={tour.tour}
-                  onClick={() => handleTourSelect(tour.tour_id)}
-                  className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
-                >
-                  <span className="text-fifth">{tour.tour}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </Modal>
-      </div>
-
-      {/* Desktop Dropdown */}
-      <div className="hidden md:block">
-        <button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
-        >
-          Tours
-          <ChevronDown className="w-4 h-4" />
-        </button>
-      </div>
+      <button
+        ref={buttonRef}
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        className="flex items-center gap-2 bg-fourth text-white pl-2 pr-1 py-0.5 border border-fourth hover:bg-tertiary hover:text-fifth transition-colors text-sm font-semibold -mx-[1px]"
+      >
+        {currentTour || 'Tours'}
+        <ChevronDown className="w-4 h-4" />
+      </button>
 
       {isDropdownOpen && (
         <div 
           ref={dropdownListRef}
-          className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
+          className="fixed bg-canvas border border-fourth shadow-lg z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 gap-0"
+          style={{
+            top: `${dropdownPosition.top}px`,
+            left: `${dropdownPosition.left}px`
+          }}
         >
           {tours.map((tour) => (
             <button
               key={tour.tour}
               onClick={() => handleTourSelect(tour.tour_id)}
-              className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
+              className={`w-full text-left px-2 py-1 text-xs leading-[0.75rem] font-medium hover:bg-black/10 transition-colors ${
                 currentTour === tour.tour ? 'bg-tertiary' : ''
               }`}
             >

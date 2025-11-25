@@ -204,6 +204,11 @@ button:not(.no-underline):not([class*="bg-"]).table-link:hover {
 
 html {
   font-size: 14px;
+  overflow-x: auto;
+}
+
+body {
+  overflow-x: auto;
 }
 
 @media (min-width: 768px) {

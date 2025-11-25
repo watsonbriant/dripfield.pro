@@ -22,22 +22,22 @@ export function GroupFilters({
   loading 
 }: GroupFiltersProps) {
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 w-full">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+    <div className="bg-primary border border-fourth pb-0.5 w-full">
+      <div className="bg-tertiary text-fifth px-2 py-0.5 mb-0.5 flex justify-between items-center">
+        <h2 className="text-sm font-semibold">
           Filter by Group
         </h2>
         {selectedGroups.length > 0 && (
           <button
             onClick={onClearFilters}
-            className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 rounded-lg border border-secondary hover:bg-red-600 transition-colors text-xs font-semibold"
+            className="flex items-center gap-2 bg-white text-red-500 px-1 border border-fourth hover:bg-red-500 hover:text-white transition-colors text-xs font-medium"
           >
             <span>Clear</span>
             <Filter className="w-3 h-3" />
           </button>
         )}
       </div>
-      <div className="space-y-1.5">
+      <div>
         {loading ? (
           <div className="text-center py-4">
             <div className="flex items-center justify-center space-x-2">
@@ -49,19 +49,20 @@ export function GroupFilters({
         ) : groups.length === 0 ? (
           <p className="text-fifth text-xs text-center py-2">No groups found</p>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="space-y-0.5">
             {groups.map((groupData) => (
-              <button
-                key={groupData.group}
-                onClick={() => onToggleGroup(groupData.group)}
-                className={`px-1.5 py-0.5 rounded text-xs font-medium transition-colors ${
-                  selectedGroups.includes(groupData.group)
-                    ? 'bg-tertiary text-fifth hover:underline border border-secondary'
-                    : 'bg-canvas text-fifth hover:underline border border-secondary'
-                }`}
-              >
-                {groupData.group} <span className="font-light">({groupData.count})</span>
-              </button>
+              <div key={groupData.group} className="text-fifth text-xs flex items-center">
+                <div className="flex-1 text-left leading-tight ml-2 font-light">
+                  <button
+                    onClick={() => onToggleGroup(groupData.group)}
+                    className="font-medium hover:underline transition-colors"
+                  >
+                    {groupData.group}
+                  </button>
+                  {' '}
+                  <span className="font-light">({groupData.count})</span>
+                </div>
+              </div>
             ))}
           </div>
         )}

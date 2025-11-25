@@ -28,7 +28,7 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
             name="entry_short"
             value={editedEntry?.entry_short === null ? "--" : editedEntry?.entry_short || "--"}
             onChange={handleInputChange}
-            className="font-light w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="font-light w-full px-2 py-2 rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
           >
             <option value="--">--</option>
             {shorts.map((short) => (
@@ -42,7 +42,7 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
             type="text"
             value={editedEntry?.entry_short || ''}
             readOnly
-            className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="w-full px-2 py-2 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
           />
         )}
       </div>
@@ -55,7 +55,7 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
             name="entry_segue"
             value={editedEntry?.entry_segue === null ? "--" : editedEntry?.entry_segue || "--"}
             onChange={handleInputChange}
-            className="font-light w-full px-2 py-2 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="font-light w-full px-2 py-2 rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
           >
             <option value="--">--</option>
             {segues.map((segue) => (
@@ -69,7 +69,7 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
             type="text"
             value={editedEntry?.entry_segue || ''}
             readOnly
-            className="w-full px-2 py-2 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="w-full px-2 py-2 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
           />
         )}
       </div>
@@ -84,7 +84,7 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
           onChange={handleInputChange}
           readOnly={!isEditing && !isNewEntry}
           placeholder="00:00:00"
-          className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+          className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
         />
       </div>
     </>

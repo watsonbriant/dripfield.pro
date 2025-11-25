@@ -23,17 +23,17 @@ const AttendShowManager: React.FC<AttendShowManagerProps> = ({ onClose }) => {
   const filteredShows = getFilteredAndSortedShows(shows, searchQuery, sortColumn, sortDirection);
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 max-w-[1280px] mx-auto">
+    <div className="bg-primary border border-fourth rounded-lg p-3 max-w-[1280px] mx-auto">
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-2">
         <div className="flex items-center gap-3 mb-2 lg:mb-0">
           <button
             onClick={onClose}
-            className="p-1.5 text-fifth bg-tertiary hover:bg-tertiary/70 transition-colors border border-secondary rounded-lg"
+            className="p-1.5 text-fifth bg-tertiary hover:bg-tertiary/70 transition-colors border border-fourth rounded-lg"
             aria-label="Back to attended shows"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Manage Attended Shows</h2>
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Manage Attended Shows</h2>
         </div>
         
         <div className="flex gap-3 mt-1 lg:mt-0 w-full lg:w-auto lg:justify-end">

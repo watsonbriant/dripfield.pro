@@ -31,7 +31,7 @@ export const SetlistTable: React.FC<SetlistTableProps> = ({
             <tr 
               key={entry.entry_id} 
               className={`${
-                index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
+                index % 2 === 0 ? 'bg-primary' : 'bg-primary'
               } hover:bg-tertiary/40 transition-colors text-xs cursor-pointer`}
               onClick={() => onEntrySelect(entry)}
             >

@@ -27,20 +27,20 @@ export default function TimelineView({
   const navigate = useNavigate();
 
   return (
-    <div className="px-0">
-      <div className="overflow-x-auto flex justify-center">
+    <div className="p-1">
+      <div className="overflow-x-auto flex justify-start">
         <div className="flex flex-row min-w-max">
           {years.map((year, index) => (
             <div 
               key={year} 
-              className={`w-16 px-1 ${
-                index !== years.length - 1 ? 'border-r border-secondary' : ''
+              className={`w-14 px-1 ${
+                index !== years.length - 1 ? 'border-r border-fourth/30' : ''
               }`}
             >
-              <div className="text-fifth text-sm font-medium mb-2 text-center bg-secondary/50 rounded-lg">
+              <div className="text-fifth text-xs font-medium mb-1 text-center bg-secondary/30 rounded">
                 {year}
               </div>
-              <div className="space-y-1">
+              <div className="space-y-[1px]">
                 {performancesByYear[year]?.sort((a, b) => {
                   return a.formattedDate.localeCompare(b.formattedDate);
                 }).map((perf, index) => {
@@ -57,8 +57,8 @@ export default function TimelineView({
                       style={{
                         backgroundColor: isHighlightedForSong ? '#8ec1b6' : 'transparent'
                       }}
-                      className={`w-full text-xs ${isHighlightedForSong ? 'text-fifth' : 'text-fifth'} hover:underline transition-colors text-center block px-0.5 font-medium rounded ${
-                        isHighlighted ? 'border border-fifth/50' : ''
+                      className={`w-full text-[0.625rem] ${isHighlightedForSong ? 'text-fifth' : 'text-fifth'} hover:underline transition-colors text-center block px-0.5 font-medium rounded ${
+                        isHighlighted ? '' : ''
                       } ${
                         (selectedGroup && !isHighlighted) || (selectedSong && !isHighlightedForSong) ? 'opacity-10' : 'opacity-100'
                       }`}

@@ -54,7 +54,7 @@ export const TooltipContainer: React.FC<TooltipContainerProps> = React.memo(({
   const tooltipContent = showTooltip ? createPortal(
     <div 
       ref={tooltipRef}
-      className="bg-tertiary border border-secondary text-fifth font-medium px-3 py-1.5 rounded shadow-lg text-xs whitespace-nowrap pointer-events-none"
+      className="bg-canvas border border-fourth text-fifth font-medium px-2 py-1 rounded shadow-lg text-[0.625rem] leading-[0.75rem] whitespace-nowrap pointer-events-none"
       style={{
         position: 'fixed',
         left: `${tooltipPosition.x}px`,
@@ -73,15 +73,15 @@ export const TooltipContainer: React.FC<TooltipContainerProps> = React.memo(({
   return (
     <>
       <div 
-        className="flex items-center justify-center w-8 h-6 cursor-pointer relative"
+        className="flex items-center justify-center cursor-pointer relative"
         ref={containerRef}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
         {result === 'not_played' ? (
-          <X className="w-6 h-6 text-primary p-0.5 bg-red-600 rounded-lg" />
+          <X className="w-5 h-5 text-white p-0.5 bg-red-600 rounded" />
         ) : (
-          <span className="font-medium text-primary bg-green-600 rounded-lg px-1">
+          <span className="font-medium text-xs text-white bg-green-600 rounded px-1 py-0.5">
             +{score}
           </span>
         )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface JiveCompleteBadgeProps {
@@ -18,27 +18,29 @@ export function JiveCompleteBadge({ showJiveComplete }: JiveCompleteBadgeProps) 
     };
 
     return (
-        <div
-            className="bg-yellow-500 border border-secondary rounded-lg p-3 cursor-pointer hover:bg-yellow-400 transition-colors mb-4"
-            onClick={handleClick}
-        >
-            <div className="flex items-center gap-3">
-                <img
-                    src="https://f4.bcbits.com/img/a2223100564_16.jpg"
-                    alt="Jive Suite"
-                    className="w-8 h-8 rounded object-cover"
-                    onMouseEnter={() => setIsNameHovered(true)}
-                    onMouseLeave={() => setIsNameHovered(false)}
-                />
-                <div className="text-[1rem] leading-[1rem] font-light text-fifth">
-                    This show featured a full performance of the{' '}
-                    <span
-                        className={`text-[1rem] leading-[1rem] font-medium text-fifth transition-all ${isNameHovered ? 'underline' : ''}`}
+        <div>
+            <div
+                className="bg-yellow-500 text-fifth py-0.5 pr-0.5 flex justify-between items-start cursor-pointer hover:bg-yellow-600 transition-colors"
+                onClick={handleClick}
+            >
+                <div className="flex items-center gap-2 pl-1">
+                    <img
+                        src="https://f4.bcbits.com/img/a2223100564_16.jpg"
+                        alt="Jive Suite"
+                        className="w-5 h-5 rounded object-cover"
                         onMouseEnter={() => setIsNameHovered(true)}
                         onMouseLeave={() => setIsNameHovered(false)}
-                    >
-                        Jive Suite
-                    </span>.
+                    />
+                    <h2 className="text-[0.625rem] font-medium leading-[0.75rem] py-0.5">
+                        This show featured a full performance of the{' '}
+                        <span
+                            className={`font-medium text-fifth transition-all ${isNameHovered ? 'underline' : ''}`}
+                            onMouseEnter={() => setIsNameHovered(true)}
+                            onMouseLeave={() => setIsNameHovered(false)}
+                        >
+                            Jive Suite
+                        </span>.
+                    </h2>
                 </div>
             </div>
         </div>

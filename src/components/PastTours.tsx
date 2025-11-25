@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { ListStart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface TourStats {
@@ -194,18 +193,17 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
 
   if (loading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
-            <ListStart className="w-5 h-5 mr-2" />
-            <span>Past Tours</span>
+      <div className="bg-primary border border-fourth rounded-lg p-3">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">
+            Past Tours
           </h2>
         </div>
         <div className="text-center py-6">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
           <p className="text-fifth mt-4">Loading past tours...</p>
         </div>
@@ -215,11 +213,10 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
 
   if (pastTours.length === 0) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
-            <ListStart className="w-5 h-5 mr-2" />
-            <span>Past Tours</span>
+      <div className="bg-primary border border-fourth rounded-lg p-3">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">
+            Past Tours
           </h2>
         </div>
         <div className="text-center py-6">
@@ -230,31 +227,30 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
   }
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 mt-6">
-      <div className="flex items-center gap-2 mb-4">
-        <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
-          <ListStart className="w-5 h-5 mr-2" />
-          <span>Past Tours</span>
+    <div className="bg-primary border border-fourth">
+      <div className="bg-tertiary text-fifth px-2 py-0.5">
+        <h2 className="text-sm font-semibold">
+          Past Tours
         </h2>
       </div>
       
       <div className="overflow-x-auto">
         <table className="w-full border-collapse min-w-max">
           <thead>
-            <tr className="bg-canvas border-y border-secondary/10">
-              <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap w-1/3">Tour</th>
-              <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-20">Players</th>
-              <th className="px-4 py-1 text-center text-s font-semibold text-fifth whitespace-nowrap w-20">Shows</th>
-              <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">Winner(s)</th>
+            <tr className="bg-canvas border-y border-white/10">
+              <th className="px-2 py-1 text-left text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">Tour</th>
+              <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">Players</th>
+              <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">Shows</th>
+              <th className="px-2 py-1 text-left text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">Winner(s)</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-black/5">
+          <tbody>
             {pastTours.map((tour) => (
               <tr 
                 key={tour.tour}
-                className="bg-canvas hover:bg-tertiary/40 transition-colors text-xs"
+                className="bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]"
               >
-                <td className="px-4 py-0.5 text-fifth whitespace-nowrap font-medium">
+                <td className="px-2 text-fifth whitespace-nowrap font-medium">
                 <Link 
                   to={`/setlistgame/tour/${tour.tour_id}`}
                   className="hover:underline transition-colors table-link"
@@ -262,13 +258,13 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
                   {tour.tour}
                 </Link>
                 </td>
-                <td className="px-4 py-0.5 text-center font-light text-fifth whitespace-nowrap">
+                <td className="px-2 text-center font-light text-fifth whitespace-nowrap">
                   {tour.playerCount}
                 </td>
-                <td className="px-4 py-0.5 text-center font-light text-fifth whitespace-nowrap">
+                <td className="px-2 text-center font-light text-fifth whitespace-nowrap">
                   {tour.showCount}
                 </td>
-                <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                <td className="px-2 text-fifth whitespace-nowrap">
                   {tour.winners.length > 0 ? (
                     <div className="flex items-center">
                       <span className="text-fourth font-medium">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Modal } from './Modal';
 import { supabase } from '../lib/supabase';
 
@@ -19,7 +19,6 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
   const [allGuests, setAllGuests] = React.useState<GuestBasic[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-  const [selectedGuest, setSelectedGuest] = React.useState<string>('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -65,47 +64,49 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       <div className="md:hidden">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-md bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
-        >
-          <Search className="w-6 h-6" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full px-1.5 py-0.5 pr-8 rounded-md border border-fourth bg-canvas font-semibold text-fifth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-left flex items-center"
+          >
+            Search
+          </button>
+          <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-fifth pointer-events-none" />
+        </div>
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           title="Select Guest"
         >
           <div className="space-y-0">
-            <div className="sticky -top-4 bg-primary pb-4">
+            <div className="sticky bg-primary py-1">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search personnel..."
-                className="w-full px-4 py-2 rounded-md border border-secondary bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
+                className="w-full px-1.5 py-0.5 text-sm rounded-md border border-fourth bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
               />
             </div>
-            <div className="divide-y divide-black/10">
+            <div>
               {filteredGuests.map((guest) => (
                 <button
                   key={guest.guest_id}
                   onClick={() => {
-                    setSelectedGuest(guest.guest);
                     setIsModalOpen(false);
                     setSearchTerm('');
                     navigate(`/personnel/${guest.guest_id}`);
                   }}
-                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-semibold text-fifth"
+                  className="w-full text-left px-2 py-1 text-xs leading-[0.75rem] hover:bg-black/10 transition-colors font-medium text-fifth"
                 >
                   {guest.guest}
                   {guest.guest_instrument && (
-                    <span className="text-fifth/70 ml-2">({guest.guest_instrument})</span>
+                    <span className="text-fifth/70 font-light text-[0.625rem] leading-[0.75rem] ml-2">({guest.guest_instrument})</span>
                   )}
                 </button>
               ))}
               {filteredGuests.length === 0 && (
-                <div className="px-4 py-2 text-sm text-fifth/60 italic">
+                <div className="px-2 py-1 text-sm text-fifth italic">
                   No guests found
                 </div>
               )}
@@ -116,48 +117,47 @@ export function GuestSearch({ className = '' }: GuestSearchProps) {
       <div className="hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
+          className="flex items-center gap-2 bg-canvas text-fifth px-1.5 py-0.5 rounded-lg border border-fourth hover:bg-primary transition-colors text-xs font-semibold"
         >
-          {selectedGuest || 'Search'}
-          <ChevronDown className="w-4 h-4" />
+          Search
+          <Search className="w-3 h-3" />
         </button>
       </div>
       {isDropdownOpen && (
-        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto ${
-          window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-96 max-h-96'
+        <div className={`absolute right-0 mt-2 bg-canvas border border-fourth shadow-lg z-50 overflow-y-auto ${
+          window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-64 max-h-96'
         }`}>
-          <div className="p-2">
+          <div className="p-1">
             <div className="relative">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search personnel..."
-                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-fifth text-sm focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
+                className="w-full px-1.5 py-0.5 pr-8 rounded-md border border-fourth bg-primary text-fifth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
+              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-fifth" />
             </div>
           </div>
-          <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+          <div className="max-h-64 overflow-y-auto">
             {filteredGuests.map((guest) => (
               <button
                 key={guest.guest_id}
                 onClick={() => {
-                  setSelectedGuest(guest.guest);
                   setIsDropdownOpen(false);
                   setSearchTerm('');
                   navigate(`/personnel/${guest.guest_id}`);
                 }}
-                className="w-full text-left px-4 py-1 text-sm text-fifth leading-[1rem] font-medium hover:bg-canvas transition-colors"
+                className="w-full text-left px-2 py-1 text-xs leading-[0.75rem] text-fifth font-medium hover:bg-primary transition-colors"
               >
                 {guest.guest}
                 {guest.guest_instrument && (
-                  <span className="text-fifth/90 text-xs font-light ml-2">({guest.guest_instrument})</span>
+                  <span className="text-fifth/70 font-light text-[0.625rem] leading-[0.75rem] ml-2">({guest.guest_instrument})</span>
                 )}
               </button>
             ))}
             {filteredGuests.length === 0 && (
-              <div className="px-4 py-2 text-sm text-fifth/60 italic">
+              <div className="px-4 py-1 text-xs text-fifth italic">
                 No guests found
               </div>
             )}

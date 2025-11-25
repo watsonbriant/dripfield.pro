@@ -20,7 +20,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
 }) => {
   return (
     <div className="flex items-center justify-between mb-2">
-      <h3 className={`text-lg font-semibold text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary transition-colors ${getHeaderStyle(saveStatus)}`}>
+      <h3 className={`text-lg font-semibold text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth transition-colors ${getHeaderStyle(saveStatus)}`}>
         {getHeaderText(saveStatus)}
       </h3>
       

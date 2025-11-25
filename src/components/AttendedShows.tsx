@@ -93,7 +93,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
 
   if (!effectiveUserId) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <p className="text-fifth">Please log in to see attended shows.</p>
       </div>
     );
@@ -110,7 +110,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
           <p className="text-fifth mt-4">
@@ -136,9 +136,9 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
   };
 
   return (
-    <div className="bg-primary p-3 rounded-lg border border-secondary">
+    <div className="bg-primary p-3 rounded-lg border border-fourth">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Shows Attended</h3>
+        <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Shows Attended</h3>
         
         {/* Only show manage button for user's own profile and if not readOnly */}
         {isOwnProfile && !readOnly && (
@@ -149,7 +149,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                 onManagingToggle(true);
               }
             }}
-            className="flex items-center gap-2 bg-tertiary hover:bg-tertiary/70 text-fifth px-3 py-1 rounded-lg text-sm font-semibold transition-colors border border-secondary"
+            className="flex items-center gap-2 bg-tertiary hover:bg-tertiary/70 text-fifth px-3 py-1 rounded-lg text-sm font-semibold transition-colors border border-fourth"
           >
             <span className="hidden md:inline font-semibold">Manage Shows</span>
             <TicketPlus className="w-4 h-4" />
@@ -184,7 +184,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                     index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
                   } hover:bg-tertiary/40 transition-colors text-xs`}
                 >
-                  <td className="px-2 py-0.5 text-primary font-medium text-center whitespace-nowrap" style={{ 
+                  <td className="px-2 py-0.5 text-white font-medium text-center whitespace-nowrap" style={{ 
                     backgroundColor: attendedShow.show?.show_group === 'Goose' && attendedShow.show?.show_canonid ? '#006400' : 'transparent' 
                   }}>
                     {attendedShow.show?.show_group === 'Goose' && attendedShow.show?.show_canonid ? (
@@ -234,7 +234,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                   <td className="px-4 text-center whitespace-nowrap">
                     {attendedShow.show?.show_rarity ? (
                       <span 
-                        className="text-primary font-normal px-2 py-0.5 rounded-md inline-block"
+                        className="text-white font-normal px-2 py-0.5 rounded-md inline-block"
                         style={{ 
                           backgroundColor: getRarityColor(attendedShow.show.show_rarity) 
                         }}

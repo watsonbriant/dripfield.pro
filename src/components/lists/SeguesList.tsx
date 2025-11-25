@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SeguePerformancesModal from './SeguePerformancesModal';
 import { SegueTable } from './shared/SegueTableComponents';
-import { useSegueData, cleanSongName } from './shared/SegueDataHooks';
+import { useSegueData } from './shared/SegueDataHooks';
 
 interface SeguesListProps {
     listId: string;
@@ -51,10 +51,10 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
     return (
         <div>
             <div>
-                <h3 className="text-lg font-semibold text-primary mb-1 rounded-lg border border-secondary inline-block px-3 bg-fifth">
+                <h3 className="text-sm font-medium text-white mb-1 px-2 py-0.5 bg-fifth">
                     Most Common Segues
                 </h3>
-                <p className="text-fifth font-light text-xs mb-2">
+                <p className="text-fifth font-light text-[0.625rem] px-2 leading-[0.75rem] mb-2">
                     Songs that segued into another song, ordered by frequency.
                 </p>
                 <SegueTable
@@ -62,7 +62,6 @@ export function SeguesList({ listId, onProgressUpdate }: SeguesListProps) {
                     expandedRows={expandedRows}
                     onToggleExpanded={toggleExpanded}
                     onOpenSegueModal={openSegueModal}
-                    cleanSongName={cleanSongName}
                 />
             </div>
             <SeguePerformancesModal

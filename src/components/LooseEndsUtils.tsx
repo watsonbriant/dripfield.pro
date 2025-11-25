@@ -62,8 +62,8 @@ export const getCategoryTextColor = (category: string): string => {
     case 'Goosemas':
     case 'Tour Stats':
     case 'Show Stats':
-      return 'text-primary'; // White text on darker colors
+      return 'text-white'; // White text on darker colors
     default:
-      return 'text-primary'; // Default black text
+      return 'text-white'; // Default black text
   }
 };

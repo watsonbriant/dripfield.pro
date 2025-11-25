@@ -145,141 +145,145 @@ export function Submit() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Submit Information</h2>
-        <p className="text-fifth mb-4 font-light">
-          Use this form to submit corrections, new information, or report issues with the site.
-        </p>
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">Submit Information</h2>
+        </div>
+        <div className="px-2 py-1">
+          <p className="text-fifth text-[0.625rem] font-light mb-2">
+            Use this form to submit corrections, new information, or report issues with the site.
+          </p>
 
-        {submitSuccess ? (
-          <div className="bg-green-600/10 border border-green-500/50 text-green-800 p-4 rounded-md mb-6">
-            <p className="font-medium">Thank you for your submission!</p>
-            <p className="text-sm font-light mt-1">We have received your information and will review it soon.</p>
-            <button
-              onClick={() => {
-                setSubmitSuccess(false);
-                setSelectedFile(null);
-              }}
-              className="mt-3 px-4 py-2 bg-tertiary hover:bg-tertiary/70 text-fifth font-medium rounded-md transition-colors border border-secondary"
-            >
-              Submit Another
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {submitError && (
-              <div className="bg-red-600/20 border border-red-500/50 text-red-800 p-4 rounded-md">
-                <p>{submitError}</p>
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="submissionType" className="block text-sm font-medium text-fifth mb-1">
-                Submission Type <span className="text-red-600">*</span>
-              </label>
-              <select
-                id="submissionType"
-                name="submissionType"
-                value={formData.submissionType}
-                onChange={handleChange}
-                required
-                className="w-full px-2 py-2 bg-canvas border border-secondary rounded-md text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-              >
-                <option value="">&mdash;</option>
-                {submissionTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="contactEmail" className="block text-sm font-medium text-fifth mb-1">
-                Contact Email <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="email"
-                id="contactEmail"
-                name="contactEmail"
-                value={formData.contactEmail}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 bg-canvas font-light border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-                placeholder="ted@dripfield.pro"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="details" className="block text-sm font-medium text-fifth mb-1">
-                Details <span className="text-red-600">*</span>
-              </label>
-              <textarea
-                id="details"
-                name="details"
-                value={formData.details}
-                onChange={handleChange}
-                required
-                rows={6}
-                className="w-full px-3 py-2 bg-canvas font-light border border-secondary rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
-                placeholder="Please provide as much detail as possible about your submission..."
-              />
-            </div>
-
-            <div>
-              <label htmlFor="file" className="block text-sm font-medium text-fifth mb-1">
-                Attach File (Optional)
-              </label>
-              <input
-                type="file"
-                id="file"
-                onChange={handleFileChange}
-                accept="*/*"
-                className="w-full px-3 py-2 bg-canvas border border-secondary rounded-md text-fifth text-sm file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-tertiary file:text-fifth hover:file:bg-tertiary/80"
-              />
-              {selectedFile && (
-                <p className="mt-1 text-sm text-fifth/70">
-                  Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                </p>
-              )}
-              {fileError && (
-                <p className="mt-1 text-sm text-red-600">{fileError}</p>
-              )}
-              <p className="mt-1 text-xs text-fifth/60 font-light">Maximum file size: 50MB.</p>
-            </div>
-
-            <div>
-              <label htmlFor="confirmationCode" className="block text-sm font-medium text-fifth mb-1">
-                Confirmation Code <span className="text-red-600">*</span>
-              </label>
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  id="confirmationCode"
-                  name="confirmationCode"
-                  value={formData.confirmationCode}
-                  onChange={handleChange}
-                  required
-                  className={`px-3 py-2 bg-canvas font-light border ${confirmationError ? 'border-red-600' : 'border-secondary'} rounded-md text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary w-24 text-sm`}
-                  placeholder="&mdash;"
-                />
-                <span className={`ml-3 font-light text-sm ${confirmationError ? 'text-red-600' : 'text-fifth/70'}`}>
-                  {confirmationError ? 'Incorrect code. Please enter 726.' : 'Type the number 726 here.'}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-2">
+          {submitSuccess ? (
+            <div className="bg-primary border border-fourth p-2 mb-2">
+              <p className="text-xs font-medium text-fifth">Thank you for your submission!</p>
+              <p className="text-[0.625rem] font-light text-fifth mt-1">We have received your information and will review it soon.</p>
               <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-fifth font-medium rounded-md transition-colors disabled:opacity-50 disabled:pointer-events-none border border-secondary"
+                onClick={() => {
+                  setSubmitSuccess(false);
+                  setSelectedFile(null);
+                }}
+                className="mt-2 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth font-medium transition-colors border border-fourth text-xs"
               >
-                {isSubmitting ? 'Submitting...' : 'Submit'}
+                Submit Another
               </button>
             </div>
-          </form>
-        )}
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-2">
+              {submitError && (
+                <div className="bg-primary border border-fourth p-2">
+                  <p className="text-xs text-fifth">{submitError}</p>
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="submissionType" className="block text-xs font-medium text-fifth mb-0.5">
+                  Submission Type <span className="text-red-600">*</span>
+                </label>
+                <select
+                  id="submissionType"
+                  name="submissionType"
+                  value={formData.submissionType}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-2 py-0.5 bg-canvas border border-fourth text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                >
+                  <option value="">&mdash;</option>
+                  {submissionTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="contactEmail" className="block text-xs font-medium text-fifth mb-0.5">
+                  Contact Email <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="contactEmail"
+                  name="contactEmail"
+                  value={formData.contactEmail}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-2 py-0.5 bg-canvas font-light border border-fourth text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  placeholder="ted@dripfield.pro"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="details" className="block text-xs font-medium text-fifth mb-0.5">
+                  Details <span className="text-red-600">*</span>
+                </label>
+                <textarea
+                  id="details"
+                  name="details"
+                  value={formData.details}
+                  onChange={handleChange}
+                  required
+                  rows={6}
+                  className="w-full px-2 py-0.5 bg-canvas font-light border border-fourth text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  placeholder="Please provide as much detail as possible about your submission..."
+                />
+              </div>
+
+              <div>
+                <label htmlFor="file" className="block text-xs font-medium text-fifth mb-0.5">
+                  Attach File (Optional)
+                </label>
+                <input
+                  type="file"
+                  id="file"
+                  onChange={handleFileChange}
+                  accept="*/*"
+                  className="w-full px-2 py-0.5 bg-canvas border border-fourth text-fifth text-xs file:mr-2 file:py-0.5 file:px-2 file:border-0 file:text-xs file:font-medium file:bg-tertiary file:text-fifth hover:file:bg-tertiary/80"
+                />
+                {selectedFile && (
+                  <p className="mt-1 text-[0.625rem] text-fifth/70">
+                    Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </p>
+                )}
+                {fileError && (
+                  <p className="mt-1 text-[0.625rem] text-red-600">{fileError}</p>
+                )}
+                <p className="mt-1 text-[0.625rem] text-fifth/60 font-light">Maximum file size: 50MB.</p>
+              </div>
+
+              <div>
+                <label htmlFor="confirmationCode" className="block text-xs font-medium text-fifth mb-0.5">
+                  Confirmation Code <span className="text-red-600">*</span>
+                </label>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    id="confirmationCode"
+                    name="confirmationCode"
+                    value={formData.confirmationCode}
+                    onChange={handleChange}
+                    required
+                    className={`px-2 py-0.5 bg-canvas font-light border ${confirmationError ? 'border-red-600' : 'border-fourth'} text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary w-24 text-xs`}
+                    placeholder="&mdash;"
+                  />
+                  <span className={`ml-2 font-light text-[0.625rem] ${confirmationError ? 'text-red-600' : 'text-fifth/70'}`}>
+                    {confirmationError ? 'Incorrect code. Please enter 726.' : 'Type the number 726 here.'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-1 text-center">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-2 py-0.5 bg-tertiary hover:bg-canvas text-fifth font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none border border-fourth text-sm"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

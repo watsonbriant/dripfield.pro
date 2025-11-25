@@ -26,16 +26,17 @@ interface SetlistEntry {
 interface SongSpreadProps {
   setlist: SetlistEntry[];
   onCategoryHover?: (category: string | null) => void;
+  hideTitle?: boolean;
+  hideContainer?: boolean;
 }
 
-const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => {
+const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideTitle = false, hideContainer = false }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [categoryArtwork, setCategoryArtwork] = useState<Record<string, string>>({});
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [isMobile, setIsMobile] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isScrollable, setIsScrollable] = useState(false);
   const [showLeftFade, setShowLeftFade] = useState(false);
   const [showRightFade, setShowRightFade] = useState(false);
   const chartContainerRef = React.useRef<HTMLDivElement>(null);
@@ -236,6 +237,11 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
     return Math.max(...Object.values(categoryData.counts));
   }, [categoryData]);
 
+  // Memoize max count width for consistent spacing
+  const maxCountDigits = useMemo(() => {
+    return maxCount.toString().length;
+  }, [maxCount]);
+
   // Optimize mouse event handlers to prevent recreation on every render
   const handleMouseEnter = useCallback((category: string, e: React.MouseEvent) => {
     if (!isMobile) {
@@ -273,7 +279,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
     }
   }, [isMobile, selectedCategory, onCategoryHover]);
 
-  // Sort categories by canonid for vertical chart
+  // Sort categories by count descending, then by canonid ascending
   const verticalSortedCategories = useMemo(() => {
     return Object.entries(categoryData.counts)
       .map(([category, count]) => ({
@@ -283,22 +289,27 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
         artwork: categoryArtwork[category] || null,
         songs: categoryData.songs[category]
       }))
-      .sort((a, b) => a.canonid - b.canonid);
+      .sort((a, b) => {
+        // First sort by count descending
+        if (b.count !== a.count) {
+          return b.count - a.count;
+        }
+        // If counts are equal, sort by canonid ascending
+        return a.canonid - b.canonid;
+      });
   }, [categoryData, categoryCanonIds, categoryArtwork]);
 
   // Check scroll position and update fade visibility
   const updateScrollFades = useCallback(() => {
     if (chartContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = chartContainerRef.current;
-      const isScrollable = scrollWidth > clientWidth;
-      
-      setIsScrollable(isScrollable);
+      const { scrollTop, scrollHeight, clientHeight } = chartContainerRef.current;
+      const isScrollable = scrollHeight > clientHeight;
       
       if (isScrollable) {
-        // Show left fade if not at the start (with small threshold)
-        setShowLeftFade(scrollLeft > 1);
-        // Show right fade if not at the end (with small threshold)
-        setShowRightFade(scrollLeft < scrollWidth - clientWidth - 1);
+        // Show top fade if not at the start (with small threshold)
+        setShowLeftFade(scrollTop > 1);
+        // Show bottom fade if not at the end (with small threshold)
+        setShowRightFade(scrollTop < scrollHeight - clientHeight - 1);
       } else {
         setShowLeftFade(false);
         setShowRightFade(false);
@@ -323,38 +334,17 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
     }
   }, [updateScrollFades]);
 
-  return (
-    <div className="bg-primary border border-secondary rounded-lg p-3" key="song-spread">
-      <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth mb-1.5">Song Spread</h2>
-      
+  const content = (
+    <>
       <div className="relative">
-        {/* Left fade overlay - only show when not scrolled all the way left */}
-        {showLeftFade && (
-          <div 
-            className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
-            style={{
-              background: 'linear-gradient(to right, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
-            }}
-          />
-        )}
-        
-        {/* Right fade overlay - only show when not scrolled all the way right */}
-        {showRightFade && (
-          <div 
-            className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
-            style={{
-              background: 'linear-gradient(to left, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
-            }}
-          />
-        )}
-        
         <div 
           ref={chartContainerRef}
-          className="overflow-x-auto song-spread-scrollbar"
+          className="overflow-y-auto song-spread-scrollbar"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            maxHeight: '400px'
           }}
         >
           <style>{`
@@ -362,88 +352,83 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
               display: none;
             }
           `}</style>
-          <div className="flex items-end gap-1" style={{ minWidth: 'fit-content' }}>
-            {verticalSortedCategories.map(({ category, count, songs, artwork }) => {
-              const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+          <div className="flex flex-col">
+            {verticalSortedCategories.map(({ category, count, artwork }) => {
+              // Calculate bar width based on count proportion, factoring in count width
+              // Estimate count width based on max digits for consistent spacing
+              // Using roughly 0.6rem per digit + 0.75rem padding (text-sm + px-1)
+              const estimatedCountWidthRem = maxCountDigits * 0.9;
+              // Convert to approximate percentage (assuming typical container width)
+              // Using a more dynamic approach: calculate based on available space
+              const barRatio = maxCount > 0 
+                ? Math.max(Math.min(count / maxCount, 1), 0.02) 
+                : 0.02;
               
               return (
-                <div key={`vertical-${category}`} className="flex flex-col items-center" style={{ minWidth: '2rem', flex: '1 1 2rem' }}>
-                {/* Vertical bar container - always full height */}
-                <div 
-                  className="cursor-pointer relative w-full transition-all duration-300"
-                  style={{ 
-                    height: '200px'
-                  }}
-                  onMouseEnter={(e) => handleMouseEnter(category, e)}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
-                  onClick={() => handleClick(category)}
-                >
-                  {/* Empty space above the filled portion - only render if not 100% height */}
-                  {barHeight < 200 && (
+                <div key={`horizontal-${category}`} className="flex items-center">
+                  {/* Artwork on left */}
+                  {artwork && loadedImages.has(category) && (
                     <div 
-                      className="w-full border-l border-r border-t border-secondary rounded-t"
-                      style={{ 
-                        height: `${200 - barHeight}px`,
-                        backgroundColor: '#ededed' // bg-secondary color
-                      }}
-                    />
+                      className="flex-shrink-0 cursor-pointer"
+                      onMouseEnter={(e) => handleMouseEnter(category, e)}
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleClick(category)}
+                    >
+                      <img 
+                        src={artwork} 
+                        alt=""
+                        onError={(e) => {
+                          console.error(`Failed to load image for ${category}. URL was:`, artwork);
+                          e.currentTarget.style.display = 'none';
+                        }}
+                        className="h-[20px] w-[20px] object-cover"
+                      />
+                    </div>
                   )}
                   
-                  {/* Filled portion with artwork - positioned on top */}
+                  {/* Horizontal bar container - always full width */}
                   <div 
-                    className={`w-full border border-secondary relative overflow-hidden ${
-                      barHeight < 200 ? 'rounded-b' : 'rounded'
-                    }`}
+                    className="cursor-pointer relative flex-1 transition-all duration-300 flex items-center gap-1"
                     style={{ 
-                      height: `${barHeight}px`
+                      height: '20px'
                     }}
+                    onMouseEnter={(e) => handleMouseEnter(category, e)}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleClick(category)}
                   >
-                    {/* Artwork background - separate from border, clipped to container shape */}
+                    {/* Filled portion with artwork - positioned on left */}
                     <div 
-                      className="w-full h-full flex items-start justify-center absolute inset-0"
+                      className="h-full relative overflow-hidden flex-shrink-0 transition-all"
                       style={{ 
-                        backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? 'none' : 'grayscale(20%) brightness(0.5)',
-                        opacity: (hoveredCategory === category || (isMobile && selectedCategory === category)) ? '1' : '1',
-                        backgroundColor: !artwork || !loadedImages.has(category) ? '#594e5f' : undefined // bg-tertiary fallback
+                        width: `calc((100% - ${estimatedCountWidthRem}rem) * ${barRatio})`
                       }}
-                    />
+                    >
+                      {/* Artwork background - always show, change filter on hover */}
+                      <div 
+                        className="w-full h-full flex items-center justify-start absolute inset-0 transition-all"
+                        style={{ 
+                          backgroundImage: artwork && loadedImages.has(category) ? `url(${artwork})` : undefined,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          filter: (hoveredCategory === category || (isMobile && selectedCategory === category)) 
+                            ? 'grayscale(100%)' 
+                            : 'grayscale(100%) brightness(0.4)',
+                          opacity: '1',
+                          backgroundColor: !artwork || !loadedImages.has(category) ? '#3c1e40' : undefined // bg-fourth fallback
+                        }}
+                      />
+                    </div>
                     
-                    {/* Content overlay */}
-                    <div className="relative z-10 w-full h-full flex items-start justify-center">
-                      {(hoveredCategory === category || (isMobile && selectedCategory === category)) && (
-                        <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
-                      )}
+                    {/* Count display - always visible to the right of the filled portion */}
+                    <div className="text-fifth text-[0.625rem] font-medium flex-shrink-0 whitespace-nowrap">
+                      {count}
                     </div>
                   </div>
                 </div>
-                
-                {/* Artwork underneath bar */}
-                <div 
-                  className="mt-2 flex justify-center cursor-pointer"
-                  onMouseEnter={(e) => handleMouseEnter(category, e)}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
-                  onClick={() => handleClick(category)}
-                >
-                  {artwork && loadedImages.has(category) && (
-                    <img 
-                      src={artwork} 
-                      alt=""
-                      onError={(e) => {
-                        console.error(`Failed to load image for ${category}. URL was:`, artwork);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                      className="h-8 w-8 object-cover rounded border border-secondary"
-                    />
-                  )}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -451,7 +436,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
       {/* Desktop tooltip - follows mouse */}
       {hoveredCategory && !isMobile && (
         <div 
-          className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
+          className="fixed bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
           style={{
             left: `${mousePosition.x + 10}px`,
             top: `${mousePosition.y - 10}px`
@@ -475,9 +460,9 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
       
       {/* Mobile tooltip - underneath chart */}
       {selectedCategory && isMobile && (
-        <div className="mt-4 flex justify-center">
-          <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
-            <div className="font-semibold text-sm mb-1">{selectedCategory}</div>
+        <div className="mt-2 flex justify-center">
+          <div className="bg-canvas text-fifth px-2 py-1 border border-fourth rounded shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-[calc(100%-10px)]">
+            <div className="font-semibold text-xs leading-[0.75rem] mb-0.5">{selectedCategory}</div>
             {verticalSortedCategories
               .find(cat => cat.category === selectedCategory)
               ?.songs
@@ -493,6 +478,19 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover }) => 
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (hideContainer) {
+    return content;
+  }
+
+  return (
+    <div className="bg-primary border border-fourth rounded-lg p-3" key="song-spread">
+      {!hideTitle && (
+        <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth mb-1.5">Song Spread</h2>
+      )}
+      {content}
     </div>
   );
 };

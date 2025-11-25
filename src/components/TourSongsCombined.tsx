@@ -41,9 +41,9 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <div className="flex justify-between items-center mb-3">
-      <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">
+    <div className="bg-primary border border-fourth">
+      <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
+        <h2 className="text-sm font-semibold">
           {uniqueSongCount} Songs Played
         </h2>
         
@@ -53,12 +53,12 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
           {viewMode === 'matrix' && (
             <>
               {/* Desktop version - hidden on mobile */}
-              <div className="hidden md:flex items-center bg-canvas rounded-md border border-secondary py-1 px-2">
-                <span className="text-fifth text-xs mr-2 font-medium">Sort:</span>
+              <div className="hidden md:flex items-center bg-canvas rounded-md border border-fourth py-0.5 px-1">
+                <span className="text-fifth text-[0.625rem] ml-1 mr-2 font-medium">Sort:</span>
                 <div className="flex gap-1 font-light">
                   <button 
                     onClick={() => setMatrixSortMode('alphabetical')}
-                    className={`px-2 py-0.5 text-xs rounded ${
+                    className={`px-1 text-[0.625rem] rounded ${
                       matrixSortMode === 'alphabetical' 
                         ? 'bg-tertiary text-fifth' 
                         : 'text-fifth hover:bg-tertiary/40'
@@ -68,7 +68,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
                   </button>
                   <button 
                     onClick={() => setMatrixSortMode('chronological')}
-                    className={`px-2 py-0.5 text-xs rounded ${
+                    className={`px-1 text-[0.625rem] rounded ${
                       matrixSortMode === 'chronological' 
                         ? 'bg-tertiary text-fifth' 
                         : 'text-fifth hover:bg-tertiary/40'
@@ -78,7 +78,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
                   </button>
                   <button 
                     onClick={() => setMatrixSortMode('playcount')}
-                    className={`px-2 py-0.5 text-xs rounded ${
+                    className={`px-1 text-[0.625rem] rounded ${
                       matrixSortMode === 'playcount' 
                         ? 'bg-tertiary text-fifth' 
                         : 'text-fifth hover:bg-tertiary/40'
@@ -92,10 +92,10 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               {/* Mobile version - only visible on mobile */}
               <button 
                 onClick={() => setIsSortModalOpen(true)}
-                className="md:hidden flex items-center justify-center bg-tertiary rounded-md border border-secondary p-1.5"
+                className="md:hidden flex items-center justify-center bg-fourth rounded border border-fourth p-0.5"
                 aria-label="Sort options"
               >
-                <ArrowDownUp className="w-4 h-4 text-fifth" />
+                <ArrowDownUp className="w-4 h-4 text-white" />
               </button>
             </>
           )}
@@ -126,11 +126,11 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               role="switch"
               aria-checked={viewMode === 'matrix'}
               onClick={() => setViewMode(viewMode === 'list' ? 'matrix' : 'list')}
-              className="relative inline-flex h-6 w-[3.125rem] items-center rounded-full border border-secondary transition-colors bg-tertiary"
+              className="relative inline-flex h-4 w-[47px] items-center rounded-full border border-fourth transition-colors bg-primary"
             >
               <span
-                className={`absolute h-4 w-4 rounded-lg bg-black transition-transform duration-200 ${
-                  viewMode === 'matrix' ? 'left-7' : 'left-1'
+                className={`absolute h-[10px] w-[10px] rounded-lg bg-black transition-transform duration-200 ${
+                  viewMode === 'matrix' ? 'left-[33px]' : 'left-[2px]'
                 }`}
               />
             </button>
@@ -169,7 +169,6 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
       ) : (
         <TourSongMatrix 
           shows={shows} 
-          songIdMap={songIdMap} 
           hideTitle={true} 
           sortMode={matrixSortMode}
           tourId={tourId}
@@ -188,7 +187,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               setMatrixSortMode('alphabetical');
               setIsSortModalOpen(false);
             }}
-            className={`w-full px-4 py-2 text-left rounded ${
+            className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
               matrixSortMode === 'alphabetical' 
                 ? 'bg-tertiary text-fifth font-semibold' 
                 : 'text-fifth hover:bg-black/10 font-medium'
@@ -201,7 +200,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               setMatrixSortMode('chronological');
               setIsSortModalOpen(false);
             }}
-            className={`w-full px-4 py-2 text-left rounded ${
+            className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
               matrixSortMode === 'chronological' 
                 ? 'bg-tertiary text-fifth font-semibold' 
                 : 'text-fifth hover:bg-black/10 font-medium'
@@ -214,7 +213,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
               setMatrixSortMode('playcount');
               setIsSortModalOpen(false);
             }}
-            className={`w-full px-4 py-2 text-left rounded ${
+            className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
               matrixSortMode === 'playcount' 
                 ? 'bg-tertiary text-fifth font-semibold' 
                 : 'text-fifth hover:bg-black/10 font-medium'

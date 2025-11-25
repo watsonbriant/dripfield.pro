@@ -3,6 +3,38 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { SongSearch } from './SongSearch';
 
+// Hook to get current column count based on window width
+const useColumnCount = (isCoverSongs: boolean) => {
+  const [columnCount, setColumnCount] = useState(1);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (isCoverSongs) {
+        // Cover Songs: 1 column on mobile, 2 on sm+
+        setColumnCount(width >= 640 ? 2 : 1);
+      } else {
+        // Other sections: 1, 2, 3, or 5 columns based on breakpoints
+        if (width >= 1024) {
+          setColumnCount(5);
+        } else if (width >= 768) {
+          setColumnCount(3);
+        } else if (width >= 640) {
+          setColumnCount(2);
+        } else {
+          setColumnCount(1);
+        }
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isCoverSongs]);
+  
+  return columnCount;
+};
+
 interface Song {
   song: string;
   song_category: string;
@@ -26,34 +58,6 @@ export function Songs() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Responsive columns hook
-  const useResponsiveColumns = () => {
-    const [columnCount, setColumnCount] = useState(1);
-    
-    useEffect(() => {
-      const handleResize = () => {
-        const width = window.innerWidth;
-        if (width >= 1280) {
-          setColumnCount(4);
-        } else if (width >= 1024) {
-          setColumnCount(3);
-        } else if (width >= 640) {
-          setColumnCount(2);
-        } else {
-          setColumnCount(1);
-        }
-      };
-      
-      handleResize();
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }, []);
-    
-    return columnCount;
-  };
-
-  const currentColumnCount = useResponsiveColumns();
 
   // Fetch all data
   useEffect(() => {
@@ -149,146 +153,130 @@ export function Songs() {
     return grouped;
   }, [songs, categories]);
 
-  // Separate categories into sections
+  // Separate categories into sections based on category_canonid
   const sectionedCategories = React.useMemo(() => {
-    // Filter by category_type
-    const gooseCategories = categories.filter(cat => 
-      ['Goose', 'Goose Misc', 'Ted Tapes'].includes(cat.category_type)
+    // Sort all categories by category_canonid first
+    const sortedCategories = [...categories].sort((a, b) => a.category_canonid - b.category_canonid);
+    
+    // Studio Releases: category_canonid < 20
+    const studioReleases = sortedCategories.filter(cat => cat.category_canonid < 20);
+    
+    // Live-Only Songs: category_canonid between 20 and 49, OR category_canonid = 98
+    const liveOnlySongs = sortedCategories.filter(cat => 
+      (cat.category_canonid >= 20 && cat.category_canonid <= 49) || cat.category_canonid === 98
     );
     
-    const coverCategories = categories.filter(cat => 
-      ['Cover Songs', 'Live Collaborations'].includes(cat.category_type)
+    // Ted Tapes Songs/Jams: category_canonid between 50 and 60
+    const tedTapesSongs = sortedCategories.filter(cat => 
+      cat.category_canonid >= 50 && cat.category_canonid <= 60
     );
     
-    const otherCategories = categories.filter(cat => 
-      cat.category_type === 'Goose-adjacent'
+    // Cover Songs: category_canonid = 99 or 100
+    const coverSongs = sortedCategories.filter(cat => 
+      cat.category_canonid === 99 || cat.category_canonid === 100
     );
+    
+    // Side Projects: category_canonid > 100
+    const sideProjects = sortedCategories.filter(cat => cat.category_canonid > 100);
     
     return { 
-      goose: gooseCategories, 
-      covers: coverCategories, 
-      other: otherCategories 
+      studioReleases, 
+      liveOnlySongs, 
+      tedTapesSongs,
+      coverSongs,
+      sideProjects
     };
   }, [categories]);
 
-  // Create columns for category layout
-  const createCategoryColumns = (sectionCategories: Category[], numColumns: number = 4) => {
-    const sortedCategories = [...sectionCategories].sort(
-      (a, b) => a.category_canonid - b.category_canonid
-    );
+  // Organize categories into columns (top-to-bottom instead of left-to-right)
+  const organizeIntoColumns = (categories: Category[], numColumns: number): Category[][] => {
+    if (numColumns === 1) return [categories];
     
-    if (numColumns === 1) {
-      return [sortedCategories];
-    }
+    const columns: Category[][] = Array.from({ length: numColumns }, () => []);
+    const numRows = Math.ceil(categories.length / numColumns);
     
-    const totalCategories = sortedCategories.length;
-    const result: Category[][] = Array.from({ length: numColumns }, () => []);
-    
-    const rowsNeeded = Math.ceil(totalCategories / numColumns);
-    
-    const grid: Category[][] = [];
-    for (let i = 0; i < rowsNeeded; i++) {
-      grid.push([]);
-      for (let j = 0; j < numColumns; j++) {
-        const index = i + j * rowsNeeded;
-        if (index < totalCategories) {
-          grid[i].push(sortedCategories[index]);
-        }
+    categories.forEach((category, index) => {
+      const column = Math.floor(index / numRows);
+      if (column < numColumns) {
+        columns[column].push(category);
       }
-    }
+    });
     
-    for (let col = 0; col < numColumns; col++) {
-      for (let row = 0; row < rowsNeeded; row++) {
-        if (grid[row] && grid[row][col]) {
-          result[col].push(grid[row][col]);
-        }
-      }
-    }
-    
-    return result;
+    return columns;
   };
 
-  // Create columns for each section
-  const gooseColumns = React.useMemo(() => 
-    createCategoryColumns(sectionedCategories.goose, currentColumnCount),
-    [sectionedCategories.goose, currentColumnCount]
-  );
-
-  const coversColumns = React.useMemo(() => 
-    createCategoryColumns(sectionedCategories.covers, Math.min(currentColumnCount, 2)),
-    [sectionedCategories.covers, currentColumnCount]
-  );
-
-  const otherColumns = React.useMemo(() => 
-    createCategoryColumns(sectionedCategories.other, currentColumnCount),
-    [sectionedCategories.other, currentColumnCount]
-  );
-
-  // Render a category section
-  const renderCategorySection = (columns: Category[][], title: string, sectionType: 'goose' | 'covers' | 'other') => {
-    if (columns.flat().length === 0) return null;
+  // Render a category section component
+  const CategorySection = ({ sectionCategories, title }: { sectionCategories: Category[], title: string }) => {
+    const isCoverSongs = title === "Cover Songs";
+    const isStudioReleases = title === "Studio Releases";
+    const columnCount = useColumnCount(isCoverSongs);
+    const organizedColumns = organizeIntoColumns(sectionCategories, columnCount);
     
-    const getCoverSongGridClass = () => {
-      if (sectionType !== 'covers') return "space-y-0";
-      return `grid ${
-        currentColumnCount === 4 || (currentColumnCount === 2 && window.innerWidth < 1024) 
-          ? 'grid-cols-2' 
-          : 'grid-cols-1'
-      } gap-x-2 gap-y-0`;
-    };
+    if (sectionCategories.length === 0) return null;
     
-    const songListClass = getCoverSongGridClass();
+    // Cover Songs section uses 2 columns, others use responsive 1-5 columns
+    const gridClasses = isCoverSongs
+      ? "grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0 items-start -my-[1px]"
+      : isStudioReleases
+        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-0 items-start -my-[1px]"
+        : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-2 gap-y-0 items-start -my-[1px]";
     
     return (
       <div className="mb-8">
-        <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
-          {title}
-        </h3>
-        <div className={`grid grid-cols-1 ${
-          sectionType === 'covers' 
-            ? 'sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2' 
-            : 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-        } gap-4`}>
-          {columns.map((columnCategories, columnIndex) => (
-            <div key={`${title}-column-${columnIndex}`} className="flex flex-col gap-4">
-              {columnCategories.map(category => {
-                const categorySongs = songsByCategory[category.category] || [];
-                
-                return (
-                  <div 
-                    key={category.category} 
-                    className="bg-primary rounded-lg p-3 border border-secondary h-auto w-full relative"
-                  >
-                    <div className="flex items-center justify-between mb-1 pb-2 border-b border-secondary">
-                      <h4 className="text-lg font-medium text-fifth leading-[1.25rem] pl-0.5">
-                        {category.category}
-                      </h4>
-                      {category.category_artwork && (
-                        <div className="h-7 flex-shrink-0">
-                          <img 
-                            src={category.category_artwork} 
-                            alt={`${category.category} artwork`}
-                            className="h-full object-contain rounded border border-secondary"
-                          />
-                        </div>
-                      )}
+        <div className="bg-primary border border-fourth">
+          <div className="bg-fourth text-white px-2 py-0.5">
+            <h3 className="text-sm font-semibold">
+              {title}
+            </h3>
+          </div>
+        </div>
+        <div className={gridClasses}>
+          {organizedColumns.map((columnCategories, columnIndex) => (
+            <div key={columnIndex} className="flex flex-col gap-0">
+              {columnCategories.map((category, categoryIndex) => {
+              const categorySongs = songsByCategory[category.category] || [];
+              const isFirstInColumn = categoryIndex === 0;
+              const isLastInColumn = categoryIndex === columnCategories.length - 1;
+              
+              return (
+                <div 
+                  key={category.category} 
+                  className={`bg-primary border-l border-r border-fourth w-full ${
+                    isFirstInColumn ? 'border-t' : ''
+                  } ${
+                    isLastInColumn ? 'border-b' : ''
+                  } ${!isFirstInColumn ? '-mt-[1px]' : ''}`}
+                >
+                <div className="bg-tertiary/50 text-fifth py-[3px] flex items-center justify-between">
+                  <h4 className="text-xs font-semibold text-fifth pl-2 leading-[0.75rem] pr-2">
+                    {category.category}
+                  </h4>
+                  {category.category_artwork && (
+                    <div className="flex-shrink-0 pr-0.5">
+                      <img 
+                        src={category.category_artwork} 
+                        alt={`${category.category} artwork`}
+                        className="h-[16px] object-contain rounded border border-fourth"
+                      />
                     </div>
-                    <ul className={songListClass}>
-                      {categorySongs.map(song => (
-                        <li 
-                          key={song.song_id} 
-                          className="text-xs hover:bg-tertiary/40 transition-colors py-0.5 px-1 rounded cursor-pointer"
-                          onClick={() => navigate(`/song/${song.song_id}`)}
-                        >
-                          <span className="font-light hover:underline transition-colors text-left text-xs text-fifth">
-                            {song.song}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
+                  )}
+                </div>
+                <ul className={title === "Cover Songs" ? "grid grid-cols-1 sm:grid-cols-2 gap-0" : ""}>
+                  {categorySongs.map(song => (
+                    <li 
+                      key={song.song_id} 
+                      className="bg-primary hover:bg-tertiary/30 transition-colors text-[0.625rem] leading-[0.625rem] py-0.5 px-2 cursor-pointer"
+                      onClick={() => navigate(`/song/${song.song_id}`)}
+                    >
+                      <span className="font-normal tracking-tight hover:underline transition-colors text-left text-fifth">
+                        {song.song}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              );
+            })}
             </div>
           ))}
         </div>
@@ -298,33 +286,37 @@ export function Songs() {
 
   if (loading) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="flex justify-center items-center h-56">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-              <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-              <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
-            </div>
-            <p className="text-fifth mt-4">Loading songs...</p>
+      <div className="w-full">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
+          <p className="text-fifth mt-4">Loading songs...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto">
-      <div className="flex justify-between mb-6 items-center">
-        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
-          Songs
-        </h1>
-        <SongSearch />
+    <div className="w-full max-w-[1280px]">
+      <div className="mb-4">
+        <div className="bg-primary border border-fourth">
+          <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
+            <h1 className="text-sm font-semibold pl-2">
+              Songs
+            </h1>
+            <SongSearch />
+          </div>
+        </div>
       </div>
       <div className="pb-8">
-        {renderCategorySection(gooseColumns, "Goose Songs", 'goose')}
-        {renderCategorySection(coversColumns, "Cover Songs", 'covers')}
-        {renderCategorySection(otherColumns, "Other Songs", 'other')}
+        <CategorySection sectionCategories={sectionedCategories.studioReleases} title="Studio Releases" />
+        <CategorySection sectionCategories={sectionedCategories.liveOnlySongs} title="Live-Only Songs" />
+        <CategorySection sectionCategories={sectionedCategories.tedTapesSongs} title="Ted Tapes Songs/Jams" />
+        <CategorySection sectionCategories={sectionedCategories.coverSongs} title="Cover Songs" />
+        <CategorySection sectionCategories={sectionedCategories.sideProjects} title="Side Projects" />
       </div>
     </div>
   );

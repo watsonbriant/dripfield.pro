@@ -21,8 +21,8 @@ export function StandingsTable({
       return null;
     }
     return sortDirection === 'asc' ?
-      <ChevronUp className="w-4 h-4 inline-block ml-1 text-fifth" /> :
-      <ChevronDown className="w-4 h-4 inline-block ml-1 text-fifth" />;
+      <ChevronUp className="w-3 h-3 inline-block ml-0.5 text-fifth" /> :
+      <ChevronDown className="w-3 h-3 inline-block ml-0.5 text-fifth" />;
   };
 
   return (
@@ -33,18 +33,18 @@ export function StandingsTable({
           <col className="w-44" /> {/* User column - flexible but with minimum width */}
           <col className="w-[65px] min-w-[65px]" /> {/* Total Points */}
           <col className="w-[65px] min-w-[65px]" /> {/* Shows Played */}
- **<col className="w-[65px] min-w-[65px]" /> {/* Points Per Show */}
+          <col className="w-[65px] min-w-[65px]" /> {/* Points Per Show */}
           <col className="w-[65px] min-w-[65px]" /> {/* Songs Correctly Picked */}
           <col className="w-[65px] min-w-[65px]" /> {/* Sets Correctly Picked */}
           <col className="w-[65px] min-w-[65px]" /> {/* Show Openers Picked */}
           <col className="w-[65px] min-w-[65px]" /> {/* Show Closers Picked */}
         </colgroup>
         <thead>
-          <tr className="bg-canvas border-y border-secondary/10">
-            <th className="px-1 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap text-center">
+          <tr className="bg-canvas border-y border-white/10">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">
               Rank
             </th>
-            <th className="px-3 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap">
+            <th className="px-2 py-1 text-left text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">
               <button 
                 className="flex items-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded"
                 onClick={() => onSort('username')}
@@ -53,7 +53,7 @@ export function StandingsTable({
                 {getSortIcon('username')}
               </button>
             </th>
-            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
               <button 
                 className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                 onClick={() => onSort('totalPoints')}
@@ -62,7 +62,7 @@ export function StandingsTable({
                 {getSortIcon('totalPoints')}
               </button>
             </th>
-            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
               <button 
                 className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                 onClick={() => onSort('showsPlayed')}
@@ -71,7 +71,7 @@ export function StandingsTable({
                 {getSortIcon('showsPlayed')}
               </button>
             </th>
-            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
               <button 
                 className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                 onClick={() => onSort('avgPointsPerShow')}
@@ -80,7 +80,7 @@ export function StandingsTable({
                 {getSortIcon('avgPointsPerShow')}
               </button>
             </th>
-            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
               <button 
                 className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                 onClick={() => onSort('songsPicked')}
@@ -89,7 +89,7 @@ export function StandingsTable({
                 {getSortIcon('songsPicked')}
               </button>
             </th>
-            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
               <button 
                 className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                 onClick={() => onSort('setsPicked')}
@@ -98,7 +98,7 @@ export function StandingsTable({
                 {getSortIcon('setsPicked')}
               </button>
             </th>
-            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
               <button 
                 className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                 onClick={() => onSort('showOpenersPicked')}
@@ -107,7 +107,7 @@ export function StandingsTable({
                 {getSortIcon('showOpenersPicked')}
               </button>
             </th>
-            <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
+            <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
               <button 
                 className="flex items-center justify-center gap-1 cursor-pointer hover:bg-black/10 px-2 py-0.5 rounded mx-auto"
                 onClick={() => onSort('showClosersPicked')}
@@ -119,45 +119,43 @@ export function StandingsTable({
           </tr>
         </thead>
 
-        <tbody className="divide-y divide-black/5">
+        <tbody>
           {standings.map((player, index) => (
             <tr 
               key={player.userId} 
               className={`
                 ${user && player.userId === user.id 
                   ? 'bg-tertiary/80' 
-                  : index % 2 === 0 
-                    ? 'bg-primary' 
-                    : 'bg-canvas'
+                  : 'bg-primary'
                 } 
-                hover:bg-tertiary/40 transition-colors
+                hover:bg-tertiary/40 transition-colors text-[0.625rem]
               `}
             >
-              <td className="px-1 py-0.5 text-xs text-center font-medium text-fifth">
+              <td className="px-2 text-center font-medium text-fifth">
                 {index + 1}
               </td>
-              <td className="px-3 py-0.5 whitespace-normal font-medium text-xs text-fifth">
+              <td className="px-2 whitespace-normal font-medium text-fifth">
                 {player.username}
               </td>
-              <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-medium text-fourth">
+              <td className="px-2 whitespace-nowrap text-center font-medium text-fourth">
                 {player.totalPoints}
               </td>
-              <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-light text-fifth">
+              <td className="px-2 whitespace-nowrap text-center font-light text-fifth">
                 {player.showsPlayed}
               </td>
-              <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-light text-fifth">
+              <td className="px-2 whitespace-nowrap text-center font-light text-fifth">
                 {player.avgPointsPerShow.toFixed(2)}
               </td>
-              <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-light text-fifth">
+              <td className="px-2 whitespace-nowrap text-center font-light text-fifth">
                 {player.songsPicked}
               </td>
-              <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-light text-fifth">
+              <td className="px-2 whitespace-nowrap text-center font-light text-fifth">
                 {player.setsPicked}
               </td>
-              <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-light text-fifth">
+              <td className="px-2 whitespace-nowrap text-center font-light text-fifth">
                 {player.showOpenersPicked}
               </td>
-              <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-light text-fifth">
+              <td className="px-2 whitespace-nowrap text-center font-light text-fifth">
                 {player.showClosersPicked}
               </td>
             </tr>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { cleanSongName, getColumnBackgroundColor, groupShowsByYear } from '../utils/songMatrixUtils';
+import { getColumnBackgroundColor, groupShowsByYear } from '../utils/songMatrixUtils';
 
 interface SongMatrixTableProps {
   songMatrix: any;
@@ -23,10 +23,10 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
       <table className="w-full border-collapse min-w-max">
         <thead>
           {/* Year headers row */}
-          <tr className="bg-canvas border-y border-secondary">
+          <tr className="bg-canvas border-y border-[#b4b2b2]">
             {/* Song cell that spans both rows */}
             <th 
-              className="px-2 py-1 text-left text-xs font-medium text-fifth border-l border-r border-secondary"
+              className="px-2 py-0.5 text-left text-xs font-medium text-fifth border-l border-r border-fourth"
               rowSpan={2}
               style={{ 
                 verticalAlign: 'bottom',
@@ -45,7 +45,7 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
                 <th 
                   key={`year-${i}`} 
                   colSpan={colSpan}
-                  className="px-1 py-1 text-center text-xs font-semibold text-fifth"
+                  className="px-1 py-0.5 text-center text-xs font-semibold text-fifth"
                   style={{
                     borderRight: '1px solid rgb(180, 178, 178)',
                     borderTop: '1px solid rgb(180, 178, 178)'
@@ -68,7 +68,7 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
           </tr>
           
           {/* Date headers row */}
-          <tr className="bg-canvas border-y border-secondary">
+          <tr className="bg-canvas border-y border-[#b4b2b2]">
             {songMatrix.showDates.map((date, index) => {
               // Find the corresponding show from the shows array
               const showId = shows[index]?.show_id || "";
@@ -76,10 +76,10 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
               return (
                 <th 
                   key={index} 
-                  className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap" 
+                  className="px-1 py-0.5 text-center text-xs font-medium text-fifth whitespace-nowrap" 
                   style={{ 
                     width: 'min-content',
-                    borderRight: '1px solid rgb(180, 178, 178)'
+                    borderRight: '1px solid #b4b2b2'
                   }}
                 >
                   <button 
@@ -100,7 +100,7 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
             return (
               <tr 
                 key={song} 
-                className={songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'}
+                className={`${songIndex % 2 === 0 ? 'bg-primary' : 'bg-primary'} hover:bg-tertiary/40`}
               >
                 <td 
                   className="text-fifth whitespace-nowrap font-semibold text-xs border"
@@ -113,9 +113,9 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
                         navigate(`/song/${songId}`);
                       }
                     }}
-                    className="text-[.875rem] leading-[1rem] pb-1 px-2 font-trad hover:underline transition-colors cursor-pointer"
+                    className="text-[0.625rem] px-2 font-medium hover:underline transition-colors cursor-pointer"
                   >
-                    {cleanSongName(song)}
+                    {song}
                   </button>
                 </td>
                 
@@ -130,7 +130,7 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
                       style={{ backgroundColor: bgColor, borderColor: 'rgb(180, 178, 178)' }}
                     >
                       {performance && (
-                        <div className="w-full h-full flex items-center justify-center text-primary text-xs font-medium">
+                        <div className="w-full h-full flex items-center justify-center text-white text-xs font-medium">
                           {performance.venueAppearanceCount}
                         </div>
                       )}

@@ -90,15 +90,15 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
-      <div className="bg-primary border border-secondary rounded-lg p-3 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+      <div className="bg-primary border border-fourth rounded-lg p-3 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
         {/* Loading Overlay */}
         {isSubmitting && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 rounded-lg">
-            <div className={`px-6 py-3 rounded-lg border border-secondary transition-colors ${
-              saveStatus === 'processing' ? 'bg-black text-primary' :
-              saveStatus === 'done' ? 'bg-green-600 text-primary' :
-              saveStatus === 'error' ? 'bg-red-600 text-primary' :
-              'bg-fourth text-primary'
+            <div className={`px-6 py-3 rounded-lg border border-fourth transition-colors ${
+              saveStatus === 'processing' ? 'bg-black text-white' :
+              saveStatus === 'done' ? 'bg-green-600 text-white' :
+              saveStatus === 'error' ? 'bg-red-600 text-white' :
+              'bg-fourth text-white'
             }`}>
               <span className="text-lg font-semibold">
                 {saveStatus === 'processing' ? 'Processing...' :
@@ -111,7 +111,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
         )}
         
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
             {isNewEntry ? 'Add Setlist Entry' : 'Edit Setlist Entry'}
           </h3>
           <div className="flex gap-2">
@@ -120,7 +120,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                 <button
                   onClick={toggleEdit}
                   disabled={isSubmitting}
-                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-blue-500 text-primary text-fifth hover:bg-blue-500/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
+                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-blue-500 text-white text-fifth hover:bg-blue-500/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
                 >
                   {isEditing ? (
                     <>
@@ -138,7 +138,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                   <button
                     onClick={handleDelete}
                     disabled={isSubmitting}
-                    className={`flex text-primary items-center justify-center w-10 h-10 rounded-md border ${
+                    className={`flex text-white items-center justify-center w-10 h-10 rounded-md border ${
                       isDeleteConfirming 
                         ? 'bg-green-500 hover:bg-green-600 border-secondary' 
                         : 'bg-red-500 hover:bg-red-600 border-secondary'
@@ -158,7 +158,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               <button
                 onClick={handleSaveChanges}
                 disabled={isSubmitting || !editedEntry?.entry_set || !editedEntry?.entry_song}
-                className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/80 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
+                className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/80 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
               >
                 <Save className="w-5 h-5" />
                 {isSubmitting && <span className="ml-1">...</span>}
@@ -166,7 +166,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-secondary"
+              className="flex items-center justify-center w-10 h-10 rounded-md bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth"
             >
               <X className="w-5 h-5" />
             </button>
@@ -228,7 +228,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               onChange={handleInputChange}
               readOnly={!isEditing && !isNewEntry}
               rows={4}
-              className={`w-full font-light px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+              className={`w-full font-light px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
             />
           </div>
 
@@ -240,7 +240,7 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
               onChange={(e) => setSelectedNewSongOption(e.target.value)}
               disabled={!isEditing && !isNewEntry}
               className={`w-full font-light px-2 py-2 rounded-md border ${
-                isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'
+                isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'
               } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
             >
               <option value="N/A">N/A</option>

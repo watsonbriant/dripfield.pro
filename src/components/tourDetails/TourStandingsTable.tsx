@@ -1,5 +1,3 @@
-import React from 'react';
-import { Trophy } from 'lucide-react';
 import { PlayerStats } from '../../hooks/useTourDetails';
 
 interface TourStandingsTableProps {
@@ -8,111 +6,117 @@ interface TourStandingsTableProps {
 }
 
 export function TourStandingsTable({ standings, currentUserId }: TourStandingsTableProps) {
+    if (standings.length === 0) {
+        return (
+            <div className="bg-primary border border-fourth">
+                <div className="bg-tertiary text-fifth px-2 py-0.5">
+                    <h2 className="text-sm font-semibold">
+                        Standings
+                    </h2>
+                </div>
+                <div className="px-2 py-1 text-center">
+                    <p className="text-fifth text-[0.625rem]">No standings available yet for this tour.</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="bg-primary border border-secondary rounded-lg p-3">
-            <div className="flex items-center gap-2">
-                <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-2">
-                    <Trophy className="w-5 h-5 mr-2" />
-                    <span>Standings</span>
+        <div className="bg-primary border border-fourth">
+            <div className="bg-tertiary text-fifth px-2 py-0.5">
+                <h2 className="text-sm font-semibold">
+                    Standings
                 </h2>
             </div>
 
-            {standings.length === 0 ? (
-                <div className="text-center py-8">
-                    <p className="text-fifth">No standings available yet for this tour.</p>
-                </div>
-            ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse min-w-max table-fixed">
-                        <colgroup>
-                            <col className="w-12" />
-                            <col className="w-44" />
-                            <col className="w-[65px] min-w-[65px]" />
-                            <col className="w-[65px] min-w-[65px]" />
-                            <col className="w-[65px] min-w-[65px]" />
-                            <col className="w-[65px] min-w-[65px]" />
-                            <col className="w-[65px] min-w-[65px]" />
-                            <col className="w-[65px] min-w-[65px]" />
-                            <col className="w-[65px] min-w-[65px]" />
-                        </colgroup>
-                        <thead>
-                            <tr className="bg-canvas border-y border-secondary/10">
-                                <th className="px-1 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap text-center">
-                                    Rank
-                                </th>
-                                <th className="px-3 py-1 text-left text-xs font-semibold text-fifth whitespace-nowrap">
-                                    User
-                                </th>
-                                <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
-                                    Total Points
-                                </th>
-                                <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
-                                    Shows Played
-                                </th>
-                                <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
-                                    Points Per Show
-                                </th>
-                                <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
-                                    Songs Picked
-                                </th>
-                                <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
-                                    Sets Picked
-                                </th>
-                                <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
-                                    Openers
-                                </th>
-                                <th className="px-0.5 py-1 text-center text-xs font-semibold text-fifth">
-                                    Closers
-                                </th>
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                    <colgroup>
+                        <col className="w-12" />
+                        <col />
+                        <col className="min-w-[56px]" />
+                        <col className="min-w-[56px]" />
+                        <col className="min-w-[56px]" />
+                        <col className="min-w-[56px]" />
+                        <col className="min-w-[56px]" />
+                        <col className="min-w-[56px]" />
+                        <col className="min-w-[56px]" />
+                    </colgroup>
+                    <thead>
+                        <tr className="bg-canvas border-y border-white/10">
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Rank
+                            </th>
+                            <th className="px-2 py-0.5 text-left text-xs leading-[0.75rem] font-medium text-fifth">
+                                User
+                            </th>
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Total Points
+                            </th>
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Shows Played
+                            </th>
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Points Per Show
+                            </th>
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Songs Picked
+                            </th>
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Sets Picked
+                            </th>
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Openers
+                            </th>
+                            <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth">
+                                Closers
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {standings.map((player, index) => (
+                            <tr
+                                key={player.userId}
+                                className={`
+                                    ${currentUserId && player.userId === currentUserId
+                                    ? 'bg-tertiary/80'
+                                    : 'bg-primary'
+                                    } 
+                                    hover:bg-tertiary/40 transition-colors text-[0.625rem]
+                                `}
+                            >
+                                <td className="w-12 px-2 text-center font-medium text-fifth whitespace-nowrap">
+                                    {index + 1}
+                                </td>
+                                <td className="px-2 whitespace-normal font-medium text-fifth">
+                                    {player.username}
+                                </td>
+                                <td className="min-w-[56px] px-2 whitespace-nowrap text-center font-medium text-fourth">
+                                    {player.totalPoints}
+                                </td>
+                                <td className="min-w-[56px] px-2 whitespace-nowrap text-center font-light text-fifth">
+                                    {player.showsPlayed}
+                                </td>
+                                <td className="min-w-[56px] px-2 whitespace-nowrap text-center font-light text-fifth">
+                                    {player.avgPointsPerShow.toFixed(2)}
+                                </td>
+                                <td className="min-w-[56px] px-2 whitespace-nowrap text-center font-light text-fifth">
+                                    {player.songsPicked}
+                                </td>
+                                <td className="min-w-[56px] px-2 whitespace-nowrap text-center font-light text-fifth">
+                                    {player.setsPicked}
+                                </td>
+                                <td className="min-w-[56px] px-2 whitespace-nowrap text-center font-light text-fifth">
+                                    {player.showOpenersPicked}
+                                </td>
+                                <td className="min-w-[56px] px-2 whitespace-nowrap text-center font-light text-fifth">
+                                    {player.showClosersPicked}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-black/5">
-                            {standings.map((player, index) => (
-                                <tr
-                                    key={player.userId}
-                                    className={`
-                                        ${currentUserId && player.userId === currentUserId
-                                        ? 'bg-tertiary/80'
-                                        : index % 2 === 0
-                                        ? 'bg-primary'
-                                        : 'bg-canvas'
-                                        } 
-                                    hover:bg-tertiary/40 transition-colors
-                                    `}
-                                >
-                                    <td className="px-1 py-0.5 text-xs text-center font-medium text-fifth">
-                                        {index + 1}
-                                    </td>
-                                    <td className="px-3 py-0.5 whitespace-normal font-medium text-xs text-fifth">
-                                        {player.username}
-                                    </td>
-                                    <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-medium text-fourth">
-                                        {player.totalPoints}
-                                    </td>
-                                    <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
-                                        {player.showsPlayed}
-                                    </td>
-                                    <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
-                                        {player.avgPointsPerShow.toFixed(2)}
-                                    </td>
-                                    <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
-                                        {player.songsPicked}
-                                    </td>
-                                    <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
-                                        {player.setsPicked}
-                                    </td>
-                                    <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
-                                        {player.showOpenersPicked}
-                                    </td>
-                                    <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center text-fifth font-light">
-                                        {player.showClosersPicked}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

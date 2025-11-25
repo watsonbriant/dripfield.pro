@@ -1,5 +1,4 @@
 import React from 'react';
-import { Award } from 'lucide-react';
 import { PlayerStats } from '../../hooks/useSetlistGameShowData';
 
 interface StandingsTableProps {
@@ -11,24 +10,26 @@ interface StandingsTableProps {
 export function StandingsTable({ standings, user, onViewOtherUserSubmission }: StandingsTableProps) {
   if (standings.length === 0) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-3 gap-2">
-          <Award className="w-5 h-5 text-fifth" />
-          <span>Standings</span>
-        </h2>
-        <div className="text-center py-8">
-          <p className="text-fifth">No standings available yet.</p>
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-medium">
+            Standings
+          </h2>
+        </div>
+        <div className="px-2 py-1 text-center">
+          <p className="text-fifth text-[0.625rem]">No standings available yet.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-3 gap-2">
-        <Award className="w-5 h-5 text-fifth" />
-        <span>Standings</span>
-      </h2>
+    <div className="bg-primary border border-fourth">
+      <div className="bg-tertiary text-fifth px-2 py-0.5">
+        <h2 className="text-sm font-medium">
+          Standings
+        </h2>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse min-w-max table-fixed"> 
@@ -42,81 +43,74 @@ export function StandingsTable({ standings, user, onViewOtherUserSubmission }: S
             <col className="w-[65px] min-w-[65px]" />
           </colgroup>
           <thead>
-            <tr className="bg-canvas border-y border-secondary/10">
-              <th className="px-1 py-2 text-left text-xs font-semibold text-fifth whitespace-nowrap text-center">
+            <tr className="bg-canvas border-y border-white/10">
+              <th className="px-2 py-0.5 text-center text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">
                 Rank
               </th>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-fifth whitespace-nowrap">
+              <th className="px-2 py-1 text-left text-xs leading-[0.75rem] font-medium text-fifth whitespace-nowrap">
                 User
               </th>
-              <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
+              <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
                 Total Points
               </th>
-              <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
+              <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
                 Songs Picked
               </th>
-              <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
+              <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
                 Sets Picked
               </th>
-              <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
+              <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
                 Show Opener
               </th>
-              <th className="px-0.5 py-2 text-center text-xs font-semibold text-fifth">
+              <th className="px-2 py-1 text-center text-xs leading-[0.75rem] font-medium text-fifth">
                 Show Closer
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-black/5">
+          <tbody>
             {standings.map((player, index) => (
               <tr
                 key={player.userId}
                 className={`
                   ${user && player.userId === user.id
-                    ? 'bg-tertiary/80 text-fifth'
-                    : index % 2 === 0
-                      ? 'bg-primary'
-                      : 'bg-canvas'
+                    ? 'bg-tertiary/80'
+                    : 'bg-primary'
                   } 
-                  hover:bg-tertiary/40 transition-colors
+                  hover:bg-tertiary/40 transition-colors text-[0.625rem]
                 `}
               >
-                <td className="px-1 py-0.5 text-xs text-center font-medium"
-                  style={{ color: 'black' }}>
+                <td className="px-2 text-center font-medium text-fifth">
                   {index + 1}
                 </td>
-                <td className="px-3 py-0.5 whitespace-normal font-medium text-xs"
-                  style={{ color: 'black' }}>
+                <td className="px-2 whitespace-normal font-medium text-fifth">
                   <button
                     onClick={() => onViewOtherUserSubmission(player.userId, player.username)}
-                    className="hover:underline transition-colors focus:outline-none"
+                    className="hover:underline transition-colors focus:outline-none text-left"
                   >
                     {player.username}
                   </button>
                 </td>
-                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center font-medium"
-                  style={{ color: '#8e6c7a' }}>
+                <td className="px-2 whitespace-nowrap text-center font-medium text-fourth">
                   {player.totalPoints}
                 </td>
-                <td className="px-0.5 py-0.5 whitespace-nowrap font-light text-xs text-center"
-                  style={{ color: 'black' }}>
+                <td className="px-2 whitespace-nowrap font-light text-center text-fifth">
                   {player.songsPicked}
                 </td>
-                <td className="px-0.5 py-0.5 whitespace-nowrap font-light text-xs text-center"
-                  style={{ color: 'black' }}>
+                <td className="px-2 whitespace-nowrap font-light text-center text-fifth">
                   {player.setsPicked}
                 </td>
-                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center">
+                <td className="px-2 whitespace-nowrap text-center">
                   {player.showOpenerPicked ? (
-                    <div className="w-4 h-4 rounded-full bg-green-600 mx-auto" />
+                    <div className="w-3 h-3 rounded-full bg-green-600 mx-auto" />
                   ) : (
-                    <div className="w-4 h-4 rounded-full bg-red-600 mx-auto" />
+                    <div className="w-3 h-3 rounded-full bg-red-600 mx-auto" />
                   )}
                 </td>
-                <td className="px-0.5 py-0.5 whitespace-nowrap text-xs text-center">
+                <td className="px-2 whitespace-nowrap text-center">
                   {player.showCloserPicked ? (
-                    <div className="w-4 h-4 rounded-full bg-green-600 mx-auto" />
+                    <div className="w-3 h-3 rounded-full bg-green-600 mx-auto" />
                   ) : (
-                    <div className="w-4 h-4 rounded-full bg-red-600 mx-auto" />
+                    <div className="w-3 h-3 rounded-full bg-red-600 mx-auto" />
                   )}
                 </td>
               </tr>

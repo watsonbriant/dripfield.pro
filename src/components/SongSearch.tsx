@@ -100,28 +100,31 @@ export function SongSearch({ className = '' }: SongSearchProps) {
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       <div className="md:hidden">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-md bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
-        >
-          <Search className="w-6 h-6" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full px-1.5 py-0.5 pr-8 rounded-md border border-fourth bg-canvas font-semibold text-fifth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-left flex items-center"
+          >
+            Search
+          </button>
+          <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-fifth pointer-events-none" />
+        </div>
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           title="Select Song"
         >
           <div className="space-y-0">
-            <div className="sticky -top-4 bg-primary py-4">
+            <div className="sticky bg-primary py-1">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search songs..."
-                className="w-full px-4 py-2 rounded-md border border-secondary bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
+                className="w-full px-1.5 py-0.5 text-sm rounded-md border border-fourth bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
               />
             </div>
-            <div className="divide-y divide-black/10">
+            <div>
               {filteredSongs.map((song) => (
                 <button
                   key={song.song_id}
@@ -131,13 +134,13 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                     setSearchTerm('');
                     navigate(`/song/${song.song_id}`);
                   }}
-                  className="w-full text-left px-4 py-1 text-sm rounded-md hover:bg-black/10 transition-colors font-medium text-fifth"
+                  className="w-full text-left px-2 py-1 text-xs leading-[0.875rem] hover:bg-black/10 transition-colors font-medium text-fifth"
                 >
                   {song.song}
                 </button>
               ))}
               {filteredSongs.length === 0 && (
-                <div className="px-4 py-2 text-sm text-fifth/60 italic">
+                <div className="px-2 py-1 text-sm text-fifth italic">
                   No songs found
                 </div>
               )}
@@ -148,29 +151,29 @@ export function SongSearch({ className = '' }: SongSearchProps) {
       <div className="hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
+          className="flex items-center gap-2 bg-canvas text-fifth px-1.5 py-0.5 rounded-lg border border-fourth hover:bg-primary transition-colors text-xs font-semibold"
         >
           {selectedSong || 'Search'}
-          <ChevronDown className="w-4 h-4" />
+          <Search className="w-3 h-3" />
         </button>
       </div>
       {isDropdownOpen && (
-        <div className={`absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto ${
+        <div className={`absolute right-0 mt-2 bg-canvas border border-fourth shadow-lg z-50 overflow-y-auto ${
           window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-64 max-h-96'
         }`}>
-          <div className="p-2">
+          <div className="p-1">
             <div className="relative">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search songs..."
-                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-fifth text-sm focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
+                className="w-full px-1.5 py-0.5 pr-8 rounded-md border border-fourth bg-primary text-fifth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
+              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-fifth" />
             </div>
           </div>
-          <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+          <div className="max-h-64 overflow-y-auto">
             {filteredSongs.map((song) => (
               <button
                 key={song.song_id}
@@ -180,13 +183,13 @@ export function SongSearch({ className = '' }: SongSearchProps) {
                   setSearchTerm('');
                   navigate(`/song/${song.song_id}`);
                 }}
-                className="w-full text-left px-4 py-1 text-sm text-fifth font-medium leading-[1rem] hover:bg-canvas transition-colors"
+                className="w-full text-left px-2 py-1 text-xs text-fifth font-medium leading-[0.875rem] hover:bg-primary transition-colors"
               >
                 {song.song}
               </button>
             ))}
             {filteredSongs.length === 0 && (
-              <div className="px-4 py-2 text-sm text-fifth/60 italic">
+              <div className="px-4 py-1 text-xs text-fifth italic">
                 No songs found
               </div>
             )}

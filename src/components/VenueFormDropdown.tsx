@@ -39,7 +39,7 @@ export const VenueFormDropdown: React.FC<VenueFormDropdownProps> = ({
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={onToggle}
-                className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm text-left flex items-center justify-between"
+                className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm text-left flex items-center justify-between"
             >
                 <span className="truncate">
                     {selectedVenue || 'Select venue...'}
@@ -48,7 +48,7 @@ export const VenueFormDropdown: React.FC<VenueFormDropdownProps> = ({
             </button>
 
             {isOpen && (
-                <div className="absolute left-0 mt-1 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-full max-h-60 overflow-y-auto">
+                <div className="absolute left-0 mt-1 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-full max-h-60 overflow-y-auto">
                     <div className="p-2">
                         <div className="relative">
                             <input
@@ -56,7 +56,7 @@ export const VenueFormDropdown: React.FC<VenueFormDropdownProps> = ({
                                 value={searchTerm}
                                 onChange={(e) => onSearchChange(e.target.value)}
                                 placeholder="Search venues..."
-                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                             />
                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                         </div>

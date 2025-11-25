@@ -326,12 +326,12 @@ export function Song() {
 
   if (loading) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
+      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-lg bg-tertiary animate-pulse"></div>
-            <div className="w-4 h-4 rounded-lg bg-tertiary animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-lg bg-tertiary animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
           <p className="text-fifth mt-4">Loading song data...</p>
         </div>
@@ -341,8 +341,8 @@ export function Song() {
 
   if (!song) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
+      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <p className="text-fifth">Song not found</p>
         </div>
       </div>
@@ -350,13 +350,23 @@ export function Song() {
   }
 
   return (
-    <div className={`${song.song_lyrics ? "max-w-[936px] xl:max-w-[1280px]" : "max-w-[936px]"} mx-auto`}>
-      <SongHeader songName={song.song} />
+    <div className="max-w-[1280px]">
+      <div className={`grid grid-cols-1 gap-2 space-y-0 ${
+        song.song_lyrics 
+          ? "lg:grid-cols-[936px_1fr]" 
+          : "lg:grid-cols-[936px]"
+      }`}>
+        <div className={song.song_lyrics ? "xl:col-span-2" : ""}>
+          <SongHeader songName={song.song} />
+        </div>
+      </div>
     
-      <div className={`${song.song_lyrics 
-        ? "grid grid-cols-1 gap-4 space-y-0 xl:grid-cols-[minmax(936px,1fr)_1fr]" 
-        : "space-y-4"} mb-8`}>
-        <div className="space-y-4">
+      <div className={`grid grid-cols-1 gap-2 space-y-0 ${
+        song.song_lyrics 
+          ? "lg:grid-cols-[936px_1fr]" 
+          : "lg:grid-cols-[936px]"
+      } mb-8`}>
+        <div className="space-y-2">
           <SongInfo 
             song={song}
             stats={stats}
@@ -374,7 +384,7 @@ export function Song() {
           />
         </div>
 
-        <SongLyrics lyrics={song.song_lyrics} />
+        {song.song_lyrics && <SongLyrics lyrics={song.song_lyrics} />}
       </div>
     </div>
   );

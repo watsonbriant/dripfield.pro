@@ -96,8 +96,8 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">Song Matrix</h2>
+      <div className="bg-primary border border-fourth rounded-lg p-3">
+        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">Song Matrix</h2>
         <div className="flex justify-center items-center h-40">
           <div className="animate-pulse text-fifth">{getLoadingMessage(!!isOwnProfile, username)}</div>
         </div>
@@ -107,8 +107,8 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
 
   if (errorMessage) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">{getTitle(songMatrix.songs.length, !!isOwnProfile, username)}</h2>
+      <div className="bg-primary border border-fourth rounded-lg p-3">
+        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">{getTitle(songMatrix.songs.length, !!isOwnProfile, username)}</h2>
         <div className="text-center py-6 text-red-500">{getErrorMessage(errorMessage, !!isOwnProfile, username)}</div>
       </div>
     );
@@ -121,8 +121,8 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
 
   if (noShows) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
+      <div className="bg-primary border border-fourth rounded-lg p-3">
+        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
         <div className="text-center py-6 text-fifth">
           {getNoShowsMessage(!!isOwnProfile, username)}
         </div>
@@ -132,18 +132,18 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
 
   if (noSongData) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
+      <div className="bg-primary border border-fourth rounded-lg p-3">
+        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
         <div className="text-center py-6 text-fifth">{getNoSongDataMessage(!!isOwnProfile, username)}</div>
       </div>
     );
   }
   
   return (
-    <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-fourth rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">
+          <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">
             {getTitle(songMatrix.songs.length, !!isOwnProfile, username)}
           </h2>
           <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             <tr className="bg-canvas border-y border-[#b4b2b2]">
               {/* Song cell that spans both rows */}
               <th 
-                className="px-2 py-1 text-left text-xs font-medium text-fifth border-l border-r border-secondary"
+                className="px-2 py-1 text-left text-xs font-medium text-fifth border-l border-r border-fourth"
                 rowSpan={2}
                 style={{ 
                   verticalAlign: 'bottom'
@@ -219,7 +219,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                 return (
                   <th 
                     key={index} 
-                    className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border-l border-r border-secondary" 
+                    className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border-l border-r border-fourth" 
                     style={{ 
                       width: 'min-content'
                     }}

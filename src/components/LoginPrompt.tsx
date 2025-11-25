@@ -3,10 +3,14 @@ import { Link } from 'react-router-dom';
 
 export function LoginPrompt() {
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <h2 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-4 py-1 rounded-lg border border-secondary whitespace-nowrap mb-3">How To Play</h2>
-      <div className="p-3 bg-tertiary/20 rounded border border-tertiary">
-        <p className="text-fifth font-light text-sm">
+    <div className="bg-primary border border-fourth">
+      <div className="bg-tertiary text-fifth px-2 py-0.5">
+        <h2 className="text-sm font-semibold">
+          How To Play
+        </h2>
+      </div>
+      <div className="p-2">
+        <p className="text-fifth font-light text-[0.625rem]">
           You need to be logged in to participate in Echo of a Show.{' '}
           <Link to="/login" className="font-medium hover:underline">
             Log in

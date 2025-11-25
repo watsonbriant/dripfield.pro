@@ -61,7 +61,7 @@ const UserSlots: React.FC<UserSlotsProps> = ({ userId }) => {
 
   return (
     <div>
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <SlotsTable 
           slots={slots}
           activeColumns={activeColumns}

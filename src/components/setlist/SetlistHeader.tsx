@@ -48,7 +48,7 @@ export const SetlistHeader: React.FC<SetlistHeaderProps> = ({
 }) => {
   return (
     <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
+      <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">
         Setlist
       </h1>
       <div className="flex items-center gap-4">

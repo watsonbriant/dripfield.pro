@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import coverImage from '../img/Cover.jpg';
-import cover2 from '../img/Cover2.jpg';
 import { HomeShowTable } from './HomeShowTable';
 import { MostRecentShow } from './MostRecentShow';
 import { StatsSection } from './StatsSection';
 import { useShowsData } from '../hooks/useShowsData';
 import { useStatsData } from '../hooks/useStatsData';
 import { useShowMetadata } from '../hooks/useShowMetadata';
+import cover7Image from '../img/Cover7.png';
 
 export function Home() {
   const [selectedYear, setSelectedYear] = useState<number | string>(new Date().getFullYear());
@@ -53,7 +52,7 @@ export function Home() {
 
 
   return (
-    <div className="max-w-[1280px] mx-auto">
+    <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
       {!isSupabaseConfigured() && (
         <div className="bg-primary border border-white/10 rounded-lg p-4 mb-6">
           <p className="text-fifth">
@@ -62,78 +61,71 @@ export function Home() {
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row">
+      <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Column */}
-        <div className="w-full lg:w-[43%] space-y-4 mr-4">
-          {/* Logo container */}
-          <div className="h-auto md:h-[204.05px] overflow-hidden rounded-lg flex items-center justify-center">
-            <img
-              src={cover2}
-              alt="Dripfield.pro logo"
-              className="hidden md:block h-full w-auto border border-secondary rounded-lg object-contain"
+        <div className="w-full lg:w-[20%]">
+          <div className="border border-fourth">
+            <HomeShowTable
+              title="Last 5 Shows"
+              shows={recentShows}
+              loading={loading}
+              showsWithSetlists={showsWithSetlists}
+              showsWithReleases={showsWithReleases}
             />
-            <img
-              src={cover2}
-              alt="Dripfield.pro logo"
-              className="block md:hidden h-auto w-auto border border-secondary rounded-lg"
+
+            <MostRecentShow
+              mostRecentShow={mostRecentShow as any}
+              setlist={setlist}
+              loadingMostRecent={loadingMostRecent}
+              loadingSetlist={loadingSetlist}
+            />
+
+            <HomeShowTable
+              title="Next 5 Shows"
+              shows={upcomingShows}
+              loading={loadingUpcoming}
+              showsWithSetlists={showsWithSetlists}
+              showsWithReleases={showsWithReleases}
+            />
+
+            <HomeShowTable
+              title="This Day in Goose History"
+              shows={historicalShows}
+              loading={loadingHistorical}
+              emptyMessage="No shows occurred on this date in Goose history."
+              showsWithSetlists={showsWithSetlists}
+              showsWithReleases={showsWithReleases}
             />
           </div>
+        </div>
 
-          <HomeShowTable
-            title="Last 5 Shows"
-            shows={recentShows}
-            loading={loading}
-            showsWithSetlists={showsWithSetlists}
-            showsWithReleases={showsWithReleases}
-          />
-
-          <MostRecentShow
-            mostRecentShow={mostRecentShow as any}
-            setlist={setlist}
-            loadingMostRecent={loadingMostRecent}
-            loadingSetlist={loadingSetlist}
-          />
-
-          <HomeShowTable
-            title="Next 5 Shows"
-            shows={upcomingShows}
-            loading={loadingUpcoming}
-            showsWithSetlists={showsWithSetlists}
-            showsWithReleases={showsWithReleases}
-          />
-
-          <HomeShowTable
-            title="This Day in Goose History"
-            shows={historicalShows}
-            loading={loadingHistorical}
-            emptyMessage="No shows occurred on this date in Goose history."
-            showsWithSetlists={showsWithSetlists}
-            showsWithReleases={showsWithReleases}
-          />
+        {/* Middle Column */}
+        <div className="w-full lg:w-[60%] space-y-4">
+          <div className="bg-primary border border-fourth">
+            <img 
+              src={cover7Image} 
+              alt="Cover7" 
+              className="w-full h-auto"
+            />
+          </div>
         </div>
 
         {/* Right Column */}
-        <div className="w-full lg:w-[57%] space-y-4">
-          {/* Cover Image */}
-          <div className="hidden md:block overflow-hidden rounded-lg">
-            <img
-              src={coverImage}
-              alt="Dripfield.pro banner"
-              className="w-full h-full object-cover border border-secondary rounded-lg shadow-lg"
+        <div className="w-full lg:w-[20%]">
+          <div className="border border-fourth">
+            <StatsSection
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              topSongs={topSongs}
+              showOpeners={showOpeners}
+              setOpeners={setOpeners}
+              setClosers={setClosers}
+              encores={encores}
+              notPlayedSongs={notPlayedSongs}
+              isAnyStatLoading={isAnyStatLoading}
+              showYearSelector={false}
             />
           </div>
-
-          <StatsSection
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            topSongs={topSongs}
-            showOpeners={showOpeners}
-            setOpeners={setOpeners}
-            setClosers={setClosers}
-            encores={encores}
-            notPlayedSongs={notPlayedSongs}
-            isAnyStatLoading={isAnyStatLoading}
-          />
         </div>
       </div>
     </div>

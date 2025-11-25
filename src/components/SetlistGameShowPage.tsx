@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { SongSelectionModal } from './SongSelectionModal';
-import { ChevronRight, ArrowLeft } from 'lucide-react';
 import { useSetlistGameShowData, GameShow, SubmissionDetails } from '../hooks/useSetlistGameShowData';
 import { useTopSongsData, useTopOpenersData, useTopClosersData } from '../hooks/useTopSongsData';
 import { ShowHeader } from './setlistgame/ShowHeader';
 import { StandingsTable } from './setlistgame/StandingsTable';
 import { PicksSection } from './setlistgame/PicksSection';
 import { TopPicksSection } from './setlistgame/TopPicksSection';
+import { SetlistGameLoading } from './SetlistGameLoading';
 
 interface UserPick {
   song: string;
@@ -186,34 +186,9 @@ export function SetlistGameShowPage() {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto">
-      {/* Breadcrumbs */}
-      <div className="flex items-center mb-6 font-semibold text-sm text-fifth">
-        <Link to="/setlistgame" className="hover:underline transition-colors">
-          <div className="flex items-center bg-tertiary rounded-lg py-1 px-2 border border-secondary text-fifth">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Echo of a Show
-          </div>
-        </Link>
-        {show && show.show_tour && show.tours?.tour_id && (
-          <>
-            <ChevronRight className="w-4 h-4 mx-2" />
-            <Link to={`/setlistgame/tour/${show.tours.tour_id}`} className="hover:underline transition-colors bg-tertiary rounded-lg py-1 px-2 border border-secondary">
-              {show.show_tour}
-            </Link>
-          </>
-        )}
-      </div>
-
+    <div className="max-w-[1024px]">
       {loading ? (
-        <div className="text-center py-12">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
-          </div>
-          <p className="text-fifth mt-4">Loading show details...</p>
-        </div>
+        <SetlistGameLoading />
       ) : show ? (
         <div className="space-y-4">
           <ShowHeader 
@@ -222,6 +197,7 @@ export function SetlistGameShowPage() {
             userSubmission={userSubmission}
             user={user}
             onViewSubmission={handleViewSubmission}
+            tours={show.tours}
           />
 
           {show.show_scored ? (
@@ -248,8 +224,8 @@ export function SetlistGameShowPage() {
           />
         </div>
       ) : (
-        <div className="bg-primary border border-secondary rounded-lg p-3 text-center">
-          <p className="text-fifth">Show not found.</p>
+        <div className="bg-primary border border-fourth rounded-lg p-3 text-center">
+          <p className="text-fifth text-[0.625rem]">Show not found.</p>
         </div>
       )}
 

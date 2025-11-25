@@ -22,7 +22,7 @@ export const VenueForm: React.FC<VenueFormProps> = ({
                     value={editedVenue?.venue || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                     placeholder="Enter venue name"
                 />
             </div>
@@ -35,7 +35,7 @@ export const VenueForm: React.FC<VenueFormProps> = ({
                     value={editedVenue?.venue_location || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                     placeholder="Enter location"
                 />
             </div>
@@ -48,7 +48,7 @@ export const VenueForm: React.FC<VenueFormProps> = ({
                     value={editedVenue?.venue_address || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                     placeholder="Enter full address"
                 />
             </div>
@@ -61,7 +61,7 @@ export const VenueForm: React.FC<VenueFormProps> = ({
                     value={editedVenue?.venue_latitude || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                     placeholder="e.g., 40.7128"
                 />
             </div>
@@ -74,7 +74,7 @@ export const VenueForm: React.FC<VenueFormProps> = ({
                     value={editedVenue?.venue_longitude || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                     placeholder="e.g., -74.0060"
                 />
             </div>
@@ -87,7 +87,7 @@ export const VenueForm: React.FC<VenueFormProps> = ({
                     onChange={onInputChange}
                     readOnly={!isEditing}
                     rows={4}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                     placeholder="Enter any notes about this venue..."
                 />
             </div>
@@ -100,7 +100,7 @@ export const VenueForm: React.FC<VenueFormProps> = ({
                         checked={editedVenue?.venue_global || false}
                         onChange={onInputChange}
                         disabled={!isEditing}
-                        className="rounded border-secondary focus:ring-fourth"
+                        className="rounded border-fourth focus:ring-fourth"
                     />
                     Global Venue
                 </label>

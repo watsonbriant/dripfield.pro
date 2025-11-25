@@ -31,7 +31,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (loading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
           <p className="text-fifth mt-4">Loading Loose Ends...</p>
@@ -42,12 +42,12 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (error) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3 text-center py-12">
+      <div className="bg-primary border border-fourth rounded-lg p-3 text-center py-12">
         <p className="text-red-600 font-semibold">Error loading Loose Ends</p>
         <p className="text-fifth text-sm mt-2">{error}</p>
         <button 
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-fourth text-fifth rounded-lg border border-secondary"
+          className="mt-4 px-4 py-2 bg-fourth text-fifth rounded-lg border border-fourth"
         >
           Retry
         </button>
@@ -57,7 +57,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (categories.length === 0) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3 text-center py-12">
+      <div className="bg-primary border border-fourth rounded-lg p-3 text-center py-12">
         <p className="text-fifth">No Loose Ends found</p>
       </div>
     );
@@ -66,12 +66,12 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Loose Ends</h3>
+        <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Loose Ends</h3>
       </div>
       
       {categories.map((category) => (
         <div key={category} className="mb-10">
-          <h4 className={`text-lg font-semibold ${getCategoryColor(category)} ${getCategoryTextColor(category)} inline-block px-3 py-1 rounded-lg border border-secondary mb-2`}>
+          <h4 className={`text-lg font-semibold ${getCategoryColor(category)} ${getCategoryTextColor(category)} inline-block px-3 py-1 rounded-lg border border-fourth mb-2`}>
             {category}
           </h4>
           
@@ -88,7 +88,7 @@ export const LooseEnds: React.FC<{ userId: string }> = ({ userId }) => {
 
 const LooseEndCard: React.FC<{ looseEnd: LooseEnd }> = ({ looseEnd }) => {
   return (
-    <div className="bg-primary border border-secondary rounded-lg overflow-hidden hover:bg-[#d5e4e1] transition-all flex flex-col">
+    <div className="bg-primary border border-fourth rounded-lg overflow-hidden hover:bg-[#d5e4e1] transition-all flex flex-col">
       <div className="relative pb-[49.25%]">
         <img
           src={looseEnd.isCompleted && looseEnd.end_image_collected 
@@ -111,7 +111,7 @@ const LooseEndCard: React.FC<{ looseEnd: LooseEnd }> = ({ looseEnd }) => {
           </h3>
           
           {looseEnd.isCompleted && (
-            <span className="bg-[#006400] text-primary text-xs px-2 py-1 rounded-full ml-2 border border-secondary">
+            <span className="bg-[#006400] text-white text-xs px-2 py-1 rounded-full ml-2 border border-fourth">
               Collected
             </span>
           )}
@@ -127,7 +127,7 @@ const LooseEndCard: React.FC<{ looseEnd: LooseEnd }> = ({ looseEnd }) => {
               <span>{looseEnd.progress.seen}/{looseEnd.progress.total}</span>
               <span>{looseEnd.progress.percentage}%</span>
             </div>
-            <div className="w-full bg-gray-300 rounded-full h-2 overflow-hidden border border-secondary">
+            <div className="w-full bg-gray-300 rounded-full h-2 overflow-hidden border border-fourth">
               <div 
                 className={`h-2 ${looseEnd.isCompleted ? 'bg-[#006400]' : 'bg-fourth'}`}
                 style={{ width: `${looseEnd.progress.percentage}%` }}

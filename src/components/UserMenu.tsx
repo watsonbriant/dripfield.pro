@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { User, ChevronDown } from 'lucide-react';
@@ -13,6 +13,7 @@ export const UserMenu: React.FC = () => {
   const [username, setUsername] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const [sparkle, setSparkle] = useState({ show: false, x: 0, y: 0 });
   const sparkleTimeoutRef = useRef<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -106,7 +107,6 @@ export const UserMenu: React.FC = () => {
   const handleSignOut = async () => {
     await signOut();
     setIsOpen(false);
-    navigate('/login');
   };
 
   // Display initial of email if no username is available
@@ -121,13 +121,14 @@ export const UserMenu: React.FC = () => {
             e.preventDefault();
             window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
           }}
-          className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-full transition-colors border border-fifth mr-2 hidden md:block`}
+          className="relative px-1.5 py-0.5 text-sm font-medium text-white bg-fourth hover:bg-tertiary hover:text-fifth rounded-lg transition-colors border border-fourth mr-2 hidden md:block"
         >
           Donate
         </Link>
         <Link
           to="/login"
-          className={`relative px-3 pt-1 pb-1.5 ${isMobile ? 'text-sm' : 'text-xl'} font-trad text-fifth bg-tertiary hover:bg-tertiary/80 rounded-lg transition-colors border border-fifth`}
+          state={{ from: location }}
+          className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-tertiary text-fourth font-medium hover:bg-fourth hover:text-white transition-colors focus:outline-none border border-fourth"
           onClick={(e) => {
             // Only show sparkle on non-mobile
             if (!isMobile) {
@@ -173,11 +174,11 @@ export const UserMenu: React.FC = () => {
         href="https://x.com/dripfieldpro"
         target="_blank"
         rel="noopener noreferrer"
-        className="mr-4 text-fifth hover:border border border-primary hidden md:block hover:border-fifth rounded-lg p-0.5 hover:text-fifth hover:bg-tertiary bg-primary transition-colors"
+        className="mx-2 text-white hover:border border border-fifth hidden md:block hover:border-fourth rounded-lg px-1 hover:text-white hover:bg-fourth bg-fifth transition-colors transition-all duration-300 hover:drop-shadow-[2px_2px_0px_rgba(244,155,29,1)]"
       >
         <FontAwesomeIcon
           icon={faXTwitter}
-          size="2x"
+          size="1x"
         />
       </a>
 
@@ -187,22 +188,22 @@ export const UserMenu: React.FC = () => {
           e.preventDefault();
           window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
         }}
-        className={`relative px-3 pb-0.5 text-lg font-trad text-fifth bg-secondary hover:bg-secondary/70 rounded-lg transition-colors border border-fifth mr-2 hidden md:block`}
+        className={`relative px-1.5 py-0.5 text-sm font-medium text-fifth bg-fourth text-white hover:bg-tertiary hover:text-fifth rounded-lg transition-colors border border-fifth mr-2 hidden md:block`}
       >
         Donate
       </Link>
       <div className="relative" ref={menuRef}>
         <button
           type="button"
-          className="mt-0.5 relative inline-flex items-center gap-1 px-3 pt-1 pb-1.5 rounded-lg bg-tertiary text-fifth font-trad hover:bg-primary transition-colors focus:outline-none border border-fifth"
+          className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-tertiary text-fourth font-medium hover:bg-fourth hover:text-white transition-colors focus:outline-none border border-fourth"
           onClick={handleButtonClick}
         >
           {/* Show User icon on mobile, username on desktop */}
           <span className="md:hidden">
             <User className="w-5 h-5" />
           </span>
-          <span className="hidden md:inline text-xl truncate max-w-[120px]">
-            Profile
+          <span className="hidden md:inline text-sm">
+            {displayText}
           </span>
           <ChevronDown className="w-4 h-4" />
           
@@ -221,26 +222,23 @@ export const UserMenu: React.FC = () => {
         </button>
         
         {isOpen && (
-          <div className="absolute right-0 mt-2 bg-secondary border border-fifth rounded-lg shadow-lg z-50 overflow-y-auto w-48 font-medium">
-            <div className="w-full text-left px-4 py-1 text-base leading-tight bg-tertiary font-sans font-normal border-b border-fifth">
-              <span className="font-trad text-xl">{username || displayText}</span>
-            </div>
+          <div className="absolute right-0 mt-2 bg-canvas border border-fourth rounded-lg shadow-lg z-50 overflow-y-auto w-24 font-medium">
             <Link
               to="/profile"
-              className="w-full text-left px-4 pt-1 pb-0.5 text-[.875rem] leading-[1.125rem] hover:bg-surface-secondary hover:underline transition-colors block"
+              className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-tertiary hover:underline transition-colors block"
               onClick={() => setIsOpen(false)}
             >
               My Stats
             </Link>
             <Link
               to="/settings"
-              className="w-full text-left px-4 pt-1 pb-0.5 text-[.875rem] leading-[1.125rem] hover:bg-surface-secondary hover:underline transition-colors block"
+              className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-tertiary hover:underline transition-colors block"
               onClick={() => setIsOpen(false)}
             >
               Settings
             </Link>
             <button
-              className="w-full text-left px-4 pt-1 pb-0.5 text-[.875rem] leading-[1.125rem] hover:bg-surface-secondary hover:underline transition-colors block"
+              className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-tertiary hover:underline transition-colors block"
               onClick={handleSignOut}
             >
               Sign Out

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
 
@@ -23,16 +23,16 @@ interface LiberatedSong {
     category_artwork?: string;
 }
 
-const cleanSongName = (songName: string): string => {
-    return songName
-        .replace(/\[/g, '(')
-        .replace(/\]/g, ')')
-        .replace(/ñ/g, 'n')
-        .replace(/ü/g, 'u')
-        .replace(/–/g, '-')
-        .replace(/…/g, '...')
-        .replace(/∆/g, 'a');
-};
+// const cleanSongName = (songName: string): string => {
+//     return songName
+//         .replace(/\[/g, '(')
+//         .replace(/\]/g, ')')
+//         .replace(/ñ/g, 'n')
+//         .replace(/ü/g, 'u')
+//         .replace(/–/g, '-')
+//         .replace(/…/g, '...')
+//         .replace(/∆/g, 'a');
+// };
 
 const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
     showIds,
@@ -40,7 +40,6 @@ const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
     tourId = '',
     onDataLoaded
 }) => {
-    const navigate = useNavigate();
     const [liberatedSongs, setLiberatedSongs] = useState<LiberatedSong[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalSongData, setModalSongData] = useState<{
@@ -165,11 +164,6 @@ const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
         });
     };
 
-    const handleShowClick = (showId: string) => {
-        if (showId) {
-            navigate(`/setlist/${showId}`);
-        }
-    };
 
     // Don't render anything if there are no liberated songs
     if (!loading && liberatedSongs.length === 0) {
@@ -177,15 +171,15 @@ const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
     }
 
     return (
-        <div className="bg-primary border border-secondary rounded-lg p-3">
-            <div className="flex items-center mb-2 gap-2">
-                <h2 className="text-lg font-semibold bg-amber-300 text-fifth inline-block px-3 rounded-lg border border-secondary">
+        <div className="bg-primary border border-fourth pb-0.5">
+            <div className="text-black px-2 py-0.5 mb-0.5 flex justify-between items-center" style={{ backgroundColor: '#fbbf24' }}>
+                <h2 className="text-sm font-semibold">
                     Liberated Songs
                 </h2>
-                <h2 className="text-xs font-medium bg-secondary text-fifth inline-block px-1.5 py-0.5 rounded-lg border border-secondary">
+                <span className="text-xs font-medium">
                     <span className="hidden md:inline">Songs returning after ≥ 100 shows</span>
                     <span className="md:hidden">≥ 100 show gap</span>
-                </h2>
+                </span>
             </div>
             {loading ? (
                 <div className="text-center py-4">
@@ -194,26 +188,25 @@ const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse min-w-max">
-                        <tbody className="divide-y divide-white/5">
+                        <tbody>
                             {liberatedSongs.map((song, index) => (
                                 <tr
                                     key={`${song.entry_song}-${index}`}
-                                    className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                        } hover:bg-tertiary/40 transition-colors text-xs`}
+                                    className={`bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                                 >
-                                    <td className="px-4 pb-0.5 text-[1rem] leading-[1rem] font-trad">
+                                    <td className="pl-3 text-fifth">
                                         <div className="flex items-center justify-between">
                                             <span
-                                                className="text-fifth cursor-pointer hover:underline"
+                                                className="font-medium text-fifth cursor-pointer hover:underline leading-[0.75rem]"
                                                 onClick={() => handleSongClick(song.entry_song)}
                                             >
-                                                {cleanSongName(song.entry_song)}
+                                                {song.entry_song}
                                             </span>
                                             {song.category_artwork && (
                                                 <img
                                                     src={song.category_artwork}
                                                     alt={`${song.entry_song} artwork`}
-                                                    className="w-5 h-5 rounded object-cover border border-secondary ml-3"
+                                                    className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                                                     onError={(e) => {
                                                         // Hide the image if it fails to load
                                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -222,33 +215,41 @@ const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-4 py-0.5 text-fifth/70 text-center">
+                                    <td className="w-[50px] text-center font-medium text-fifth">
                                         {formatLength(song.entry_length)}
                                     </td>
-                                    <td className="px-4 py-0.5 text-fifth">
+                                    <td className="px-2 py-0.5 text-fifth font-light">
                                         {song.show_date && (
                                             <>
                                                 <span className="font-light">Returned&nbsp;&nbsp;</span>
-                                                <span
-                                                    onClick={() => handleShowClick(song.show_id || '')}
-                                                    className="font-medium cursor-pointer hover:underline"
-                                                >
-                                                    {formatDate(song.show_date)}
-                                                </span>
+                                                {song.show_id ? (
+                                                    <Link
+                                                        to={`/setlist/${song.show_id}`}
+                                                        className="font-medium cursor-pointer hover:underline"
+                                                    >
+                                                        {formatDate(song.show_date)}
+                                                    </Link>
+                                                ) : (
+                                                    <span className="font-medium">{formatDate(song.show_date)}</span>
+                                                )}
                                                 {song.venue_location && <span className="text-fifth/70 font-light">&nbsp;[{song.venue_location.replace(/[\[\]]/g, '')}]</span>}
                                             </>
                                         )}
                                     </td>
-                                    <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                                    <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                                         {song.last_show_date && (
                                             <>
                                                 <span className="font-light">LTP&nbsp;&nbsp;</span>
-                                                <span
-                                                    onClick={() => handleShowClick(song.last_show_id || '')}
-                                                    className="font-medium cursor-pointer hover:underline"
-                                                >
-                                                    {song.last_show_date}
-                                                </span>
+                                                {song.last_show_id ? (
+                                                    <Link
+                                                        to={`/setlist/${song.last_show_id}`}
+                                                        className="font-medium cursor-pointer hover:underline"
+                                                    >
+                                                        {song.last_show_date}
+                                                    </Link>
+                                                ) : (
+                                                    <span className="font-medium">{song.last_show_date}</span>
+                                                )}
                                                 {extractShowCount(song.last_count) && (
                                                     <span className="text-fifth/70 font-light">
                                                         &nbsp;({extractShowCount(song.last_count)} shows)

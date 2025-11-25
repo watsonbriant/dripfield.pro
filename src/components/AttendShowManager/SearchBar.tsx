@@ -14,7 +14,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ searchQuery, setSearchQuer
         placeholder="Search shows..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-8 pr-3 py-1.5 text-xs bg-canvas text-fifth border border-secondary rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
+        className="pl-8 pr-3 py-1.5 text-xs bg-canvas text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
       />
       <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-fifth/50 w-4 h-4" />
       {searchQuery && (

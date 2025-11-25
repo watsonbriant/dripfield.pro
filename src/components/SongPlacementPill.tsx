@@ -133,15 +133,9 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
         <>
             <style>{tooltipStyles}</style>
             <div>
-                <div className="flex justify-between items-center mb-0.5">
-                    <div className="flex items-center">
-                        <div className="text-fifth text-base font-medium mb-1">Set Placements</div>
-                    </div>
-                </div>
-
                 <div className="relative flex items-center">
                     <div 
-                        className="flex overflow-hidden h-8 rounded-lg border border-secondary flex-1" 
+                        className="flex overflow-hidden h-6 rounded border border-fourth flex-1" 
                         style={{
                             gap: 0,
                             backgroundColor: adjustedStats.length > 0 
@@ -158,7 +152,7 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                                         width: `${stat.percentage}%`,
                                         backgroundColor: placementColors[stat.placement] || '#000000'
                                     }}
-                                    className="h-full flex items-center justify-center text-primary text-xs font-bold relative"
+                                    className="h-full flex items-center justify-center text-white text-xs font-bold relative"
                                     onMouseEnter={(e) => {
                                         setHoveredSection(stat);
                                         setMousePosition({ x: e.clientX, y: e.clientY });
@@ -175,7 +169,7 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                         })}
                     </div>
                     <button
-                        className="ml-2 bg-tertiary hover:bg-primary text-fifth text-xs font-semibold p-1.5 rounded-lg flex items-center justify-center border border-secondary z-10 stats-toggle-button flex-shrink-0"
+                        className="ml-2 bg-tertiary hover:bg-canvas text-fifth text-xs font-semibold p-[3px] rounded flex items-center justify-center border border-fourth z-10 stats-toggle-button flex-shrink-0"
                         onMouseEnter={(e) => {
                             setShowAllStats(true);
                             setMousePosition({ x: e.clientX, y: e.clientY });
@@ -194,14 +188,13 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                 {/* Tooltip for hovered section */}
                 {hoveredSection && (
                     <div
-                        className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
+                        className="fixed bg-canvas text-fifth px-2 py-1 rounded shadow-lg z-[9999] text-[0.625rem] leading-[0.75rem] tooltip-bubble border border-fourth"
                         style={{
                             left: `${mousePosition.x + 10}px`,
                             top: `${mousePosition.y - 10}px`,
                             maxWidth: '250px',
                             wordWrap: 'break-word',
-                            whiteSpace: 'normal',
-                            backgroundColor: 'tertiary'
+                            whiteSpace: 'normal'
                         }}
                     >
                         <div className='font-light'>
@@ -215,7 +208,7 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                 {/* All Stats Tooltip - use same positioning as section tooltips */}
                 {showAllStats && (
                     <div
-                        className="fixed bg-primary text-fifth px-2 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
+                        className="fixed bg-canvas text-fifth px-2 py-1 rounded shadow-lg z-[9999] text-[0.625rem] leading-[0.875rem] tooltip-bubble border border-fourth"
                         style={{
                             left: `${mousePosition.x + 10}px`,
                             top: `${mousePosition.y - 10}px`,
@@ -246,15 +239,15 @@ const SongPlacementPill: React.FC<SongPlacementPillProps> = ({ placementStats })
                 )}
 
                 {/* Mobile stats display - shows below the pill on mobile */}
-                <div className="mobile-stats-container mt-3 bg-canvas text-fifth px-3 py-2 rounded border border-secondary hidden">
-                    <div className="space-y-1 max-h-[300px] overflow-y-auto">
+                <div className="mobile-stats-container mt-2 bg-canvas text-fifth px-2 py-1 rounded border border-fourth hidden">
+                    <div className="space-y-0.5 max-h-[300px] overflow-y-auto">
                         {statsForDisplay.map((stat, index) => (
                             <div key={index} className="flex items-center">
                                 <div
                                     className="w-3 h-3 mr-2 flex-shrink-0 rounded-sm"
                                     style={{ backgroundColor: placementColors[stat.placement] || '#000000' }}
                                 ></div>
-                                <div className="flex justify-between w-full text-xs">
+                                <div className="flex justify-between w-full text-[0.625rem] leading-[0.75rem]">
                                     <span className='font-light'>{stat.placement}:</span>
                                     <div className="flex items-center ml-4">
                                         <span className="font-medium">{stat.count}</span>

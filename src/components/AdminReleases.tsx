@@ -105,7 +105,7 @@ export function AdminReleases() {
   return (
     <>
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-2">
-        <h2 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+        <h2 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
           Manage Releases
         </h2>
         
@@ -117,7 +117,7 @@ export function AdminReleases() {
               placeholder="Search releases..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1 bg-canvas text-fifth border font-light border-secondary rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
+              className="pl-8 pr-3 py-1 bg-canvas text-fifth border font-light border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
             />
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-fifth/50 w-4 h-4" />
             {searchQuery && (
@@ -133,7 +133,7 @@ export function AdminReleases() {
           {/* Add new button */}
           <button
             onClick={handleAddNew}
-            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-primary border border-secondary rounded-lg text-sm hover:bg-green-600/80 transition-colors"
+            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white border border-fourth rounded-lg text-sm hover:bg-green-600/80 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Add Release</span>

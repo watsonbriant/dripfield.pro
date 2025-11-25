@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUp, ArrowDown, MoveRight } from 'lucide-react';
+import { MoveRight } from 'lucide-react';
 import { formatInTimeZone } from 'date-fns-tz';
 import JOTYBadge from './JOTYBadge';
 import { placementColors, formatLength } from '../utils/performanceUtils';
@@ -32,7 +32,6 @@ interface PerformanceTableViewProps {
   sortColumn: string;
   sortDirection: 'asc' | 'desc';
   handleSort: (column: string) => void;
-  getSortIcon: (column: string) => React.ReactNode;
   selectedGroup?: string | null;
   hoveredPerformance: {
     formattedDate: string;
@@ -50,7 +49,6 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
   sortColumn,
   sortDirection,
   handleSort,
-  getSortIcon,
   selectedGroup,
   hoveredPerformance,
   mousePosition,
@@ -81,72 +79,51 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse min-w-max">
         <thead>
-          <tr className="bg-canvas border-y border-secondary">
+          <tr className="bg-fourth border-y border-fourth">
             <th 
-              className="pl-4 pr-5 py-2 text-center text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="pl-2 pr-3 py-0.5 text-center text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => handleSort('show_date')}
             >
-              <div className="flex justify-center gap-1">
-                Show
-                {getSortIcon('show_date')}
-              </div>
+              Show
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => handleSort('show_group')}
             >
-              <div className="flex items-center gap-1">
-                Group
-                {getSortIcon('show_group')}
-              </div>
+              Group
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => handleSort('show_venue_location')}
             >
-              <div className="flex items-center gap-1">
-                Location
-                {getSortIcon('show_venue_location')}
-              </div>
+              Location
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => handleSort('entry_song')}
             >
-              <div className="flex items-center gap-1">
-                Song
-                {getSortIcon('entry_song')}
-              </div>
+              Song
             </th>
-            <th className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap">
+            <th className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap">
               JOTY
             </th>
             <th 
-              className="px-4 py-2 text-center text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-center text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => handleSort('gap')}
             >
-              <div className="flex justify-center items-center gap-1">
-                Gap
-                {getSortIcon('gap')}
-              </div>
+              Gap
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-center text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => handleSort('entry_length')}
             >
-              <div className="flex items-center gap-1">
-                Length
-                {getSortIcon('entry_length')}
-              </div>
+              Length
             </th>
             <th 
-              className="px-4 py-2 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
+              className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
               onClick={() => handleSort('entry_coachnotes')}
             >
-              <div className="flex items-center gap-1">
-                Coach's Notes
-                {getSortIcon('entry_coachnotes')}
-              </div>
+              Coach's Notes
             </th>
           </tr>
         </thead>
@@ -158,15 +135,15 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
               <tr 
                 key={`${perf.show_id}-${index}`}
                 className={`${
-                  index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                } hover:bg-tertiary/40 transition-colors text-xs ${
+                  index % 2 === 0 ? 'bg-canvas/40' : 'bg-canvas'
+                } hover:bg-tertiary/40 transition-colors text-[0.625rem] ${
                   isHighlighted ? 'bg-tertiary/40' : ''
                 } ${
                   selectedGroup && !isHighlighted ? 'opacity-30' : 'opacity-100'
                 }`}
               >
                 <td 
-                  className="pl-4 pr-5 py-1 text-fifth whitespace-nowrap"
+                  className="pl-2 pr-3 py-0.5 text-fifth whitespace-nowrap text-center"
                   style={{
                     boxShadow: placementColors[perf.entry_placement] 
                       ? `inset -4px 0 0 ${placementColors[perf.entry_placement]}` 
@@ -186,9 +163,9 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                     </button>
                   </span>
                 </td>
-                <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
                 <td 
-                  className="px-4 py-1 text-fifth whitespace-nowrap font-light"
+                  className="px-2 py-0.5 text-fifth whitespace-nowrap font-light"
                   onMouseEnter={(e) => {
                     if (perf.show_subvenue) {
                       setHoveredPerformance({
@@ -215,7 +192,7 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                   </button>
                   {hoveredPerformance?.show_id === perf.show_id && (
                   <div 
-                    className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
+                    className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-fourth"
                     style={{
                         left: `${mousePosition.x + 10}px`,
                         top: `${mousePosition.y - 10}px`,
@@ -228,7 +205,7 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-1 text-fifth">
+                <td className="px-2 py-0.5 text-fifth">
                   {(perf.entry_song && perf.entry_song !== '>') ? (
                     <span className="font-medium">
                       <span className="mr-2">{perf.entry_song}</span>
@@ -244,7 +221,7 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                     </button>
                   )}
                 </td>
-                <td className="px-4 py-1 text-fifth font-light whitespace-nowrap text-center">
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-center">
                   {perf.joty_round && (
                     <JOTYBadge 
                       round={perf.joty_round} 
@@ -256,7 +233,7 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                     />
                   )}
                 </td>
-                <td className="px-4 py-1 text-fifth font-light whitespace-nowrap text-center">
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-center">
                   {perf.gap !== null && perf.gap !== undefined ? (
                     perf.gap === 'Debut' ? (
                       <span className="font-medium text-green-600">Debut</span>
@@ -265,10 +242,10 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                     )
                   ) : ''}
                 </td>
-                <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
+                <td className="px-2 py-0.5 text-fifth text-center font-light whitespace-nowrap">
                   {perf.entry_length ? formatLength(perf.entry_length) : ''}
                 </td>
-                <td className="px-4 py-1 text-fifth font-light">
+                <td className="px-2 py-0.5 text-fifth font-light">
                   {perf.entry_coachnotes ? (
                     <div dangerouslySetInnerHTML={{ __html: perf.entry_coachnotes }} />
                   ) : ''}

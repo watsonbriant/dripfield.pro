@@ -52,9 +52,9 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
   return (
     <>
       <style>{tooltipStyles}</style>
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-fifth text-base font-medium">Performances</div>
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
+          <h3 className="text-sm font-semibold">Performances</h3>
           
           <FilterIndicators selectedGroup={selectedGroup} selectedSong={selectedSong} />
           
@@ -63,41 +63,42 @@ function GuestPerformanceChart({ performances, selectedGroup, selectedSong, song
             onToggle={() => setViewMode(viewMode === 'timeline' ? 'table' : 'timeline')} 
           />
         </div>
-        
-        {viewMode === 'timeline' ? (
-          <TimelineView
-            performancesByYear={performancesByYear}
-            years={years}
-            selectedGroup={selectedGroup}
-            selectedSong={selectedSong}
-            songShowMap={songShowMap}
-            onHover={handleHover}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          />
-        ) : (
-          <TableView
-            performances={performances}
-            selectedGroup={selectedGroup}
-            selectedSong={selectedSong}
-            songShowMap={songShowMap}
-            sortColumn={sortColumn}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-            onHover={handleTableHover}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            hoveredPerformance={hoveredPerformance}
-            mousePosition={mousePosition}
-          />
-        )}
+        <div>
+          {viewMode === 'timeline' ? (
+            <TimelineView
+              performancesByYear={performancesByYear}
+              years={years}
+              selectedGroup={selectedGroup}
+              selectedSong={selectedSong}
+              songShowMap={songShowMap}
+              onHover={handleHover}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            />
+          ) : (
+            <TableView
+              performances={performances}
+              selectedGroup={selectedGroup}
+              selectedSong={selectedSong}
+              songShowMap={songShowMap}
+              sortColumn={sortColumn}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+              onHover={handleTableHover}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              hoveredPerformance={hoveredPerformance}
+              mousePosition={mousePosition}
+            />
+          )}
 
-        {viewMode === 'timeline' && hoveredPerformance && (
-          <Tooltip 
-            hoveredPerformance={hoveredPerformance} 
-            mousePosition={mousePosition} 
-          />
-        )}
+          {viewMode === 'timeline' && hoveredPerformance && (
+            <Tooltip 
+              hoveredPerformance={hoveredPerformance} 
+              mousePosition={mousePosition} 
+            />
+          )}
+        </div>
       </div>
     </>
   );

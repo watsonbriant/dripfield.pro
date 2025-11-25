@@ -57,20 +57,20 @@ const PerformanceTimelineView: React.FC<PerformanceTimelineViewProps> = ({
   };
 
   return (
-    <div className="px-0">
-      <div className="overflow-x-auto flex justify-center">
-        <div className="flex flex-row min-w-max mx-auto">
+    <div className="p-1">
+      <div className="overflow-x-auto flex justify-start">
+        <div className="flex flex-row min-w-max">
           {years.map((year, index) => (
             <div 
               key={year} 
-              className={`w-16 px-1 ${
-                index !== years.length - 1 ? 'border-r border-secondary' : ''
+              className={`w-14 px-1 ${
+                index !== years.length - 1 ? 'border-r border-fourth/30' : ''
               }`}
             >
-              <div className="text-fifth text-sm font-medium mb-2 text-center bg-secondary/50 rounded-lg">
+              <div className="text-fifth text-xs font-medium mb-1 text-center bg-secondary/30 rounded">
                 {year}
               </div>
-              <div className="space-y-1">
+              <div className="space-y-[1px]">
                 {performancesByYear[year]?.sort((a, b) => {
                   const dateComparison = a.formattedDate.localeCompare(b.formattedDate);
                   if (dateComparison !== 0) return dateComparison;
@@ -98,7 +98,7 @@ const PerformanceTimelineView: React.FC<PerformanceTimelineViewProps> = ({
                       style={{
                         backgroundColor: placementColors[perf.entry_placement] || 'transparent'
                       }}
-                      className={`w-full text-xs ${placementColors[perf.entry_placement] ? 'text-primary' : 'text-fifth'} hover:underline transition-colors text-center block px-0.5 font-medium rounded ${
+                      className={`w-full text-[0.625rem] ${placementColors[perf.entry_placement] ? 'text-white' : 'text-fifth'} hover:underline transition-colors text-center block px-0.5 font-medium rounded ${
                         isHighlighted ? '' : ''
                       } ${
                         selectedGroup && !isHighlighted ? 'opacity-10' : 'opacity-100'

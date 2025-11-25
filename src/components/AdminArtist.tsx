@@ -121,19 +121,19 @@ export const AdminArtist: React.FC = () => {
     <div>
       {/* Header with right-aligned dropdown */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Artist Management</h3>
+        <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Artist Management</h3>
         
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
+            className="flex items-center gap-2 bg-fourth text-white px-4 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
           >
             Current Artists
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
+            <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
               <div className="p-2">
                 <div className="relative">
                   <input
@@ -141,7 +141,7 @@ export const AdminArtist: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search artists..."
-                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                   />
                   <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                 </div>
@@ -179,17 +179,17 @@ export const AdminArtist: React.FC = () => {
           value={newArtistName}
           onChange={(e) => setNewArtistName(e.target.value)}
           placeholder="Enter artist name"
-          className="flex-grow px-3 py-2 rounded-md border border-secondary bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
+          className="flex-grow px-3 py-2 rounded-md border border-fourth bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
         />
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || buttonState === 'success' || buttonState === 'error'}
           className={`px-4 py-2 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border ${
             buttonState === 'success' 
-              ? 'bg-green-500 text-primary border-green-700' 
+              ? 'bg-green-500 text-white border-green-700' 
               : buttonState === 'error'
-              ? 'bg-red-500 text-primary border-red-700'
-              : 'bg-fourth text-primary border-secondary hover:bg-fourth/80'
+              ? 'bg-red-500 text-white border-red-700'
+              : 'bg-fourth text-white border-fourth hover:bg-fourth/80'
           } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isSubmitting ? 'Adding...' : 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ShowChange } from '../types/showChanges';
 import { getChangeIcon, renderChangeText } from '../utils/showChangesHelpers';
 
@@ -9,7 +8,7 @@ interface ChangesListProps {
 export default function ChangesList({ changes }: ChangesListProps) {
     if (changes.length === 0) {
         return (
-            <div className="text-fifth">
+            <div className="text-fifth font-light text-[0.625rem]">
                 No changes from original setlist.
             </div>
         );
@@ -23,12 +22,12 @@ export default function ChangesList({ changes }: ChangesListProps) {
                 return (
                     <div
                         key={change.show_change_uuid}
-                        className={`flex items-center gap-2 ${index !== 0 ? 'pt-1 border-t border-[#d8d7d7]' : ''}`}
+                        className={`flex items-center gap-2 hover:bg-tertiary/20 transition-colors ${index !== 0 ? '' : ''}`}
                     >
                         <div className="flex-shrink-0">
                             {icon}
                         </div>
-                        <div className="text-fifth font-light [&_a]:font-medium text-xs">
+                        <div className="text-fifth font-light [&_a]:font-medium text-[0.625rem] leading-[0.75rem]">
                             {renderChangeText(change.change)}
                         </div>
                     </div>

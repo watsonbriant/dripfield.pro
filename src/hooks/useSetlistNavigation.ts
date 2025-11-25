@@ -7,7 +7,7 @@ export function useSetlistNavigation(show: Show | null) {
   const navigate = useNavigate();
   const location = useLocation();
   const [openChangesModal, setOpenChangesModal] = useState(false);
-  const [showCoachNotes, setShowCoachNotes] = useState(false);
+  const [showCoachNotes, setShowCoachNotes] = useState(true);
 
   // Check if we should open the changes modal from navigation state
   useEffect(() => {

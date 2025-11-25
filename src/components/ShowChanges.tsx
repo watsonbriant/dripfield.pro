@@ -57,13 +57,13 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
     // If there's an error and no data, show error state
     if (error && changes.length === 0) {
         return (
-            <div className={`bg-primary border border-secondary rounded-lg p-3 text-sm ${className}`}>
-                <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-lg font-medium text-fifth mb-2">
+            <div className={`pt-2 ${className}`}>
+                <div className="bg-fifth text-white px-1 py-0.5 flex justify-between items-center">
+                    <h2 className="text-xs font-semibold">
                         Setlist Changes
                     </h2>
                 </div>
-                <div className="text-red-400 text-xs">
+                <div className="text-red-400 text-[0.625rem] px-2 py-0.5">
                     {error}
                 </div>
             </div>
@@ -72,30 +72,32 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
 
     return (
         <>
-            <div className={`bg-primary border border-secondary rounded-lg p-3 text-sm ${className}`}>
-                <div className="flex justify-between items-center mb-1">
-                    <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth mb-1">
+            <div className={className}>
+                <div className="bg-fifth text-white py-0.5 pr-0.5 flex justify-between items-center">
+                    <h2 className="text-xs font-semibold pl-1">
                         Setlist Changes
                     </h2>
                     {setlistUrl && (
                         <button
                             onClick={handleOpenModal}
-                            className="bg-tertiary hover:bg-primary border border-secondary rounded p-1.5 transition-colors"
+                            className="transition-colors hover:opacity-80"
                         >
                             <FileMusic
-                                className="h-4 w-4 text-fifth"
+                                className="h-4 w-4 bg-tertiary text-fifth rounded p-0.5"
                             />
                         </button>
                     )}
                 </div>
 
                 {error && (
-                    <div className="text-red-400 text-xs mb-2">
+                    <div className="text-red-400 text-[0.625rem] px-2 py-0.5">
                         {error}
                     </div>
                 )}
 
-                <ChangesList changes={changes} />
+                <div className="px-1 py-0.5">
+                    <ChangesList changes={changes} />
+                </div>
             </div>
 
             <SetlistModal
@@ -106,7 +108,6 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                 setlist={setlist}
                 changes={changes}
                 error={error}
-                navigate={navigate}
             />
         </>
     );

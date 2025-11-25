@@ -210,47 +210,47 @@ const ShowStats: React.FC<ShowStatsProps> = ({
   if (!shouldShowLength && !shouldShowRarity && !shouldShowGap) return null;
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 mb-4">
+    <>
       {shouldShowLength && (
         <div>
-          <div className="flex justify-between items-center">
-            <h2 className="text-[1rem] leading-[1.125rem] font-medium text-fifth">Show Length</h2>
+          <div className="bg-fifth text-white px-1 py-0.5 flex justify-between items-center">
+            <h2 className="text-xs font-medium">Show Length</h2>
             <div className="flex items-center gap-2">
               {show_length_rank && (
                 <div className="relative inline-flex items-center">
                   <a
                     href="https://dripfield.pro/lists/45a4b90e-adbe-4af5-9051-2f4d212069fc"
                     rel="noopener noreferrer"
-                    className="text-fifth text-xs font-medium px-2 py-[1px] rounded-md bg-yellow-500 inline-block"
+                    className="text-fifth text-[0.625rem] font-medium px-1 py-[1px] rounded bg-yellow-500 inline-block"
                     onMouseEnter={() => setRankHovered(true)}
                     onMouseLeave={() => setRankHovered(false)}
                   >
                     #{show_length_rank}
                   </a>
                   {rankHovered && (
-                    <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-xs font-medium bg-fifth text-primary px-2 py-0.5 rounded border border-secondary shadow-lg whitespace-nowrap z-[9999]">
+                    <div className="absolute left-0 top-full mt-1 text-[0.625rem] font-medium bg-canvas text-fifth px-2 py-0.5 rounded border border-fourth shadow-lg whitespace-nowrap z-[9999]">
                       {getRankingText(show_length_rank)}
                     </div>
                   )}
                 </div>
               )}
-              <Clock className="text-fifth w-[1rem] h-[1rem]" />
+              <Clock className="text-white w-3 h-3" />
             </div>
           </div>
-          <p className="text-fifth font-light text-xs">
+          <p className="text-fifth font-light text-[0.625rem] px-1 py-0.5">
             {totalLength || 'The length of this show is unknown.'}
           </p>
         </div>
       )}
       
       {shouldShowRarity && (
-        <div className={shouldShowLength ? "mt-1.5" : ""}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <h2 className="text-base font-medium text-fifth">Show Rarity</h2>
+        <div>
+          <div className="bg-fifth text-white px-1 py-0.5 flex justify-between items-center">
+            <h2 className="text-xs font-medium">Show Rarity</h2>
+            <div className="flex items-center gap-2">
               {rarityStats && (
                 <span
-                  className="text-primary text-xs font-normal px-1.5 py-0.5 rounded-md inline-block ml-3"
+                  className="text-white text-[0.625rem] font-medium px-1 py-[1px] rounded inline-block"
                   style={{
                     backgroundColor: getRarityColor(rarityStats.percentage + '%')
                   }}
@@ -258,11 +258,11 @@ const ShowStats: React.FC<ShowStatsProps> = ({
                   {rarityStats.percentage}%
                 </span>
               )}
+              <Flame className="text-white w-3 h-3" />
             </div>
-            <Flame className="text-fifth w-[1rem] h-[1rem]" />
           </div>
           {!rarityStats && (
-            <p className="text-fifth text-xs">
+            <p className="text-fifth text-[0.625rem] px-2 py-0.5">
               &nbsp;
             </p>
           )}
@@ -270,13 +270,13 @@ const ShowStats: React.FC<ShowStatsProps> = ({
       )}
 
       {shouldShowGap && (
-        <div className={(shouldShowLength || shouldShowRarity) ? "mt-1.5" : ""}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <h2 className="text-base font-medium text-fifth">Average Show Gap</h2>
+        <div>
+          <div className="bg-fifth text-white px-1 py-0.5 flex justify-between items-center">
+            <h2 className="text-xs font-medium">Average Show Gap</h2>
+            <div className="flex items-center gap-2">
               {averageShowGap && (
                 <span 
-                  className="text-white text-xs font-normal px-1.5 py-0.5 rounded-md inline-block ml-3"
+                  className="text-white text-[0.625rem] font-medium px-1 py-[1px] rounded inline-block"
                   style={{
                     backgroundColor: getGapColor(averageShowGap.average)
                   }}
@@ -284,17 +284,17 @@ const ShowStats: React.FC<ShowStatsProps> = ({
                   {averageShowGap.average}
                 </span>
               )}
+              <Space className="text-white w-3 h-3" />
             </div>
-            <Space className="text-fifth w-[1rem] h-[1rem]" />
           </div>
           {!averageShowGap && (
-            <p className="text-fifth text-xs">
+            <p className="text-fifth text-[0.625rem] px-2 py-0.5">
               &nbsp;
             </p>
           )}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

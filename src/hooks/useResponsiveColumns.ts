@@ -6,11 +6,11 @@ export const useResponsiveColumns = () => {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      if (width >= 1280) {
+      if (width >= 1024) {
         setColumnCount(4); // xl breakpoint - 4 columns for original/other
-      } else if (width >= 1024) {
-        setColumnCount(3); // lg breakpoint - 3 columns for original/other
       } else if (width >= 640) {
+        setColumnCount(3); // lg breakpoint - 3 columns for original/other
+      } else if (width >= 320) {
         setColumnCount(2); // sm breakpoint - 2 columns for all sections
       } else {
         setColumnCount(1); // mobile - 1 column

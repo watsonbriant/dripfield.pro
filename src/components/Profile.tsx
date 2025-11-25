@@ -201,7 +201,7 @@ export const Profile: React.FC = () => {
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Songs You've Seen</h3>
+              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Songs You've Seen</h3>
               <UserSongToggleSwitch
                 isRight={showSongMatrix}
                 onToggle={setShowSongMatrix}
@@ -221,14 +221,14 @@ export const Profile: React.FC = () => {
       case 'Slots':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">My Slots</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">My Slots</h3>
             <UserSlots userId={user.id} />
           </div>
         );
       case 'Personnel':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Musicians You've Seen</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Musicians You've Seen</h3>
             <UserGuests userId={user.id} />
           </div>
         );
@@ -247,7 +247,7 @@ export const Profile: React.FC = () => {
     <div className="max-w-[1280px] mx-auto">
       <div className="flex flex-row justify-between items-center">
         <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">My Stats</h2>
+          <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">My Stats</h2>
           <button
             onClick={handleShareStats}
             className={`flex items-center gap-1 px-3 py-1 rounded-lg ${shareButtonColor} text-fifth font-semibold transition-colors duration-200 hover:opacity-90 border border-secondary`}
@@ -261,14 +261,14 @@ export const Profile: React.FC = () => {
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-secondary"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-fourth"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-4 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-4 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -289,7 +289,7 @@ export const Profile: React.FC = () => {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-primary px-1 py-1 rounded-lg border border-secondary">
+          <div className="bg-primary px-1 py-1 rounded-lg border border-fourth">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
@@ -309,7 +309,7 @@ export const Profile: React.FC = () => {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-secondary"
+                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-fourth"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>

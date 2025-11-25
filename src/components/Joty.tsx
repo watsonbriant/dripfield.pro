@@ -200,8 +200,10 @@ export function Joty() {
 
   if (!loading && regions.length !== 4) {
     return (
-      <div className="max-w-[1600px] mx-auto text-center">
-        <div className="text-fifth">Unable to load tournament data. Please ensure 4 regions exist for {selectedYear}.</div>
+      <div className="max-w-[1600px]">
+        <div className="bg-primary border border-fourth p-2 text-center">
+          <p className="text-fifth text-[0.625rem]">Unable to load tournament data. Please ensure 4 regions exist for {selectedYear}.</p>
+        </div>
       </div>
     );
   }
@@ -212,7 +214,7 @@ export function Joty() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto">
+    <div className="max-w-[1600px]">
       {/* Header with Year Selector */}
       <JotyHeader 
         selectedYear={selectedYear}
@@ -221,8 +223,8 @@ export function Joty() {
       />
 
       {/* Bracket Container */}
-      <div className={`bg-primary border border-secondary rounded-lg p-2 overflow-x-auto ${loading ? 'opacity-20' : ''} transition-opacity duration-300`}>
-        <div className="flex gap-4 min-w-[1400px]">
+      <div className={`bg-primary border border-fourth overflow-x-auto ${loading ? 'opacity-20' : ''} transition-opacity duration-300`}>
+        <div className="flex gap-4 min-w-[1400px] p-2">
           {/* Left Side - All Regions stacked */}
           <div className="flex-1">
             <div className="space-y-6">

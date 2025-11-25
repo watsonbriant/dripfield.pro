@@ -36,12 +36,15 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
         handleStarClick
     } = useRating({ showId, userId: user?.id || null, isVisible });
 
-    // Handle star click
+    // Handle star click - open reviews modal instead of directly saving
     const onStarClick = async (rating: number) => {
-        const success = await handleStarClick(rating);
-        if (!success && !user) {
+        if (!user) {
             setShowModal(true);
+            return;
         }
+        // Open reviews modal when clicking stars
+        setShowReviewsModal(true);
+        await fetchReviews();
     };
 
     const handleLogin = () => {
@@ -67,7 +70,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
 
     return (
         <>
-            <div className={`flex items-center gap-6 ${className}`}>
+            <div className={`flex items-center gap-3 ${className}`}>
                 <StarDisplay
                     rating={displayRating}
                     isInteractive={true}
@@ -89,11 +92,11 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                 />
 
                 {/* Rating text and count */}
-                <div className="flex-1 flex justify-start lg:justify-end text-sm text-fifth">
+                <div className="flex-1 flex justify-start lg:justify-start text-[0.625rem] text-fifth">
                     {isLoading ? (
                         <div className="w-4 h-4 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>
                     ) : error ? (
-                        <div className="text-red-400 text-xs" title={error}>
+                        <div className="text-red-400" title={error}>
                             Error loading ratings
                         </div>
                     ) : (
@@ -106,7 +109,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                                 {averageRating > 0 ? averageRating.toFixed(2) : ''}
                             </span>
                             {ratingCount > 0 && (
-                                <span className="text-xs text-fifth/70 ml-2">
+                                <span className="text-fifth/70 ml-2">
                                     ({ratingCount} review{ratingCount > 1 ? 's' : ''})
                                 </span>
                             )}
@@ -118,13 +121,6 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                     <div className="w-4 h-4 border-2 border-fifth border-t-transparent rounded-full animate-spin"></div>
                 )}
             </div>
-
-            {/* User's rating on its own line */}
-            {userRating && (
-                <div className="text-xs text-fourth font-normal">
-                    Your rating: {userRating}
-                </div>
-            )}
 
             {/* Error display */}
             {error && !isLoading && (
@@ -146,6 +142,18 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                     error={error}
                     showDate={showDate}
                     showVenueLocation={showVenueLocation}
+                    showId={showId}
+                    userId={user?.id || null}
+                    userRating={userRating}
+                    onRatingSave={async (rating: number) => {
+                        const success = await handleStarClick(rating);
+                        if (success) {
+                            // Refresh reviews after saving
+                            await fetchReviews();
+                        }
+                        return success;
+                    }}
+                    isSaving={isSaving}
                 />
             )}
         </>

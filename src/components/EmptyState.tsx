@@ -6,7 +6,7 @@ interface EmptyStateProps {
 
 const EmptyState: React.FC<EmptyStateProps> = ({ message }) => {
   return (
-    <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+    <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
       <p className="text-fifth">{message}</p>
     </div>
   );

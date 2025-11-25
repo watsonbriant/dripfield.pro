@@ -129,21 +129,21 @@ const ShowDropdown: React.FC<{
 
   return (
     <div className="relative" ref={dropdownRef}>
-    <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium">
+    <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center gap-2 bg-fourth text-white px-4 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium">
       Show <ChevronDown className="w-4 h-4" />
     </button>
     {isDropdownOpen && (
-      <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
+      <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-80 max-h-96 overflow-y-auto">
         <div className="p-2">
           <div className="relative">
-            <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search shows..." className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60" />
+            <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search shows..." className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60" />
             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
           </div>
         </div>
         <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
           {loading && loadingProgress < 100 ? (
             <div className="flex flex-col justify-center items-center p-3 h-16">
-              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-fourth"></div>
               <p className="text-xs text-fifth/70 mt-2">Loading shows ({Math.round(loadingProgress)}%)</p>
             </div>
           ) : (
@@ -302,7 +302,7 @@ export const AdminChanges: React.FC = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Show Changes Management</h3>
+        <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Show Changes Management</h3>
         <ShowDropdown 
           shows={filteredShows} 
           searchTerm={searchTerm} 
@@ -322,7 +322,7 @@ export const AdminChanges: React.FC = () => {
               <h4 className="text-lg text-black font-medium">{formatDate(selectedShow.show_date)} &nbsp;[{selectedShow.show_group}]</h4>
               <div className="text-sm text-black/70">{selectedShow.show_subvenue} — {selectedShow.show_venue_location}</div>
             </div>
-            <button onClick={handleCreateNewChange} className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-primary">
+            <button onClick={handleCreateNewChange} className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-white">
               <Plus className="w-5 h-5" />
             </button>
           </div>
@@ -349,7 +349,7 @@ export const AdminChanges: React.FC = () => {
 
       {showsLoading && loadingProgress < 100 && !selectedShow && (
         <div className="flex flex-col justify-center items-center h-56">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-secondary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-fourth"></div>
           <p className="text-black/70 mt-4">Loading shows ({Math.round(loadingProgress)}%)</p>
         </div>
       )}

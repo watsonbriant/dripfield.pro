@@ -106,7 +106,7 @@ export const AdminSetlist: React.FC = () => {
                   onEntrySelect={handleEntrySelect}
                 />
               ) : (
-                <div className="border border-secondary rounded-lg p-6 text-center">
+                <div className="border border-fourth rounded-lg p-6 text-center">
                   <p className="text-fifth/70">No setlist entries found for this show.</p>
                 </div>
               )}
@@ -116,14 +116,14 @@ export const AdminSetlist: React.FC = () => {
       )}
 
       {!selectedShow && !loading && (
-        <div className="border border-secondary rounded-lg p-6 text-center">
+        <div className="border border-fourth rounded-lg p-6 text-center">
           <p className="text-fifth/70">Select a show to view its setlist.</p>
         </div>
       )}
 
       {loading && loadingProgress < 100 && !selectedShow && (
         <div className="flex flex-col justify-center items-center h-56">
-          <div className="animate-spin rounded-lg h-8 w-8 border-t-2 border-b-2 border-secondary"></div>
+          <div className="animate-spin rounded-lg h-8 w-8 border-t-2 border-b-2 border-fourth"></div>
           <p className="text-fifth/70 mt-4">Loading shows ({Math.round(loadingProgress)}%)</p>
         </div>
       )}

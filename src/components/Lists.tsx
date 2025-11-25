@@ -55,57 +55,78 @@
 
     if (loading) {
       return (
-        <div className="max-w-[936px] mx-auto">
-          <div className="text-fifth text-center py-8">Loading lists...</div>
+        <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+          <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+              <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+              <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+            </div>
+            <p className="text-fifth mt-4">Loading lists...</p>
+          </div>
         </div>
       );
     }
 
     return (
-      <div className="max-w-[936px] mx-auto">
-        <div className="flex justify-between mb-4">
-          <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Lists</h1>
+      <div className="max-w-[960px]">
+        <div className="mb-4">
+          <div className="bg-primary border border-fourth">
+            <div className="bg-tertiary text-fifth pr-1 py-0.5">
+              <h1 className="text-sm font-semibold pl-2">
+                Lists
+              </h1>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-primary border border-secondary rounded-lg p-3">
-            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
-              Songs
-            </h2>
-            <div className="text-fourth text-sm font-medium">
+          <div className="bg-primary border border-fourth">
+            <div className="bg-fourth text-white px-2 py-0.5">
+              <h2 className="text-sm font-semibold">
+                Songs
+              </h2>
+            </div>
+            <div className="p-1.5">
               {songLists.length > 0 ? (
-                songLists.map((list, index) => (
-                  <button
-                    key={`song-${list.id || index}`}
-                    onClick={() => handleListClick(list.list_id)}
-                    className="block w-full text-left hover:underline transition-colors cursor-pointer"
-                  >
-                    {list.list_name}
-                  </button>
-                ))
+                <div className="space-y-0">
+                  {songLists.map((list, index) => (
+                    <button
+                      key={`song-${list.id || index}`}
+                      onClick={() => handleListClick(list.list_id)}
+                      className="block w-full text-left text-xs text-fifth hover:underline transition-colors font-medium cursor-pointer hover:bg-tertiary/40 px-1"
+                    >
+                      {list.list_name}
+                    </button>
+                  ))}
+                </div>
               ) : (
-                <div key="no-songs" className="text-gray-500">No song lists available</div>
+                <div key="no-songs" className="text-[0.625rem] text-fifth/70">No song lists available</div>
               )}
             </div>
           </div>
 
-          <div className="bg-primary border border-secondary rounded-lg p-3">
-            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
-              Shows
-            </h2>
-            <div className="text-fourth text-sm font-medium">
+          <div className="bg-primary border border-fourth">
+            <div className="bg-fourth text-white px-2 py-0.5">
+              <h2 className="text-sm font-semibold">
+                Shows
+              </h2>
+            </div>
+            <div className="p-1.5">
               {showLists.length > 0 ? (
-                showLists.map((list, index) => (
-                  <button
-                    key={`show-${list.id || index}`}
-                    onClick={() => handleListClick(list.list_id)}
-                    className="block w-full text-left hover:underline transition-colors cursor-pointer"
-                  >
-                    {list.list_name}
-                  </button>
-                ))
+                <div className="space-y-0">
+                  {showLists.map((list, index) => (
+                    <button
+                      key={`show-${list.id || index}`}
+                      onClick={() => handleListClick(list.list_id)}
+                      className="block w-full text-left text-xs text-fifth hover:underline transition-colors font-medium cursor-pointer hover:bg-tertiary/40 px-1"
+                    >
+                      {list.list_name}
+                    </button>
+                  ))}
+                </div>
               ) : (
-                <div key="no-shows" className="text-gray-500">No show lists available</div>
+                <div key="no-shows" className="text-[0.625rem] text-fifth/70">No show lists available</div>
               )}
             </div>
           </div>

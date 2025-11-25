@@ -10,10 +10,10 @@ interface TourInfoCardProps {
 
 export function TourInfoCard({ tourName, totalShows, totalPlayers, tourWinners }: TourInfoCardProps) {
     return (
-        <div className="bg-primary border border-secondary rounded-lg p-3">
+        <div className="bg-primary border border-fourth rounded-lg p-3">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                 <div>
-                    <h1 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-secondary whitespace-nowrap mb-2">
+                    <h1 className="text-xl items-center font-semibold bg-tertiary text-fifth inline-flex px-3 py-1 rounded-lg border border-fourth whitespace-nowrap mb-2">
                         {tourName}
                     </h1>
                     <div className="flex gap-3">

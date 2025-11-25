@@ -25,7 +25,7 @@ const SlotsTable: React.FC<SlotsTableProps> = ({ slots, activeColumns, songIdMap
             {activeColumns.map(column => (
               <th 
                 key={column} 
-                className="px-4 py-1 text-left text-s font-semibold text-primary"
+                className="px-4 py-1 text-left text-s font-semibold text-white"
                 style={{ 
                   width: '190px',
                   minWidth: '190px',

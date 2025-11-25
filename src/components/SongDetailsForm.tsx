@@ -46,7 +46,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
         <button
           onClick={onToggleEdit}
           disabled={isSubmitting}
-          className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-primary border-secondary hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+          className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
         >
           {isEditing ? (
             <>
@@ -71,7 +71,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
             value={editedSong?.song || ''}
             onChange={onInputChange}
             readOnly={!isEditing}
-            className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+            className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
           />
         </div>
         
@@ -82,7 +82,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
               name="song_category"
               value={editedSong?.song_category || ''}
               onChange={onInputChange}
-              className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
             >
               <option value="">-- Select Category --</option>
               {categories.map((cat) => (
@@ -96,7 +96,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
               type="text"
               value={editedSong?.song_category || ''}
               readOnly
-              className="w-full px-2 py-1.5 rounded-md border font-light border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-1.5 rounded-md border font-light border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
             />
           )}
         </div>
@@ -108,7 +108,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
               name="song_originalartist"
               value={editedSong?.song_originalartist || ''}
               onChange={onInputChange}
-              className="w-full px-2 py-1.5 rounded-md border font-light border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-1.5 rounded-md border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
             >
               <option value="">-- Select Artist --</option>
               {artists.map((artist) => (
@@ -122,7 +122,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
               type="text"
               value={editedSong?.song_originalartist || ''}
               readOnly
-              className="w-full px-2 py-1.5 rounded-md font-light border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-1.5 rounded-md font-light border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
             />
           )}
         </div>
@@ -135,7 +135,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
             value={editedSong?.song_categoryorder === null ? '' : editedSong?.song_categoryorder}
             onChange={onInputChange}
             readOnly={!isEditing}
-            className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+            className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
           />
         </div>
         
@@ -147,7 +147,7 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
             onChange={onInputChange}
             readOnly={!isEditing}
             rows={4}
-            className={`w-full px-2 py-1.5 rounded-md font-light border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+            className={`w-full px-2 py-1.5 rounded-md font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
           />
         </div>
       </div>

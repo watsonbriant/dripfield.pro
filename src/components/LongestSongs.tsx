@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
 
@@ -19,19 +19,18 @@ interface LongestSong {
   category_artwork?: string;
 }
 
-const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
+// const cleanSongName = (songName: string): string => {
+//   return songName
+//     .replace(/\[/g, '(')
+//     .replace(/\]/g, ')')
+//     .replace(/ñ/g, 'n')
+//     .replace(/ü/g, 'u')
+//     .replace(/–/g, '-')
+//     .replace(/…/g, '...')
+//     .replace(/∆/g, 'a');
+// };
 
 const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId = '' }) => {
-  const navigate = useNavigate();
   const [longestSongs, setLongestSongs] = useState<LongestSong[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalSongData, setModalSongData] = useState<{
@@ -133,17 +132,14 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
     });
   };
 
-  const handleShowClick = (showId: string) => {
-    if (showId) {
-      navigate(`/setlist/${showId}`);
-    }
-  };
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <h2 className="text-lg font-semibold bg-fourth text-primary inline-block px-3 rounded-lg border border-secondary mb-2">
+    <div className="bg-primary border border-fourth pb-0.5">
+      <div className="text-white px-2 py-0.5 mb-0.5" style={{ backgroundColor: '#3c1e40' }}>
+        <h2 className="text-sm font-semibold">
         Longest Songs
       </h2>
+      </div>
       {loading ? (
         <div className="text-center py-4">
           <p className="text-fifth/70">Loading...</p>
@@ -155,27 +151,25 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
       ) : (
         <div className="overflow-y-auto max-h-64">
           <table className="w-full border-collapse min-w-max">
-            <tbody className="divide-y divide-white/5">
+            <tbody>
               {longestSongs.map((song, index) => (
                 <tr
                   key={`${song.entry_song}-${index}`}
-                  className={`${
-                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-tertiary/40 transition-colors text-xs`}
+                  className={`bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                 >
-                  <td className="px-4 pb-0.5 text-[1rem] leading-[1rem] font-trad">
+                  <td className="pl-3 text-fifth">
                     <div className="flex items-center justify-between">
                       <span
-                        className="text-fifth cursor-pointer hover:underline"
+                        className="font-medium text-fifth cursor-pointer hover:underline leading-[0.75rem]"
                         onClick={() => handleSongClick(song.entry_song)}
                       >
-                        {cleanSongName(song.entry_song)}
+                        {song.entry_song}
                       </span>
                       {song.category_artwork && (
                         <img
                           src={song.category_artwork}
                           alt={`${song.entry_song} artwork`}
-                          className="w-5 h-5 rounded object-cover border border-secondary ml-3"
+                          className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                           onError={(e) => {
                             // Hide the image if it fails to load
                             (e.target as HTMLImageElement).style.display = 'none';
@@ -184,18 +178,22 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-0.5 text-fifth text-center font-medium">
+                  <td className="w-[50px] text-center font-medium text-fifth">
                     {formatTime(song.entry_length)}
                   </td>
-                  <td className="px-4 py-0.5 text-fifth">
+                  <td className="px-2 text-fifth font-light">
                     {song.show_date && (
                       <>
-                        <span
-                          onClick={() => handleShowClick(song.show_id || '')}
+                        {song.show_id ? (
+                          <Link
+                            to={`/setlist/${song.show_id}`}
                           className="font-medium cursor-pointer hover:underline"
                         >
                           {formatDate(song.show_date)}
-                        </span>
+                          </Link>
+                        ) : (
+                          <span className="font-medium">{formatDate(song.show_date)}</span>
+                        )}
                         {song.venue_location && <span className="text-fifth/70 font-light">&nbsp;&nbsp;[{song.venue_location.replace(/[\[\]]/g, '')}]</span>}
                       </>
                     )}

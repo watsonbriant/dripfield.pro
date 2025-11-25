@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import gooseLogo from '../img/Goose.png';
+import gooseLogo from '../img/Goose2.png';
 import { VenueSearch } from './VenueSearch';
 import { VenueMap } from './VenueMap';
 
@@ -72,15 +72,6 @@ export function Venues() {
       setSortDirection('asc');
     }
   };
-  
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) {
-      return null;
-    }
-    return sortDirection === 'asc' ?
-      <ChevronUp className="w-4 h-4 inline-block ml-1 text-fifth" /> :
-      <ChevronDown className="w-4 h-4 inline-block ml-1 text-fifth" />;
-  };
 
   // Updated CircularProgress component with new color scheme
   const CircularProgress = ({ value }: { value: number }) => {
@@ -125,13 +116,19 @@ export function Venues() {
   // If loading, show the loading state with circular progress
   if (loading) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Venues</h1>
-          <VenueSearch />
+      <div className="w-full max-w-[1280px]">
+        <div className="mb-4">
+          <div className="bg-primary border border-fourth">
+            <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
+              <h1 className="text-sm font-semibold pl-2">
+                Venues
+              </h1>
+              <VenueSearch />
+            </div>
+          </div>
         </div>
         
-        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-fourth">
           <CircularProgress value={loadingProgress} />
           <p className="text-fifth mt-4">Loading venues...</p>
         </div>
@@ -140,12 +137,18 @@ export function Venues() {
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Venues</h1>
-        <VenueSearch 
-          onModalStateChange={setIsSearchModalOpen}
-        />
+    <div className="w-full max-w-[1280px]">
+      <div className="mb-4">
+        <div className="bg-primary border border-fourth">
+          <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
+            <h1 className="text-sm font-semibold pl-2">
+              Venues
+            </h1>
+            <VenueSearch 
+              onModalStateChange={setIsSearchModalOpen}
+            />
+          </div>
+        </div>
       </div>
       
       {/* Map Container - hide when search modal is open on mobile */}
@@ -154,50 +157,46 @@ export function Venues() {
       </div>
       
       {/* List Container */}
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth">
         {venues.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-fifth">No venues found</p>
+          <div className="p-2 text-center">
+            <p className="text-[0.625rem] text-fifth">No venues found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse min-w-max">
               <thead>
-                <tr className="bg-canvas border-y border-white/10">
+                <tr className="bg-fourth border-y border-fourth">
                   <th 
-                    className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-tertiary/40"
+                    className="px-2 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
                     onClick={() => handleSort('subvenue')}
                   >
                     <div className="flex items-center gap-1">
                       Venue
-                      {getSortIcon('subvenue')}
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-tertiary/40"
+                    className="px-2 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
                     onClick={() => handleSort('subvenue_venue_location')}
                   >
                     <div className="flex items-center gap-1">
                       Location
-                      {getSortIcon('subvenue_venue_location')}
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-tertiary/40"
+                    className="px-2 text-center text-xs font-medium text-white cursor-pointer hover:bg-white/20"
                     onClick={() => handleSort('goose_show_count')}
                   >
                     <div className="flex items-center justify-center gap-1">
-                      <img src={gooseLogo} alt="goose" className="h-6" />
-                      {getSortIcon('goose_show_count')}
+                      <img src={gooseLogo} alt="goose" className="h-4" />
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-tertiary/40"
+                    className="px-2 text-center text-xs font-medium text-white cursor-pointer hover:bg-white/20"
                     onClick={() => handleSort('other_show_count')}
                   >
                     <div className="flex items-center justify-center gap-1">
                       Other
-                      {getSortIcon('other_show_count')}
                     </div>
                   </th>
                 </tr>
@@ -207,22 +206,22 @@ export function Venues() {
                   <tr
                     key={venue.subvenue}
                     className={`${
-                      index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                    } hover:bg-tertiary/40 transition-colors text-xs cursor-pointer`}
+                      index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+                    } hover:bg-tertiary/40 transition-colors text-[0.625rem] cursor-pointer`}
                     onClick={() => navigate(`/venue/${venue.venue_id}`)}
                   >
-                    <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                    <td className="px-2 text-fifth whitespace-nowrap">
                       <span className="font-medium hover:underline transition-colors table-link">
                         {venue.subvenue}
                       </span>
                     </td>
-                    <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap">
+                    <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {venue.subvenue_venue_location}
                     </td>
-                    <td className="px-4 py-0.5 text-fifth font-light text-center whitespace-nowrap">
+                    <td className="px-2 text-fifth font-light text-center whitespace-nowrap">
                       {venue.goose_show_count}
                     </td>
-                    <td className="px-4 py-0.5 text-fifth font-light text-center whitespace-nowrap">
+                    <td className="px-2 text-fifth font-light text-center whitespace-nowrap">
                       {venue.other_show_count}
                     </td>
                   </tr>

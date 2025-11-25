@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface ShowDate {
   show_id: string;
@@ -27,12 +28,20 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
   onShowSelect
 }) => {
   const [isShowDatesDropdownOpen, setIsShowDatesDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const showDatesDropdownRef = useRef<HTMLDivElement>(null);
   const showDatesDropdownListRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showDatesDropdownRef.current && !showDatesDropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        showDatesDropdownRef.current && 
+        !showDatesDropdownRef.current.contains(target) &&
+        showDatesDropdownListRef.current &&
+        !showDatesDropdownListRef.current.contains(target)
+      ) {
         setIsShowDatesDropdownOpen(false);
       }
     };
@@ -41,16 +50,27 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Effect for auto-scrolling in the Shows dropdown
+  // Effect for auto-scrolling in the Shows dropdown and positioning
   useEffect(() => {
-    // Scroll to the current show when dropdown opens
-    if (isShowDatesDropdownOpen && showDatesDropdownListRef.current && currentShowId) {
-      // Find the button for the current show
-      const buttons = showDatesDropdownListRef.current.querySelectorAll('button');
-      for (const button of buttons) {
-        if (button.getAttribute('data-show-id') === currentShowId) {
-          button.scrollIntoView({ block: 'center' });
-          break;
+    if (isShowDatesDropdownOpen) {
+      // Calculate position for fixed positioning
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 8, // 8px for mt-2 equivalent
+          left: rect.left + window.scrollX
+        });
+      }
+      
+      // Scroll to the current show when dropdown opens
+      if (showDatesDropdownListRef.current && currentShowId) {
+        // Find the button for the current show
+        const buttons = showDatesDropdownListRef.current.querySelectorAll('button');
+        for (const button of buttons) {
+          if (button.getAttribute('data-show-id') === currentShowId) {
+            button.scrollIntoView({ block: 'center' });
+            break;
+          }
         }
       }
     }
@@ -61,37 +81,48 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
     setIsShowDatesDropdownOpen(false);
   };
 
+  // Find current show to display its date
+  const currentShow = showDates.find(sd => sd.show_id === currentShowId);
+  const currentShowDate = currentShow 
+    ? formatInTimeZone(new Date(currentShow.show_date), 'UTC', 'MM.dd.yy')
+    : 'Shows';
+
   return (
     <div className="relative" ref={showDatesDropdownRef}>
       <div className="md:block">
         <button
+          ref={buttonRef}
           onClick={() => setIsShowDatesDropdownOpen(!isShowDatesDropdownOpen)}
-          className="flex items-center gap- growth-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
+          className="flex items-center gap-2 bg-fourth text-white pl-2 pr-1 py-0.5 border border-fourth hover:bg-tertiary hover:text-fifth transition-colors text-sm font-semibold"
         >
-          Shows
+          {currentShowDate}
           <ChevronDown className="w-4 h-4" />
         </button>
       </div>
       {isShowDatesDropdownOpen && (
         <div 
           ref={showDatesDropdownListRef}
-          className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto w-64 max-h-96"
+          className="fixed bg-canvas border border-fourth shadow-lg z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 gap-0"
+          style={{
+            top: `${dropdownPosition.top}px`,
+            left: `${dropdownPosition.left}px`
+          }}
         >
           {showDates.map((showDate) => (
             <button
               key={showDate.show_id}
               data-show-id={showDate.show_id}
               onClick={() => handleShowSelect(showDate.show_id)}
-              className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-black/10 transition-colors ${
+              className={`w-full text-left px-2 py-0.5 text-xs font-semibold hover:bg-black/10 transition-colors ${
                 currentShowId === showDate.show_id ? 'bg-tertiary' : ''
               }`}
             >
               <div className="flex justify-between items-center">
                 <div className="truncate text-fifth">
-                  <span className="font-semibold">
+                  <span className="font-medium">
                     {showDate.formatted_show_date} 
                     {showDate.show_venue_location && (
-                      <span className="font-normal">
+                      <span className="font-light">
                         {' '}({showDate.show_venue_location})
                       </span>
                     )}

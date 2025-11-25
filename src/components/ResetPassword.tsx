@@ -28,21 +28,21 @@ export const ResetPassword: React.FC = () => {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg shadow-xl">
+      <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg shadow-xl">
         <div className="p-3">
-          <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+          <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
             Reset your password
           </h2>
         </div>
 
         <div className="px-3 pb-3">
           {message ? (
-            <div className="p-3 bg-green-500 border border-secondary rounded-lg mb-4">
+            <div className="p-3 bg-green-500 border border-fourth rounded-lg mb-4">
               <p className="text-sm text-fifth font-medium">{message}</p>
               <div className="mt-4">
                 <Link
                   to="/login"
-                  className="w-full px-4 py-2 text-fifth rounded-lg font-medium transition-colors bg-tertiary hover:bg-tertiary/80 border border-secondary flex justify-center"
+                  className="w-full px-4 py-2 text-fifth rounded-lg font-medium transition-colors bg-tertiary hover:bg-tertiary/80 border border-fourth flex justify-center"
                 >
                   Back to Login
                 </Link>
@@ -68,7 +68,7 @@ export const ResetPassword: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas text-fifth placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas text-fifth placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                   placeholder="Enter your email"
                 />
               </div>
@@ -76,7 +76,7 @@ export const ResetPassword: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full px-3 py-1.5 text-fifth rounded-lg font-medium transition-colors border border-secondary ${
+                className={`w-full px-3 py-1.5 text-fifth rounded-lg font-medium transition-colors border border-fourth ${
                   loading
                   ? 'bg-tertiary/50 cursor-not-allowed'
                   : 'bg-tertiary hover:bg-tertiary/80'

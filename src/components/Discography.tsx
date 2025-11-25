@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Modal } from './Modal';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,20 +28,10 @@ export function Discography() {
   const [loading, setLoading] = React.useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const albumRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Add the cleanSongName function from Tours component
-  const cleanSongName = (songName: string): string => {
-    return songName
-      .replace(/\[/g, '(')
-      .replace(/\]/g, ')')
-      .replace(/ñ/g, 'n')
-      .replace(/ü/g, 'u')
-      .replace(/–/g, '-')
-      .replace(/…/g, '...')
-      .replace(/∆/g, 'a');
-  };
 
   // Function to get display name for category type groups
   const getCategoryTypeDisplayName = (categoryType: string): string => {
@@ -105,8 +95,17 @@ export function Discography() {
       albumRef.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setIsDropdownOpen(false);
       setIsModalOpen(false);
+      setSearchTerm('');
     }
   };
+
+  const filteredAlbums = React.useMemo(() => {
+    return albums.filter(album =>
+      album.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      album.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      album.artist.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [albums, searchTerm]);
 
   React.useEffect(() => {
     async function fetchAlbums() {
@@ -197,87 +196,132 @@ export function Discography() {
   });
 
   return (
-    <div className="max-w-[1280px] mx-auto">
-      <div className="flex justify-between mb-6 items-center">
-        <h1 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">Discography</h1>
-        <div className="relative" ref={dropdownRef}>
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors border border-secondary"
-            >
-              <Search className="w-6 h-6" />
-            </button>
-            <Modal
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              title="Select Album"
-            >
-              <div className="space-y-0">
-                <div className="divide-y divide-black/10">
-                  {albums.map((album) => (
-                    <button
-                      key={album.category}
-                      onClick={() => scrollToAlbum(album.category)}
-                      className="w-full text-left px-4 py-1 text-sm rounded-lg hover:bg-black/10 transition-colors font-semibold"
-                    >
-                      <span className="text-fifth">{album.category}</span>
-                    </button>
-                  ))}
+    <div className="max-w-[1024px]">
+      <div className="mb-4">
+        <div className="bg-primary border border-fourth">
+          <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
+            <h1 className="text-sm font-semibold pl-2">
+              Discography
+            </h1>
+            <div className="relative" ref={dropdownRef}>
+              <div className="md:hidden">
+                <div className="relative">
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="w-full px-1.5 py-0.5 pr-8 rounded-md border border-fourth bg-canvas font-semibold text-fifth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-left flex items-center"
+                  >
+                    Search
+                  </button>
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-fifth pointer-events-none" />
                 </div>
-              </div>
-            </Modal>
-          </div>
-          <div className="hidden md:block">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
-            >
-              Select Release
-              <ChevronDown className="w-4 h-4" />
-            </button>
-          </div>
-          {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto right-0 w-64 max-h-96">
-              {albums.map((album) => (
-                <button
-                  key={album.category}
-                  onClick={() => scrollToAlbum(album.category)}
-                  className="w-full text-left px-4 py-1 text-sm font-medium hover:bg-secondary transition-colors "
+                <Modal
+                  isOpen={isModalOpen}
+                  onClose={() => {
+                    setIsModalOpen(false);
+                    setSearchTerm('');
+                  }}
+                  title="Select Album"
                 >
-                  {album.category}
+                  <div className="space-y-0">
+                    <div className="sticky bg-primary py-1">
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search albums..."
+                        className="w-full px-1.5 py-0.5 text-sm rounded-md border border-fourth bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary"
+                      />
+                    </div>
+                    <div>
+                      {filteredAlbums.map((album) => (
+                        <button
+                          key={album.category}
+                          onClick={() => scrollToAlbum(album.category)}
+                          className="w-full text-left px-2 py-1 text-xs leading-[0.875rem] hover:bg-black/10 transition-colors font-medium text-fifth"
+                        >
+                          {album.category}
+                        </button>
+                      ))}
+                      {filteredAlbums.length === 0 && (
+                        <div className="px-2 py-1 text-xs text-fifth italic">
+                          No albums found
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Modal>
+              </div>
+              <div className="hidden md:block">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 bg-canvas text-fifth px-1.5 py-0.5 rounded-lg border border-fourth hover:bg-primary transition-colors text-xs font-semibold"
+                >
+                  Search
+                  <Search className="w-3 h-3" />
                 </button>
-              ))}
+              </div>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 bg-canvas border border-fourth shadow-lg z-50 overflow-y-auto right-0 w-64 max-h-96">
+                  <div className="p-1">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search albums..."
+                        className="w-full px-1.5 py-0.5 pr-8 rounded-md border border-fourth bg-primary text-fifth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
+                      />
+                      <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-fifth" />
+                    </div>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto">
+                    {filteredAlbums.map((album) => (
+                      <button
+                        key={album.category}
+                        onClick={() => scrollToAlbum(album.category)}
+                        className="w-full text-left px-2 py-1 text-xs leading-[0.875rem] text-fifth font-medium hover:bg-primary transition-colors"
+                      >
+                        {album.category}
+                      </button>
+                    ))}
+                    {filteredAlbums.length === 0 && (
+                      <div className="px-2 py-1 text-xs text-fifth italic">
+                        No albums found
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
           <p className="text-fifth mt-4">Loading albums...</p>
         </div>
       ) : albums.length === 0 ? (
-        <div className="text-center py-12 bg-primary border border-secondary rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <p className="text-fifth">No albums found</p>
         </div>
       ) : (
-        <div className="space-y-8">
-          {sortedCategoryTypes.map((categoryTypeDisplay, groupIndex) => (
+        <div className="space-y-4">
+          {sortedCategoryTypes.map((categoryTypeDisplay) => (
             <div key={categoryTypeDisplay}>
-              {/* Category Type Header with Divider */}
-              <div className="mb-6">
-                <div className="flex items-center">
-                  <div className="flex-grow h-px bg-secondary"></div>
-                  <h2 className="mx-4 text-xl font-semibold text-fifth bg-tertiary border border-secondary rounded-lg px-3">
-                    {categoryTypeDisplay}
-                  </h2>
-                  <div className="flex-grow h-px bg-secondary"></div>
+              {/* Category Type Header */}
+              <div className="mb-4">
+                <div className="bg-primary border border-fourth">
+                  <div className="bg-fourth text-white px-2 py-0.5">
+                    <h2 className="text-sm font-semibold">
+                      {categoryTypeDisplay}
+                    </h2>
+                  </div>
                 </div>
               </div>
 
@@ -287,7 +331,7 @@ export function Discography() {
                   <div
                     key={album.title}
                     ref={el => albumRefs.current[album.category] = el}
-                    className="bg-primary border border-secondary rounded-lg overflow-hidden hover:border-secondary/70 transition-colors"
+                    className="bg-primary border border-fourth overflow-hidden hover:border-secondary/70 transition-colors"
                   >
                     <div className="aspect-square">
                       <img
@@ -296,11 +340,11 @@ export function Discography() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="p-4">
-                      <h3 className="text-[1.125rem] leading-[1.125rem] font-semibold text-fifth pb-1.5">{album.title}</h3>
-                      <p className="text-fifth/70 font-medium text-sm">{album.artist}</p>
+                    <div className="p-2">
+                      <h3 className="text-xs leading-[0.875rem] font-semibold text-fifth">{album.title}</h3>
+                      <p className="text-fifth/70 font-medium text-[0.625rem] leading-[0.625rem]">{album.artist}</p>
                       {album.releaseDate && (
-                        <p className="text-fifth/70 text-xs mb-2">
+                        <p className="text-fifth/70 text-[0.625rem] mb-1">
                           {(() => {
                             // Parse the date string to avoid timezone issues
                             const [year, month, day] = album.releaseDate.split('-').map(Number);
@@ -313,7 +357,7 @@ export function Discography() {
                           })()}
                         </p>
                       )}
-                      {!album.releaseDate && <div className="mb-2" />}
+                      {!album.releaseDate && <div className="mb-1" />}
 
                       {album.tracks.length > 0 && (
                         <>
@@ -321,16 +365,16 @@ export function Discography() {
                             {album.tracks.map((track) => (
                               <li
                                 key={`${album.title}-${track.name}-${track.id}`}
-                                className="text-sm text-fifth relative pl-8 flex"
+                                className="text-[0.625rem] leading-[0.75rem] text-fifth relative pl-6 flex"
                               >
-                                <span className="absolute left-0 top-0 text-fifth/70 w-5 text-right">
+                                <span className="absolute left-0 top-0 text-fifth/70 w-4 text-right">
                                   {Number(track.song_categoryorder)}.
                                 </span>
                                 <button
                                   onClick={() => navigate(`/song/${track.id}`)}
-                                  className="font-trad text-[1rem] leading-[1rem] pb-1 hover:underline transition-colors text-left"
+                                  className="font-medium hover:underline transition-colors text-left"
                                 >
-                                  {cleanSongName(track.name)}
+                                  {track.name}
                                 </button>
                               </li>
                             ))}

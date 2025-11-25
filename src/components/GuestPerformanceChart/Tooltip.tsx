@@ -14,7 +14,7 @@ interface TooltipProps {
 export default function Tooltip({ hoveredPerformance, mousePosition }: TooltipProps) {
   return (
     <div 
-      className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-secondary"
+      className="fixed bg-canvas text-fifth px-1.5 py-1 rounded shadow-lg z-[9999] text-[0.625rem] leading-[0.75rem] tooltip-bubble border border-fourth"
       style={{
         left: `${mousePosition.x + 10}px`,
         top: `${mousePosition.y - 10}px`,
@@ -23,7 +23,7 @@ export default function Tooltip({ hoveredPerformance, mousePosition }: TooltipPr
         whiteSpace: 'normal'
       }}
     >
-      <div className="space-y-0.5">
+      <div>
         {/* Date */}
         <div className="hang">
           <span className='font-medium'>
@@ -36,12 +36,12 @@ export default function Tooltip({ hoveredPerformance, mousePosition }: TooltipPr
         </div>
         {/* Group and tour */}
         <div className="hang font-light">
-          <span className='font-medium'>{hoveredPerformance.fullData.show_group}</span>
+          <span className='font-medium pr-1'>{hoveredPerformance.fullData.show_group}</span>
           {hoveredPerformance.fullData.show_tour && ` (${hoveredPerformance.fullData.show_tour})`}
         </div>
         {/* Venue */}
         <div className="hang font-light">
-          {hoveredPerformance.fullData.show_subvenue} 
+          <span className='pr-1'>{hoveredPerformance.fullData.show_subvenue}</span> 
           {hoveredPerformance.fullData.show_venue_location && ` (${hoveredPerformance.fullData.show_venue_location})`}
         </div>
       </div>

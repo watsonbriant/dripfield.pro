@@ -51,7 +51,7 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
             {(isEditing || isNewEntry) && (
               <button
                 onClick={handleSelectAllGooseMembers}
-                className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-canvas transition-colors text-xs font-medium border border-secondary"
+                className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-canvas transition-colors text-xs font-medium border border-fourth"
               >
                 Select All Goose Members
               </button>
@@ -78,7 +78,7 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
               return (
                 <div 
                   key={guestId} 
-                  className="bg-tertiary text-fifth text-xs px-2 py-1 rounded-lg flex items-center border border-secondary"
+                  className="bg-tertiary text-fifth text-xs px-2 py-1 rounded-lg flex items-center border border-fourth"
                 >
                   <span>{guestInfo.guest_displayname || guestInfo.guest}</span>
                   {(isEditing || isNewEntry) && (
@@ -100,7 +100,7 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
       </div>
       
       {isGuestSectionExpanded && (
-        <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'}`}>
+        <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'}`}>
           {/* Add search input */}
           {(isEditing || isNewEntry) && (
             <div className="mb-3">
@@ -110,7 +110,7 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
                   value={guestSearchTerm}
                   onChange={(e) => setGuestSearchTerm(e.target.value)}
                   placeholder="Search guests..."
-                  className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
+                  className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
                 />
                 <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
               </div>

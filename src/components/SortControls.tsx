@@ -19,12 +19,12 @@ export const SortControls: React.FC<SortControlsProps> = ({
   return (
     <>
       {/* Desktop version of sort controls */}
-      <div className="hidden md:flex items-center bg-canvas rounded-md border border-secondary py-1 px-2">
+      <div className="hidden md:flex items-center bg-canvas rounded-md border border-fourth py-1 px-2">
         <span className="text-fifth text-xs mr-2 font-medium">Sort:</span>
         <div className="flex gap-1">
           <button 
             onClick={() => setMatrixSortMode('alphabetical')}
-            className={`px-2 py-0.5 text-xs rounded font-light ${
+            className={`px-2 text-xs rounded font-light ${
               matrixSortMode === 'alphabetical' 
                 ? 'bg-tertiary text-fifth' 
                 : 'text-fifth hover:bg-tertiary/40'
@@ -34,7 +34,7 @@ export const SortControls: React.FC<SortControlsProps> = ({
           </button>
           <button 
             onClick={() => setMatrixSortMode('chronological')}
-            className={`px-2 py-0.5 text-xs rounded font-light ${
+            className={`px-2 text-xs rounded font-light ${
               matrixSortMode === 'chronological' 
                 ? 'bg-tertiary text-fifth' 
                 : 'text-fifth hover:bg-tertiary/40'
@@ -44,7 +44,7 @@ export const SortControls: React.FC<SortControlsProps> = ({
           </button>
           <button 
             onClick={() => setMatrixSortMode('playcount')}
-            className={`px-2 py-0.5 text-xs rounded font-light ${
+            className={`px-2 text-xs rounded font-light ${
               matrixSortMode === 'playcount' 
                 ? 'bg-tertiary text-fifth' 
                 : 'text-fifth hover:bg-tertiary/40'
@@ -58,7 +58,7 @@ export const SortControls: React.FC<SortControlsProps> = ({
       {/* Mobile version - sort button */}
       <button 
         onClick={() => setIsSortModalOpen(true)}
-        className="md:hidden flex items-center justify-center bg-tertiary hover:bg-tertiary/40 rounded-md border border-secondary p-1.5"
+        className="md:hidden flex items-center justify-center bg-tertiary hover:bg-tertiary/40 rounded-md border border-fourth p-1.5"
         aria-label="Sort options"
       >
         <ArrowDownUp className="w-4 h-4 text-fifth" />

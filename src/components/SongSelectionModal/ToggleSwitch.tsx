@@ -11,7 +11,7 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
 }) => {
   return (
     <div className="flex items-center justify-center my-3">
-      <div className="inline-flex border border-secondary rounded-lg overflow-hidden">
+      <div className="inline-flex border border-fourth rounded-lg overflow-hidden">
         <span 
           className={`px-4 py-1.5 transition-colors font-semibold hover:bg-tertiary/40 text-base ${!showActualSetlist ? 'bg-tertiary text-fifth' : 'bg-canvas text-fifth'}`}
           onClick={() => setShowActualSetlist(false)}

@@ -17,10 +17,15 @@ export function SongPerformanceChart({ performances, selectedGroup, songName }: 
           selectedGroup={selectedGroup}
         />
       ) : (
-        <div className="bg-primary border border-secondary rounded-lg p-3">
-          <p className="text-fifth text-center font-light">
-            <span className="font-medium">{songName}</span> hasn't been played live.
-          </p>
+        <div className="bg-primary border border-fourth">
+          <div className="bg-tertiary text-fifth px-2 py-0.5">
+            <h3 className="text-sm font-semibold">Performance Chart</h3>
+          </div>
+          <div className="p-2">
+            <p className="text-fifth text-center font-light text-[0.625rem]">
+              <span className="font-medium">{songName}</span> hasn't been played live.
+            </p>
+          </div>
         </div>
       )}
     </div>

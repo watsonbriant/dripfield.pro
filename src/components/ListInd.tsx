@@ -157,11 +157,14 @@ export function ListInd() {
 
     if (loading) {
         return (
-            <div className={`${containerMaxWidth} mx-auto`}>
-                <div className="max-h-[320px] overflow-y-auto">
-                    <div className="flex items-center justify-center py-6">
-                        <CircularProgress value={loadingProgress} />
+            <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+                <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+                    <div className="flex items-center justify-center space-x-2">
+                        <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                        <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                        <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
                     </div>
+                    <p className="text-fifth mt-4">Loading list...</p>
                 </div>
             </div>
         );
@@ -169,8 +172,10 @@ export function ListInd() {
 
     if (!list) {
         return (
-            <div className={`${containerMaxWidth} mx-auto`}>
-                <div className="text-fifth text-center py-8">List not found</div>
+            <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+                <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+                    <p className="text-fifth">List not found</p>
+                </div>
             </div>
         );
     }
@@ -179,47 +184,52 @@ export function ListInd() {
     const SpecialListComponent = listId ? SPECIAL_LIST_COMPONENTS[listId] : null;
 
     return (
-        <div className={`${containerMaxWidth} mx-auto`}>
-            <button
-                onClick={() => navigate('/lists')}
-                className="flex items-center bg-tertiary rounded-lg py-1 px-2 border border-secondary hover:underline transition-colors font-medium text-sm text-fifth mb-6"
-            >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Lists
-            </button>
-
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
-                        {list.list_name}
-                    </h1>
+        <div className="max-w-[1024px]">
+            <div className="mb-4">
+                <div className="bg-primary border border-fourth">
+                    <div className="bg-tertiary text-fifth px-2 py-0.5 flex flex-col">
+                        <button
+                            onClick={() => navigate('/lists')}
+                            className="flex items-center bg-canvas rounded-lg px-1 border border-fourth text-fifth hover:underline transition-colors text-xs font-semibold w-fit mt-0.5"
+                        >
+                            <ArrowLeft className="w-3 h-3 mr-1" />
+                            Back to Lists
+                        </button>
+                        <h1 className="text-sm font-semibold">
+                            {list.list_name}
+                        </h1>
+                    </div>
                     {list.list_description && (
-                        <p className="text-fifth font-light text-xs mt-2 bg-primary rounded-lg px-2 py-1 border border-secondary">{list.list_description}</p>
+                        <div className="px-2 py-1">
+                            <p className="text-[0.625rem] leading-[0.75rem] text-fifth/70">{list.list_description}</p>
+                        </div>
                     )}
                 </div>
             </div>
 
-            <div className="bg-primary border border-secondary rounded-lg p-3">
+            <div className="bg-primary border border-fourth">
                 {SpecialListComponent ? (
                     <SpecialListComponent 
                         listId={listId} 
                         onProgressUpdate={handleProgressUpdate}
                     />
                 ) : (
-                    <div className="space-y-2">
+                    <div className="p-2">
                         {items.length > 0 ? (
-                            items.map((item, index) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => handleItemClick(item.list_item_id, list.list_category)}
-                                    className="block w-full text-left px-3 py-2 bg-canvas hover:bg-tertiary hover:text-fifth transition-colors rounded border border-secondary text-fourth"
-                                >
-                                    <span className="font-medium mr-2">{index + 1}.</span>
-                                    {item.list_item_name}
-                                </button>
-                            ))
+                            <div className="space-y-0">
+                                {items.map((item, index) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => handleItemClick(item.list_item_id, list.list_category)}
+                                        className="block w-full text-left text-[0.625rem] text-fifth hover:underline transition-colors font-medium cursor-pointer hover:bg-tertiary/40 px-2 py-0.5 rounded"
+                                    >
+                                        <span className="mr-2">{index + 1}.</span>
+                                        {item.list_item_name}
+                                    </button>
+                                ))}
+                            </div>
                         ) : (
-                            <div className="text-fifth text-center py-8">No items in this list</div>
+                            <div className="text-[0.625rem] text-fifth/70 text-center py-4">No items in this list</div>
                         )}
                     </div>
                 )}

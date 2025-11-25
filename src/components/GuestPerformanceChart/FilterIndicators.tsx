@@ -10,14 +10,14 @@ export default function FilterIndicators({ selectedGroup, selectedSong }: Filter
   if (!selectedGroup && !selectedSong) return null;
 
   return (
-    <div className="flex items-center text-xs text-fifth tooltip-bubble">
+    <div className="flex items-center gap-2">
       {selectedSong && (
-        <span className="font-trad text-sm text-fifth border border-secondary bg-tertiary leading-[1rem] px-1 pb-0.5 rounded mr-2">
+        <span className="font-medium text-white border border-fourth bg-fourth px-1 rounded text-[0.625rem]">
           {cleanSongName(selectedSong)}
         </span>
       )}
       {selectedGroup && (
-        <span className="font-medium text-fifth border border-secondary bg-tertiary leading-[1rem] px-1 py-0.5 rounded">
+        <span className="font-medium text-white border border-fourth bg-fourth px-1 rounded text-[0.625rem]">
           {selectedGroup}
         </span>
       )}

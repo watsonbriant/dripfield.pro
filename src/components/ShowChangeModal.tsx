@@ -113,7 +113,7 @@ const ChangeOrderField: React.FC<{ value: number; onChange: (e: React.ChangeEven
         onChange={onChange}
         readOnly={readOnly}
         className={`w-full px-2 py-2 font-light rounded-md border ${
-          readOnly ? 'border-secondary bg-canvas/50' : 'border-secondary bg-canvas'
+          readOnly ? 'border-fourth bg-canvas/50' : 'border-fourth bg-canvas'
         } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
       />
     </FormField>
@@ -123,9 +123,9 @@ const ChangeTypeField: React.FC<{ value: string; onChange: (e: React.ChangeEvent
   ({ value, onChange, changeTypes, readOnly }) => (
     <FormField label="Type">
       {readOnly ? (
-        <input type="text" value={value || ''} readOnly className="w-full px-2 py-2 font-light rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm" />
+        <input type="text" value={value || ''} readOnly className="w-full px-2 py-2 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm" />
       ) : (
-        <select name="change_type" value={value || ''} onChange={onChange} className="w-full px-2 py-2 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm" required>
+        <select name="change_type" value={value || ''} onChange={onChange} className="w-full px-2 py-2 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm" required>
           <option value="">Select a type...</option>
           {changeTypes.map((type) => <option key={type.change} value={type.change}>{type.change}</option>)}
         </select>
@@ -140,15 +140,15 @@ const ChangeTextField: React.FC<{ value: string; onChange: (e: React.ChangeEvent
         <label className="block text-sm font-medium text-fifth">Change</label>
         {!readOnly && (
           <div className="flex items-center gap-2">
-            <select value={selectedSongId} onChange={(e) => onSongSelect(e.target.value)} className="px-2 py-1 w-48 rounded-md border border-secondary font-light bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs">
+            <select value={selectedSongId} onChange={(e) => onSongSelect(e.target.value)} className="px-2 py-1 w-48 rounded-md border border-fourth font-light bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs">
               <option value="">Add song link...</option>
               {songs.map((song) => <option key={song.song_id} value={song.song_id}>{song.song}</option>)}
             </select>
-            <button type="button" onClick={onInsertArrow} className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold border border-secondary" title="Insert arrow">→</button>
+            <button type="button" onClick={onInsertArrow} className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold border border-fourth" title="Insert arrow">→</button>
           </div>
         )}
       </div>
-      <textarea name="change" value={value || ''} onChange={onChange} readOnly={readOnly} rows={6} placeholder="Enter the change details..." className={`w-full px-2 py-2 rounded-md border ${readOnly ? 'border-secondary bg-canvas/50' : 'border-secondary bg-canvas'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-mono`} />
+      <textarea name="change" value={value || ''} onChange={onChange} readOnly={readOnly} rows={6} placeholder="Enter the change details..." className={`w-full px-2 py-2 rounded-md border ${readOnly ? 'border-fourth bg-canvas/50' : 'border-fourth bg-canvas'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-mono`} />
       {readOnly && value && (
         <div className="mt-2 p-3 bg-canvas rounded-md border border-secondary/20">
           <p className="text-xs text-fifth/60 mb-2">Rendered HTML:</p>
@@ -278,15 +278,15 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
-      <div className="bg-primary border border-secondary rounded-lg p-3 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-primary border border-fourth rounded-lg p-3 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
             {isNewChange ? 'Add Show Change' : 'Edit Show Change'}
           </h3>
           <div className="flex gap-2">
             {!isNewChange && (
               <>
-                <button onClick={toggleEdit} disabled={isSubmitting} className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary">
+                <button onClick={toggleEdit} disabled={isSubmitting} className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth">
                   {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
                 </button>
                 <button onClick={handleDeleteClick} disabled={isSubmitting} className={`flex items-center justify-center w-10 h-10 rounded-md border ${isDeleteConfirming ? 'bg-green-500 hover:bg-green-600 border-secondary' : 'bg-red-500 hover:bg-red-600 border-secondary'} text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`} title={isDeleteConfirming ? "Confirm Delete" : "Delete"}>
@@ -295,12 +295,12 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
               </>
             )}
             {isNewChange && (
-              <button onClick={handleSaveChanges} disabled={isSubmitting || !editedChange?.change_type || !editedChange?.change} className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary">
+              <button onClick={handleSaveChanges} disabled={isSubmitting || !editedChange?.change_type || !editedChange?.change} className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth">
                 <Save className="w-5 h-5" />
                 {isSubmitting && <span className="ml-1">...</span>}
               </button>
             )}
-            <button onClick={onClose} className="flex items-center justify-center w-10 h-10 rounded-md bg-red-500 hover:bg-red-600 transition-colors border border-secondary">
+            <button onClick={onClose} className="flex items-center justify-center w-10 h-10 rounded-md bg-red-500 hover:bg-red-600 transition-colors border border-fourth">
               <X className="w-5 h-5 text-fifth" />
             </button>
           </div>

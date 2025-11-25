@@ -38,16 +38,16 @@ interface Props {
   tourId?: string; // Add tourId prop
 }
 
-const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
+// const cleanSongName = (songName: string): string => {
+//   return songName
+//     .replace(/\[/g, '(')
+//     .replace(/\]/g, ')')
+//     .replace(/ñ/g, 'n')
+//     .replace(/ü/g, 'u')
+//     .replace(/–/g, '-')
+//     .replace(/…/g, '...')
+//     .replace(/∆/g, 'a');
+// };
 
 const TourSongStats: React.FC<Props> = ({ 
   shows, 
@@ -285,27 +285,29 @@ const TourSongStats: React.FC<Props> = ({
   };
 
   return (
-    <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
+    <div className={className}>
       {!hideTitle && (
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-lg border border-secondary mb-4">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">
           {uniqueSongCount} Songs Played
         </h2>
+        </div>
       )}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse min-w-max">
           <thead>
             <tr className="bg-canvas border-y border-white/10">
               <th 
-                className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-2 text-center text-sm font-medium text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('count')}
               >
-                <div className="text-center gap-1">
+                <div className="flex items-center justify-center gap-1">
                   #
                   {getSortIcon('count')}
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-left text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-2 text-left text-sm font-medium text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('song')}
               >
                 <div className="flex items-center gap-1">
@@ -314,7 +316,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-2 text-center text-sm font-medium text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('longest')}
               >
                 <div className="flex items-center justify-center gap-1">
@@ -323,7 +325,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-center text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-2 text-center text-sm font-medium text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('shortest')}
               >
                 <div className="flex items-center justify-center gap-1">
@@ -332,7 +334,7 @@ const TourSongStats: React.FC<Props> = ({
                 </div>
               </th>
               <th 
-                className="px-4 py-1 text-left text-s font-semibold text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
+                className="px-2 text-left text-sm font-medium text-fifth cursor-pointer hover:bg-black/10 whitespace-nowrap"
                 onClick={() => handleSort('category')}
               >
                 <div className="flex items-center gap-1">
@@ -342,31 +344,29 @@ const TourSongStats: React.FC<Props> = ({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody>
             {sortedSongStats.map((stat, index) => (
               <tr
                 key={stat.song}
-                className={`${
-                  index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                } hover:bg-tertiary/40 transition-colors text-xs`}
+                className="bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]"
               >
-                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap text-center">{stat.count}</td>
+                <td className="px-2 text-fifth font-light whitespace-nowrap text-center">{stat.count}</td>
                 <td 
-                  className="font-trad text-fifth text-[1rem] leading-[1rem] pb-1 pl-4  whitespace-nowrap cursor-pointer"
+                  className="px-2 text-fifth whitespace-nowrap cursor-pointer"
                   onClick={() => handleRowClick(stat.song)}
                 >
                   <span className="font-medium transition-colors table-link">
-                    {cleanSongName(stat.song)}
+                    {stat.song}
                   </span>
                 </td>
-                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap text-center">
+                <td className="px-2 text-fifth font-light whitespace-nowrap text-center">
                   {stat.longest || ''}
                 </td>
-                <td className="px-4 py-0.5 text-fifth font-light whitespace-nowrap text-center">
+                <td className="px-2 text-fifth font-light whitespace-nowrap text-center">
                   {stat.shortest || ''}
                 </td>
                 <td 
-                  className="px-4 py-0.5 text-fifth font-light whitespace-nowrap"
+                  className="px-2 text-fifth font-light whitespace-nowrap"
                 >
                   {stat.category}
                 </td>

@@ -17,7 +17,6 @@ interface SongsPlayedProps {
   selectedSong: string | null;
   onSongClick: (song: string) => void;
   CircularProgress?: React.FC<{ value: number }>;
-  cleanSongName?: (songName: string) => string;
   songs: SongCount[];
   songSpreadData: SongSpreadItem[];
   loadingProgress: number;
@@ -41,7 +40,6 @@ export function SongsPlayed({
   selectedSong, 
   onSongClick,
   CircularProgress = CircularProgressComponent,
-  cleanSongName,
   songs,
   songSpreadData,
   loadingProgress
@@ -228,8 +226,8 @@ export function SongsPlayed({
   
   return (
     <div>
-      <div className="pl-2 pr-2 flex justify-between items-center mb-3">
-        <h2 className="text-fifth text-sm flex justify-between font-light">
+      <div className="flex justify-between items-center mb-1.5">
+        <h2 className="text-fifth text-xs flex justify-between font-medium">
           {songs.length} Unique Songs
         </h2>
         <button 
@@ -237,32 +235,32 @@ export function SongsPlayed({
           className="text-fifth hover:text-tertiary transition-colors"
           aria-label="Show song spread"
         >
-          <ChartBarDecreasing size={18} />
+          <ChartBarDecreasing size={14} />
         </button>
       </div>
       
       {/* Search input */}
-      <div className="mb-3">
+      <div className="mb-1.5">
         <input
           type="text"
           placeholder="Search songs..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-canvas border border-secondary rounded-md px-3 py-1.5 text-sm text-fifth focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
+          className="w-full bg-canvas border border-fourth rounded-md px-2 py-1 text-xs text-fifth focus:outline-none focus:ring-1 focus:ring-tertiary placeholder-black/60"
         />
       </div>
       
       {sortedSongs.length > 0 ? (
         <div className="relative">
           {/* Sticky table header */}
-          <div className="sticky top-0 z-10 bg-primary grid grid-cols-2 text-sm text-fifth border-b border-secondary pb-1 mb-2">
+          <div className="sticky top-0 z-10 bg-primary grid grid-cols-2 text-xs text-fifth border-b border-fourth px-2 pb-0.5 mb-0.5">
             <div 
               className="cursor-pointer hover:text-tertiary font-medium flex items-center"
               onClick={() => handleSortClick('song')}
             >
               <span>Song</span>
               {sortBy === 'song' && (
-                <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                <span className="ml-1">{sortDirection === 'asc' ? '' : ''}</span>
               )}
             </div>
             <div 
@@ -271,25 +269,25 @@ export function SongsPlayed({
             >
               <span>Count</span>
               {sortBy === 'count' && (
-                <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                <span className="ml-1">{sortDirection === 'asc' ? '' : ''}</span>
               )}
             </div>
           </div>
           
           {/* Scrollable song list */}
-          <div className="max-h-[234px] overflow-y-auto">
+          <div className="max-h-[264px] overflow-y-auto">
             <div>
               {sortedSongs.map((song, index) => (
                 <div 
                   key={index} 
                   onClick={() => onSongClick(song.song)}
-                  className={`flex justify-between text-sm cursor-pointer ${
+                  className={`flex justify-between text-[0.625rem] cursor-pointer ${
                     selectedSong === song.song 
                       ? 'bg-tertiary/80' 
                       : 'hover:bg-tertiary/40'
                   }`}
                 >
-                  <span className="pl-2 truncate font-trad text-fifth">{cleanSongName ? cleanSongName(song.song) : song.song}</span>
+                  <span className="pl-2 truncate font-medium text-fifth">{song.song}</span>
                   <span className="pr-2 text-fifth font-base">{song.play_count}</span>
                 </div>
               ))}
@@ -364,7 +362,7 @@ export function SongsPlayed({
                     {/* Empty space above the filled portion - only render if not 100% height */}
                     {barHeight < 200 && (
                       <div 
-                        className="w-full border-l border-r border-t border-secondary rounded-t"
+                        className="w-full border-l border-r border-t border-fourth rounded-t"
                         style={{ 
                           height: `${200 - barHeight}px`,
                           backgroundColor: '#ededed' // bg-secondary color
@@ -374,7 +372,7 @@ export function SongsPlayed({
                     
                     {/* Filled portion with artwork - positioned on top */}
                     <div 
-                      className={`w-full border border-secondary relative overflow-hidden ${
+                      className={`w-full border border-fourth relative overflow-hidden ${
                         barHeight < 200 ? 'rounded-b' : 'rounded'
                       }`}
                       style={{ 
@@ -397,7 +395,7 @@ export function SongsPlayed({
                       {/* Content overlay */}
                       <div className="relative z-10 w-full h-full flex items-start justify-center">
                         {(hoveredCategory === category || (isMobile && selectedCategory === category)) && (
-                          <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
+                          <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-fourth px-1">{count}</div>
                         )}
                       </div>
                     </div>
@@ -418,7 +416,7 @@ export function SongsPlayed({
                           console.error(`Failed to load image for ${category}. URL was:`, artwork);
                           e.currentTarget.style.display = 'none';
                         }}
-                        className="h-8 w-8 object-cover rounded border border-secondary"
+                        className="h-8 w-8 object-cover rounded border border-fourth"
                       />
                     )}
                   </div>
@@ -432,7 +430,7 @@ export function SongsPlayed({
           {/* Tooltip underneath bar chart */}
           {(hoveredCategory || selectedCategory) && (
             <div className="mt-4 flex justify-center">
-              <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+              <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-fourth shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
                 <div className="font-semibold text-sm mb-1">{hoveredCategory || selectedCategory}</div>
                 {songSpreadData
                   .find(cat => cat.category === (hoveredCategory || selectedCategory))

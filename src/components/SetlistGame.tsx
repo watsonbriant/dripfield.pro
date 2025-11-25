@@ -124,7 +124,7 @@ export function SetlistGame() {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto">
+    <div className="max-w-[1280px]">
       <SetlistGameHeader 
         isAdminUser={isAdminUser}
         onShowRules={() => setShowRulesModal(true)}

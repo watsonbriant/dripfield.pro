@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cleanSongName } from '../utils/songMatrixUtils';
@@ -24,36 +24,59 @@ export default function SongTourPerformancesModal({
   const navigate = useNavigate();
   const { performances, loading, tourName, songId, guestGroups, getGuestColor } = useSongPerformances(isOpen, songName, tourId);
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      // Lock body scroll
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        // Restore scroll position when modal closes
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/50 z-50"
+        className="fixed inset-0 bg-black/50 z-[9998]"
         onClick={onClose}
       />
       
-      {/* Custom Modal with 650px max-width on desktop */}
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[650px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-secondary bg-canvas rounded-t-lg">
+      {/* Custom Modal - centered in viewport */}
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+        <div className="bg-primary border border-fourth shadow-xl flex flex-col max-w-[650px] w-full max-h-[90vh] overflow-y-auto pointer-events-auto">
+        <div className="flex items-center justify-between px-0.5 py-0.5 bg-tertiary text-fifth">
             <div className="flex items-center flex-1">
-                <h2 className="text-[1.25rem] leading-[1.25rem] font-trad bg-tertiary text-fifth inline-block px-3 pt-0.5 pb-1.5 rounded-lg border border-secondary mr-4">{cleanSongName(songName)}</h2>
+                <h2 className="text-sm font-semibold ml-1.5 mr-4">{cleanSongName(songName)}</h2>
                 {tourName && (
-                <span className="text-xs font-medium bg-secondary text-fifth px-3 py-1 rounded-full border border-secondary whitespace-nowrap mr-4">
+                <span className="text-xs font-medium bg-canvas text-fifth px-2 py-0.5 rounded border border-fourth whitespace-nowrap mr-4">
                     {tourName}
                 </span>
                 )}
             </div>
             <button
                 onClick={onClose}
-                className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors flex-shrink-0"
+                className="p-1 hover:bg-white rounded border border-fourth bg-red-500 transition-colors flex-shrink-0"
             >
-                <X className="w-5 h-5 text-fifth" />
+                <X className="w-4 h-4 text-fifth" />
             </button>
         </div>
         
-        <div className="p-4">
+        <div>
             <div>
             {loading ? (
               <div className="text-center py-8">
@@ -86,7 +109,7 @@ export default function SongTourPerformancesModal({
         </div>
         
         {/* Footer with Song History button */}
-        <div className="border-t border-secondary p-4 bg-canvas rounded-b-lg flex justify-center">
+        <div className="border-t border-fourth px-2 py-0.5 bg-tertiary text-fifth flex justify-center">
           <button
             onClick={() => {
               if (songId) {
@@ -94,10 +117,11 @@ export default function SongTourPerformancesModal({
                 onClose();
               }
             }}
-            className="bg-tertiary hover:bg-primary text-fifth font-medium py-1 px-3 rounded-lg border border-secondary transition-colors"
+            className="bg-canvas hover:bg-primary text-fifth font-medium py-0.5 px-2 rounded border border-fourth transition-colors text-sm"
           >
             Song History
           </button>
+        </div>
         </div>
       </div>
     </>

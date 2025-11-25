@@ -45,14 +45,14 @@ export function FilterModal({
         className="fixed inset-0 bg-black/50 z-[9999]"
         onClick={onClose}
       />
-      <div className="fixed inset-x-4 top-[72px] max-h-[calc(100vh-88px)] z-[9999] bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
+      <div className="fixed inset-x-4 top-[72px] max-h-[calc(100vh-88px)] z-[9999] bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-secondary/10">
-          <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
+          <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">
             Venue Map Filters
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
+            className="p-2 hover:bg-tertiary rounded-lg border border-fourth bg-red-500 transition-colors"
           >
             <X className="w-5 h-5 text-black" />
           </button>
@@ -70,7 +70,7 @@ export function FilterModal({
                 onTourChange(e);
                 onClose();
               }}
-              className="w-full px-3 py-2 border border-secondary rounded bg-tertiary text-fifth text-sm font-normal focus:outline-none focus:ring-2 focus:ring-tertiary"
+              className="w-full px-3 py-2 border border-fourth rounded bg-tertiary text-fifth text-sm font-normal focus:outline-none focus:ring-2 focus:ring-tertiary"
             >
               <option value="Show All">[Show All]</option>
               {tours.map((tour) => (
@@ -94,7 +94,7 @@ export function FilterModal({
                 onClose();
               }}
               disabled={isGroupDropdownDisabled}
-              className={`w-full px-3 py-2 border border-secondary rounded text-fifth text-sm font-normal focus:outline-none focus:ring-2 focus:ring-tertiary ${
+              className={`w-full px-3 py-2 border border-fourth rounded text-fifth text-sm font-normal focus:outline-none focus:ring-2 focus:ring-tertiary ${
                 isGroupDropdownDisabled 
                   ? 'bg-gray-200 cursor-not-allowed opacity-50' 
                   : 'bg-tertiary'
@@ -117,7 +117,7 @@ export function FilterModal({
                   onClearFilters();
                   onClose();
                 }}
-                className="w-full px-4 py-2 bg-red-600 hover:bg-red-600/70 text-primary text-sm font-medium rounded transition-colors focus:outline-none"
+                className="w-full px-4 py-2 bg-red-600 hover:bg-red-600/70 text-white text-sm font-medium rounded transition-colors focus:outline-none"
               >
                 Clear All Filters
               </button>

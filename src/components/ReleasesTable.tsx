@@ -21,7 +21,7 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
                 <h4 className="text-base text-fifth font-medium">Releases</h4>
                 <button
                     onClick={onAddRelease}
-                    className="flex items-center gap-1 px-3 py-1 bg-green-600 text-primary border border-secondary rounded-lg text-sm hover:bg-green-600/80 transition-colors"
+                    className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white border border-fourth rounded-lg text-sm hover:bg-green-600/80 transition-colors"
                 >
                     <Plus className="w-4 h-4" />
                     Add Release
@@ -30,7 +30,7 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
             
             {loadingReleases ? (
                 <div className="flex justify-center items-center p-3">
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-secondary"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-fourth"></div>
                     <p className="text-sm text-fifth/70 ml-2">Loading releases...</p>
                 </div>
             ) : showReleases.length > 0 ? (

@@ -24,9 +24,11 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">Song Matrix</h2>
-        <div className="flex justify-center items-center h-40">
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">Song Matrix</h2>
+        </div>
+        <div className="p-2 flex justify-center items-center h-40">
           <div className="animate-pulse text-fifth">Loading song matrix...</div>
         </div>
       </div>
@@ -35,35 +37,39 @@ const VenueSongMatrix: React.FC<VenueSongMatrixProps> = ({
 
   if (errorMessage) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">Song Matrix</h2>
-        <div className="text-center py-6 text-red-500">{errorMessage}</div>
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">Song Matrix</h2>
+        </div>
+        <div className="p-2 text-center py-6 text-red-500">{errorMessage}</div>
       </div>
     );
   }
 
   if (songMatrix.songs.length === 0) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">Song Matrix</h2>
-        <div className="text-center py-6 text-fifth">No song data available for this venue</div>
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">Song Matrix</h2>
+        </div>
+        <div className="p-2 text-center py-6 text-fifth">No song data available for this venue</div>
       </div>
     );
   }
   
   return (
-    <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-fourth" : ""} ${className}`}>
       {!hideTitle && (
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+        <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
+          <h2 className="text-sm font-semibold">
             {songMatrix.songs.length} Songs Played
           </h2>
           <button 
             onClick={() => setIsSpreadModalOpen(true)} 
-            className="text-fifth bg-tertiary rounded-lg p-2 border border-secondary hover:bg-tertiary/70 transition-colors"
+            className="text-fifth bg-canvas rounded p-0.5 border border-fourth hover:bg-primary transition-colors"
             aria-label="Show song spread"
           >
-            <ChartBarDecreasing size={20} />
+            <ChartBarDecreasing size={14} />
           </button>
         </div>
       )}

@@ -27,13 +27,13 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
 }) => (
   <div className="mb-2 hidden xl:flex justify-between items-center">
     <div className="flex items-center gap-3">
-      <div className="text-sm text-fifth">
+      <div className="text-xs font-medium text-fifth">
         Showing {venueCount} venues
       </div>
       {hasActiveFilters && (
         <button
           onClick={onClearFilters}
-          className="px-2 py-1 bg-red-600 hover:bg-red-600/70 text-primary text-xs font-medium rounded transition-colors focus:outline-none"
+          className="px-2 py-0.5 bg-red-600 hover:bg-red-600/70 text-white border border-fourth text-xs font-medium rounded transition-colors focus:outline-none"
         >
           Clear Filter
         </button>
@@ -42,14 +42,14 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
     <div className="flex items-center gap-4">
       {/* Tour Filter Dropdown */}
       <div className="flex items-center gap-2">
-        <label htmlFor="tour-filter" className="text-sm text-fifth font-medium">
+        <label htmlFor="tour-filter" className="text-xs text-fifth font-medium">
           Filter by tour:
         </label>
         <select
           id="tour-filter"
           value={selectedTour}
           onChange={onTourChange}
-          className="px-3 py-1 border border-secondary rounded bg-tertiary text-fifth text-sm font-normal focus:outline-none focus:ring-2 focus:ring-tertiary"
+          className="pl-1.5 pr-4 py-0.5 border border-fourth rounded bg-tertiary text-fifth text-xs font-normal focus:outline-none focus:ring-2 focus:ring-tertiary"
         >
           <option value="Show All">[Show All]</option>
           {tours.map((tour) => (
@@ -62,7 +62,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
 
       {/* Group Filter Dropdown */}
       <div className="flex items-center gap-2">
-        <label htmlFor="group-filter" className="text-sm text-fifth font-medium">
+        <label htmlFor="group-filter" className="text-xs text-fifth font-medium">
           Filter by group:
         </label>
         <select
@@ -70,7 +70,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
           value={selectedGroup}
           onChange={onGroupChange}
           disabled={isGroupDropdownDisabled}
-          className={`px-3 py-1 border border-secondary rounded text-fifth text-sm font-normal focus:outline-none focus:ring-2 focus:ring-tertiary ${
+          className={`pl-1.5 pr-4 py-0.5 border border-fourth rounded text-fifth text-xs font-normal focus:outline-none focus:ring-2 focus:ring-tertiary ${
             isGroupDropdownDisabled 
               ? 'bg-gray-200 cursor-not-allowed opacity-50' 
               : 'bg-tertiary'

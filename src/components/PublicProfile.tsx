@@ -172,7 +172,7 @@ export const PublicProfile: React.FC = () => {
       case 'Overview':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Profile Overview</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Profile Overview</h3>
             <div className="grid grid-cols-1 gap-6">
               <OverviewChart userId={userId} />
               <UserStats userId={userId} showCopyButton={false} />
@@ -199,7 +199,7 @@ export const PublicProfile: React.FC = () => {
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Songs Seen</h3>
+              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Songs Seen</h3>
               <UserSongToggleSwitch
                 isRight={showSongMatrix}
                 onToggle={setShowSongMatrix}
@@ -219,14 +219,14 @@ export const PublicProfile: React.FC = () => {
       case 'Slots':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Slots</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Slots</h3>
             <UserSlots userId={userId} />
           </div>
         );
       case 'Personnel':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Personnel Seen</h3>
+            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Personnel Seen</h3>
             <UserGuests userId={userId} />
           </div>
         );
@@ -244,7 +244,7 @@ export const PublicProfile: React.FC = () => {
   if (isLoading) {
     return (
       <div className="max-w-[1280px] mx-auto flex items-center justify-center h-64">
-        <div className="font-semibold bg-tertiary text-fifth px-4 py-2 rounded-full border border-secondary">Loading profile...</div>
+        <div className="font-semibold bg-tertiary text-fifth px-4 py-2 rounded-full border border-fourth">Loading profile...</div>
       </div>
     );
   }
@@ -252,12 +252,12 @@ export const PublicProfile: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-[1280px] mx-auto mt-8">
-        <div className="bg-white/20 border border-secondary rounded-lg p-6 text-center">
-          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-full border border-secondary mb-2">Error</h3>
+        <div className="bg-white/20 border border-fourth rounded-lg p-6 text-center">
+          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-full border border-fourth mb-2">Error</h3>
           <p className="text-fifth/80">{error}</p>
           <button 
             onClick={() => navigate('/')} 
-            className="mt-4 px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-fifth rounded-full border border-secondary font-semibold"
+            className="mt-4 px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-fifth rounded-full border border-fourth font-semibold"
           >
             Return Home
           </button>
@@ -275,7 +275,7 @@ export const PublicProfile: React.FC = () => {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex flex-row justify-between items-center">
-        <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
+        <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">
           {formatUsername(profileUsername)}'s Stats
         </h2>
         
@@ -283,14 +283,14 @@ export const PublicProfile: React.FC = () => {
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-secondary"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-fourth"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-4 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-4 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -311,7 +311,7 @@ export const PublicProfile: React.FC = () => {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-primary px-1 py-1 rounded-lg border border-secondary">
+          <div className="bg-primary px-1 py-1 rounded-lg border border-fourth">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
@@ -331,7 +331,7 @@ export const PublicProfile: React.FC = () => {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-secondary"
+                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-fourth"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>

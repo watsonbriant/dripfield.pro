@@ -9,8 +9,6 @@ interface DisplaySetlistTableProps {
   isMobile: boolean;
   isAdmin: boolean;
   copiedEntries: Set<string>;
-  shouldShowCoachNotesForEntry: (entryId: string, hasCoachNotes: boolean) => boolean;
-  toggleIndividualCoachNote: (entryId: string) => void;
   getGuestColor: (entry: SetlistEntry) => string;
   hoverStates: {
     mousePosition: { x: number; y: number };
@@ -34,11 +32,9 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   setlist,
   show,
   isMobile,
-  isAdmin,
-  copiedEntries,
-  shouldShowCoachNotesForEntry,
-  toggleIndividualCoachNote,
-  getGuestColor,
+    isAdmin,
+    copiedEntries,
+    getGuestColor,
   hoverStates,
   hoveredCategory,
   onSongClick,
@@ -50,13 +46,17 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   // Early return if setlist is undefined or empty, or show is undefined
   if (!setlist || setlist.length === 0 || !show) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3 overflow-x-auto">
-        <div className="min-w-[602px] divide-y divide-[#d8d7d7] relative">
+      <div className="border border-fourth rounded-lg p-3 overflow-x-auto w-fit">
+        <table className="border-collapse w-auto">
           <SetlistTableHeader show={show} />
-          <div className="text-center text-fifth py-8">
-            {!show ? 'Loading show data...' : 'No setlist data available'}
-          </div>
-        </div>
+          <tbody>
+            <tr>
+              <td colSpan={show?.show_canonid !== null ? 8 : 5} className="text-center text-fifth py-8">
+                {!show ? 'Loading show data...' : 'No setlist data available'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
   }
@@ -69,49 +69,48 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   const hasSinglePlacementType = uniquePlacements.size === 1;
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 overflow-x-auto">
-      <div className="min-w-[602px] divide-y divide-[#d8d7d7] relative">
+    <div className="border border-fourth overflow-x-auto w-fit">
+      <table className="border-collapse table-auto" style={{ minWidth: 'max-content' }}>
         <SetlistTableHeader show={show} />
-        
-        {setlist.map((entry, index) => {
-          const shouldSkipNumbering = entry.entry_short && 
-            skipNumberingShorts.includes(entry.entry_short.toLowerCase());
-          
-          const alreadyHasNumber = songsWithNumbers.has(entry.entry_song);
-          
-          const displayNumber = (!alreadyHasNumber && !shouldSkipNumbering) ? 
-            currentRunningNumber++ : null;
-          
-          if (displayNumber !== null) {
-            songsWithNumbers.add(entry.entry_song);
-          }
+        <tbody>
+          {setlist.map((entry, index) => {
+            const shouldSkipNumbering = entry.entry_short && 
+              skipNumberingShorts.includes(entry.entry_short.toLowerCase());
+            
+            const alreadyHasNumber = songsWithNumbers.has(entry.entry_song);
+            
+            const displayNumber = (!alreadyHasNumber && !shouldSkipNumbering) ? 
+              currentRunningNumber++ : null;
+            
+            if (displayNumber !== null) {
+              songsWithNumbers.add(entry.entry_song);
+            }
 
-          return (
-            <SetlistTableRow
-              key={entry.entry_id}
-              entry={entry}
-              index={index}
-              setlist={setlist}
-              show={show}
-              displayNumber={displayNumber}
-              hasSinglePlacementType={hasSinglePlacementType}
-              isMobile={isMobile}
-              isAdmin={isAdmin}
-              copiedEntries={copiedEntries}
-              shouldShowCoachNotesForEntry={shouldShowCoachNotesForEntry}
-              toggleIndividualCoachNote={toggleIndividualCoachNote}
-              getGuestColor={getGuestColor}
-              hoverStates={hoverStates}
-              hoveredCategory={hoveredCategory}
-              onSongClick={onSongClick}
-              onLastShowClick={onLastShowClick}
-              onGuestClick={onGuestClick}
-              onJOTYClick={onJOTYClick}
-              onNumberClick={onNumberClick}
-            />
-          );
-        })}
-      </div>
+            return (
+              <SetlistTableRow
+                key={entry.entry_id}
+                entry={entry}
+                index={index}
+                setlist={setlist}
+                show={show}
+                displayNumber={displayNumber}
+                hasSinglePlacementType={hasSinglePlacementType}
+                isMobile={isMobile}
+                isAdmin={isAdmin}
+                copiedEntries={copiedEntries}
+                getGuestColor={getGuestColor}
+                hoverStates={hoverStates}
+                hoveredCategory={hoveredCategory}
+                onSongClick={onSongClick}
+                onLastShowClick={onLastShowClick}
+                onGuestClick={onGuestClick}
+                onJOTYClick={onJOTYClick}
+                onNumberClick={onNumberClick}
+              />
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface TourCount {
   tour_count: string;
@@ -16,11 +17,13 @@ interface ToursSectionProps {
 
 export function ToursSection({ tours, currentYear, loading }: ToursSectionProps) {
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 w-full">
-      <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">
-        {currentYear} Tours
-      </h2>
-      <div className="space-y-1.5">
+    <div className="bg-primary border border-fourth w-full">
+      <div className="bg-tertiary text-fifth px-2 py-0.5">
+        <h2 className="text-sm font-semibold">
+          {currentYear} Tours
+        </h2>
+      </div>
+      <div>
         {loading ? (
           <div className="text-center py-4">
             <div className="flex items-center justify-center space-x-2">
@@ -33,18 +36,22 @@ export function ToursSection({ tours, currentYear, loading }: ToursSectionProps)
           <p className="text-fifth text-xs text-center py-2">No tours found</p>
         ) : (
           tours.map((tour) => (
-            <div key={tour.tour_count} className="text-fifth text-xs flex items-center gap-2">
+            <div key={tour.tour_count} className="text-fifth text-xs flex items-center">
               <div 
-                className="w-5 h-5 rounded flex-shrink-0 border border-secondary"
-                style={{ backgroundColor: tour.color }}
+                className="w-1 h-5 flex-shrink-0"
+                style={{ 
+                  width: '5px',
+                  padding: 0,
+                  backgroundColor: tour.color
+                }}
               />
-              <div className="flex-1 text-left leading-tight">
-                <a 
-                  href={`/tours/${tour.tour_id}`}
-                  className="hover:underline transition-colors font-semibold text-left"
+              <div className="flex-1 text-left leading-tight ml-2 font-light">
+                <Link 
+                  to={`/tours/${tour.tour_id}`}
+                  className="hover:underline transition-colors font-medium text-left"
                 >
                   {tour.tour_count.split(' (')[0]}
-                </a>
+                </Link>
                 {' (' + tour.tour_count.split(' (')[1]}
               </div>
             </div>

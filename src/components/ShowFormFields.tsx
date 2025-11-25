@@ -38,7 +38,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                     value={editedShow?.show_date || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
 
@@ -49,7 +49,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         name="show_group"
                         value={editedShow?.show_group || ''}
                         onChange={onInputChange}
-                        className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                        className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                     >
                         <option value="">-- Select Group --</option>
                         {groups.map((group) => (
@@ -63,7 +63,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         type="text"
                         value={editedShow?.show_group || ''}
                         readOnly
-                        className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
+                        className="w-full px-2 py-1.5 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                     />
                 )}
             </div>
@@ -75,7 +75,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         name="show_tour"
                         value={editedShow?.show_tour || ''}
                         onChange={onInputChange}
-                        className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                        className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                     >
                         <option value="">-- Select Tour --</option>
                         {tours.map((tour) => (
@@ -89,7 +89,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         type="text"
                         value={editedShow?.show_tour || ''}
                         readOnly
-                        className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
+                        className="w-full px-2 py-1.5 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                     />
                 )}
             </div>
@@ -101,7 +101,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         name="show_subvenue"
                         value={editedShow?.show_subvenue || ''}
                         onChange={onInputChange}
-                        className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                        className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                     >
                         <option value="">-- Select Subvenue --</option>
                         {subvenues.map((subvenue) => (
@@ -115,7 +115,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         type="text"
                         value={editedShow?.show_subvenue || ''}
                         readOnly
-                        className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
+                        className="w-full px-2 py-1.5 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                     />
                 )}
             </div>
@@ -127,7 +127,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         name="show_year"
                         value={editedShow?.show_year || ''}
                         onChange={onInputChange}
-                        className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                        className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                     >
                         <option value="">-- Select Year --</option>
                         {years.map((year) => (
@@ -141,7 +141,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         type="text"
                         value={editedShow?.show_year || ''}
                         readOnly
-                        className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
+                        className="w-full px-2 py-1.5 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                     />
                 )}
             </div>
@@ -152,7 +152,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                     type="text"
                     value={editedShow?.show_canonid || ''}
                     readOnly
-                    className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
+                    className="w-full px-2 py-1.5 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
                 />
                 <p className="text-xs text-fifth/60 italic">Auto-generated value</p>
             </div>
@@ -165,7 +165,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                     value={editedShow?.show_detail || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
 
@@ -177,7 +177,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                     value={editedShow?.show_alert || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
 
@@ -189,7 +189,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         checked={editedShow?.show_iscanon || false}
                         onChange={onInputChange}
                         disabled={!isEditing}
-                        className="rounded border-secondary focus:ring-fourth"
+                        className="rounded border-fourth focus:ring-fourth"
                     />
                     Is Canon?
                 </label>
@@ -203,7 +203,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                         checked={editedShow?.show_issetlistgame || false}
                         onChange={onInputChange}
                         disabled={!isEditing}
-                        className="rounded border-secondary focus:ring-fourth"
+                        className="rounded border-fourth focus:ring-fourth"
                     />
                     Is Setlist Game?
                 </label>
@@ -217,7 +217,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                     value={convertToEasternDisplay(editedShow?.show_time || null)}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
 
@@ -230,7 +230,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                     onChange={onInputChange}
                     readOnly={!isEditing}
                     placeholder="https://wysterialane.org/..."
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
 
@@ -242,7 +242,7 @@ export const ShowFormFields: React.FC<ShowFormFieldsProps> = ({
                     onChange={onInputChange}
                     readOnly={!isEditing}
                     rows={3}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
                 />
             </div>
 

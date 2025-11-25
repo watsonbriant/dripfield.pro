@@ -79,7 +79,7 @@ export function YearSelector({ years, currentYear, onYearChange }: YearSelectorP
       <div className="md:hidden">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-primary transition-colors border border-secondary"
+          className="p-2 rounded-lg bg-tertiary text-fifth hover:bg-primary transition-colors border border-fourth"
         >
           <Search className="w-6 h-6" />
         </button>
@@ -94,7 +94,7 @@ export function YearSelector({ years, currentYear, onYearChange }: YearSelectorP
                 <button
                   key={year.year}
                   onClick={() => handleYearSelect(year.year_id, year.year)}
-                  className="w-full text-center px-3 py-1 text-lg rounded-lg hover:bg-primary bg-tertiary transition-colors font-semibold border border-secondary"
+                  className="w-full text-center px-3 py-1 text-lg rounded-lg hover:bg-primary bg-tertiary transition-colors font-semibold border border-fourth"
                 >
                   <span className="text-fifth">{year.year}</span>
                 </button>
@@ -108,7 +108,7 @@ export function YearSelector({ years, currentYear, onYearChange }: YearSelectorP
       <div className="hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-secondary hover:bg-primary transition-colors text-lg font-semibold"
+          className="flex items-center gap-2 bg-tertiary text-fifth px-4 py-1 rounded-lg border border-fourth hover:bg-primary transition-colors text-lg font-semibold"
         >
           {currentYear || 'Select Year'}
           <ChevronDown className="w-4 h-4" />
@@ -118,7 +118,7 @@ export function YearSelector({ years, currentYear, onYearChange }: YearSelectorP
       {isDropdownOpen && (
         <div 
           ref={dropdownListRef}
-          className={`absolute py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto ${
+          className={`absolute py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 overflow-y-auto ${
             window.innerWidth < 768 ? 'fixed left-0 right-0 mx-2 top-[72px]' : 'right-0 w-24 max-h-96'
           }`}
         >

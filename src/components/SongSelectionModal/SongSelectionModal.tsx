@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { SongSelectionModalProps } from './types';
 import { useSongSelection } from './hooks';
@@ -20,6 +20,28 @@ export function SongSelectionModal({
   submissionDetails
 }: SongSelectionModalProps) {
   const { user } = useAuth();
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      // Lock body scroll
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        // Restore scroll position when modal closes
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
   
   const {
     songs,
@@ -106,11 +128,15 @@ export function SongSelectionModal({
 
   return (
     <>
+      {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/50 z-50"
+        className="fixed inset-0 bg-black/50 z-[9998]"
         onClick={onClose}
       />
-      <div className="fixed inset-x-4 inset-y-4 md:inset-x-auto md:inset-y-auto md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col md:h-auto md:max-h-[90vh] md:w-[min(1000px,calc(100vw-32px))]">
+      
+      {/* Custom Modal - centered in viewport */}
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+        <div className="bg-primary border border-fourth shadow-xl flex flex-col max-w-[650px] w-full max-h-[90vh] overflow-y-auto pointer-events-auto">
         
         {/* Header */}
         <ModalHeader
@@ -135,24 +161,24 @@ export function SongSelectionModal({
         />
         
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-3">
+        <div className="flex-1 overflow-y-auto px-2 pt-2">
           {loading ? (
             <div className="text-center py-8">
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse"></div>
-                <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse delay-150"></div>
-                <div className="w-3 h-3 rounded-full bg-[#594e5f] animate-pulse delay-300"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
               </div>
-              <p className="text-[#fce7ca]/70 mt-4 text-sm">Loading songs...</p>
+              <p className="text-fifth mt-4 text-xs">Loading songs...</p>
             </div>
           ) : success ? (
             <div className="text-center py-8">
-              <div className="bg-green-500/20 text-fifth px-4 py-3 rounded-lg">
+              <div className="bg-green-500/20 text-fifth px-2 py-1 rounded-lg text-xs">
                 Your song selections have been {isEditing ? 'updated' : 'submitted'} successfully!
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {/* Only show song selection UI if not in view mode */}
               {!viewMode && (
                 <SongSelector
@@ -191,7 +217,7 @@ export function SongSelectionModal({
         </div>
         
         {/* Footer actions */}
-        <div className="p-3 border-t bg-canvas border-secondary rounded-b-lg">
+        <div className="px-2 py-0.5 border-t bg-tertiary text-fifth border-fourth">
           <Footer
             viewMode={viewMode}
             show_scored={show.show_scored}
@@ -206,6 +232,7 @@ export function SongSelectionModal({
             onSubmit={handleSubmit}
             onClearSelections={handleClearSelections}
           />
+        </div>
         </div>
       </div>
     </>

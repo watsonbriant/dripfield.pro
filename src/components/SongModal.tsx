@@ -163,23 +163,23 @@ const SongModal: React.FC<SongModalProps> = ({
         className="fixed inset-0 bg-black/50 z-50"
         onClick={onClose}
       />
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-2xl md:w-full z-50 bg-primary rounded-lg border border-secondary shadow-xl flex flex-col">
+      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-2xl md:w-full z-50 bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-3">
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">
+          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
             {isNewSong ? 'Add New Song' : 'Edit Song'}
           </h2>
           <div className="flex gap-2">
             <button
               onClick={handleSaveChanges}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/80 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-secondary"
+              className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/80 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
             >
               <Save className="w-4 h-4 text-fifth" />
               <span className="text-fifth">Save</span>
             </button>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-tertiary rounded-lg border border-secondary bg-red-500 transition-colors"
+              className="p-2 hover:bg-tertiary rounded-lg border border-fourth bg-red-500 transition-colors"
             >
               <X className="w-5 h-5 text-fifth" />
             </button>
@@ -195,7 +195,7 @@ const SongModal: React.FC<SongModalProps> = ({
                 name="song"
                 value={editedSong?.song || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="Enter song title"
                 required
               />
@@ -207,7 +207,7 @@ const SongModal: React.FC<SongModalProps> = ({
                 name="song_category"
                 value={editedSong?.song_category || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               >
                 <option value="">-- Select Category --</option>
                 {categories.map((cat) => (
@@ -224,7 +224,7 @@ const SongModal: React.FC<SongModalProps> = ({
                 name="song_originalartist"
                 value={editedSong?.song_originalartist || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
               >
                 <option value="">-- Select Artist --</option>
                 {artists.map((artist) => (
@@ -242,7 +242,7 @@ const SongModal: React.FC<SongModalProps> = ({
                 name="song_categoryorder"
                 value={editedSong?.song_categoryorder === null ? '' : editedSong?.song_categoryorder}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="Enter order number"
               />
             </div>
@@ -254,7 +254,7 @@ const SongModal: React.FC<SongModalProps> = ({
                 value={editedSong?.song_coachnotes || ''}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-3 py-2 rounded-lg border border-secondary bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas font-light text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
                 placeholder="Add notes here..."
               />
             </div>

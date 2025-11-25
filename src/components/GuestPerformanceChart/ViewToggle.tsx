@@ -31,11 +31,11 @@ export default function ViewToggle({ viewMode, onToggle }: ViewToggleProps) {
           role="switch"
           aria-checked={viewMode === 'table'}
           onClick={onToggle}
-          className="relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary bg-canvas border border-secondary"
+          className="relative inline-flex h-4 w-[47px] items-center rounded-full border border-fourth transition-colors bg-primary"
         >
           <span
-            className={`absolute h-4 w-4 rounded-full bg-tertiary transition-transform duration-200 ${
-              viewMode === 'table' ? 'left-7' : 'left-1'
+            className={`absolute h-[10px] w-[10px] rounded-lg bg-black transition-transform duration-200 ${
+              viewMode === 'table' ? 'left-[33px]' : 'left-[2px]'
             }`}
           />
         </button>

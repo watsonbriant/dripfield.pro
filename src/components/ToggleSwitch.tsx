@@ -12,7 +12,7 @@ const ToggleSwitch = ({ checked, onChange }: ToggleSwitchProps) => {
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-[3.125rem] border border-secondary hover:bg-secondary items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary/50 ${
+        className={`relative inline-flex h-6 w-[3.125rem] border border-fourth hover:bg-secondary items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary/50 ${
           checked ? 'bg-tertiary' : 'bg-primary'
         }`}
       >

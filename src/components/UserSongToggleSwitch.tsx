@@ -22,7 +22,7 @@ const UserSongToggleSwitch: React.FC<UserSongToggleSwitchProps> = ({
         role="switch"
         aria-checked={isRight}
         onClick={() => onToggle(!isRight)}
-        className="relative inline-flex h-6 w-[3.125rem] items-center rounded-full border border-secondary transition-colors bg-primary"
+        className="relative inline-flex h-6 w-[3.125rem] items-center rounded-full border border-fourth transition-colors bg-primary"
       >
         <span
           className={`absolute h-4 w-4 rounded-full bg-fourth transition-transform duration-200 ${

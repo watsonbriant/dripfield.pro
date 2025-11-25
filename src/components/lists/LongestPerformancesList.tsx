@@ -281,103 +281,110 @@ export function LongestPerformancesList({ listId, onProgressUpdate }: LongestPer
 
     if (loading) {
         return (
-            <div className="text-fifth text-center py-8">Loading performances...</div>
+            <div className="text-center py-12 bg-primary p-3">
+                <div className="flex items-center justify-center space-x-2">
+                    <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                    <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                    <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+                </div>
+                <p className="text-fifth mt-4">Loading performances...</p>
+            </div>
         );
     }
 
     if (performances.length === 0) {
         return (
-            <div className="text-fifth text-center py-8">No performances found</div>
+            <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+                <p className="text-fifth">No performances found</p>
+            </div>
         );
     }
 
     const sortedPerformances = getSortedPerformances();
 
     return (
-        <div className="overflow-x-auto">
-            <table className="w-full border-collapse min-w-max">
-                <thead>
-                    <tr className="bg-canvas border-y border-secondary">
-                        <th
-                            className="px-3 py-1 text-left text-s font-medium text-fifth cursor-pointer hover:bg-black/5 w-[250px] max-w-[250px]"
-                            onClick={() => handleSort('song_name')}
-                        >
-                            Song
-                        </th>
-                        <th
-                            className="px-3 py-1 text-center text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
-                            onClick={() => handleSort('entry_length')}
-                        >
-                            Length
-                        </th>
-                        <th
-                            className="px-3 py-1 text-center text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
-                            onClick={() => handleSort('show_date')}
-                        >
-                            <div className="flex justify-center gap-1">
+        <div>
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse min-w-max">
+                    <thead>
+                        <tr className="bg-fourth">
+                            <th
+                                className="pl-2 pr-3 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20 w-[250px] max-w-[250px]"
+                                onClick={() => handleSort('song_name')}
+                            >
+                                Song
+                            </th>
+                            <th
+                                className="px-2 py-0.5 text-center text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
+                                onClick={() => handleSort('entry_length')}
+                            >
+                                Length
+                            </th>
+                            <th
+                                className="px-2 py-0.5 text-center text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
+                                onClick={() => handleSort('show_date')}
+                            >
                                 Show
-                            </div>
-                        </th>
-                        <th
-                            className="px-3 py-1 text-left text-s font-medium text-fifth whitespace-nowrap cursor-pointer hover:bg-black/5"
-                            onClick={() => handleSort('show_venue_location')}
-                        >
-                            <div className="flex items-center gap-1">
+                            </th>
+                            <th
+                                className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
+                                onClick={() => handleSort('show_venue_location')}
+                            >
                                 Location
-                            </div>
-                        </th>
-                        <th className="px-3 py-1 text-left text-s font-medium text-fifth whitespace-nowrap w-[350px] max-w-[350px]">
-                            Coach's Notes
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-black/5">
-                    {sortedPerformances.map((perf, index) => (
-                        <tr
-                            key={perf.entry_id}
-                            className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                } hover:bg-tertiary/40 transition-colors text-xs`}
-                        >
-                            <td className="px-3 py-0.5 text-fifth w-[250px] max-w-[250px]">
-                                <button
-                                    onClick={() => navigate(`/song/${perf.song_id}`)}
-                                    className="font-medium hover:underline transition-colors break-words text-left"
-                                >
-                                    {perf.song_name}
-                                </button>
-                            </td>
-                            <td className="px-3 py-0.5 text-fifth font-light whitespace-nowrap text-center">
-                                {formatLength(perf.entry_length)}
-                            </td>
-                            <td className="px-3 py-0.5 text-fifth whitespace-nowrap text-center">
-                                <button
-                                    onClick={() => navigate(`/setlist/${perf.show_id}`)}
-                                    className="font-medium hover:underline transition-colors"
-                                >
-                                    {formatInTimeZone(
-                                        new Date(perf.show_date),
-                                        'UTC',
-                                        'MM.dd.yy'
-                                    )}
-                                </button>
-                            </td>
-                            <td className="px-3 py-0.5 text-fifth font-light whitespace-nowrap">
-                                <button
-                                    onClick={() => navigate(`/venue/${perf.venue_id}`)}
-                                    className="hover:underline transition-colors"
-                                >
-                                    {perf.show_venue_location}
-                                </button>
-                            </td>
-                            <td className="px-3 py-0.5 text-fifth font-light">
-                                {perf.entry_coachnotes ? (
-                                    <div dangerouslySetInnerHTML={{ __html: perf.entry_coachnotes }} />
-                                ) : ''}
-                            </td>
+                            </th>
+                            <th className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap w-[500px] max-w-[500px]">
+                                Coach's Notes
+                            </th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-black/5">
+                        {sortedPerformances.map((perf, index) => (
+                            <tr
+                                key={perf.entry_id}
+                                className={`${index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+                                    } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
+                            >
+                                <td className="pl-2 pr-3 text-fifth w-[250px] max-w-[250px]">
+                                    <button
+                                        onClick={() => navigate(`/song/${perf.song_id}`)}
+                                        className="font-medium hover:underline transition-colors break-words text-left"
+                                    >
+                                        {perf.song_name}
+                                    </button>
+                                </td>
+                                <td className="px-2 text-fifth font-light whitespace-nowrap text-center">
+                                    {formatLength(perf.entry_length)}
+                                </td>
+                                <td className="px-2 text-fifth whitespace-nowrap text-center">
+                                    <button
+                                        onClick={() => navigate(`/setlist/${perf.show_id}`)}
+                                        className="font-medium hover:underline transition-colors"
+                                    >
+                                        {formatInTimeZone(
+                                            new Date(perf.show_date),
+                                            'UTC',
+                                            'MM.dd.yy'
+                                        )}
+                                    </button>
+                                </td>
+                                <td className="px-2 text-fifth font-light whitespace-nowrap">
+                                    <button
+                                        onClick={() => navigate(`/venue/${perf.venue_id}`)}
+                                        className="hover:underline transition-colors"
+                                    >
+                                        {perf.show_venue_location}
+                                    </button>
+                                </td>
+                                <td className="px-2 text-fifth leading-[0.75rem] font-light">
+                                    {perf.entry_coachnotes ? (
+                                        <div dangerouslySetInnerHTML={{ __html: perf.entry_coachnotes }} />
+                                    ) : ''}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

@@ -50,7 +50,7 @@ export const VenueMap: React.FC<VenueMapProps> = ({ onVenueClick }) => {
 
   if (loading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-4 text-center">
+      <div className="bg-primary border border-fourth rounded-lg p-4 text-center">
         <p className="text-fifth">Loading map...</p>
       </div>
     );
@@ -58,7 +58,7 @@ export const VenueMap: React.FC<VenueMapProps> = ({ onVenueClick }) => {
 
   if (allVenues.length === 0) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-4 text-center">
+      <div className="bg-primary border border-fourth rounded-lg p-4 text-center">
         <p className="text-fifth">No venues with location data available for mapping.</p>
       </div>
     );
@@ -73,7 +73,7 @@ export const VenueMap: React.FC<VenueMapProps> = ({ onVenueClick }) => {
     : -98.5795; // Default to US center
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 mb-4">
+    <div className="bg-primary border border-fourth p-2 mb-4">
       <MobileHeader
         venueCount={mapVenues.length}
         hasActiveFilters={hasActiveFilters}

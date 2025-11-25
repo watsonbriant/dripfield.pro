@@ -23,7 +23,7 @@ export const VenueActionButtons: React.FC<VenueActionButtonsProps> = ({
             {/* Add New Venue button */}
             <button
                 onClick={onCreateNew}
-                className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-primary"
+                className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-white"
             >
                 <Plus className="w-5 h-5" />
             </button>
@@ -34,7 +34,7 @@ export const VenueActionButtons: React.FC<VenueActionButtonsProps> = ({
                     <button
                         onClick={onCancel}
                         disabled={isSubmitting}
-                        className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-gray-500 text-primary border-secondary hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-gray-500 text-white border-fourth hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Cancel
                     </button>
@@ -42,7 +42,7 @@ export const VenueActionButtons: React.FC<VenueActionButtonsProps> = ({
                 <button
                     onClick={onToggleEdit}
                     disabled={isSubmitting}
-                    className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-primary border-secondary hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+                    className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
                 >
                     {isEditing ? (
                         <>

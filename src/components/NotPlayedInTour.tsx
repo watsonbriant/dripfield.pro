@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { BarChart3 } from 'lucide-react';
 
@@ -18,19 +18,18 @@ interface NotPlayedInTourProps {
   songIdMap: { [songName: string]: string };
 }
 
-const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
+// const cleanSongName = (songName: string): string => {
+//   return songName
+//     .replace(/\[/g, '(')
+//     .replace(/\]/g, ')')
+//     .replace(/ñ/g, 'n')
+//     .replace(/ü/g, 'u')
+//     .replace(/–/g, '-')
+//     .replace(/…/g, '...')
+//     .replace(/∆/g, 'a');
+// };
 
 const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, showIds, songIdMap }) => {
-  const navigate = useNavigate();
   const [notPlayedSongs, setNotPlayedSongs] = useState<NotPlayedSong[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -175,10 +174,12 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
   }, [tourId, tourName, showIds]);
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3">
-      <h2 className="text-lg font-semibold bg-fifth text-primary inline-block px-3 rounded-lg border border-secondary mb-1.5">
+    <div className="bg-primary border border-fourth pb-0.5">
+      <div className="text-white px-2 py-0.5 mb-0.5" style={{ backgroundColor: '#181818' }}>
+        <h2 className="text-sm font-semibold">
         Most Common Not Played
       </h2>
+      </div>
       
       <div className={`${loading ? 'opacity-20' : ''} transition-opacity duration-300`}>
         {notPlayedSongs.length === 0 ? (
@@ -188,25 +189,25 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
         ) : (
           <div className="overflow-y-auto max-h-64">
             <table className="w-full border-collapse">
-              <tbody className="divide-y divide-white/5">
+              <tbody>
                 {notPlayedSongs.map((song, index) => (
                   <tr
                     key={song.song_id}
-                    className={`${index % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}
+                    className={`bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                   >
-                    <td className="pl-4 text-fifth">
+                    <td className="pl-3 text-fifth">
                       <div className="flex items-center justify-between">
-                        <button
-                          onClick={() => navigate(`/song/${song.song_id}`)}
-                          className="font-trad text-fifth text-[1rem] leading-[1rem] pb-0.5 hover:underline cursor-pointer text-left"
+                        <Link
+                          to={`/song/${song.song_id}`}
+                          className="font-medium text-fifth hover:underline cursor-pointer leading-[0.75rem] text-left"
                         >
-                          {cleanSongName(song.song)}
-                        </button>
+                          {song.song}
+                        </Link>
                         {song.category_artwork && (
                           <img
                             src={song.category_artwork}
                             alt={`${song.song} artwork`}
-                            className="w-5 h-5 rounded object-cover border border-secondary ml-3"
+                            className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                             onError={(e) => {
                               // Hide the image if it fails to load
                               (e.target as HTMLImageElement).style.display = 'none';
@@ -215,7 +216,7 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
                         )}
                       </div>
                     </td>
-                    <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                    <td className="w-[30px] text-center font-medium text-fifth">
                       {song.play_count}
                     </td>
                   </tr>

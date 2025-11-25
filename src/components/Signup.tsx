@@ -93,8 +93,8 @@ export const Signup: React.FC = () => {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg p-3">
-        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-3">Create a New Account</h1>
+      <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg p-3">
+        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-3">Create a New Account</h1>
 
         {message ? (
           <div className="p-4 bg-green-100 rounded-lg border border-green-300 mb-4">
@@ -102,7 +102,7 @@ export const Signup: React.FC = () => {
             <div className="mt-4">
               <Link
                 to="/login"
-                className="w-full px-4 py-2 text-fifth rounded-full font-medium transition-colors bg-tertiary hover:bg-tertiary/70 flex justify-center border border-secondary"
+                className="w-full px-4 py-2 text-fifth rounded-full font-medium transition-colors bg-tertiary hover:bg-tertiary/70 flex justify-center border border-fourth"
               >
                 Back to Login
               </Link>
@@ -187,7 +187,7 @@ export const Signup: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full px-3 py-1.5 text-fifth rounded-lg font-medium transition-colors border border-secondary ${
+              className={`w-full px-3 py-1.5 text-fifth rounded-lg font-medium transition-colors border border-fourth ${
                 loading
                 ? 'bg-tertiary/50 cursor-not-allowed'
                 : 'bg-tertiary hover:bg-tertiary/80'

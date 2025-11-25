@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const Login: React.FC = () => {
@@ -11,6 +11,7 @@ export const Login: React.FC = () => {
   
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +26,9 @@ export const Login: React.FC = () => {
       // Show success message briefly before redirect
       setAuthSuccess(true);
       setTimeout(() => {
-        navigate('/');
+        // Redirect to the page the user was on before login, or home if no previous page
+        const from = (location.state as any)?.from?.pathname || '/';
+        navigate(from, { replace: true });
       }, 1000);
     } catch (err: any) {
       setError(err.message || 'Failed to sign in');
@@ -36,8 +39,8 @@ export const Login: React.FC = () => {
   
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="max-w-md mx-auto bg-primary border border-secondary rounded-lg p-3">
-        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-3">Sign in to your account</h1>
+      <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg p-3">
+        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-3">Sign in to your account</h1>
         
         <form onSubmit={handleSubmit} className="space-y-2">
           {error && (
@@ -87,7 +90,7 @@ export const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading || authSuccess}
-            className={`w-full px-3 py-1.5 rounded-lg font-medium transition-colors border border-secondary ${
+            className={`w-full px-3 py-1.5 rounded-lg font-medium transition-colors border border-fourth ${
               authSuccess 
                 ? 'bg-green-500 text-fifth cursor-not-allowed'
                 : loading

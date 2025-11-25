@@ -2,7 +2,6 @@ import React from 'react';
 import { X, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
 import { SongPick, SetlistEntry } from './types';
 import { 
-  cleanSongName, 
   getPlacementColor, 
   getSetDisplayName, 
   getUniqueSets, 
@@ -68,14 +67,14 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
         {/* Desktop view: Two column layout */}
         <div className="hidden md:block">
           {uniqueSets.map(setId => (
-            <div key={setId} className="border border-secondary rounded-lg overflow-hidden mb-5">
-              <div className="flex items-center px-3 py-2 bg-black">
-                <h4 className="text-base font-medium text-primary flex-1">
+            <div key={setId} className="border border-fourth overflow-hidden mb-2">
+              <div className="flex items-center px-2 py-1 bg-black">
+                <h4 className="text-sm font-medium text-white flex-1">
                   {setId.startsWith('E') ? 
                     `${setId === 'E1' ? 'Encore' : setId === 'E2' ? '2nd Encore' : '3rd Encore'} Selections` : 
                     `Set ${setId} Selections`}
                 </h4>
-                <h4 className="text-base font-medium text-primary flex-1 pl-6">
+                <h4 className="text-sm font-medium text-white flex-1 pl-6">
                   {setId.startsWith('E') ? 
                     `Actual ${setId === 'E1' ? 'Encore' : setId === 'E2' ? '2nd Encore' : '3rd Encore'}` : 
                     `Actual Set ${setId}`}
@@ -85,7 +84,7 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
               <div className="p-2 bg-canvas">
                 <div className="grid grid-cols-2 gap-0">
                   {/* Left column: User's selections */}
-                  <div className="space-y-0.5 pr-3 border-r border-secondary">
+                  <div className="space-y-0.5 pr-3 border-r border-fourth">
                     {getSongsForSet(songPicks, setId).length > 0 ? (
                       getSongsForSet(songPicks, setId).map((pick, index) => (
                         <div 
@@ -93,7 +92,7 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                           className="flex justify-between items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                           <div className="flex items-center gap-3">
                             <span 
-                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
+                              className="text-white text-center rounded text-xs font-medium px-2 py-0.5 flex items-center justify-center"
                               style={{ 
                                 backgroundColor: getPlacementColor(pick.placement) 
                               }}
@@ -101,8 +100,8 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                               {index + 1}
                             </span>
                             <div className="flex-1 flex flex-col justify-center">
-                              <span className="break-words pr-2 font-trad text-[1.125rem] pb-1 leading-[1rem] text-fifth">
-                                {cleanSongName(pick.song)}
+                              <span className="break-words pr-2 font-medium text-xs text-fifth">
+                                {pick.song}
                               </span>
                             </div>
                           </div>
@@ -116,7 +115,7 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                         </div>
                       ))
                     ) : (
-                      <div className="text-center text-fifth text-sm italic">
+                      <div className="text-center text-fifth text-xs font-medium">
                         No songs picked for this set
                       </div>
                     )}
@@ -128,10 +127,10 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                       getSongsForActualSet(actualSetlist, setId).map((entry, index) => (
                         <div 
                           key={entry.entry_id} 
-                          className="flex items-center rounded-md text-[#fce7ca]/90 hover:bg-white/5 transition-colors">
+                          className="flex items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                           <div className="flex items-center gap-3">
                             <span 
-                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
+                              className="text-white text-center rounded text-xs font-medium px-2 py-0.5 flex items-center justify-center"
                               style={{ 
                                 backgroundColor: getPlacementColor(entry.entry_placement) 
                               }}
@@ -139,15 +138,15 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                               {index + 1}
                             </span>
                             <div className="flex-1 flex flex-col justify-center">
-                              <span className="break-words pr-2 font-trad text-[1.125rem] pb-1 leading-[1rem] text-fifth">
-                                {cleanSongName(entry.entry_song)}
+                              <span className="break-words pr-2 font-medium text-xs text-fifth">
+                                {entry.entry_song}
                               </span>
                             </div>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="text-center text-fifth text-sm italic">
+                      <div className="text-center text-fifth text-xs font-medium">
                         No songs played in this set
                       </div>
                     )}
@@ -161,9 +160,9 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
         {/* Mobile view: Single column based on toggle state */}
         <div className="md:hidden">
           {uniqueSets.map(setId => (
-            <div key={setId} className="border border-secondary rounded-lg overflow-hidden mb-5">
-              <div className="flex items-center px-3 py-2 bg-black">
-                <h4 className="text-base font-medium text-primary flex-1">
+            <div key={setId} className="border border-fourth overflow-hidden mb-2">
+              <div className="flex items-center px-2 py-1 bg-black">
+                <h4 className="text-sm font-medium text-white flex-1">
                   {setId.startsWith('E') ? 
                     `${getSetDisplayName(setId)} ${!showActualSetlist ? 'Selections' : ''}` : 
                     `Set ${setId} ${!showActualSetlist ? 'Selections' : ''}`}
@@ -181,14 +180,14 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                           className="flex justify-between items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                           <div className="flex items-center gap-3">
                             <span 
-                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
+                              className="text-white text-center rounded text-xs font-medium px-2 py-0.5 flex items-center justify-center"
                               style={{ backgroundColor: getPlacementColor(pick.placement) }}
                             >
                               {index + 1}
                             </span>
                             <div className="flex-1 flex flex-col justify-center">
-                              <span className="break-words pr-2 font-trad text-[1.25rem] pb-1 leading-[1rem] text-sm">
-                                {cleanSongName(pick.song)}
+                              <span className="break-words pr-2 font-medium text-xs text-fifth">
+                                {pick.song}
                               </span>
                             </div>
                           </div>
@@ -202,7 +201,7 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                         </div>
                       ))
                     ) : (
-                      <div className="text-center text-fifth text-sm italic">
+                      <div className="text-center text-fifth text-xs font-medium">
                         No songs picked for this set
                       </div>
                     )}
@@ -217,21 +216,21 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                           className="flex items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                           <div className="flex items-center gap-3">
                             <span 
-                              className="text-primary text-center rounded text-sm font-normal w-8 h-6 flex items-center justify-center"
+                              className="text-white text-center rounded text-xs font-medium px-2 py-0.5 flex items-center justify-center"
                               style={{ backgroundColor: getPlacementColor(entry.entry_placement) }}
                             >
                               {index + 1}
                             </span>
                             <div className="flex-1 flex flex-col justify-center">
-                              <span className="break-words pr-2 font-trad text-[1.25rem] pb-1 leading-[1rem] text-sm">
-                                {cleanSongName(entry.entry_song)}
+                              <span className="break-words pr-2 font-medium text-xs text-fifth">
+                                {entry.entry_song}
                               </span>
                             </div>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="text-center text-fifth text-sm italic">
+                      <div className="text-center text-fifth text-xs font-medium">
                         No songs in this set
                       </div>
                     )}
@@ -249,9 +248,9 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
   return (
     <div className="space-y-1">
       {uniqueSets.map(setId => (
-        <div key={setId} className="border border-secondary rounded-lg overflow-hidden">
-          <div className="flex justify-between items-center px-3 py-2 bg-black">
-            <h4 className="text-base font-medium text-primary">
+        <div key={setId} className="border border-fourth overflow-hidden mb-2">
+          <div className="flex justify-between items-center px-0.5 py-0.5 bg-fifth">
+            <h4 className="text-sm pl-1.5 font-medium text-white">
               {getSetDisplayName(setId)}
             </h4>
             {!viewMode && (
@@ -260,7 +259,7 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                   e.stopPropagation();
                   onRemoveSet(setId);
                 }}
-                className="bg-red-600 text-primary hover:bg-red-600/80 p-1.5 rounded-md"
+                className="bg-red-600 text-white hover:bg-red-600/80 p-1 rounded"
                 title="Remove this set"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -268,14 +267,14 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
             )}
           </div>
           
-          <div className="space-y-1 p-2 bg-canvas">
+          <div className="space-y-0.5 py-1 px-2 bg-canvas">
             {getSongsForSet(songPicks, setId).map((pick, index) => (
               <div 
                 key={pick.id} 
                 className="flex justify-between items-center rounded-md text-fifth hover:bg-tertiary/40 transition-colors">
                 <div className="flex items-center gap-3">
                   <span 
-                    className="text-xs text-primary px-2 py-0.5 rounded flex items-center font-normal justify-center min-w-[1.5rem]"
+                    className="text-xs text-white px-1.5 py-0.5 rounded flex items-center font-medium justify-center min-w-[1.5rem]"
                     style={{ 
                       backgroundColor: getPlacementColor(pick.placement) 
                     }}
@@ -283,12 +282,12 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                     {index + 1}
                   </span>
                   <div className="flex flex-col justify-center">
-                    <span className="break-words pr-2 font-trad text-[1.125rem] pb-1 leading-[1rem]">
-                      {cleanSongName(pick.song)}
+                    <span className="break-words pr-2 font-medium text-xs">
+                      {pick.song}
                     </span>
                     {/* Only show placement labels if not in view mode or if the show isn't closed */}
                     {pick.placement && (!viewMode || !isSelectionClosed) && (
-                      <span className="text-xs text-fourth font-medium">
+                      <span className="text-[0.625rem] leading-[0.625rem] text-fourth font-base">
                         {pick.placement.startsWith('Main Set') ? '' : 
                          pick.placement.startsWith('Encore') ? '' : 
                          pick.placement}
@@ -304,20 +303,20 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                         e.stopPropagation(); // Prevent event bubbling
                         onMoveSongUp(pick.id);
                       }}
-                      className="text-fifth bg-tertiary hover:bg-tertiary/40 p-1 mr-0.5 rounded border border-secondary"
+                      className="text-fifth bg-tertiary hover:bg-tertiary/40 p-0.5 mr-0.5 rounded border border-fourth"
                       title="Move up"
                     >
-                      <ChevronUp className="w-4 h-4" />
+                      <ChevronUp className="w-3.5 h-3.5" />
                     </button>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent event bubbling
                         onMoveSongDown(pick.id);
                       }}
-                      className="text-fifth bg-tertiary hover:bg-tertiary/40 p-1 mr-0.5 rounded border border-secondary"
+                      className="text-fifth bg-tertiary hover:bg-tertiary/40 p-0.5 mr-0.5 rounded border border-fourth"
                       title="Move down"
                     >
-                      <ChevronDown className="w-4 h-4" />
+                      <ChevronDown className="w-3.5 h-3.5" />
                     </button>
                     <button 
                       onClick={(e) => {
@@ -327,10 +326,10 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                           onRemoveSong(index);
                         }
                       }}
-                      className="text-primary bg-red-600 hover:bg-red-600/50 p-1 mr-0.5 rounded border border-secondary"
+                      className="text-white bg-red-600 hover:bg-red-600/50 p-0.5 mr-0.5 rounded border border-fourth"
                       title="Remove song"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ) : (

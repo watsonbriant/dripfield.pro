@@ -13,19 +13,19 @@ interface ShowAttendButtonProps {
 const LoginModal: React.FC<{ onClose: () => void, onLogin: () => void }> = ({ onClose, onLogin }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-primary border border-secondary rounded-lg p-4 max-w-sm mx-4 shadow-lg" onClick={e => e.stopPropagation()}>
-        <h3 className="text-xl font-medium text-fifth mb-3">Login Required</h3>
-        <p className="mb-4 text-fifth text-sm font-light">You must be logged in to add this show to your attended list.</p>
+      <div className="bg-primary border border-fourth rounded-lg px-2 py-1 max-w-sm mx-4 shadow-lg" onClick={e => e.stopPropagation()}>
+        <h3 className="text-base font-medium text-fifth mb-0.5">Login Required</h3>
+        <p className="mb-2 text-fifth text-xs font-light">You must be logged in to add this show to your attended list.</p>
         <div className="flex justify-end space-x-3">
           <button 
             onClick={onClose}
-            className="px-4 py-1 border border-secondary rounded-lg text-fifth hover:bg-red-500/50 transition-colors text-sm font-medium bg-red-500"
+            className="px-2 py-0.5 border border-fourth rounded-lg text-fifth hover:bg-red-500/50 transition-colors text-sm font-medium bg-red-500"
           >
             Cancel
           </button>
           <button 
             onClick={onLogin}
-            className="px-4 py-1 bg-tertiary border border-secondary rounded-lg text-fifth hover:bg-primary transition-colors text-sm font-medium"
+            className="px-2 py-0.5 bg-tertiary border border-fourth rounded-lg text-fifth hover:bg-primary transition-colors text-sm font-medium"
           >
             Log In
           </button>
@@ -138,24 +138,24 @@ const ShowAttendButton: React.FC<ShowAttendButtonProps> = React.memo(({
           isAttended ? "Remove from attended shows" : 
           "Mark as attended"
         }
-        className={`p-1 rounded-lg transition-all ${
-          error ? 'bg-red-800 text-primary' :
-          !user ? 'text-fifth border-secondary border bg-tertiary hover:bg-tertiary/80' :
+        className={`p-0.5 rounded transition-all ${
+          error ? 'bg-red-800 text-white' :
+          !user ? 'text-fifth border-fourth border bg-tertiary hover:bg-tertiary/80' :
           isAttended
-            ? 'border border-secondary bg-green-600 hover:bg-red-600 text-primary'
-            : 'text-primary border-secondary border bg-fourth hover:bg-green-600 hover:text-primary'
+            ? 'border border-fourth bg-green-600 hover:bg-red-600 text-white'
+            : 'text-white border-fourth border bg-fourth hover:bg-green-600 hover:text-white'
         } ${className}`}
       >
         {isLoading ? (
-          <div className="w-4 h-4 border-2 border-primary border-t-white rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-1 border-fourth border-t-white rounded-full animate-spin"></div>
         ) : error ? (
-          <UserX size={16} />
+          <UserX size={14} />
         ) : !user ? (
-          <UserPlus size={16} />
+          <UserPlus size={14} />
         ) : isAttended ? (
-          isHovering ? <UserX size={16} /> : <UserCheck size={16} />
+          isHovering ? <UserX size={14} /> : <UserCheck size={14} />
         ) : (
-          <UserPlus size={16} />
+          <UserPlus size={14} />
         )}
       </button>
 

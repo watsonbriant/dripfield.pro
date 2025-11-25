@@ -250,10 +250,12 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
   }, [updateScrollFades]);
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3" key="tour-song-spread">
-      <h2 className="text-lg font-semibold bg-fourth text-primary inline-block px-3 rounded-lg border border-secondary mb-2">
-        Song Spread
-      </h2>
+    <div className="bg-primary border border-fourth" key="tour-song-spread">
+      <div className="bg-fourth text-white px-2 py-0.5">
+        <h2 className="text-sm font-semibold">
+          Song Spread
+        </h2>
+      </div>
       
       <div className="relative">
         {/* Left fade overlay - only show when not scrolled all the way left */}
@@ -261,7 +263,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
           <div 
             className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
             style={{
-              background: 'linear-gradient(to right, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
+              background: 'linear-gradient(to right, #e0dcc3 0%, #e0dcc3 30%, transparent 100%)'
             }}
           />
         )}
@@ -271,7 +273,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
           <div 
             className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
             style={{
-              background: 'linear-gradient(to left, #f5f4f6 0%, #f5f4f6 30%, transparent 100%)'
+              background: 'linear-gradient(to left, #e0dcc3 0%, #e0dcc3 30%, transparent 100%)'
             }}
           />
         )}
@@ -290,7 +292,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               display: none;
             }
           `}</style>
-          <div className="flex items-end gap-1" style={{ minWidth: 'fit-content' }}>
+          <div className="flex items-end gap-1 py-1 px-1" style={{ minWidth: 'fit-content' }}>
             {sortedCategories.map(({ category, count, artwork }) => {
               const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
               
@@ -310,18 +312,18 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                   {/* Empty space above the filled portion - only render if not 100% height */}
                   {barHeight < 200 && (
                     <div 
-                      className="w-full border-l border-r border-t border-secondary rounded-t"
+                      className="w-full border-l border-r border-t border-fourth"
                       style={{ 
                         height: `${200 - barHeight}px`,
-                        backgroundColor: '#ededed' // bg-secondary color
+                        backgroundColor: '#e0dcc3' // bg-secondary color
                       }}
                     />
                   )}
                   
                   {/* Filled portion with artwork - positioned on top */}
                   <div 
-                    className={`w-full border border-secondary relative overflow-hidden ${
-                      barHeight < 200 ? 'rounded-b' : 'rounded'
+                    className={`w-full border border-fourth relative overflow-hidden ${
+                      barHeight < 200 ? '' : ''
                     }`}
                     style={{ 
                       height: `${barHeight}px`
@@ -343,7 +345,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                     {/* Content overlay */}
                     <div className="relative z-10 w-full h-full flex items-start justify-center">
                       {(hoveredCategory === category || (isMobile && selectedCategory === category)) && (
-                        <div className="text-fifth text-sm font-semibold mt-0.5 bg-primary rounded border border-secondary px-1">{count}</div>
+                        <div className="text-fifth text-sm font-semibold mt-0.5 bg-canvas rounded border border-fourth px-1">{count}</div>
                       )}
                     </div>
                   </div>
@@ -365,7 +367,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                         console.error(`Failed to load image for ${category}. URL was:`, artwork);
                         e.currentTarget.style.display = 'none';
                       }}
-                      className="h-8 w-8 object-cover rounded border border-secondary"
+                      className="h-8 w-8 object-cover rounded border border-fourth"
                     />
                   )}
                 </div>
@@ -379,24 +381,24 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
       {/* Desktop tooltip - follows mouse */}
       {hoveredCategory && !isMobile && (
         <div 
-          className="fixed bg-tertiary text-fifth px-2 py-1 rounded border border-secondary shadow-lg min-w-max z-[9999] text-[0.625rem] leading-[0.75rem]"
+          className="fixed bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg min-w-max z-[9999] text-xs leading-[0.75rem]"
           style={{
             left: `${mousePosition.x + 10}px`,
             top: `${mousePosition.y - 10}px`
           }}
         >
-          <div className="font-semibold text-sm mb-0.5">{hoveredCategory}</div>
+          <div className="font-semibold text-xs mb-0.5">{hoveredCategory}</div>
           {sortedCategories
             .find(cat => cat.category === hoveredCategory)
             ?.songs
             .sort((a, b) => a.song.localeCompare(b.song))
             .map((song, index) => (
               <div key={index}>
-                <span className="font-medium">{song.song}</span>
+                <span className="font-medium text-[0.625rem]">{song.song}</span>
                 {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory) && (
-                  <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
+                  <>&nbsp;&nbsp;<span className="font-light text-[0.625rem]">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
                 )}
-                &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
+                &nbsp;&nbsp;<span className="font-light text-[0.625rem]">[{song.playCount}]</span>
               </div>
             ))}
         </div>
@@ -404,9 +406,9 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
       
       {/* Mobile tooltip - underneath chart */}
       {selectedCategory && isMobile && (
-        <div className="mt-4 flex justify-center">
-          <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-secondary shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
-            <div className="font-semibold text-[0.875rem] leading-[0.875rem] mb-1">{selectedCategory}</div>
+        <div className="m-1 flex justify-center">
+          <div className="bg-canvas text-fifth px-2 py-1.5 rounded border border-fourth shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+            <div className="font-semibold text-sm leading-[0.75rem] mb-1">{selectedCategory}</div>
             {sortedCategories
               .find(cat => cat.category === selectedCategory)
               ?.songs

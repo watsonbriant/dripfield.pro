@@ -162,13 +162,13 @@ export const AdminGuest: React.FC = () => {
     <div>
       {/* Header with buttons and dropdown */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">Guest Management</h3>
+        <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Guest Management</h3>
         
         <div className="flex items-center gap-2">
           {/* Add New Guest button */}
           <button
             onClick={handleOpenNewGuestModal}
-            className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-primary"
+            className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-white"
           >
             <Plus className="w-5 h-5" />
           </button>
@@ -177,14 +177,14 @@ export const AdminGuest: React.FC = () => {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-fourth text-primary px-4 py-1.5 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
+              className="flex items-center gap-2 bg-fourth text-white px-4 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
             >
               Guest
               <ChevronDown className="w-4 h-4" />
             </button>
             
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
+              <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
                 <div className="p-2">
                   <div className="relative">
                     <input
@@ -192,7 +192,7 @@ export const AdminGuest: React.FC = () => {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Search guests..."
-                      className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                      className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                     />
                     <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                   </div>
@@ -227,7 +227,7 @@ export const AdminGuest: React.FC = () => {
             <button
               onClick={toggleEdit}
               disabled={isSubmitting}
-              className="px-3 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-primary border-secondary hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+              className="px-3 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
             >
               {isEditing ? (
                 <>
@@ -252,7 +252,7 @@ export const AdminGuest: React.FC = () => {
                 value={editedGuest?.guest || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               />
             </div>
             
@@ -264,7 +264,7 @@ export const AdminGuest: React.FC = () => {
                 value={editedGuest?.guest_displayname || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               />
             </div>
             
@@ -276,7 +276,7 @@ export const AdminGuest: React.FC = () => {
                 value={editedGuest?.guest_instrument || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-secondary bg-canvas' : 'border-secondary bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               />
             </div>
             
@@ -287,7 +287,7 @@ export const AdminGuest: React.FC = () => {
                   name="guest_category"
                   value={editedGuest?.guest_category || ''}
                   onChange={handleInputChange}
-                  className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                  className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                 >
                   <option value="">-- Select Category --</option>
                   {guestCategories.map((category) => (
@@ -301,7 +301,7 @@ export const AdminGuest: React.FC = () => {
                   type="text"
                   value={editedGuest?.guest_category || ''}
                   readOnly
-                  className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                  className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
                 />
               )}
             </div>
@@ -312,7 +312,7 @@ export const AdminGuest: React.FC = () => {
                 type="text"
                 value={editedGuest?.guest_canonid || ''}
                 readOnly
-                className="w-full px-2 py-1.5 font-light rounded-md border border-secondary bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
               />
               <p className="text-xs text-fifth/60 italic">Auto-generated value</p>
             </div>

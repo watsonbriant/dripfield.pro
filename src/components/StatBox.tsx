@@ -41,13 +41,13 @@ const StatBox: React.FC<StatBoxProps> = ({
   };
   
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 w-full h-full relative">
+    <div className="bg-primary border border-fourth rounded-lg p-3 w-full h-full relative">
       <div className="flex justify-between items-start">
         <h3 className={`text-lg font-semibold ${getStatBgColor(type)} ${
           type === 'showOpeners' || type === 'setOpeners' || type === 'setClosers' || type === 'encoreSongs' || type === 'notSeenSongs'
-            ? 'text-primary' 
+            ? 'text-white' 
             : 'text-fifth'
-        } inline-block px-3 pt-0.5 pb-0.5 rounded-lg border border-secondary mb-2`}>
+        } inline-block px-3 pt-0.5 pb-0.5 rounded-lg border border-fourth mb-2`}>
           {title}
         </h3>
         {!loading && data.length > 0 && showCopyButton && (
@@ -55,11 +55,11 @@ const StatBox: React.FC<StatBoxProps> = ({
             onClick={handleCopy}
             className={`${
               isCopied ? 'bg-green-600' : 'bg-secondary hover:bg-tertiary'
-            } border border-secondary rounded-lg p-1.5 transition-colors`}
+            } border border-fourth rounded-lg p-1.5 transition-colors`}
             title="Copy to clipboard"
           >
             {isCopied ? (
-              <Check className="w-4 h-4 text-primary" />
+              <Check className="w-4 h-4 text-white" />
             ) : (
               <Copy className="w-4 h-4 text-fifth" />
             )}
@@ -68,7 +68,7 @@ const StatBox: React.FC<StatBoxProps> = ({
       </div>
       {loading ? (
         <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-lg h-6 w-6 border-t-2 border-b-2 border-secondary"></div>
+          <div className="animate-spin rounded-lg h-6 w-6 border-t-2 border-b-2 border-fourth"></div>
         </div>
       ) : data.length === 0 ? (
         <div className="text-center h-40 flex items-center justify-center">
@@ -111,7 +111,7 @@ const StatBox: React.FC<StatBoxProps> = ({
                         <img
                           src={item.category_artwork}
                           alt={`${item[songNameKey]} artwork`}
-                          className="w-5 h-5 rounded object-cover border border-secondary ml-3"
+                          className="w-5 h-5 rounded object-cover border border-fourth ml-3"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = 'none';
                           }}

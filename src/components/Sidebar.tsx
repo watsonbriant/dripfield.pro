@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { getNavigationItems, NavItem } from './navigation/navigationItems';
 import { useSparkleEffect } from '../hooks/useSparkleEffect';
 import { useBugCount } from '../hooks/useBugCount';
@@ -13,6 +13,8 @@ interface SidebarProps {
   isAdmin?: boolean;
   openShowModal?: () => void;
   showAllOnSameLine?: boolean;
+  logoElement?: React.ReactNode;
+  rightSideElements?: React.ReactNode;
 }
 
 export function Sidebar({ 
@@ -21,21 +23,21 @@ export function Sidebar({
   isMobile = true, 
   isAdmin = false,
   openShowModal,
-  showAllOnSameLine = false
+  showAllOnSameLine = false,
+  logoElement,
+  rightSideElements
 }: SidebarProps) {
   const location = useLocation();
-  const navigate = useNavigate();
   const bugCount = useBugCount(isAdmin);
   const { sparkle, handleItemClick } = useSparkleEffect();
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = () => {
     if (onNavigate) {
       onNavigate();
     }
     if (onClose) {
       onClose();
     }
-    navigate(path);
   };
 
   // Get navigation items
@@ -57,41 +59,42 @@ export function Sidebar({
   }
   
   // For desktop: horizontal navigation
-  // Separate regular and admin navigation items
-  const regularNavItems = filteredNavigation.filter(item => !item.adminOnly && !item.mobileOnly);
+  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, Jam of the Year
+  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'Jam of the Year'];
+  const mainNavItems = mainNavItemNames
+    .map(name => filteredNavigation.find(item => item.name === name && !item.adminOnly && !item.mobileOnly))
+    .filter((item): item is NavItem => item !== undefined);
+  
+  // Get admin items: Admin Panel, Bug Tracker, Find
   const adminNavItems = filteredNavigation.filter(item => item.adminOnly && !item.mobileOnly);
-
-  // Find the index of "Setlist Game" in regularNavItems
-  const echoIndex = regularNavItems.findIndex(item => item.name === 'Setlist Game');
-
-  // Split regularNavItems into two arrays
-  const firstLineItems = regularNavItems.slice(0, echoIndex);
-  const secondLineItems = regularNavItems.slice(echoIndex);
-
-  // Combine second line items with admin items if showAllOnSameLine is true
-  const adminLineItems = showAllOnSameLine 
-    ? [...secondLineItems, ...adminNavItems]
-    : secondLineItems;
+  
+  // Get Submit button for right side (available to all users)
+  const submitItem = filteredNavigation.find(item => item.name === 'Submit' && !item.adminOnly && !item.mobileOnly);
+  
+  // Combine admin items and Submit for right side display
+  const rightSideNavItems = submitItem 
+    ? [...adminNavItems, submitItem]
+    : adminNavItems;
 
   const handleDesktopItemClick = (e: React.MouseEvent, item: NavItem) => {
     handleItemClick(e, item.name, () => {
       if (item.action) {
         item.action();
       } else {
-        handleNavigation(item.path);
+        handleNavigation();
       }
     });
   };
 
   return (
     <DesktopNavigation
-      firstLineItems={firstLineItems}
-      adminLineItems={adminLineItems}
-      adminNavItems={adminNavItems}
-      showAllOnSameLine={showAllOnSameLine}
+      mainNavItems={mainNavItems}
+      rightSideNavItems={rightSideNavItems}
       location={location}
       sparkle={sparkle}
       onItemClick={handleDesktopItemClick}
+      logoElement={logoElement}
+      rightSideElements={rightSideElements}
     />
   );
 }

@@ -15,7 +15,7 @@ interface StarDisplayProps {
 
 const StarDisplay: React.FC<StarDisplayProps> = ({
     rating,
-    size = 20,
+    size = 12,
     isInteractive = false,
     isHovering = false,
     onStarClick,
@@ -43,7 +43,7 @@ const StarDisplay: React.FC<StarDisplayProps> = ({
                         {/* Background star (empty) */}
                         <Star
                             size={size}
-                            className="text-secondary"
+                            className="text-fourth"
                             fill="none"
                             stroke="currentColor"
                         />
@@ -56,8 +56,8 @@ const StarDisplay: React.FC<StarDisplayProps> = ({
                             <Star
                                 size={size}
                                 className={`${isHovering
-                                        ? 'text-fourth'
-                                        : 'text-tertiary'
+                                        ? 'text-tertiary'
+                                        : 'text-fourth'
                                     }`}
                                 fill="currentColor"
                                 stroke="currentColor"

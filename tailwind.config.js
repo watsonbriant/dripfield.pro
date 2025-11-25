@@ -14,12 +14,12 @@ export default {
         numeric: '"tnum" 1',
       },
       colors: {
-        primary: '#fdfdfd', // white
-        secondary: '#b4b2b2', // gray
-        tertiary: '#8ec1b6', // teal
-        fourth: '#8e6c7a', // purple
-        fifth: '#272727', // black
-        canvas: '#e7e7e7', // light gray
+        primary: '#e0dcc3', // live album
+        secondary: '#585b52', // grey
+        tertiary: '#f49b1d', // orange
+        fourth: '#3c1e40', // purple
+        fifth: '#181818', // black
+        canvas: '#fee5bc', // tan
         'surface-primary': '#FFFFFF',
         'surface-secondary': '#FFFFFF',
         'border-primary': '#000000',

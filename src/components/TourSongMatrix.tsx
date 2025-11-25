@@ -38,7 +38,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="flex justify-center items-center h-40">
           <div className="animate-pulse text-fifth">Loading song matrix...</div>
         </div>
@@ -48,7 +48,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
 
   if (errorMessage) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="text-center py-6 text-red-500">{errorMessage}</div>
       </div>
     );
@@ -56,16 +56,16 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
 
   if (songMatrix.songs.length === 0) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="text-center py-6 text-fifth">No song data available for this tour</div>
       </div>
     );
   }
 
   return (
-    <div className={`${!hideTitle ? "bg-primary border border-secondary rounded-lg p-3" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-fourth rounded-lg p-3" : ""} ${className}`}>
       {!hideTitle && (
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-secondary mb-4">
+        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-1 rounded-full border border-fourth mb-4">
           {songMatrix.songs.length} Songs Played1
         </h2>
       )}

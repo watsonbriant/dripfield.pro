@@ -1,9 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTourDetails } from '../hooks/useTourDetails';
-import { TourDetailsBreadcrumbs } from './tourDetails/TourDetailsBreadcrumbs';
-import { TourDetailsLoading } from './tourDetails/TourDetailsLoading';
-import { TourInfoCard } from './tourDetails/TourInfoCard';
+import { TourHeader } from './tourDetails/TourHeader';
+import { SetlistGameLoading } from './SetlistGameLoading';
 import { TourShowsTable } from './tourDetails/TourShowsTable';
 import { TourStandingsTable } from './tourDetails/TourStandingsTable';
 
@@ -13,14 +12,12 @@ export function TourDetailsPage() {
     const { loading, gameShows, tourInfo, tourStats, standings } = useTourDetails(tourId);
 
     return (
-        <div className="max-w-[1280px] mx-auto">
-            <TourDetailsBreadcrumbs tourName={tourInfo?.tour} />
-
+        <div className="max-w-[1024px]">
             {loading ? (
-                <TourDetailsLoading />
+                <SetlistGameLoading />
             ) : (
                 <div className="space-y-4">
-                    <TourInfoCard
+                    <TourHeader
                         tourName={tourInfo?.tour}
                         totalShows={tourStats.totalShows}
                         totalPlayers={tourStats.totalPlayers}

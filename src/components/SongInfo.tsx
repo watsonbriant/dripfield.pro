@@ -22,77 +22,87 @@ export function SongInfo({ song, stats, lastPlayed, selectedGroup, onGroupClick 
         : (!stats.groupCounts.length || !song.song_coachnotes)
         ? 'md:grid-cols-2'
         : 'md:grid-cols-3'
-    } gap-4`}>
+    } gap-2`}>
       <div className="h-full">
-        <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
-          {song.categories?.category_artwork && (
-            <img 
-              src={song.categories.category_artwork}
-              alt={`${song.song_category} artwork`}
-              className="float-right ml-3 mb-2 w-20 h-20 rounded-md object-cover border border-secondary"
-            />
-          )}
-          <div className="space-y-2">
-            <div>
-              <div className="text-fifth text-base font-medium">Category</div>
-              <div className="text-fifth text-sm font-light mb-1">{song.song_category}</div>
-            </div>
-            {song.song_originalartist && (
-              <div>
-                <div className="text-fifth text-base font-medium">Original Artist</div>
-                <div className="text-fifth text-sm font-light">{song.song_originalartist}</div>
-              </div>
+        <div className="bg-primary border border-fourth w-full h-full">
+          <div className="bg-tertiary text-fifth px-2 py-0.5">
+            <h3 className="text-sm font-semibold">Song Info</h3>
+          </div>
+          <div className="py-1 px-2">
+            {song.categories?.category_artwork && (
+              <img 
+                src={song.categories.category_artwork}
+                alt={`${song.song_category} artwork`}
+                className="float-right ml-3 mb-2 w-20 h-20 rounded object-cover border border-fourth"
+              />
             )}
-            {lastPlayed && (
+            <div className="space-y-1">
               <div>
-                <div className="text-fifth text-base font-medium">Last Time Played</div>
-                <div className="text-fifth text-sm font-light">
-                  <button
-                    onClick={() => navigate(`/setlist/${lastPlayed.show_id}`)}
-                    className="hover:underline cursor-pointer font-medium"
-                  >
-                    {formatInTimeZone(new Date(lastPlayed.show_date), 'UTC', 'MM.dd.yy')}
-                  </button> ({lastPlayed.showsAgo === 1 ? 'most recent show' : `${lastPlayed.showsAgo} shows ago`})
+                <div className="text-fifth text-xs font-medium">Category</div>
+                <div className="text-fifth text-[0.625rem] font-light">{song.song_category}</div>
+              </div>
+              {song.song_originalartist && (
+                <div>
+                  <div className="text-fifth text-xs font-medium">Original Artist</div>
+                  <div className="text-fifth text-[0.625rem] font-light">{song.song_originalartist}</div>
                 </div>
-              </div>
-            )}
+              )}
+              {lastPlayed && (
+                <div>
+                  <div className="text-fifth text-xs font-medium">Last Time Played</div>
+                  <div className="text-fifth text-[0.625rem] font-light">
+                    <button
+                      onClick={() => navigate(`/setlist/${lastPlayed.show_id}`)}
+                      className="hover:underline cursor-pointer font-medium pr-2"
+                    >
+                      {formatInTimeZone(new Date(lastPlayed.show_date), 'UTC', 'MM.dd.yy')}
+                    </button> ({lastPlayed.showsAgo === 1 ? 'most recent show' : `${lastPlayed.showsAgo} shows ago`})
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
     
       {stats.groupCounts.length > 0 && (
         <div className="h-full">
-          <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full space-y-2">
-            {stats.hasRarity && (
-              <>
-                <div className="flex items-center mb-1">
-                  <div className="text-fifth text-base font-medium">Song Rarity</div>
-                  <span 
-                    className="text-primary text-sm font-normal border border-secondary px-2 py-0.5 rounded-md inline-block ml-6"
-                    style={{ 
-                      backgroundColor: getRarityColor(stats.rarity) 
-                    }}
-                  >
-                    {stats.rarity}
-                  </span>
-                </div>
-              </>
-            )}
-            <div className={!stats.hasRarity ? "mt-0" : ""}>
-              <div className="text-fifth text-base font-medium mb-1">Performances by Group</div>
-              <div>
-                {stats.groupCounts.map(({ group, count }) => (
-                  <div 
-                    key={group} 
-                    className={`pl-2 pr-2 text-fifth text-sm flex justify-between font-medium cursor-pointer ${
-                      selectedGroup === group ? 'bg-tertiary/80' : 'hover:bg-tertiary/40'
-                    }`}
-                    onClick={() => onGroupClick(group)}
-                  >
-                    <span className='font-light'>{group}</span>
-                    <span>{count}</span>
+          <div className="bg-primary border border-fourth w-full h-full">
+            <div className="bg-tertiary text-fifth px-2 py-0.5">
+              <h3 className="text-sm font-semibold">Stats</h3>
+            </div>
+            <div className="px-2 py-1 space-y-2">
+              {stats.hasRarity && (
+                <>
+                  <div className="flex items-center">
+                    <div className="text-fifth text-xs font-medium">Song Rarity</div>
+                    <span 
+                      className="text-white text-[0.625rem] font-normal border border-fourth px-1 rounded inline-block ml-6"
+                      style={{ 
+                        backgroundColor: getRarityColor(stats.rarity) 
+                      }}
+                    >
+                      {stats.rarity}
+                    </span>
                   </div>
-                ))}
+                </>
+              )}
+              <div className={!stats.hasRarity ? "mt-0" : ""}>
+                <div className="text-fifth text-xs font-medium">Performances by Group</div>
+                <div>
+                  {stats.groupCounts.map(({ group, count }) => (
+                    <div 
+                      key={group} 
+                      className={`px-2 text-fifth text-[0.625rem] flex justify-between font-medium cursor-pointer ${
+                        selectedGroup === group ? 'bg-fourth/80 text-white' : 'hover:bg-tertiary/40'
+                      }`}
+                      onClick={() => onGroupClick(group)}
+                    >
+                      <span className='font-light'>{group}</span>
+                      <span>{count}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -101,12 +111,16 @@ export function SongInfo({ song, stats, lastPlayed, selectedGroup, onGroupClick 
     
       {song.song_coachnotes && (
         <div className="h-full">
-          <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
-            <div className="text-fifth text-base font-medium mb-1">Song Notes</div>
-            <div 
-              className="text-fifth font-light text-xs [&_a]:font-medium"
-              dangerouslySetInnerHTML={{ __html: song.song_coachnotes }}
-            />
+          <div className="bg-primary border border-fourth w-full h-full">
+            <div className="bg-tertiary text-fifth px-2 py-0.5">
+              <h3 className="text-sm font-semibold">Song Notes</h3>
+            </div>
+            <div className="px-2 py-1">
+              <div 
+                className="text-fifth font-light text-[0.625rem] leading-[0.75rem] [&_a]:font-medium"
+                dangerouslySetInnerHTML={{ __html: song.song_coachnotes }}
+              />
+            </div>
           </div>
         </div>
       )}

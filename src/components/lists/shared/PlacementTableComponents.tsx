@@ -43,17 +43,17 @@ export function PlacementTable({ songs, cleanSongName }: PlacementTableProps) {
                     {rankedSongs.map((song) => (
                         <tr
                             key={song.song_id}
-                            className={`${song.bgGroup && song.bgGroup % 2 === 0 ? 'bg-canvas' : 'bg-primary'
+                            className={`${song.bgGroup && song.bgGroup % 2 === 0 ? 'bg-primary' : 'bg-primary'
                                 } hover:bg-tertiary/40 transition-colors text-xs`}
                         >
-                            <td className="pl-2 pr-1 w-[30px] text-center font-semibold text-[0.875rem] text-fifth">
+                            <td className="pl-2 pr-1 w-[24px] text-center font-semibold text-[0.625rem] text-fifth">
                                 {song.displayRank !== null ? song.displayRank : ''}
                             </td>
                             <td className="pl-2 text-fifth">
                                 <div className="flex items-center justify-between">
                                     <button
                                         onClick={() => navigate(`/song/${song.song_id}`)}
-                                        className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
+                                        className="font-medium text-fifth hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left"
                                     >
                                         {cleanSongName(song.song_name)}
                                     </button>
@@ -61,7 +61,7 @@ export function PlacementTable({ songs, cleanSongName }: PlacementTableProps) {
                                         <img
                                             src={song.category_artwork}
                                             alt={`${song.song_name} artwork`}
-                                            className="w-5 h-5 rounded-full object-cover border border-secondary ml-3"
+                                            className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                                             onError={(e) => {
                                                 (e.target as HTMLImageElement).style.display = 'none';
                                             }}
@@ -69,7 +69,7 @@ export function PlacementTable({ songs, cleanSongName }: PlacementTableProps) {
                                     )}
                                 </div>
                             </td>
-                            <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                            <td className="pr-2 w-[30px] text-center text-[0.625rem] font-medium text-fifth">
                                 {song.times_played}
                             </td>
                         </tr>
@@ -90,7 +90,7 @@ interface PlacementSectionProps {
 export function PlacementSection({ title, bgColor, songs, cleanSongName }: PlacementSectionProps) {
     return (
         <div>
-            <h3 className="text-lg font-semibold text-white mb-1 rounded-lg border border-secondary inline-block px-3" style={{ backgroundColor: bgColor }}>
+            <h3 className="text-sm font-medium text-white px-2 py-0.5" style={{ backgroundColor: bgColor }}>
                 {title}
             </h3>
             <PlacementTable songs={songs} cleanSongName={cleanSongName} />

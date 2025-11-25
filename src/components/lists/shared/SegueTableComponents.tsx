@@ -41,7 +41,6 @@ interface SegueTableRowProps {
     isExpanded: boolean;
     onToggleExpanded: (segue: Segue) => void;
     onOpenSegueModal: (sourceSongName: string, destinationSongName: string) => void;
-    cleanSongName: (songName: string) => string;
 }
 
 export function SegueTableRow({
@@ -50,8 +49,7 @@ export function SegueTableRow({
     rankedSegues,
     isExpanded,
     onToggleExpanded,
-    onOpenSegueModal,
-    cleanSongName
+    onOpenSegueModal
 }: SegueTableRowProps) {
     const nextItem = rankedSegues[index + 1];
     const isTied = nextItem && segue.count === nextItem.count;
@@ -59,21 +57,20 @@ export function SegueTableRow({
     return (
         <React.Fragment>
             <tr
-                className={`${segue.bgGroup && segue.bgGroup % 2 === 0 ? 'bg-canvas' : 'bg-primary'
-                    } hover:bg-tertiary/40 transition-colors text-xs ${
+                className={`bg-primary hover:bg-tertiary/40 transition-colors text-xs ${
                     !isTied && index < rankedSegues.length - 1 && !isExpanded ? 'border-b border-white/5' : ''
                 }`}
             >
-                <td className="pl-2 pr-1 w-[30px] text-center font-semibold text-[0.875rem] text-fifth">
+                <td className="pl-2 pr-1 w-[24px] text-center font-semibold text-[0.625rem] text-fifth">
                     {segue.displayRank !== null ? segue.displayRank : ''}
                 </td>
                 <td className="pl-2 text-fifth">
                     <div className="flex items-center justify-between">
                         <button
                             onClick={() => onToggleExpanded(segue)}
-                            className="font-trad text-fifth text-[1rem] leading-[0.875rem] pb-0.5 hover:underline cursor-pointer text-left"
+                            className="font-medium text-fifth hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left"
                         >
-                            {cleanSongName(segue.songs[0].song_name)}
+                            {segue.songs[0].song_name}
                         </button>
                         <div className="flex items-center gap-2">
                             <button
@@ -86,7 +83,7 @@ export function SegueTableRow({
                                 <img
                                     src={segue.songs[0].song_artwork}
                                     alt={`${segue.songs[0].song_name} artwork`}
-                                    className="w-5 h-5 rounded-full object-cover border border-secondary"
+                                    className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                                     onError={(e) => {
                                         (e.target as HTMLImageElement).style.display = 'none';
                                     }}
@@ -95,12 +92,12 @@ export function SegueTableRow({
                         </div>
                     </div>
                 </td>
-                <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                <td className="pr-2 w-[30px] text-center text-[0.625rem] font-medium text-fifth">
                     {segue.count}
                 </td>
             </tr>
             {isExpanded && (
-                <tr className={`${segue.bgGroup && segue.bgGroup % 2 === 0 ? 'bg-canvas' : 'bg-primary'} ${!isTied && index < rankedSegues.length - 1 ? 'border-b border-white/5' : ''}`}>
+                <tr className={`bg-primary ${!isTied && index < rankedSegues.length - 1 ? 'border-b border-white/5' : ''}`}>
                     <td colSpan={3} className="px-2 pb-2">
                         {segue.destinations && segue.destinations.length > 0 ? (
                             <div className="pl-8">
@@ -110,27 +107,27 @@ export function SegueTableRow({
                                             return (
                                                 <tr
                                                     key={dest.song_id}
-                                                    className="hover:bg-black/5 transition-colors"
+                                                    className="hover:bg-tertiary/40 transition-colors"
                                                 >
                                                     <td className="text-fifth pl-2">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
-                                                                <MoveRight className="text-red-500 w-3 h-3" />
+                                                                <MoveRight className="text-red-500 w-3.5 h-3.5" />
                                                                 <button
                                                                     onClick={() => onOpenSegueModal(
                                                                         segue.songs[0].song_name,
                                                                         dest.song_name
                                                                     )}
-                                                                    className="font-trad text-fifth text-[0.875rem] leading-[0.75rem] hover:underline cursor-pointer"
+                                                                    className="font-medium text-fifth hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left"
                                                                 >
-                                                                    {cleanSongName(dest.song_name)}
+                                                                    {dest.song_name}
                                                                 </button>
                                                             </div>
                                                             {dest.song_artwork && (
                                                                 <img
                                                                     src={dest.song_artwork}
                                                                     alt={`${dest.song_name} artwork`}
-                                                                    className="w-4 h-4 rounded-full object-cover border border-secondary"
+                                                                    className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                                                                     onError={(e) => {
                                                                         (e.target as HTMLImageElement).style.display = 'none';
                                                                     }}
@@ -138,7 +135,7 @@ export function SegueTableRow({
                                                             )}
                                                         </div>
                                                     </td>
-                                                    <td className="w-[40px] text-center font-medium text-fifth text-[0.75rem] leading-[0.75rem] pr-2">
+                                                    <td className="w-[30px] text-center text-[0.625rem] font-medium text-fifth pr-2">
                                                         {dest.count}
                                                     </td>
                                                 </tr>
@@ -148,7 +145,7 @@ export function SegueTableRow({
                                 </table>
                             </div>
                         ) : (
-                            <div className="text-fifth text-xs pl-8 py-2">No destination data available</div>
+                            <div className="text-fifth text-[0.625rem] pl-8 py-2">No destination data available</div>
                         )}
                     </td>
                 </tr>
@@ -162,15 +159,13 @@ interface SegueTableProps {
     expandedRows: Set<string>;
     onToggleExpanded: (segue: Segue) => void;
     onOpenSegueModal: (sourceSongName: string, destinationSongName: string) => void;
-    cleanSongName: (songName: string) => string;
 }
 
 export function SegueTable({
     segues,
     expandedRows,
     onToggleExpanded,
-    onOpenSegueModal,
-    cleanSongName
+    onOpenSegueModal
 }: SegueTableProps) {
     // Calculate rankings with tie handling
     let currentRank = 1;
@@ -204,7 +199,6 @@ export function SegueTable({
                                 isExpanded={isExpanded}
                                 onToggleExpanded={onToggleExpanded}
                                 onOpenSegueModal={onOpenSegueModal}
-                                cleanSongName={cleanSongName}
                             />
                         );
                     })}

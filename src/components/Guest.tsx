@@ -4,9 +4,7 @@ import { GuestSearch } from './GuestSearch';
 import GuestPerformanceChart from './GuestPerformanceChart';
 import { GuestSongsSection } from './GuestSongsSection';
 import { ShowsByGroup } from './ShowsByGroup';
-import { LoadingSpinner } from './ui/LoadingSpinner';
 import { useGuestData } from '../hooks/useGuestData';
-import { cleanSongName } from '../utils/songUtils';
 
 export function Guest() {
   const { PersonnelID } = useParams();
@@ -26,13 +24,24 @@ export function Guest() {
 
   // Loading state
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="max-w-[1024px]">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+          </div>
+          <p className="text-fifth mt-4">Loading personnel data...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!guest) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
+      <div className="max-w-[1024px]">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <p className="text-fifth">Personnel not found</p>
         </div>
       </div>
@@ -40,24 +49,37 @@ export function Guest() {
   }
 
   return (
-    <div className="max-w-[936px] mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-2 mb-1 mr-2">
-          <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary whitespace-nowrap">
-            {guest.guest}
-          </h2>
-          {guest.guest_instrument && (
-            <div className="bg-secondary text-fifth text-xs font-medium px-2 py-1 rounded-lg border border-secondary">
-              {guest.guest_instrument}
+    <div className="max-w-[1024px]">
+      <div className="mb-4">
+        <div className="bg-primary border border-fourth">
+          <div className="bg-fourth text-white py-0.5 pr-1">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2 pl-2">
+                <h2 className="text-sm font-semibold">
+                  {guest.guest}
+                </h2>
+                {guest.guest_instrument && (
+                  <div className="hidden md:block text-fifth border border-fourth bg-primary px-1 rounded text-[0.625rem]">
+                    {guest.guest_instrument}
+                  </div>
+                )}
+              </div>
+              <GuestSearch />
             </div>
-          )}
+            {guest.guest_instrument && (
+              <div className="md:hidden pl-2">
+                <div className="text-white text-[0.625rem] inline-block">
+                  {guest.guest_instrument}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <GuestSearch />
       </div>
 
-      <div className="space-y-4 mb-8">
+      <div className="space-y-2 mb-8">
         {/* Top row with Song List and Performances by Group side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {/* Song List - Only show if there are performances */}
           {performances.length > 0 && (
             <GuestSongsSection 
@@ -65,7 +87,6 @@ export function Guest() {
               isLoading={loading} 
               selectedSong={selectedSong}
               onSongClick={handleSongClick}
-              cleanSongName={cleanSongName}
               songs={songs}
               songSpreadData={songSpreadData}
               loadingProgress={loadingProgress}
@@ -91,10 +112,12 @@ export function Guest() {
             />
           </div>
         ) : (
-          <div className="bg-primary border border-secondary rounded-lg p-4">
-            <p className="text-fifth text-center">
-              <span className="font-semibold">{guest.guest}</span> hasn't performed as a guest.
-            </p>
+          <div className="bg-primary border border-fourth">
+            <div className="p-2">
+              <p className="text-[0.625rem] text-fifth text-center">
+                <span className="font-semibold">{guest.guest}</span> hasn't performed as a guest.
+              </p>
+            </div>
           </div>
         )}
       </div>

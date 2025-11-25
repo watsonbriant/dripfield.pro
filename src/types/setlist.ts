@@ -97,6 +97,7 @@ export interface FullSetlistDisplayProps {
   setOpenChangesModal?: (open: boolean) => void;
   showLengthRank?: number | null;
   scrollToReleases?: boolean;
+  hoveredCategory?: string | null;
 }
 
 export interface ShowPosition {

@@ -217,8 +217,8 @@ const AttendedByGroupChart: React.FC<AttendedByGroupChartProps> = ({ userId }) =
   };
 
   return (
-    <div className="bg-primary p-3 rounded-lg border border-secondary">
-      <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary">{getTitle()}</h3>
+    <div className="bg-primary p-3 rounded-lg border border-fourth">
+      <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">{getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">

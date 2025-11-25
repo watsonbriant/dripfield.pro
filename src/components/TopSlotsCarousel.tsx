@@ -24,16 +24,16 @@ interface TopSlotsCarouselProps {
   tourId?: string; // Added tourId prop
 }
 
-const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
+// const cleanSongName = (songName: string): string => {
+//   return songName
+//     .replace(/\[/g, '(')
+//     .replace(/\]/g, ')')
+//     .replace(/ñ/g, 'n')
+//     .replace(/ü/g, 'u')
+//     .replace(/–/g, '-')
+//     .replace(/…/g, '...')
+//     .replace(/∆/g, 'a');
+// };
 
 const TopSlotsCarousel = ({ 
   slots, 
@@ -81,6 +81,14 @@ const TopSlotsCarousel = ({
     return colorMap[title] || colorMap[index.toString()] || '#8ec1b6'; // Default amber
   };
   
+  // Convert hex color to rgba with specified opacity
+  const hexToRgba = (hex: string, opacity: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
+  
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -122,49 +130,46 @@ const TopSlotsCarousel = ({
     const headerBgColor = getHeaderBgColor(slot.title, index);
     
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <h3 
-          className="text-lg font-semibold text-primary mb-1 rounded-lg border border-secondary inline-block px-3"
+      <div className="bg-primary border border-fourth pb-0.5">
+        <div 
+          className="text-white px-2 py-0.5 mb-0.5"
           style={{ backgroundColor: headerBgColor }}
         >
+          <h3 className="text-sm font-semibold">
           {`Top ${slot.title}`}
         </h3>
+        </div>
         <div className={`${isLoading ? 'opacity-20' : ''} transition-opacity duration-300`}>
           <div className="overflow-y-auto max-h-64">
             <table className="w-full border-collapse">
-              <tbody className="divide-y divide-white/5">
+              <tbody>
                 {slot.data.map((item, itemIndex) => (
                   <tr
                     key={itemIndex}
-                    className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}
+                      className={`bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                   >
-                    <td className="pl-4 text-fifth">
+                    <td className="pl-3 text-fifth">
                       <div className="flex items-center justify-between">
                         <button
                           onClick={() => handleSongClick(item.left)}
-                          className="font-trad text-fifth text-[1rem] leading-[1rem] pb-0.5 hover:underline cursor-pointer text-left"
+                          className="font-medium text-fifth hover:underline cursor-pointer leading-[0.75rem] text-left"
                         >
-                          {cleanSongName(item.left)}
+                          {item.left}
                         </button>
                         {item.artwork && (
                           <img
                             src={item.artwork}
                             alt={`${item.left} artwork`}
-                            className="w-5 h-5 rounded object-cover border border-secondary ml-3"
+                            className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                             onError={(e) => {
                               console.log(`Failed to load artwork for ${item.left}:`, item.artwork);
                               (e.target as HTMLImageElement).style.display = 'none';
                             }}
                           />
                         )}
-                        {!item.artwork && (
-                          <div className="w-5 h-5 rounded bg-gray-500 border border-secondary ml-3 flex items-center justify-center text-xs text-white">
-                            ?
-                          </div>
-                        )}
                       </div>
                     </td>
-                    <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                    <td className="w-[30px] text-center font-medium text-fifth">
                       {typeof item.right === 'number' ? `${item.right}` : item.right}
                     </td>
                   </tr>
@@ -181,40 +186,49 @@ const TopSlotsCarousel = ({
     <>
       {/* Mobile view - shown when isMobile is true or screen is smaller than md */}
       <div className={`${!isMobile ? "md:hidden" : ""}`}>
-        <div className="bg-primary border border-secondary rounded-lg p-3">
-          <div className="flex justify-between items-center mb-1.5">
-            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-secondary">
+        <div className="bg-primary border border-fourth">
+          <div 
+            className="text-white py-0.5 flex justify-between items-center"
+            style={{ backgroundColor: getHeaderBgColor(currentTitle, safeCurrentIndex) }}
+          >
+            <h2 className="pl-2 text-sm font-semibold">
               Top Slots
             </h2>
             
             {/* Dropdown selector for mobile */}
             {slotsWithData.length > 1 && (
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative pr-1" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 text-primary px-3 py-1 rounded-lg border border-secondary hover:opacity-90 transition-colors text-base font-semibold"
+                  className="relative flex items-center gap-2 text-white px-2 border border-black/30 transition-colors text-sm font-semibold overflow-hidden"
                   style={{ backgroundColor: getHeaderBgColor(currentTitle, safeCurrentIndex) }}
                 >
-                  {currentTitle}
-                  <ChevronDown className="w-4 h-4" />
+                  <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+                  <span className="relative z-10">{currentTitle}</span>
+                  <ChevronDown className="w-3 h-3 relative z-10" />
                 </button>
                 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 overflow-y-auto w-48">
-                    {slotsWithData.map((slot, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          setCurrentSlideIndex(index);
-                          setIsDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-4 py-1 text-sm font-semibold hover:bg-tertiary/40 transition-colors ${
-                          index === safeCurrentIndex ? 'bg-[#8ec1b6]' : ''
-                        }`}
-                      >
-                        {slot.title}
-                      </button>
-                    ))}
+                  <div className="absolute right-0 bg-canvas text-fifth border border-fourth shadow-lg z-50 overflow-y-auto w-36">
+                    {slotsWithData.map((slot, index) => {
+                      const slotBgColor = getHeaderBgColor(slot.title, index);
+                      const isSelected = index === safeCurrentIndex;
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            setCurrentSlideIndex(index);
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-2 text-xs py-1 font-medium transition-colors ${
+                            isSelected ? 'text-white' : 'hover:bg-tertiary/40'
+                          }`}
+                          style={isSelected ? { backgroundColor: slotBgColor } : {}}
+                        >
+                          {slot.title}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -225,39 +239,34 @@ const TopSlotsCarousel = ({
           <div className={`${isLoading ? 'opacity-20' : ''} transition-opacity duration-300`}>
             <div className="overflow-y-auto max-h-72">
               <table className="w-full border-collapse">
-                <tbody className="divide-y divide-white/5">
+                <tbody>
                   {currentSlide.data.map((item, itemIndex) => (
                     <tr
                       key={itemIndex}
-                      className={`${itemIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'} hover:bg-tertiary/40 transition-colors text-xs`}
+                      className={`bg-primary hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                     >
-                      <td className="pl-4 text-fifth">
+                      <td className="pl-3 text-fifth">
                         <div className="flex items-center justify-between">
                           <button
                             onClick={() => handleSongClick(item.left)}
-                            className="font-trad text-fifth text-[1rem] leading-[1rem] pb-0.5 hover:underline cursor-pointer text-left"
+                            className="font-medium text-fifth hover:underline cursor-pointer leading-[0.75rem] text-left"
                           >
-                            {cleanSongName(item.left)}
+                            {item.left}
                           </button>
                           {item.artwork && (
                             <img
                               src={item.artwork}
                               alt={`${item.left} artwork`}
-                              className="w-5 h-5 rounded object-cover border border-secondary ml-3"
+                              className="w-4 h-4 rounded object-cover border border-fourth ml-3"
                               onError={(e) => {
                                 console.log(`Failed to load artwork for ${item.left}:`, item.artwork);
                                 (e.target as HTMLImageElement).style.display = 'none';
                               }}
                             />
                           )}
-                          {!item.artwork && (
-                            <div className="w-5 h-5 rounded bg-gray-500 border border-secondary ml-3 flex items-center justify-center text-xs text-white">
-                              ?
-                            </div>
-                          )}
                         </div>
                       </td>
-                      <td className="pr-2 w-[40px] py-0.5 text-center font-medium text-fifth">
+                      <td className="w-[30px] text-center font-medium text-fifth">
                         {typeof item.right === 'number' ? `${item.right}` : item.right}
                       </td>
                     </tr>

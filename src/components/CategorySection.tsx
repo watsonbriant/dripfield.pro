@@ -71,7 +71,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
   
   return (
     <div className="mb-8">
-      <h3 className="text-lg font-semibold bg-fourth text-primary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">{title}</h3>
+      <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">{title}</h3>
       <div className={`grid grid-cols-1 ${
         sectionType === 'covers' 
           ? 'sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2' 
@@ -85,7 +85,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
               return (
                 <div 
                   key={category.category} 
-                  className="bg-primary rounded-lg p-3 border border-secondary h-auto w-full relative"
+                  className="bg-primary rounded-lg p-3 border border-fourth h-auto w-full relative"
                 >
                   <div className="flex items-center justify-between space-x-2 mb-1 pb-2 border-b border-secondary/20">
                     <h4 className="text-[1.125rem] leading-[1.125rem] font-medium text-fifth">

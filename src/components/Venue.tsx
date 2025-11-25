@@ -229,12 +229,12 @@ export function Venue() {
 
   if (loading) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
+      <div className="max-w-[1280px]">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse"></div>
-            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse delay-150"></div>
-            <div className="w-4 h-4 rounded-full bg-tertiary animate-pulse delay-300"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+            <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
           </div>
           <p className="text-fifth mt-4">Loading venue data...</p>
         </div>
@@ -244,8 +244,8 @@ export function Venue() {
 
   if (!venue) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="text-center py-12">
+      <div className="max-w-[1280px]">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <p className="text-fifth">Venue not found</p>
         </div>
       </div>
@@ -253,35 +253,48 @@ export function Venue() {
   }
 
   return (
-    <div className="max-w-[936px] mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-2 mb-1 mr-2">
-          <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-secondary">
-            {venue.venue}
-          </h2>
-          {venue.venue_location && (
-            <div className="bg-secondary text-fifth text-xs font-medium px-2 py-1 rounded-lg border border-secondary whitespace-nowrap">
-              {venue.venue_location}
+    <div className="max-w-[1280px]">
+      <div className="mb-4">
+        <div className="bg-primary border border-fourth">
+          <div className="bg-fourth text-white py-0.5 pr-1 flex justify-between items-center">
+            <div className="flex items-center gap-2 pl-2">
+              <h2 className="text-sm font-semibold">
+                {venue.venue}
+              </h2>
+              {venue.venue_location && (
+                <div className="hidden md:block text-fifth border border-fourth bg-primary px-1 rounded text-[0.625rem]">
+                  {venue.venue_location}
+                </div>
+              )}
             </div>
-          )}
+            <VenueSearch />
+          </div>
+            {venue.venue_location && (
+              <div className="md:hidden pl-2 bg-fourth">
+                <div className="text-white text-[0.625rem] inline-block">
+                  {venue.venue_location}
+                </div>
+              </div>
+            )}
         </div>
-        <VenueSearch />
       </div>
 
-      <div className="space-y-4 mb-8">
+      <div className="space-y-2 mb-8">
         {/* Shows List */}
-        <div className="bg-primary border border-secondary rounded-lg p-3">
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-secondary mb-2">Shows</h2>
+        <div className="bg-primary border border-fourth">
+          <div className="bg-tertiary text-fifth px-2 py-0.5">
+            <h2 className="text-sm font-semibold">Shows</h2>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse min-w-max">
               <thead>
-                <tr className="bg-canvas border-y border-secondary/10">
-                  <th className="px-4 py-2 text-center text-s font-semibold text-fifth w-12">Date</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Group</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Venue</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Tour</th>
-                  <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Rating</th>
-                  <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Detail</th>
+                <tr className="bg-fourth border-y border-fourth">
+                  <th className="pl-2 pr-3 text-center text-xs font-medium text-white whitespace-nowrap">Date</th>
+                  <th className="px-2 text-left text-xs font-medium text-white whitespace-nowrap">Group</th>
+                  <th className="px-2 text-left text-xs font-medium text-white whitespace-nowrap">Venue</th>
+                  <th className="px-2 text-left text-xs font-medium text-white whitespace-nowrap">Tour</th>
+                  <th className="px-2 text-center text-xs font-medium text-white whitespace-nowrap">Rating</th>
+                  <th className="px-2 text-left text-xs font-medium text-white whitespace-nowrap">Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5">
@@ -289,10 +302,10 @@ export function Venue() {
                   <tr
                     key={show.show_id}
                     className={`${
-                      index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                    } hover:bg-tertiary/40 transition-colors text-xs`}
+                      index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+                    } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                   >
-                    <td className="px-4 py-1 text-fifth whitespace-nowrap text-center">
+                    <td className="pl-2 pr-3 text-fifth whitespace-nowrap text-center">
                       <button
                         onClick={() => navigate(`/setlist/${show.show_id}`)}
                         className="font-medium hover:underline transition-colors table-link"
@@ -304,13 +317,13 @@ export function Venue() {
                         )}
                       </button>
                     </td>
-                    <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
+                    <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {show.show_group}
                     </td>
-                    <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
+                    <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {show.show_subvenue}
                     </td>
-                    <td className="px-4 py-1 text-fifth font-light whitespace-nowrap">
+                    <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {show.show_tour && (
                         <button
                           onClick={() => navigate(`/tours/${show.tours?.tour_id}`)}
@@ -320,7 +333,7 @@ export function Venue() {
                         </button>
                       )}
                     </td>
-                    <td className="px-4 py-1 text-fifth whitespace-nowrap">
+                    <td className="px-2 text-fifth whitespace-nowrap">
                       <div className="relative flex items-center justify-center group">
                         {/* Stars with hover-based transparency */}
                         <div className={`flex items-center transition-opacity ${showRatings[show.show_id] > 0 ? 'group-hover:opacity-30' : ''}`}>
@@ -332,10 +345,11 @@ export function Venue() {
                               <div key={starNumber} className="relative">
                                 {/* Background star (empty) */}
                                 <Star
-                                  size={16}
+                                  size={12}
                                   className="text-secondary"
                                   fill="none"
                                   stroke="currentColor"
+                                  strokeWidth={1.5}
                                 />
                                 {/* Foreground star (filled) */}
                                 <div
@@ -343,10 +357,11 @@ export function Venue() {
                                   style={{ width: `${fillPercentage * 100}%` }}
                                 >
                                   <Star
-                                    size={16}
+                                    size={12}
                                     className="text-tertiary"
                                     fill="currentColor"
                                     stroke="currentColor"
+                                    strokeWidth={1.5}
                                   />
                                 </div>
                               </div>
@@ -355,13 +370,13 @@ export function Venue() {
                         </div>
                         {/* Rating text overlaid on stars - only visible on hover */}
                         {showRatings[show.show_id] > 0 && (
-                          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-fifth pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute inset-0 flex items-center justify-center text-[0.625rem] font-semibold text-fifth pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                             {showRatings[show.show_id].toFixed(2)}
                           </div>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-1 text-fifth whitespace-nowrap">
+                    <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {show.show_detail && show.show_detail}
                       {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
                       {show.show_alert && 

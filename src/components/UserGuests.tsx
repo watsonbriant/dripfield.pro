@@ -66,7 +66,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
 
   if (error) {
     return (
-      <div className="bg-primary p-3 rounded-lg border border-secondary">
+      <div className="bg-primary p-3 rounded-lg border border-fourth">
         <div className="text-center text-red-500 py-8">{getErrorMessage()}</div>
       </div>
     );
@@ -74,7 +74,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
 
   if (Object.keys(guestsByCategory).length === 0) {
     return (
-      <div className="bg-primary p-3 rounded-lg border border-secondary">
+      <div className="bg-primary p-3 rounded-lg border border-fourth">
         <div className="text-center text-fifth py-12">
           <p>{getEmptyStateMessage()}</p>
         </div>

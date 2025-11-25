@@ -200,7 +200,7 @@ export const CallbacksEditor: React.FC<CallbacksEditorProps> = ({
                         <button
                             type="button"
                             onClick={insertArrow}
-                            className="flex items-center gap-1 bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
+                            className="flex items-center gap-1 bg-fourth text-white px-2 py-1 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-xs font-medium"
                             title="Insert arrow"
                         >
                             →
@@ -210,7 +210,7 @@ export const CallbacksEditor: React.FC<CallbacksEditorProps> = ({
                         <button
                             type="button"
                             onClick={insertLineBreak}
-                            className="bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
+                            className="bg-fourth text-white px-2 py-1 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-xs font-medium"
                             title="Insert <br /> tag"
                         >
                             BR
@@ -221,14 +221,14 @@ export const CallbacksEditor: React.FC<CallbacksEditorProps> = ({
                             <button
                                 type="button"
                                 onClick={() => setIsShowDropdownOpen(!isShowDropdownOpen)}
-                                className="flex items-center gap-1 bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
+                                className="flex items-center gap-1 bg-fourth text-white px-2 py-1 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-xs font-medium"
                             >
                                 Insert Show
                                 <ChevronDown className="w-3 h-3" />
                             </button>
                             
                             {isShowDropdownOpen && (
-                                <div className="absolute right-0 mt-1 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-96 max-h-64 overflow-y-auto">
+                                <div className="absolute right-0 mt-1 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-96 max-h-64 overflow-y-auto">
                                     <div className="p-2">
                                         <div className="relative">
                                             <input
@@ -236,7 +236,7 @@ export const CallbacksEditor: React.FC<CallbacksEditorProps> = ({
                                                 value={showSearchTerm}
                                                 onChange={(e) => setShowSearchTerm(e.target.value)}
                                                 placeholder="Search shows..."
-                                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                                             />
                                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                                         </div>
@@ -276,14 +276,14 @@ export const CallbacksEditor: React.FC<CallbacksEditorProps> = ({
                             <button
                                 type="button"
                                 onClick={() => setIsSongDropdownOpen(!isSongDropdownOpen)}
-                                className="flex items-center gap-1 bg-fourth text-primary px-2 py-1 rounded-md border border-secondary hover:bg-fourth/80 transition-colors text-xs font-medium"
+                                className="flex items-center gap-1 bg-fourth text-white px-2 py-1 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-xs font-medium"
                             >
                                 Insert Song
                                 <ChevronDown className="w-3 h-3" />
                             </button>
                             
                             {isSongDropdownOpen && (
-                                <div className="absolute right-0 mt-1 py-1 bg-primary border border-secondary rounded-lg shadow-lg z-50 w-64 max-h-64 overflow-y-auto">
+                                <div className="absolute right-0 mt-1 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-64 max-h-64 overflow-y-auto">
                                     <div className="p-2">
                                         <div className="relative">
                                             <input
@@ -291,7 +291,7 @@ export const CallbacksEditor: React.FC<CallbacksEditorProps> = ({
                                                 value={songSearchTerm}
                                                 onChange={(e) => setSongSearchTerm(e.target.value)}
                                                 placeholder="Search songs..."
-                                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-secondary bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                                             />
                                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                                         </div>
@@ -327,12 +327,12 @@ export const CallbacksEditor: React.FC<CallbacksEditorProps> = ({
                     value={editedShow?.show_callbacks || ''}
                     onChange={onInputChange}
                     rows={4}
-                    className="w-full px-2 py-1.5 rounded-md border border-secondary bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm font-mono"
+                    className="w-full px-2 py-1.5 rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm font-mono"
                     placeholder="Enter callbacks HTML..."
                 />
             ) : (
                 <div 
-                    className="w-full px-2 py-1.5 rounded-md border font-light border-secondary bg-canvas/50 text-fifth text-sm min-h-[100px] [&_a]:font-medium [&_a]:text-fourth"
+                    className="w-full px-2 py-1.5 rounded-md border font-light border-fourth bg-canvas/50 text-fifth text-sm min-h-[100px] [&_a]:font-medium [&_a]:text-fourth"
                     dangerouslySetInnerHTML={{ __html: selectedShow.show_callbacks }}
                 />
             )}

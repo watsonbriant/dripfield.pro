@@ -26,9 +26,11 @@ export const ShowsByGroup: React.FC<ShowsByGroupProps> = ({
 
   return (
     <div className="h-full">
-      <div className="bg-primary rounded-lg p-3 border border-secondary w-full h-full">
-        <div className="text-fifth text-base font-medium mb-1">Shows by Group</div>
-        <div className="max-h-[350px] overflow-y-auto">
+      <div className="bg-primary border border-fourth w-full h-full">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h3 className="text-sm font-semibold">Shows by Group</h3>
+        </div>
+        <div className="p-1 max-h-[350px] overflow-y-auto">
           <div>
             {Object.entries(
               performances.reduce((acc, show) => {
@@ -48,8 +50,8 @@ export const ShowsByGroup: React.FC<ShowsByGroupProps> = ({
               .map(([group, count]) => (
                 <div 
                   key={group} 
-                  className={`text-fifth px-2 text-sm flex justify-between cursor-pointer ${
-                    selectedGroup === group ? 'bg-tertiary/80' : 'hover:bg-tertiary/40'
+                  className={`text-[0.625rem] text-fifth px-2 flex justify-between cursor-pointer ${
+                    selectedGroup === group ? 'bg-tertiary/40' : 'hover:bg-tertiary/40'
                   }`}
                   onClick={() => onGroupClick(group)}
                 >

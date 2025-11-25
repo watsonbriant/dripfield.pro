@@ -124,7 +124,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
 
   if (loading) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
           <p className="text-fifth mt-4">{getLoadingMessage(!!isOwnProfile, username || null)}</p>
@@ -136,7 +136,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   // If no user ID found, show an appropriate message
   if (!effectiveUserId) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="text-center py-6">
           <p className="text-fifth">No user data available.</p>
         </div>
@@ -155,7 +155,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   
   if (hasNoData) {
     return (
-      <div className="bg-primary border border-secondary rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="text-center py-6">
           <p className="text-fifth">
             {isOwnProfile 

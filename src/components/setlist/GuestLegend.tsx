@@ -25,16 +25,16 @@ export const GuestLegend: React.FC<GuestLegendProps> = ({
   if (guestGroups.length === 0) return null;
 
   return (
-    <div className="bg-primary border border-secondary rounded-lg p-3 h-fit relative">
-      <User className="w-5 h-5 text-fifth absolute top-3 right-3" />
-      <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-1 pr-8">
+    <div className="bg-tertiary/20 border border-fourth p-1 h-fit relative w-fit max-w-[800px]">
+      <User className="w-3.5 h-3.5 text-fifth absolute top-1 right-1" />
+      <div className="grid grid-cols-[20px_1fr] gap-x-1 gap-y-0.5 pr-6">
         {guestGroups.map((group, index) => (
           <React.Fragment key={index}>
             <div 
-              className="w-5 h-5 rounded"
+              className="w-4 h-4 rounded border border-fourth"
               style={{ backgroundColor: group.color }}
             />
-            <div className="text-fifth text-sm flex items-center flex-wrap">
+            <div className="text-fifth text-xs flex items-center flex-wrap">
               {group.guests
                 .sort((a, b) => a.guest_canonid - b.guest_canonid)
                 .map((g, gIndex) => (
@@ -63,7 +63,7 @@ export const GuestLegend: React.FC<GuestLegendProps> = ({
                         {g.guest_display_name}
                         {!isMobile && hoveredPersonnel === g.guest_id && (
                           <div 
-                            className="fixed text-xs font-medium bg-tertiary text-fifth px-3 py-1 rounded border border-secondary shadow-lg z-[9999] whitespace-nowrap"
+                            className="fixed text-[0.625rem] font-medium bg-canvas text-fifth px-1.5 py-0.5 rounded border border-fourth shadow-lg z-[9999] whitespace-nowrap"
                             style={{
                               left: `${mousePosition.x + 10}px`,
                               top: `${mousePosition.y - 10}px`

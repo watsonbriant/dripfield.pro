@@ -111,18 +111,17 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
   return (
     <>
       <style>{tooltipStyles}</style>
-      <div className="bg-primary border border-secondary rounded-lg p-3">
-        <div className="flex justify-between items-center mb-4">
+      <div className="bg-primary border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="text-fifth text-base font-medium">Performances</div>
-            
+            <h3 className="text-sm font-semibold">Performances</h3>
             {user && (
               <button
                 onClick={() => setShowOnlyAttended(!showOnlyAttended)}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full border border-secondary text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 pr-1 pl-0.5 py-0.5 rounded border border-fourth text-[0.625rem] font-medium transition-colors ${
                   showOnlyAttended 
-                    ? 'bg-canvas text-fifth hover:bg-secondary/50' 
-                    : 'bg-canvas text-fifth hover:bg-secondary/50'
+                    ? 'bg-canvas text-fifth hover:bg-primary' 
+                    : 'bg-canvas text-fifth hover:bg-primary'
                 } ${loadingAttended ? 'opacity-50 cursor-wait' : ''}`}
                 disabled={loadingAttended}
               >
@@ -134,7 +133,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                     className="sr-only"
                     onClick={(e) => e.stopPropagation()}
                   />
-                  <div className={`w-4 h-4 rounded border border-secondary transition-all duration-200 flex items-center justify-center ${
+                  <div className={`w-4 h-4 rounded border border-fourth transition-all duration-200 flex items-center justify-center ${
                     showOnlyAttended ? 'bg-green-600' : 'bg-red-600'
                   }`}>
                     {showOnlyAttended ? (
@@ -168,14 +167,14 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               </button>
             )}
           </div>
-          
+
           {selectedGroup && (
-            <div className="text-xs text-fifth items-end tooltip-bubble">
-              <span className="font-medium text-fifth border border-secondary bg-tertiary px-1 py-0.5 rounded">
-                {selectedGroup}
-              </span>
-            </div>
-          )}
+              <div className="text-xs text-fifth items-end tooltip-bubble">
+                <span className="font-medium text-white border border-fourth bg-fourth px-1 rounded text-[0.625rem]">
+                  {selectedGroup}
+                </span>
+              </div>
+            )}
           
           <div className="flex items-center">
             <div className="flex items-center gap-3">
@@ -200,11 +199,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
                 role="switch"
                 aria-checked={viewMode === 'table'}
                 onClick={() => setViewMode(viewMode === 'timeline' ? 'table' : 'timeline')}
-                className="relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary bg-canvas border border-secondary"
+                className="relative inline-flex h-4 w-[47px] items-center rounded-full border border-fourth transition-colors bg-primary"
               >
                 <span
-                  className={`absolute h-4 w-4 rounded-full bg-tertiary transition-transform duration-200 ${
-                    viewMode === 'table' ? 'left-7' : 'left-1'
+                  className={`absolute h-[10px] w-[10px] rounded-lg bg-black transition-transform duration-200 ${
+                    viewMode === 'table' ? 'left-[33px]' : 'left-[2px]'
                   }`}
                 />
               </button>
@@ -228,8 +227,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
             </div>
           </div>
         </div>
-        
-        {viewMode === 'timeline' ? (
+        <div>
+          {viewMode === 'timeline' ? (
           <PerformanceTimelineView
             performancesByYear={performancesByYear}
             selectedGroup={selectedGroup}
@@ -243,7 +242,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
             sortColumn={sortColumn}
             sortDirection={sortDirection}
             handleSort={handleSort}
-            getSortIcon={getSortIcon}
             selectedGroup={selectedGroup}
             hoveredPerformance={hoveredPerformance}
             mousePosition={mousePosition}
@@ -257,6 +255,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
           mousePosition={mousePosition}
           viewMode={viewMode}
         />
+        </div>
       </div>
     </>
   );
