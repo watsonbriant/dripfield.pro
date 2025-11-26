@@ -158,17 +158,17 @@ export function Songs() {
     // Sort all categories by category_canonid first
     const sortedCategories = [...categories].sort((a, b) => a.category_canonid - b.category_canonid);
     
-    // Studio Releases: category_canonid < 20
-    const studioReleases = sortedCategories.filter(cat => cat.category_canonid < 20);
+    // Studio Releases: category_canonid <= 20
+    const studioReleases = sortedCategories.filter(cat => cat.category_canonid <= 20);
     
-    // Live-Only Songs: category_canonid between 20 and 49, OR category_canonid = 98
+    // Live-Only Songs: category_canonid between 20 and 70, OR category_canonid = 98
     const liveOnlySongs = sortedCategories.filter(cat => 
-      (cat.category_canonid >= 20 && cat.category_canonid <= 49) || cat.category_canonid === 98
+      (cat.category_canonid >= 21 && cat.category_canonid <= 70) || cat.category_canonid === 98
     );
     
-    // Ted Tapes Songs/Jams: category_canonid between 50 and 60
+    // Ted Tapes Songs/Jams: category_canonid between 71 and 97
     const tedTapesSongs = sortedCategories.filter(cat => 
-      cat.category_canonid >= 50 && cat.category_canonid <= 60
+      cat.category_canonid >= 71 && cat.category_canonid <= 97
     );
     
     // Cover Songs: category_canonid = 99 or 100
@@ -209,6 +209,7 @@ export function Songs() {
   const CategorySection = ({ sectionCategories, title }: { sectionCategories: Category[], title: string }) => {
     const isCoverSongs = title === "Cover Songs";
     const isStudioReleases = title === "Studio Releases";
+    const isTedTapes = title === "Ted Tapes Songs/Jams";
     const columnCount = useColumnCount(isCoverSongs);
     const organizedColumns = organizeIntoColumns(sectionCategories, columnCount);
     
@@ -219,7 +220,9 @@ export function Songs() {
       ? "grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0 items-start -my-[1px]"
       : isStudioReleases
         ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-0 items-start -my-[1px]"
-        : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-2 gap-y-0 items-start -my-[1px]";
+        : isTedTapes
+          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-2 gap-y-0 items-start -my-[1px]"
+          : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-2 gap-y-0 items-start -my-[1px]";
     
     return (
       <div className="mb-8">
