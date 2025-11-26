@@ -27,10 +27,10 @@ export default function SetlistModal({
 
     return (
         <div
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-[50000] p-4 overflow-y-auto min-h-screen"
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-[50000] p-8 overflow-y-auto min-h-screen"
             style={{ 
                 position: 'fixed',
-                top: -24,
+                top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0,
