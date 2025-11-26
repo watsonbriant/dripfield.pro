@@ -87,7 +87,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                   key={category.category} 
                   className="bg-primary rounded-lg p-3 border border-fourth h-auto w-full relative"
                 >
-                  <div className="flex items-center justify-between space-x-2 mb-1 pb-2 border-b border-secondary/20">
+                  <div className="flex items-center justify-between space-x-2 mb-1 pb-2 border-b border-fourth/20">
                     <h4 className="text-[1.125rem] leading-[1.125rem] font-medium text-fifth">
                       {category.category || category.category}
                     </h4>
@@ -96,7 +96,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                         <img 
                           src={category.category_artwork} 
                           alt={`${category.category} artwork`}
-                          className="h-full object-contain rounded border border-secondary/10"
+                          className="h-full object-contain rounded border border-fourth/10"
                         />
                       </div>
                     )}

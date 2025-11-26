@@ -37,7 +37,7 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="bg-canvas border-y border-secondary/10">
+                            <tr className="bg-canvas border-y border-fourth/10">
                                 <th className="px-4 py-1 text-left text-sm font-medium text-fifth">Display Name</th>
                                 <th className="px-4 py-1 text-left text-sm font-medium text-fifth">Service</th>
                                 <th className="px-4 py-1 text-center text-sm font-medium text-fifth">Order</th>
@@ -67,7 +67,7 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
                     </table>
                 </div>
             ) : (
-                <div className="text-sm text-fifth/80 italic p-3 bg-canvas rounded-md border border-secondary/10">
+                <div className="text-sm text-fifth/80 italic p-3 bg-canvas rounded-md border border-fourth/10">
                     No releases associated with this show
                 </div>
             )}

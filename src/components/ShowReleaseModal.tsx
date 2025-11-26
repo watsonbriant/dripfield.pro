@@ -220,7 +220,7 @@ export function ShowReleaseModal({
 
             {/* Modal */}
             <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[500px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
-                <div className="flex items-center justify-between p-3 border-b border-secondary/10 bg-canvas rounded-t-lg">
+                <div className="flex items-center justify-between p-3 border-b border-fourth/10 bg-canvas rounded-t-lg">
                     <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
                         {mode === 'add' ? 'Add Release to Show' : 'Edit Release Order'}
                     </h2>
@@ -310,7 +310,7 @@ export function ShowReleaseModal({
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-secondary/10 p-3 bg-canvas rounded-b-lg flex justify-between">
+                <div className="border-t border-fourth/10 p-3 bg-canvas rounded-b-lg flex justify-between">
                     {/* Delete button - only show in edit mode */}
                     {mode === 'edit' && (
                         <div>

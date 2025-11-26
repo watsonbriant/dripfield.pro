@@ -131,7 +131,7 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
                           checked={selectedGuestIds.includes(guest.guest_id)}
                           onChange={() => handleGuestSelection(guest.guest_id)}
                           disabled={!isEditing && !isNewEntry}
-                          className="mr-2 h-4 w-4 rounded border-secondary/30 bg-white checked:bg-tertiary focus:ring-tertiary disabled:opacity-50"
+                          className="mr-2 h-4 w-4 rounded border-fourth/30 bg-white checked:bg-tertiary focus:ring-tertiary disabled:opacity-50"
                         />
                         <label 
                           htmlFor={`guest-${guest.guest_id}`} 
@@ -153,7 +153,7 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
           )}
           
           {selectedGuestIds.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-secondary/10">
+            <div className="mt-3 pt-3 border-t border-fourth/10">
               <p className="text-sm text-fifth">Selected guests: {selectedGuestIds.length}</p>
             </div>
           )}

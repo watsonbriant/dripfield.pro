@@ -202,7 +202,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 value={formData.show_date || ''}
                 onChange={handleChange}
                 className={`w-full px-2 py-1.5 font-light rounded-md border ${
-                  errors.show_date ? 'border-red-500' : 'border-secondary'
+                  errors.show_date ? 'border-red-500' : 'border-fourth'
                 } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               />
               {errors.show_date && (
@@ -219,7 +219,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 value={formData.show_group || ''}
                 onChange={handleChange}
                 className={`w-full px-2 py-1.5 font-light rounded-md border ${
-                  errors.show_group ? 'border-red-500' : 'border-secondary'
+                  errors.show_group ? 'border-red-500' : 'border-fourth'
                 } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               >
                 <option value="">-- Select Group --</option>
@@ -243,7 +243,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 value={formData.show_tour || ''}
                 onChange={handleChange}
                 className={`w-full px-2 py-1.5 font-light rounded-md border ${
-                  errors.show_tour ? 'border-red-500' : 'border-secondary'
+                  errors.show_tour ? 'border-red-500' : 'border-fourth'
                 } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               >
                 <option value="">-- Select Tour --</option>
@@ -267,7 +267,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 value={formData.show_subvenue || ''}
                 onChange={handleChange}
                 className={`w-full px-2 py-1.5 font-light rounded-md border ${
-                  errors.show_subvenue ? 'border-red-500' : 'border-secondary'
+                  errors.show_subvenue ? 'border-red-500' : 'border-fourth'
                 } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               >
                 <option value="">-- Select Subvenue --</option>
@@ -317,7 +317,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 value={formData.show_year || ''}
                 onChange={handleChange}
                 className={`w-full px-2 py-1.5 font-light rounded-md border ${
-                  errors.show_year ? 'border-red-500' : 'border-secondary'
+                  errors.show_year ? 'border-red-500' : 'border-fourth'
                 } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
               >
                 <option value="">-- Select Year --</option>

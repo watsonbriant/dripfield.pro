@@ -113,7 +113,7 @@ export const ShowTable: React.FC<ShowTableProps> = ({
                     className={`p-0.5 rounded-md transition-all ${
                       show.attended
                         ? 'bg-green-600 hover:bg-red-600 text-white'
-                        : 'text-white border-secondary/80 hover:bg-green-600 hover:text-white'
+                        : 'text-white border-fourth/80 hover:bg-green-600 hover:text-white'
                     }`}
                     title={show.attended ? "Remove from attended shows" : "Mark as attended"}
                   >

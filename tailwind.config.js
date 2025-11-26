@@ -23,7 +23,7 @@ export default {
         'surface-primary': '#FFFFFF',
         'surface-secondary': '#FFFFFF',
         'border-primary': '#000000',
-        'border-secondary': '#4e4e4e',
+        'border-fourth': '#4e4e4e',
       },
     },
   },

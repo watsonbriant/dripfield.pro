@@ -15,7 +15,7 @@ export const SetlistTable: React.FC<SetlistTableProps> = ({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse min-w-max">
         <thead>
-          <tr className="bg-canvas border-y border-secondary/10">
+          <tr className="bg-canvas border-y border-fourth/10">
             <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap">S</th>
             <th className="px-2 py-1 text-center text-s font-medium text-fifth whitespace-nowrap">#</th>
             <th className="px-2 py-1 text-left text-s font-medium text-fifth whitespace-nowrap">Song</th>

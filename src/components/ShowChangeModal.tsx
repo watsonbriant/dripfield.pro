@@ -150,7 +150,7 @@ const ChangeTextField: React.FC<{ value: string; onChange: (e: React.ChangeEvent
       </div>
       <textarea name="change" value={value || ''} onChange={onChange} readOnly={readOnly} rows={6} placeholder="Enter the change details..." className={`w-full px-2 py-2 rounded-md border ${readOnly ? 'border-fourth bg-canvas/50' : 'border-fourth bg-canvas'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-mono`} />
       {readOnly && value && (
-        <div className="mt-2 p-3 bg-canvas rounded-md border border-secondary/20">
+        <div className="mt-2 p-3 bg-canvas rounded-md border border-fourth/20">
           <p className="text-xs text-fifth/60 mb-2">Rendered HTML:</p>
           <div className="text-sm font-light text-fifth [&_a]:font-medium" dangerouslySetInnerHTML={{ __html: value }} />
         </div>
@@ -289,7 +289,7 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
                 <button onClick={toggleEdit} disabled={isSubmitting} className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth">
                   {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
                 </button>
-                <button onClick={handleDeleteClick} disabled={isSubmitting} className={`flex items-center justify-center w-10 h-10 rounded-md border ${isDeleteConfirming ? 'bg-green-500 hover:bg-green-600 border-secondary' : 'bg-red-500 hover:bg-red-600 border-secondary'} text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`} title={isDeleteConfirming ? "Confirm Delete" : "Delete"}>
+                <button onClick={handleDeleteClick} disabled={isSubmitting} className={`flex items-center justify-center w-10 h-10 rounded-md border ${isDeleteConfirming ? 'bg-green-500 hover:bg-green-600 border-fourth' : 'bg-red-500 hover:bg-red-600 border-fourth'} text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`} title={isDeleteConfirming ? "Confirm Delete" : "Delete"}>
                   {isDeleteConfirming ? <Check className="w-5 h-5" /> : <Trash2 className="w-5 h-5" />}
                 </button>
               </>

@@ -207,7 +207,7 @@ export function Admin() {
         <button
           onClick={handleUpdateStatistics}
           disabled={isUpdating || updateStatus.type === 'success'}
-          className={`px-3 py-1 rounded-md text-sm font-medium transition-colors border border-secondary
+          className={`px-3 py-1 rounded-md text-sm font-medium transition-colors border border-fourth
             ${isUpdating
               ? 'bg-black/50 text-white cursor-not-allowed'
               : updateStatus.type === 'success'

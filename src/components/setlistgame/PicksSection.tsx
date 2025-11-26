@@ -42,7 +42,7 @@ export function PicksSection({ show, user, userSubmission, onMakePicks }: PicksS
             ) : (
               <Link
                 to="/login"
-                className="px-2 py-0.5 bg-tertiary/50 hover:bg-tertiary/60 text-fifth font-medium rounded border border-secondary/60 transition-colors inline-block text-xs"
+                className="px-2 py-0.5 bg-tertiary/50 hover:bg-tertiary/60 text-fifth font-medium rounded border border-fourth/60 transition-colors inline-block text-xs"
               >
                 Login to Play
               </Link>

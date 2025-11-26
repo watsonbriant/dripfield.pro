@@ -130,12 +130,12 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
                 </div>
                 <div className="flex items-center gap-2 text-xs shrink-0">
                   {showDate.show_rarity_percentage && (
-                    <span className="px-2 py-0.5 bg-canvas rounded border border-secondary/20 text-fifth">
+                    <span className="px-2 py-0.5 bg-canvas rounded border border-fourth/20 text-fifth">
                       {showDate.show_rarity_percentage}
                     </span>
                   )}
                   {showDate.total_entry_length && (
-                    <span className="px-2 py-0.5 bg-canvas rounded border border-secondary/20 text-fifth">
+                    <span className="px-2 py-0.5 bg-canvas rounded border border-fourth/20 text-fifth">
                       {showDate.total_entry_length}
                     </span>
                   )}

@@ -250,7 +250,7 @@ export const Profile: React.FC = () => {
           <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">My Stats</h2>
           <button
             onClick={handleShareStats}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg ${shareButtonColor} text-fifth font-semibold transition-colors duration-200 hover:opacity-90 border border-secondary`}
+            className={`flex items-center gap-1 px-3 py-1 rounded-lg ${shareButtonColor} text-fifth font-semibold transition-colors duration-200 hover:opacity-90 border border-fourth`}
           >
             <Link2 className="w-4 h-4" />
             <span>{shareButtonText}</span>

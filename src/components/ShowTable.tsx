@@ -186,7 +186,7 @@ export function ShowTable({ gameShows, user, onSelectSongs, onViewSubmission }: 
                     ) : (
                       <Link
                         to="/login"
-                        className="px-3 py-1 bg-tertiary hover:bg-tertiary/70 text-fifth text-xs font-medium rounded transition-colors inline-block border border-secondary/30"
+                        className="px-3 py-1 bg-tertiary hover:bg-tertiary/70 text-fifth text-xs font-medium rounded transition-colors inline-block border border-fourth/30"
                       >
                         Login to Play
                       </Link>

@@ -331,7 +331,7 @@ export function Discography() {
                   <div
                     key={album.title}
                     ref={el => albumRefs.current[album.category] = el}
-                    className="bg-primary border border-fourth overflow-hidden hover:border-secondary/70 transition-colors"
+                    className="bg-primary border border-fourth overflow-hidden hover:border-fourth/70 transition-colors"
                   >
                     <div className="aspect-square">
                       <img

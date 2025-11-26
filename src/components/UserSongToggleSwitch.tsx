@@ -13,7 +13,7 @@ const UserSongToggleSwitch: React.FC<UserSongToggleSwitchProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`flex items-center gap-3 ${className} bg-tertiary px-1.5 py-1 rounded-lg border border-secondary`}>
+    <div className={`flex items-center gap-3 ${className} bg-tertiary px-1.5 py-1 rounded-lg border border-fourth`}>
       <LayoutList 
         size={16} 
         className={`${!isRight ? 'text-fifth' : 'text-fifth'}`} 

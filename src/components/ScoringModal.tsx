@@ -117,7 +117,7 @@ export function ScoringModal({ isOpen, onClose, gameShows, onScoringComplete }: 
                 >
                   {isScoring ? (
                     <>
-                      <div className="w-3 h-3 rounded-full border-2 border-secondary/20 border-t-black animate-spin"></div>
+                      <div className="w-3 h-3 rounded-full border-2 border-fourth/20 border-t-black animate-spin"></div>
                       <span>Scoring...</span>
                     </>
                   ) : (

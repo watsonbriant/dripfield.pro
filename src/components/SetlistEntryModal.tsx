@@ -140,8 +140,8 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
                     disabled={isSubmitting}
                     className={`flex text-white items-center justify-center w-10 h-10 rounded-md border ${
                       isDeleteConfirming 
-                        ? 'bg-green-500 hover:bg-green-600 border-secondary' 
-                        : 'bg-red-500 hover:bg-red-600 border-secondary'
+                        ? 'bg-green-500 hover:bg-green-600 border-fourth' 
+                        : 'bg-red-500 hover:bg-red-600 border-fourth'
                     } text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                     title={isDeleteConfirming ? "Confirm Delete" : "Delete"}
                   >

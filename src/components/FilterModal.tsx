@@ -46,7 +46,7 @@ export function FilterModal({
         onClick={onClose}
       />
       <div className="fixed inset-x-4 top-[72px] max-h-[calc(100vh-88px)] z-[9999] bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-secondary/10">
+        <div className="flex items-center justify-between p-4 border-b border-fourth/10">
           <h2 className="text-xl font-medium bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">
             Venue Map Filters
           </h2>
@@ -111,7 +111,7 @@ export function FilterModal({
 
           {/* Clear Filters Button */}
           {hasActiveFilters && (
-            <div className="pt-4 border-t border-secondary/20">
+            <div className="pt-4 border-t border-fourth/20">
               <button
                 onClick={() => {
                   onClearFilters();

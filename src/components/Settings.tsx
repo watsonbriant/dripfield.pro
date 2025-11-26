@@ -158,7 +158,7 @@ export const Settings: React.FC = () => {
               id="email"
               value={user?.email || ''}
               disabled
-              className="text-sm w-full px-2 py-1.5 font-light rounded-lg border border-secondary/20 bg-canvas text-fifth/70 placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary cursor-not-allowed"
+              className="text-sm w-full px-2 py-1.5 font-light rounded-lg border border-fourth/20 bg-canvas text-fifth/70 placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary cursor-not-allowed"
             />
           </div>
 
@@ -172,7 +172,7 @@ export const Settings: React.FC = () => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value.slice(0, 16))}
-              className="text-sm w-full px-2 py-1.5 rounded-lg font-light border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
+              className="text-sm w-full px-2 py-1.5 rounded-lg font-light border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="Set username (max 16 characters)"
               maxLength={16}
             />
@@ -189,7 +189,7 @@ export const Settings: React.FC = () => {
               id="website"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
-              className="text-sm w-full px-2 py-1.5 rounded-lg font-light border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
+              className="text-sm w-full px-2 py-1.5 rounded-lg font-light border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="Your website URL"
             />
           </div>
@@ -228,7 +228,7 @@ export const Settings: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-2 py-1.5 rounded-lg text-sm border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
+              className="w-full px-2 py-1.5 rounded-lg text-sm border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="New password"
             />
           </div>
@@ -244,7 +244,7 @@ export const Settings: React.FC = () => {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-2 py-1.5 rounded-lg text-sm border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
+              className="w-full px-2 py-1.5 rounded-lg text-sm border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
               placeholder="Confirm new password"
             />
           </div>

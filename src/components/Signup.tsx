@@ -126,7 +126,7 @@ export const Signup: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Enter email"
               />
             </div>
@@ -143,7 +143,7 @@ export const Signup: React.FC = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value.slice(0, 16))}
-                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Choose a username"
                 maxLength={16}
               />
@@ -162,7 +162,7 @@ export const Signup: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Create password"
               />
             </div>
@@ -179,7 +179,7 @@ export const Signup: React.FC = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-lg border border-secondary/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Confirm password"
               />
             </div>
