@@ -294,7 +294,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
           `}</style>
           <div className="flex items-end gap-1 py-1 px-1" style={{ minWidth: 'fit-content' }}>
             {sortedCategories.map(({ category, count, artwork }) => {
-              const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+              const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 274, 274), 27) : 27;
               
               return (
                 <div key={`vertical-${category}`} className="flex flex-col items-center" style={{ minWidth: '2rem', flex: '1 1 2rem' }}>
@@ -302,7 +302,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                 <div 
                   className="cursor-pointer relative w-full transition-all duration-300"
                   style={{ 
-                    height: '200px'
+                    height: '274px'
                   }}
                   onMouseEnter={(e) => handleMouseEnter(category, e)}
                   onMouseMove={handleMouseMove}
@@ -310,11 +310,11 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                   onClick={() => handleClick(category)}
                 >
                   {/* Empty space above the filled portion - only render if not 100% height */}
-                  {barHeight < 200 && (
+                  {barHeight < 274 && (
                     <div 
                       className="w-full border-l border-r border-t border-fourth"
                       style={{ 
-                        height: `${200 - barHeight}px`,
+                        height: `${274 - barHeight}px`,
                         backgroundColor: '#e0dcc3' // bg-secondary color
                       }}
                     />
@@ -323,7 +323,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
                   {/* Filled portion with artwork - positioned on top */}
                   <div 
                     className={`w-full border border-fourth relative overflow-hidden ${
-                      barHeight < 200 ? '' : ''
+                      barHeight < 274 ? '' : ''
                     }`}
                     style={{ 
                       height: `${barHeight}px`

@@ -176,7 +176,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
             `}</style>
             <div className="flex items-end gap-1" style={{ minWidth: 'fit-content' }}>
               {songSpreadData.map(({ category, count, artwork }) => {
-                const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 200, 200), 27) : 27;
+                const barHeight = maxCount > 0 ? Math.max(Math.min((count / maxCount) * 274, 274), 27) : 27;
                 
                 return (
                   <div key={`vertical-${category}`} className="flex flex-col items-center" style={{ minWidth: '2rem', flex: '1 1 2rem' }}>
@@ -184,18 +184,18 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
                 <div 
                   className="cursor-pointer relative w-full transition-all duration-300"
                   style={{ 
-                    height: '200px'
+                    height: '274px'
                   }}
                   onMouseEnter={() => handleMouseEnter(category)}
                   onMouseLeave={handleMouseLeave}
                   onClick={() => handleClick(category)}
                 >
                   {/* Empty space above the filled portion - only render if not 100% height */}
-                  {barHeight < 200 && (
+                  {barHeight < 274 && (
                     <div 
                       className="w-full border-l border-r border-t border-fourth rounded-t"
                       style={{ 
-                        height: `${200 - barHeight}px`,
+                        height: `${274 - barHeight}px`,
                         backgroundColor: '#ededed' // bg-secondary color
                       }}
                     />
@@ -204,7 +204,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
                   {/* Filled portion with artwork - positioned on top */}
                   <div 
                     className={`w-full border border-fourth relative overflow-hidden ${
-                      barHeight < 200 ? 'rounded-b' : 'rounded'
+                      barHeight < 274 ? 'rounded-b' : 'rounded'
                     }`}
                     style={{ 
                       height: `${barHeight}px`
@@ -261,7 +261,7 @@ export const SongSpreadModal: React.FC<SongSpreadModalProps> = ({
         {/* Tooltip underneath bar chart */}
         {(hoveredCategory || selectedCategory) && (
           <div className="mt-4 flex justify-center">
-            <div className="bg-tertiary text-fifth px-3 py-2 rounded border border-fourth shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
+            <div className="bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg text-[0.625rem] leading-[0.75rem] w-fit max-w-full">
               <div className="font-semibold text-sm mb-1">{hoveredCategory || selectedCategory}</div>
               {songSpreadData
                 .find(cat => cat.category === (hoveredCategory || selectedCategory))
