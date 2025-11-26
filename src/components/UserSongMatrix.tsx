@@ -7,7 +7,6 @@ import { SortControls } from './SortControls';
 import { SongSpreadModal } from './SongSpreadModal';
 import { useUserShows } from '../hooks/useUserShows';
 import { useUserSongMatrix } from '../hooks/useUserSongMatrix';
-import { cleanSongName } from '../utils/songUtils';
 import { 
   formatShowDate, 
   groupShowsByYear, 
@@ -256,7 +255,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                     }}
                     className="hover:underline transition-colors cursor-pointer"
                   >
-                    {cleanSongName(song)}
+                    {song}
                   </button>
                 </td>
                 

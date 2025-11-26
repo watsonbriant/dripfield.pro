@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { cleanSongName } from '../utils/songMatrixUtils';
 import { useSongPerformances } from '../hooks/useSongPerformances';
 import PerformancesTable from './PerformancesTable';
 import GuestLegend from './GuestLegend';
@@ -61,7 +60,7 @@ export default function SongTourPerformancesModal({
         <div className="bg-primary border border-fourth shadow-xl flex flex-col max-w-[650px] w-full max-h-[90vh] overflow-y-auto pointer-events-auto">
         <div className="flex items-center justify-between px-0.5 py-0.5 bg-tertiary text-fifth">
             <div className="flex items-center flex-1">
-                <h2 className="text-sm font-semibold ml-1.5 mr-4">{cleanSongName(songName)}</h2>
+                <h2 className="text-sm font-semibold ml-1.5 mr-4">{songName}</h2>
                 {tourName && (
                 <span className="text-xs font-medium bg-canvas text-fifth px-2 py-0.5 rounded border border-fourth whitespace-nowrap mr-4">
                     {tourName}

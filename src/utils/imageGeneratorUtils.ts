@@ -24,17 +24,6 @@ export interface Show {
     show_wl_link?: string | null;
 }
 
-export const cleanSongName = (songName: string): string => {
-    return songName
-        .replace(/\[/g, '(')
-        .replace(/\]/g, ')')
-        .replace(/ñ/g, 'n')
-        .replace(/ü/g, 'u')
-        .replace(/–/g, '-')
-        .replace(/…/g, '...')
-        .replace(/∆/g, 'a');
-};
-
 export const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number, font: string): string[] => {
     ctx.font = font;
     const words = text.split(' ');

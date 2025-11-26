@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoveRight } from 'lucide-react';
 import { SongEntryWithId } from '../types/userSlots';
-import { cleanSongName } from '../utils/userSlotsUtils';
 
 interface SongListProps {
   songs: SongEntryWithId[] | null;
@@ -39,7 +38,7 @@ const SongList: React.FC<SongListProps> = ({ songs, songIdMap }) => {
             }}
             className="font-semibold hover:underline transition-colors text-fifth table-link cursor-pointer inline"
           >
-            {cleanSongName(song.song)}
+            {song.song}
           </a>
         </React.Fragment>
       ))}

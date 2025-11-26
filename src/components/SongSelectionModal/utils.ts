@@ -1,16 +1,5 @@
 import { SongPick, SetlistEntry, TimeRemainingResult } from './types';
 
-export const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
-
 export const calculateTimeRemaining = (showTime: string): TimeRemainingResult => {
   const now = new Date();
   const showDateTime = new Date(showTime);

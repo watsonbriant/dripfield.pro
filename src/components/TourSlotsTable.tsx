@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { MoveRight } from 'lucide-react';
 import { SlotShowData, SongEntryWithId } from '../types/tourTypes';
 import { getColumnBackgroundColor } from '../utils/tourUtils';
-// import { cleanSongName, getColumnBackgroundColor } from '../utils/tourUtils';
 
 interface TourSlotsTableProps {
   slots: SlotShowData[];

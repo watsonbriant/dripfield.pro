@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SongStat } from '../../hooks/useSetlistGameShowData';
-import { cleanSongName } from '../../utils/setlistGameUtils';
 
 interface TopPicksSectionProps {
   topSongs: SongStat[];
@@ -46,7 +45,7 @@ export function TopPicksSection({ topSongs, topOpeners, topClosers, activePill, 
                 to={`/song/${song.song_id}`}
                 className="text-fifth font-medium text-[0.625rem] hover:underline transition-colors truncate"
               >
-                {cleanSongName(song.song)}
+                {song.song}
               </Link>
             </div>
             <div className="flex items-center">

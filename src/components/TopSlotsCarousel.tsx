@@ -24,17 +24,6 @@ interface TopSlotsCarouselProps {
   tourId?: string; // Added tourId prop
 }
 
-// const cleanSongName = (songName: string): string => {
-//   return songName
-//     .replace(/\[/g, '(')
-//     .replace(/\]/g, ')')
-//     .replace(/ñ/g, 'n')
-//     .replace(/ü/g, 'u')
-//     .replace(/–/g, '-')
-//     .replace(/…/g, '...')
-//     .replace(/∆/g, 'a');
-// };
-
 const TopSlotsCarousel = ({ 
   slots, 
   isMobile = false, 

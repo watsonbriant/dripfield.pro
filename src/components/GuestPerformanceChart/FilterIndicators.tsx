@@ -1,5 +1,4 @@
 import React from 'react';
-import { cleanSongName } from './utils';
 
 interface FilterIndicatorsProps {
   selectedGroup: string | null;
@@ -13,7 +12,7 @@ export default function FilterIndicators({ selectedGroup, selectedSong }: Filter
     <div className="flex items-center gap-2">
       {selectedSong && (
         <span className="font-medium text-white border border-fourth bg-fourth px-1 rounded text-[0.625rem]">
-          {cleanSongName(selectedSong)}
+          {selectedSong}
         </span>
       )}
       {selectedGroup && (

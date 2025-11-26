@@ -13,10 +13,9 @@ interface PlacementSong {
 
 interface PlacementTableProps {
     songs: PlacementSong[];
-    cleanSongName: (songName: string) => string;
 }
 
-export function PlacementTable({ songs, cleanSongName }: PlacementTableProps) {
+export function PlacementTable({ songs }: PlacementTableProps) {
     const navigate = useNavigate();
 
     // Calculate rankings with tie handling
@@ -55,7 +54,7 @@ export function PlacementTable({ songs, cleanSongName }: PlacementTableProps) {
                                         onClick={() => navigate(`/song/${song.song_id}`)}
                                         className="font-medium text-fifth hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left"
                                     >
-                                        {cleanSongName(song.song_name)}
+                                        {song.song_name}
                                     </button>
                                     {song.category_artwork && (
                                         <img
@@ -84,16 +83,15 @@ interface PlacementSectionProps {
     title: string;
     bgColor: string;
     songs: PlacementSong[];
-    cleanSongName: (songName: string) => string;
 }
 
-export function PlacementSection({ title, bgColor, songs, cleanSongName }: PlacementSectionProps) {
+export function PlacementSection({ title, bgColor, songs }: PlacementSectionProps) {
     return (
         <div>
             <h3 className="text-sm font-medium text-white px-2 py-0.5" style={{ backgroundColor: bgColor }}>
                 {title}
             </h3>
-            <PlacementTable songs={songs} cleanSongName={cleanSongName} />
+            <PlacementTable songs={songs} />
         </div>
     );
 }

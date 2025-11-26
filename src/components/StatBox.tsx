@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, Check } from 'lucide-react';
-import { cleanSongName, getStatBgColor, copyToClipboard, formatTimeInterval } from '../utils/userStatsUtils';
+import { getStatBgColor, copyToClipboard, formatTimeInterval } from '../utils/userStatsUtils';
 
 interface StatBoxProps {
   title: string;
@@ -92,7 +92,7 @@ const StatBox: React.FC<StatBoxProps> = ({
                             onClick={() => navigate(`/song/${item[songIdKey]}`)}
                             className='font-trad hover:underline cursor-pointer'
                           >
-                            {cleanSongName(item[songNameKey])}
+                            {item[songNameKey]}
                           </span>
                           {showDate && item.show_date && (
                             <span 

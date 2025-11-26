@@ -1,16 +1,5 @@
 import { SetlistEntry, ShowDate, Show, GuestGroup } from '../types/setlist';
 
-export const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
-
 export const getGridClass = (showCanonId: number | null): string => {
   return showCanonId !== null 
     ? "grid grid-cols-[32px_max-content_50px_60px_55px_50px_30px_minmax(150px,1fr)] gap-4"

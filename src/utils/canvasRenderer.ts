@@ -2,7 +2,6 @@ import { formatInTimeZone } from 'date-fns-tz';
 import { 
     SetlistEntry, 
     Show, 
-    cleanSongName, 
     wrapText, 
     drawRoundedRect, 
     getPlacementColor, 
@@ -392,10 +391,10 @@ const renderSetlistEntry = (
     ctx.fillStyle = '#000000';
     ctx.font = '500 28px "Traditional", "Inter", system-ui, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(cleanSongName(entry.entry_song), numberX + 60, currentY + 2);
+    ctx.fillText(entry.entry_song, numberX + 60, currentY + 2);
 
     // Draw additional elements
-    const songWidth = ctx.measureText(cleanSongName(entry.entry_song)).width;
+    const songWidth = ctx.measureText(entry.entry_song).width;
     let currentX = numberX + 63 + songWidth;
 
     if (entry.entry_short) {

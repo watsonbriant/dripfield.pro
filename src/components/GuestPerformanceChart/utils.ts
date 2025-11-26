@@ -1,18 +1,6 @@
 import { formatInTimeZone } from 'date-fns-tz';
 import { ChartPerformance, PerformanceWithFormattedDate } from './types';
 
-// Text replacement function from Tours component
-export const cleanSongName = (songName: string): string => {
-  return songName
-    .replace(/\[/g, '(')
-    .replace(/\]/g, ')')
-    .replace(/ñ/g, 'n')
-    .replace(/ü/g, 'u')
-    .replace(/–/g, '-')
-    .replace(/…/g, '...')
-    .replace(/∆/g, 'a');
-};
-
 export const shouldHighlightForSong = (showId: string, selectedSong: string | null, songShowMap: { [songName: string]: string[] }) => {
   if (!selectedSong || !songShowMap[selectedSong]) return false;
   return songShowMap[selectedSong].includes(showId);

@@ -1,5 +1,5 @@
 import { PlacementSection } from './shared/PlacementTableComponents';
-import { usePlacementData, cleanSongName } from './shared/PlacementDataHooks';
+import { usePlacementData } from './shared/PlacementDataHooks';
 
 interface PopularPlacementsListProps {
     listId: string;
@@ -25,7 +25,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Show Openers" 
                         bgColor="#047857" 
                         songs={showOpeners} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
                 <div className="border-b border-fourth">
@@ -33,7 +32,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Set Openers" 
                         bgColor="#10b981" 
                         songs={setOpeners} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
                 <div className="border-r border-fourth">
@@ -41,7 +39,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Set Closers" 
                         bgColor="#3b82f6" 
                         songs={setClosers} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
                 <div>
@@ -49,7 +46,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Encores" 
                         bgColor="#be123c" 
                         songs={encores} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
             </div>
@@ -61,7 +57,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Show Openers" 
                         bgColor="#047857" 
                         songs={showOpeners} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
                 <div className="border-b border-fourth">
@@ -69,7 +64,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Set Openers" 
                         bgColor="#10b981" 
                         songs={setOpeners} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
                 <div className="border-b border-fourth">
@@ -77,7 +71,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Set Closers" 
                         bgColor="#3b82f6" 
                         songs={setClosers} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
                 <div>
@@ -85,7 +78,6 @@ export function PopularPlacementsList({ listId, onProgressUpdate }: PopularPlace
                         title="Top Encores" 
                         bgColor="#be123c" 
                         songs={encores} 
-                        cleanSongName={cleanSongName} 
                     />
                 </div>
             </div>

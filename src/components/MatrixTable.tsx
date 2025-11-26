@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getColumnBackgroundColor } from '../utils/songMatrixUtils';
-// import { cleanSongName, getColumnBackgroundColor } from '../utils/songMatrixUtils';
 
 interface MatrixTableProps {
   songMatrix: {

@@ -210,7 +210,7 @@ export function useUnfinishedReprisedData(listId: string, onProgressUpdate: (pro
                             }));
 
                             const sandwichKey = sandwichSongs.map(s => s.song_id).join('|');
-                            const sortString = sandwichSongs.map(s => cleanSongName(s.song_name)).join(' ');
+                            const sortString = sandwichSongs.map(s => s.song_name).join(' ');
 
                             if (!sandwiches[sandwichKey]) {
                                 sandwiches[sandwichKey] = {
@@ -255,13 +255,3 @@ export function useUnfinishedReprisedData(listId: string, onProgressUpdate: (pro
     };
 }
 
-export function cleanSongName(songName: string): string {
-    return songName
-        .replace(/\[/g, '(')
-        .replace(/\]/g, ')')
-        .replace(/ñ/g, 'n')
-        .replace(/ü/g, 'u')
-        .replace(/–/g, '-')
-        .replace(/…/g, '...')
-        .replace(/∆/g, 'a');
-}
