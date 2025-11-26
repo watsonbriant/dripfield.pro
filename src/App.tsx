@@ -231,7 +231,7 @@ function App() {
 
   return (
     <div 
-      className="flex flex-col md:h-screen lg:min-w-[1500px]"
+      className="flex flex-col h-screen lg:min-w-[1500px]"
     >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
@@ -395,8 +395,8 @@ function App() {
           </main>
           
           {/* Footer */}
-          <footer className="p-4 md:p-4 pt-0 text-center text-fifth/70 text-[0.625rem]">
-            <div className="bg-primary lg:max-w-none max-w-[1280px] lg:mx-0 mx-auto p-2 mt-8 md:mt-0 border border-fourth">
+          <footer className="text-center text-fifth/70 text-[0.625rem] leading-[0.75rem]">
+            <div className="bg-primary lg:max-w-none max-w-[1280px] lg:mx-0 mx-auto px-4 py-1 mt-4 border-t border-fourth">
               <p>All statistical information and computations copyright ©2025, Brian Watson and Dripfield.pro. No portion of this website's content may be reproduced without permission. Song lyrics and titles are the copyright of No Coincidence Records, Factory Underground Records, and their respective publishers, including Lantern Collective, Master Cat Music, Gong Gang, Potato Party, Space Panther Music, and Spun Haus Productions. Show posters and artwork are the copyright of their respective artists.</p>
             </div>
           </footer>

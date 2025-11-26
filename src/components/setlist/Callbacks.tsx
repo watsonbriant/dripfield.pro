@@ -11,7 +11,7 @@ export const Callbacks: React.FC<CallbacksProps> = ({ show }) => {
   return (
     <div className="bg-fourth border border-fourth px-1.5 py-1 text-xs w-fit max-w-[800px]">
       <div 
-        className="font-light text-white text-[0.625rem] leading-[0.75rem] hover:[&_a]:underline [&_a]:font-medium [&_a]:text-tertiary"
+        className="font-light text-white text-[0.625rem] leading-[0.75rem] hover:[&_a]:underline [&_a]:font-medium [&_a]:text-emerald-400"
         dangerouslySetInnerHTML={{ __html: show.show_callbacks }}
       />
     </div>
