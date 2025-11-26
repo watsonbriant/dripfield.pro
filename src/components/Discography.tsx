@@ -196,7 +196,7 @@ export function Discography() {
   });
 
   return (
-    <div className="max-w-[1024px]">
+    <div className="max-w-[1280px]">
       <div className="mb-4">
         <div className="bg-primary border border-fourth">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
@@ -326,7 +326,11 @@ export function Discography() {
               </div>
 
               {/* Albums Grid for this Category Type */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className={`grid gap-4 ${
+                categoryTypeDisplay === 'Goose Miscellaneous' || categoryTypeDisplay === 'Goose-adjacent'
+                  ? 'grid-cols-1 md:grid-cols-3 lg:grid-cols-6'
+                  : 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4'
+              }`}>
                 {groupedAlbums[categoryTypeDisplay].map((album) => (
                   <div
                     key={album.title}
