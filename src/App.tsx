@@ -235,7 +235,7 @@ function App() {
     >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
-        <header className="z-20 bg-canvas border-b border-secondary/15 md:sticky md:top-0">
+        <header className="z-20 bg-canvas border-b border-fourth md:sticky md:top-0">
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)}
             openShowModal={openShowModal}
