@@ -261,11 +261,6 @@ const ShowStats: React.FC<ShowStatsProps> = ({
               <Flame className="text-white w-3 h-3" />
             </div>
           </div>
-          {!rarityStats && (
-            <p className="text-fifth text-[0.625rem] px-2 py-0.5">
-              &nbsp;
-            </p>
-          )}
         </div>
       )}
 
@@ -287,11 +282,6 @@ const ShowStats: React.FC<ShowStatsProps> = ({
               <Space className="text-white w-3 h-3" />
             </div>
           </div>
-          {!averageShowGap && (
-            <p className="text-fifth text-[0.625rem] px-2 py-0.5">
-              &nbsp;
-            </p>
-          )}
         </div>
       )}
     </>
