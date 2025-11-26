@@ -33,16 +33,16 @@ export function TourSlotsTable({
         {songs.map((song, index) => (
           <React.Fragment key={`${song.song}-${index}`}>
             {index > 0 && (
-              <MoveRight className="text-red-500 inline w-[1rem] h-[0.75rem] mr-1" />
+              <MoveRight className="text-red-500 inline w-[1rem] h-[0.75rem] leading-[0.75rem] mr-1" />
             )}
-            <button
+            <span
               onClick={() => onSongClick(song.song)}
-              className={`text-fifth text-[0.625rem] font-medium transition-colors text-fifth table-link cursor-pointer inline ${
+              className={`text-fifth text-[0.625rem] leading-[0.75rem] font-medium transition-colors text-fifth table-link cursor-pointer inline ${
                 index < songs.length - 1 ? 'mr-1' : ''
               }`}
             >
               {song.song}
-            </button>
+            </span>
           </React.Fragment>
         ))}
       </div>

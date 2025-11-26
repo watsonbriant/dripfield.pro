@@ -142,7 +142,7 @@ export function Tours() {
 
   if (isLoading) {
     return (
-      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+      <div className="max-w-[1500px]">
         <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
@@ -157,7 +157,7 @@ export function Tours() {
 
   if (tours.length === 0) {
     return (
-      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+      <div className="max-w-[1500px]">
         <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <p className="text-fifth">No tours found</p>
         </div>
@@ -166,7 +166,7 @@ export function Tours() {
   }
 
   return (
-    <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+    <div className="max-w-[1500px]">
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Side: Shows Table and other content */}
         <div className="w-full lg:w-auto lg:min-w-0">
