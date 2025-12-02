@@ -12,8 +12,8 @@ export function SongPlacementStats({ placementStats }: SongPlacementStatsProps) 
   }
 
   return (
-    <div className="overflow-x-auto">
-      <div className="bg-primary border border-fourth">
+    <div className="overflow-x-auto shadow-xl">
+      <div className="bg-primary border border-fourth shadow-xl">
         <div className="bg-tertiary text-fifth px-2 py-0.5">
           <h3 className="text-sm font-semibold">Set Placements</h3>
         </div>

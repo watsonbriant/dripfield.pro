@@ -197,7 +197,7 @@ export function Discography() {
 
   return (
     <div className="max-w-[1280px]">
-      <div className="mb-4">
+      <div className="mb-4 shadow-xl">
         <div className="bg-primary border border-fourth">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
             <h1 className="text-sm font-semibold pl-2">
@@ -315,8 +315,8 @@ export function Discography() {
           {sortedCategoryTypes.map((categoryTypeDisplay) => (
             <div key={categoryTypeDisplay}>
               {/* Category Type Header */}
-              <div className="mb-4">
-                <div className="bg-primary border border-fourth">
+              <div className="mb-4 shadow-xl">
+                <div className="bg-primary border border-fourth shadow-xl">
                   <div className="bg-fourth text-white px-2 py-0.5">
                     <h2 className="text-sm font-semibold">
                       {categoryTypeDisplay}
@@ -335,7 +335,7 @@ export function Discography() {
                   <div
                     key={album.title}
                     ref={el => albumRefs.current[album.category] = el}
-                    className="bg-primary border border-fourth overflow-hidden hover:border-fourth/70 transition-colors"
+                    className="bg-primary border border-fourth overflow-hidden hover:border-fourth/70 transition-colors shadow-xl"
                   >
                     <div className="aspect-square">
                       <img

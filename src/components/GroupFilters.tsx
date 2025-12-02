@@ -22,7 +22,7 @@ export function GroupFilters({
   loading 
 }: GroupFiltersProps) {
   return (
-    <div className="bg-primary border border-fourth pb-0.5 w-full">
+    <div className="bg-primary border border-fourth pb-0.5 w-full shadow-xl">
       <div className="bg-tertiary text-fifth px-2 py-0.5 mb-0.5 flex justify-between items-center">
         <h2 className="text-sm font-semibold">
           Filter by Group

@@ -193,7 +193,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
 
   if (loading) {
     return (
-      <div className="bg-primary border border-fourth rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3 shadow-xl">
         <div className="bg-tertiary text-fifth px-2 py-0.5">
           <h2 className="text-sm font-semibold">
             Past Tours
@@ -213,7 +213,7 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
 
   if (pastTours.length === 0) {
     return (
-      <div className="bg-primary border border-fourth rounded-lg p-3">
+      <div className="bg-primary border border-fourth rounded-lg p-3 shadow-xl">
         <div className="bg-tertiary text-fifth px-2 py-0.5">
           <h2 className="text-sm font-semibold">
             Past Tours
@@ -227,14 +227,14 @@ export function PastTours({ currentLeague }: { currentLeague: string }) {
   }
 
   return (
-    <div className="bg-primary border border-fourth">
+    <div className="bg-primary border border-fourth shadow-xl">
       <div className="bg-tertiary text-fifth px-2 py-0.5">
         <h2 className="text-sm font-semibold">
           Past Tours
         </h2>
       </div>
       
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto shadow-xl">
         <table className="w-full border-collapse min-w-max">
           <thead>
             <tr className="bg-canvas border-y border-white/10">

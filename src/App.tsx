@@ -235,7 +235,7 @@ function App() {
     >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
-        <header className="z-20 bg-canvas border-b border-fourth md:sticky md:top-0">
+        <header className="z-20 bg-canvas border-b border-fourth md:sticky md:top-0 shadow-xl">
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)}
             openShowModal={openShowModal}
@@ -314,7 +314,7 @@ function App() {
           className="flex-1 flex flex-col relative max-w-full min-w-0 w-full"
         >
           {/* Mobile-only header */}
-          <header className="z-20 bg-canvas border-b border-fourth p-2 lg:hidden">
+          <header className="z-20 bg-canvas border-b border-fourth p-2 lg:hidden shadow-xl">
             <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full px-2">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}

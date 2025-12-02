@@ -115,7 +115,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                             to={`/song/${song.song_id}`}
                             className={`${seen 
                               ? 'font-medium hover:underline transition-colors text-left text-xs text-fourth' 
-                              : 'font-light text-fifth/70'} block`}
+                              : 'font-light text-fifth/70'}`}
                           >
                             {song.song}
                           </Link>

@@ -8,7 +8,7 @@ interface SongHeaderProps {
 export function SongHeader({ songName }: SongHeaderProps) {
   return (
     <div className="mb-4">
-      <div className="bg-primary border border-fourth">
+      <div className="bg-primary border border-fourth shadow-xl">
         <div className="bg-fourth text-white py-0.5 pr-1 flex justify-between items-center">
           <h2 className="text-sm font-semibold pl-2">
             {songName}

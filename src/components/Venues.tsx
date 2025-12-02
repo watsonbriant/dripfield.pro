@@ -117,7 +117,7 @@ export function Venues() {
   if (loading) {
     return (
       <div className="w-full max-w-[1280px]">
-        <div className="mb-4">
+        <div className="mb-4 shadow-xl">
           <div className="bg-primary border border-fourth">
             <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
               <h1 className="text-sm font-semibold pl-2">
@@ -138,7 +138,7 @@ export function Venues() {
 
   return (
     <div className="w-full max-w-[1280px]">
-      <div className="mb-4">
+      <div className="mb-4 shadow-xl">
         <div className="bg-primary border border-fourth">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
             <h1 className="text-sm font-semibold pl-2">
@@ -157,7 +157,7 @@ export function Venues() {
       </div>
       
       {/* List Container */}
-      <div className="bg-primary border border-fourth">
+      <div className="bg-primary border border-fourth shadow-xl">
         {venues.length === 0 ? (
           <div className="p-2 text-center">
             <p className="text-[0.625rem] text-fifth">No venues found</p>

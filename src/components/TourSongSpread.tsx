@@ -250,7 +250,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
   }, [updateScrollFades]);
 
   return (
-    <div className="bg-primary border border-fourth" key="tour-song-spread">
+    <div className="bg-primary border border-fourth shadow-xl" key="tour-song-spread">
       <div className="bg-fourth text-white px-2 py-0.5">
         <h2 className="text-sm font-semibold">
           Song Spread

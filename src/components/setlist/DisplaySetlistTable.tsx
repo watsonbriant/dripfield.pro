@@ -46,7 +46,7 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   // Early return if setlist is undefined or empty, or show is undefined
   if (!setlist || setlist.length === 0 || !show) {
     return (
-      <div className="border border-fourth rounded-lg p-3 overflow-x-auto w-fit">
+      <div className="border border-fourth rounded-lg p-3 overflow-x-auto w-fit shadow-xl">
         <table className="border-collapse w-auto">
           <SetlistTableHeader show={show} />
           <tbody>
@@ -69,7 +69,7 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   const hasSinglePlacementType = uniquePlacements.size === 1;
 
   return (
-    <div className="border border-fourth overflow-x-auto w-fit">
+    <div className="border border-fourth overflow-x-auto w-fit shadow-xl">
       <table className="border-collapse table-auto" style={{ minWidth: 'max-content' }}>
         <SetlistTableHeader show={show} />
         <tbody>

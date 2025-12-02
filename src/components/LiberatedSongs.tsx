@@ -160,7 +160,7 @@ const LiberatedSongs: React.FC<LiberatedSongsProps> = ({
     }
 
     return (
-        <div className="bg-primary border border-fourth pb-0.5">
+        <div className="bg-primary border border-fourth pb-0.5 shadow-xl">
             <div className="text-black px-2 py-0.5 mb-0.5 flex justify-between items-center" style={{ backgroundColor: '#fbbf24' }}>
                 <h2 className="text-sm font-semibold">
                     Liberated Songs

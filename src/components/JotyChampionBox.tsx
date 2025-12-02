@@ -20,7 +20,7 @@ const ChampionBox: React.FC<ChampionBoxProps> = ({ championship, selectedYear })
   
   return (
     <div className="py-2 text-center">
-      <div className="inline-block bg-fourth border border-fourth p-2">
+      <div className="inline-block bg-fourth border border-fourth p-2 shadow-xl">
         <p className="text-xs font-semibold text-white mb-1">{selectedYear} Jam of the Year</p>
         <p className="text-sm font-medium text-white">{champion.name}</p>
         {champion.date && champion.venue && (

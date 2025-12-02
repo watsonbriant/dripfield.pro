@@ -10,7 +10,7 @@ interface TourHeaderProps {
 
 export function TourHeader({ tourName, totalShows, totalPlayers, tourWinners }: TourHeaderProps) {
     return (
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
             <div className="bg-fourth text-white px-2 py-0.5 flex justify-between items-center">
                 <h2 className="text-sm font-medium flex items-center gap-2">
                     <Link to="/setlistgame" className="hover:underline transition-colors flex items-center bg-canvas border border-fourth text-fifth px-2 rounded">

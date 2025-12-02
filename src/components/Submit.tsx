@@ -144,7 +144,7 @@ export function Submit() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto shadow-xl">
       <div className="bg-primary border border-fourth">
         <div className="bg-tertiary text-fifth px-2 py-0.5">
           <h2 className="text-sm font-semibold">Submit Information</h2>

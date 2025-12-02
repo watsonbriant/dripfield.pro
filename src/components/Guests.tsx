@@ -122,7 +122,7 @@ export function Guests() {
     }
 
     return (
-      <div className="flex-1 min-w-0 bg-primary border border-fourth">
+      <div className="flex-1 min-w-0 bg-primary border border-fourth shadow-xl">
         <div className="bg-primary border border-fourth">
           <div className="bg-fourth text-white px-2 py-0.5">
             <h2 className="text-sm font-semibold">
@@ -161,7 +161,7 @@ export function Guests() {
   return (
     <div className="w-full max-w-[1280px]">
       <div className="mb-4">
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
             <h1 className="text-sm font-semibold pl-2">
               Guests

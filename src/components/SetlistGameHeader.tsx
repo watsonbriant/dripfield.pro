@@ -8,7 +8,7 @@ interface SetlistGameHeaderProps {
 
 export function SetlistGameHeader({ isAdminUser, onShowRules, onShowScoring }: SetlistGameHeaderProps) {
   return (
-    <div className="flex flex-row justify-between items-center mb-6 bg-tertiary border border-fourth">
+    <div className="flex flex-row justify-between items-center mb-6 bg-tertiary border border-fourth shadow-xl">
       <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5">
         Echo of a Show
       </h1>

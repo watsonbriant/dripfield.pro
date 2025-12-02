@@ -256,7 +256,7 @@ const GuestAppearances: React.FC<GuestAppearancesProps> = ({
 
   return (
     <>
-      <div className="bg-primary border border-fourth pb-0.5">
+      <div className="bg-primary border border-fourth pb-0.5 shadow-xl">
         <div className="text-white px-2 py-0.5 mb-0.5" style={{ backgroundColor: '#3498db' }}>
           <h2 className="text-sm font-semibold">
           Guest Appearances

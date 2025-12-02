@@ -10,7 +10,7 @@ export const ShowNotes: React.FC<ShowNotesProps> = ({ show }) => {
   if (!show.show_coachnotes) return null;
 
   return (
-    <div className="bg-tertiary/50 border border-fourth px-1.5 py-1 w-fit max-w-[800px]">
+    <div className="bg-tertiary/50 border border-fourth px-1.5 py-1 w-fit max-w-[800px] shadow-xl">
       <div 
         className="text-fifth font-light text-[0.625rem] leading-[0.75rem] hover:[&_a]:underline [&_a]:font-medium"
         dangerouslySetInnerHTML={{ __html: show.show_coachnotes }}

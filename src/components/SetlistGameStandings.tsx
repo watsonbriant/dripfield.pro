@@ -23,7 +23,7 @@ export function SetlistGameStandings({ activeLeague, user }: SetlistGameStanding
   };
   
   return (
-    <div className="bg-primary border border-fourth">
+    <div className="bg-primary border border-fourth shadow-xl">
       <div className="bg-tertiary text-fifth px-2 py-0.5 flex gap-2 items-center">
         <h2 className="text-sm font-semibold">
           Standings

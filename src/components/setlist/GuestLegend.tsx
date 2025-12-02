@@ -25,7 +25,7 @@ export const GuestLegend: React.FC<GuestLegendProps> = ({
   if (guestGroups.length === 0) return null;
 
   return (
-    <div className="bg-tertiary/20 border border-fourth p-1 h-fit relative w-fit max-w-[800px]">
+    <div className="bg-tertiary/20 border border-fourth p-1 h-fit relative w-fit max-w-[800px] shadow-xl">
       <User className="w-3.5 h-3.5 text-fifth absolute top-1 right-1" />
       <div className="grid grid-cols-[20px_1fr] gap-x-1 gap-y-0.5 pr-6">
         {guestGroups.map((group, index) => (

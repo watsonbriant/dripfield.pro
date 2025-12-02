@@ -51,7 +51,7 @@ export function Guest() {
   return (
     <div className="max-w-[1024px]">
       <div className="mb-4">
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-fourth text-white py-0.5 pr-1">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2 pl-2">
@@ -103,7 +103,7 @@ export function Guest() {
 
         {/* Performance Chart */}
         {performances.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto shadow-xl">
             <GuestPerformanceChart 
               performances={performances} 
               selectedGroup={selectedGroup}

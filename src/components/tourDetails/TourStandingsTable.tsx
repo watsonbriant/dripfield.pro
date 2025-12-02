@@ -22,7 +22,7 @@ export function TourStandingsTable({ standings, currentUserId }: TourStandingsTa
     }
 
     return (
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
             <div className="bg-tertiary text-fifth px-2 py-0.5">
                 <h2 className="text-sm font-semibold">
                     Standings

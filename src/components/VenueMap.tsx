@@ -73,7 +73,7 @@ export const VenueMap: React.FC<VenueMapProps> = ({ onVenueClick }) => {
     : -98.5795; // Default to US center
 
   return (
-    <div className="bg-primary border border-fourth p-2 mb-4">
+    <div className="bg-primary border border-fourth p-2 mb-4 shadow-xl">
       <MobileHeader
         venueCount={mapVenues.length}
         hasActiveFilters={hasActiveFilters}

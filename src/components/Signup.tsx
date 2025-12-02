@@ -93,8 +93,8 @@ export const Signup: React.FC = () => {
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg p-3">
-        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-3">Create a New Account</h1>
+      <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
+        <h1 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">Create a New Account</h1>
 
         {message ? (
           <div className="p-4 bg-green-100 rounded-lg border border-green-300 mb-4">
@@ -109,13 +109,13 @@ export const Signup: React.FC = () => {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-2">
             {error && (
               <p className="mt-2 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300">{error}</p>
             )}
             
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-fifth mb-1">
+            <div className="px-2">
+              <label htmlFor="email" className="block text-xs font-medium text-fifth mb-1">
                 Email Address
               </label>
               <input
@@ -126,13 +126,13 @@ export const Signup: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Enter email"
               />
             </div>
 
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-fifth mb-1">
+            <div className="px-2">
+              <label htmlFor="username" className="block text-xs font-medium text-fifth mb-1">
                 Username
               </label>
               <input
@@ -143,15 +143,15 @@ export const Signup: React.FC = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value.slice(0, 16))}
-                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Choose a username"
                 maxLength={16}
               />
               <p className="text-xs text-fifth/50 mt-1">(maximum 16 characters)</p>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-fifth mb-1">
+            <div className="px-2">
+              <label htmlFor="password" className="block text-xs font-medium text-fifth mb-1">
                 Password
               </label>
               <input
@@ -162,13 +162,13 @@ export const Signup: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Create password"
               />
             </div>
 
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-fifth mb-1">
+            <div className="px-2">
+              <label htmlFor="confirmPassword" className="block text-xs font-medium text-fifth mb-1">
                 Confirm Password
               </label>
               <input
@@ -179,25 +179,27 @@ export const Signup: React.FC = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Confirm password"
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full px-3 py-1.5 text-fifth rounded-lg font-medium transition-colors border border-fourth ${
-                loading
-                ? 'bg-tertiary/50 cursor-not-allowed'
-                : 'bg-tertiary hover:bg-tertiary/80'
-              }`}
-            >
-              {loading ? 'Creating account...' : 'Sign up'}
-            </button>
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`px-2 py-0.5 text-sm rounded-lg font-medium transition-colors border border-fourth ${
+                  loading
+                  ? 'bg-tertiary/50 cursor-not-allowed'
+                  : 'bg-tertiary hover:bg-tertiary/80'
+                } text-fifth`}
+              >
+                {loading ? 'Creating account...' : 'Sign up'}
+              </button>
+            </div>
             
             <div className="mt-4 text-center">
-              <p className="text-fifth/70 font-light text-sm">
+              <p className="text-fifth/70 text-xs mb-1 font-light">
                 Already have an account?{' '}
                 <Link to="/login" className="font-medium text-fifth hover:underline">
                   Login

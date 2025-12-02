@@ -119,7 +119,7 @@ const TopSlotsCarousel = ({
     const headerBgColor = getHeaderBgColor(slot.title, index);
     
     return (
-      <div className="bg-primary border border-fourth pb-0.5">
+      <div className="bg-primary border border-fourth pb-0.5 shadow-xl">
         <div 
           className="text-white px-2 py-0.5 mb-0.5"
           style={{ backgroundColor: headerBgColor }}
@@ -175,7 +175,7 @@ const TopSlotsCarousel = ({
     <>
       {/* Mobile view - shown when isMobile is true or screen is smaller than md */}
       <div className={`${!isMobile ? "md:hidden" : ""}`}>
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div 
             className="text-white py-0.5 flex justify-between items-center"
             style={{ backgroundColor: getHeaderBgColor(currentTitle, safeCurrentIndex) }}

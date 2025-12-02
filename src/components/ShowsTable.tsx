@@ -184,7 +184,7 @@ export function ShowsTable({
           </button>
         )}
       </div>
-      <div className="overflow-x-auto">
+      <div className="shadow-xl">
         <table className="w-full border-collapse min-w-max">
           <TableHeader 
             sortColumn={sortColumn}

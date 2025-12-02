@@ -220,7 +220,7 @@ export function Tours() {
 
         {/* Right Side: Tours List - appears first on mobile, last on desktop */}
         <div className="w-full lg:w-[250px] flex-shrink-0 order-first lg:order-last">
-          <div className="bg-primary border border-fourth w-full">
+          <div className="bg-primary border border-fourth w-full shadow-xl">
             <button
               onClick={() => setIsToursListVisible(!isToursListVisible)}
               className="lg:pointer-events-none w-full bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center hover:bg-tertiary/90 transition-colors"

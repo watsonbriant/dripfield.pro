@@ -17,7 +17,7 @@ interface ToursSectionProps {
 
 export function ToursSection({ tours, currentYear, loading }: ToursSectionProps) {
   return (
-    <div className="bg-primary border border-fourth w-full">
+    <div className="bg-primary border border-fourth w-full shadow-xl">
       <div className="bg-tertiary text-fifth px-2 py-0.5">
         <h2 className="text-sm font-semibold">
           {currentYear} Tours

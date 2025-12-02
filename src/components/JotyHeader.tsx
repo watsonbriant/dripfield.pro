@@ -14,7 +14,7 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
       {/* Desktop Layout */}
       <div className="hidden lg:flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 border border-fourth">
+          <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 border border-fourth shadow-xl">
             Jam of the Year
           </h2>
           
@@ -47,7 +47,7 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
           </div>
           
           {/* Credits */}
-          <div className="bg-primary border border-fourth px-2 py-1 max-w-[350px]">
+          <div className="bg-primary border border-fourth px-2 py-1 max-w-[350px] shadow-xl">
             <p className="text-[0.625rem] leading-[0.75rem] font-light text-fifth">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
           </div>
         </div>
@@ -56,7 +56,7 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
       {/* Mobile Layout */}
       <div className="lg:hidden">
         <div className="text-center mb-2">
-          <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 border border-fourth">
+          <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 border border-fourth shadow-xl">
             Jam of the Year
           </h2>
           
@@ -91,7 +91,7 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
         </div>
         
         {/* Credits */}
-        <div className="bg-primary border border-fourth px-2 py-1 mb-4 mx-auto max-w-[350px]">
+        <div className="bg-primary border border-fourth px-2 py-1 mb-4 mx-auto max-w-[350px] shadow-xl">
           <p className="text-[0.625rem] leading-[0.75rem] font-light text-fifth text-center">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
         </div>
       </div>

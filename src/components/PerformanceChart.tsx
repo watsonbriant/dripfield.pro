@@ -111,7 +111,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
   return (
     <>
       <style>{tooltipStyles}</style>
-      <div className="bg-primary border border-fourth">
+      <div className="bg-primary border border-fourth shadow-xl">
         <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <h3 className="text-sm font-semibold">Performances</h3>

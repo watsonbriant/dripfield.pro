@@ -24,7 +24,7 @@ export function SongInfo({ song, stats, lastPlayed, selectedGroup, onGroupClick 
         : 'md:grid-cols-3'
     } gap-2`}>
       <div className="h-full">
-        <div className="bg-primary border border-fourth w-full h-full">
+        <div className="bg-primary border border-fourth w-full h-full shadow-xl">
           <div className="bg-tertiary text-fifth px-2 py-0.5">
             <h3 className="text-sm font-semibold">Song Info</h3>
           </div>
@@ -67,7 +67,7 @@ export function SongInfo({ song, stats, lastPlayed, selectedGroup, onGroupClick 
     
       {stats.groupCounts.length > 0 && (
         <div className="h-full">
-          <div className="bg-primary border border-fourth w-full h-full">
+          <div className="bg-primary border border-fourth w-full h-full shadow-xl">
             <div className="bg-tertiary text-fifth px-2 py-0.5">
               <h3 className="text-sm font-semibold">Stats</h3>
             </div>
@@ -111,7 +111,7 @@ export function SongInfo({ song, stats, lastPlayed, selectedGroup, onGroupClick 
     
       {song.song_coachnotes && (
         <div className="h-full">
-          <div className="bg-primary border border-fourth w-full h-full">
+          <div className="bg-primary border border-fourth w-full h-full shadow-xl">
             <div className="bg-tertiary text-fifth px-2 py-0.5">
               <h3 className="text-sm font-semibold">Song Notes</h3>
             </div>

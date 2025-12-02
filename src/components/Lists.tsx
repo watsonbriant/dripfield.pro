@@ -56,7 +56,7 @@
     if (loading) {
       return (
         <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
-          <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+          <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3 shadow-xl">
             <div className="flex items-center justify-center space-x-2">
               <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
               <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
@@ -70,7 +70,7 @@
 
     return (
       <div className="max-w-[960px]">
-        <div className="mb-4">
+        <div className="mb-4 shadow-xl">
           <div className="bg-primary border border-fourth">
             <div className="bg-tertiary text-fifth pr-1 py-0.5">
               <h1 className="text-sm font-semibold pl-2">
@@ -81,7 +81,7 @@
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-primary border border-fourth">
+          <div className="bg-primary border border-fourth shadow-xl">
             <div className="bg-fourth text-white px-2 py-0.5">
               <h2 className="text-sm font-semibold">
                 Songs
@@ -106,7 +106,7 @@
             </div>
           </div>
 
-          <div className="bg-primary border border-fourth">
+          <div className="bg-primary border border-fourth shadow-xl">
             <div className="bg-fourth text-white px-2 py-0.5">
               <h2 className="text-sm font-semibold">
                 Shows

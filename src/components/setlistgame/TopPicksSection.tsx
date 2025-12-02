@@ -111,7 +111,7 @@ export function TopPicksSection({ topSongs, topOpeners, topClosers, activePill, 
       {/* Desktop view */}
       <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4">
         {/* Top Songs Picked */}
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-fourth text-white px-2 py-0.5">
             <h3 className="text-sm font-medium">
               Top Songs Picked
@@ -123,7 +123,7 @@ export function TopPicksSection({ topSongs, topOpeners, topClosers, activePill, 
         </div>
 
         {/* Top Show Openers Picked */}
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-[#047857] text-white px-2 py-0.5">
             <h3 className="text-sm font-medium">
               Top Show Openers
@@ -135,7 +135,7 @@ export function TopPicksSection({ topSongs, topOpeners, topClosers, activePill, 
         </div>
 
         {/* Top Show Closers Picked */}
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-[#3b82f6] text-white px-2 py-0.5">
             <h3 className="text-sm font-medium">
               Top Show Closers

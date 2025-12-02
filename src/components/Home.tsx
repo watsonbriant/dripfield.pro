@@ -64,7 +64,7 @@ export function Home() {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Column */}
         <div className="w-full lg:w-[20%]">
-          <div className="border border-fourth">
+          <div className="border border-fourth shadow-xl">
             <HomeShowTable
               title="Last 5 Shows"
               shows={recentShows}
@@ -101,7 +101,7 @@ export function Home() {
 
         {/* Middle Column */}
         <div className="w-full lg:w-[60%] space-y-4">
-          <div className="bg-primary border border-fourth">
+          <div className="bg-primary border border-fourth shadow-xl">
             <img 
               src={cover7Image} 
               alt="Cover7" 
@@ -112,7 +112,7 @@ export function Home() {
 
         {/* Right Column */}
         <div className="w-full lg:w-[20%]">
-          <div className="border border-fourth">
+          <div className="border border-fourth shadow-xl">
             <StatsSection
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}

@@ -281,7 +281,7 @@ export function LongestPerformancesList({ listId, onProgressUpdate }: LongestPer
 
     if (loading) {
         return (
-            <div className="text-center py-12 bg-primary p-3">
+            <div className="text-center py-12 bg-primary p-3 shadow-xl">
                 <div className="flex items-center justify-center space-x-2">
                     <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
                     <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
@@ -294,7 +294,7 @@ export function LongestPerformancesList({ listId, onProgressUpdate }: LongestPer
 
     if (performances.length === 0) {
         return (
-            <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+            <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3 shadow-xl">
                 <p className="text-fifth">No performances found</p>
             </div>
         );
@@ -304,7 +304,7 @@ export function LongestPerformancesList({ listId, onProgressUpdate }: LongestPer
 
     return (
         <div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto shadow-xl">
                 <table className="w-full border-collapse min-w-max">
                     <thead>
                         <tr className="bg-fourth">

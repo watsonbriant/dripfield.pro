@@ -327,7 +327,7 @@ export function Song() {
   if (loading) {
     return (
       <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
-        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3 shadow-xl">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
             <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
@@ -342,7 +342,7 @@ export function Song() {
   if (!song) {
     return (
       <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
-        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3 shadow-xl">
           <p className="text-fifth">Song not found</p>
         </div>
       </div>
@@ -357,7 +357,9 @@ export function Song() {
           : "lg:grid-cols-[936px]"
       }`}>
         <div className={song.song_lyrics ? "xl:col-span-2" : ""}>
-          <SongHeader songName={song.song} />
+          <div className="shadow-xl">
+            <SongHeader songName={song.song} />
+          </div>
         </div>
       </div>
     

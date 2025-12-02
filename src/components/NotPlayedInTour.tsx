@@ -163,7 +163,7 @@ const NotPlayedInTour: React.FC<NotPlayedInTourProps> = ({ tourId, tourName, sho
   }, [tourId, tourName, showIds]);
 
   return (
-    <div className="bg-primary border border-fourth pb-0.5">
+    <div className="bg-primary border border-fourth pb-0.5 shadow-xl">
       <div className="text-white px-2 py-0.5 mb-0.5" style={{ backgroundColor: '#181818' }}>
         <h2 className="text-sm font-semibold">
         Most Common Not Played

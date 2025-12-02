@@ -11,7 +11,7 @@ export function SongLyrics({ lyrics }: SongLyricsProps) {
 
   return (
     <div className="h-fit xl:sticky xl:top-3">
-      <div className="bg-primary border border-fourth w-full">
+      <div className="bg-primary border border-fourth w-full shadow-xl">
         <div className="bg-tertiary text-fifth px-2 py-0.5">
           <h3 className="text-sm font-semibold">Lyrics</h3>
         </div>

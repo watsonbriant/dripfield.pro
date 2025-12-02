@@ -27,7 +27,7 @@ const BracketRegion: React.FC<BracketRegionProps> = ({ region, matches, onMatchu
 
   return (
     <div key={region?.priorityLevel || Math.random()}>
-      <h2 className={`text-sm font-semibold ${region?.color || 'bg-gray-500'} text-white inline-block px-2 py-0.5 mb-2`}>
+      <h2 className={`text-sm font-semibold ${region?.color || 'bg-gray-500'} text-white border border-fourth inline-block px-2 py-0.5 mb-2 shadow-xl`}>
         {region?.name || 'Loading...'} Region
       </h2>
       

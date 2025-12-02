@@ -152,7 +152,7 @@ export function Years() {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Shows Table - Tour Dates Container */}
         <div className="w-auto max-w-full lg:w-auto lg:min-w-0 min-w-0">
-          <div className="overflow-x-auto" ref={tableRef}>
+          <div className="overflow-x-auto shadow-xl" ref={tableRef}>
             <div style={tableMinWidth ? { minWidth: `${tableMinWidth}px` } : undefined}>
               <ShowsTable
                 shows={filteredShows}

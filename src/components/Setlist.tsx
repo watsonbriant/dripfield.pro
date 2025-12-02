@@ -319,7 +319,7 @@ export function Setlist() {
   return (
     <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto overflow-x-auto">
       {/* Header Bar with Navigation Row */}
-      <div className="bg-primary border border-fourth mb-4 w-max min-w-max relative overflow-visible">
+      <div className="bg-primary border border-fourth mb-4 w-max min-w-max relative overflow-visible shadow-md">
         {/* Header */}
         <div className="bg-tertiary text-fifth pl-2 pr-1 py-0.5 flex items-center">
           <h2 className="text-sm font-semibold">

@@ -39,16 +39,16 @@ export const Login: React.FC = () => {
   
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg p-3">
-        <h1 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-3">Sign in to your account</h1>
+      <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
+        <h1 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">Sign in to your account</h1>
         
         <form onSubmit={handleSubmit} className="space-y-2">
           {error && (
             <p className="mt-2 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300">{error}</p>
           )}
           
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-fifth mb-1">
+          <div className="px-2">
+            <label htmlFor="email" className="block text-xs font-medium text-fifth mb-1">
               Email address
             </label>
             <input
@@ -59,13 +59,13 @@ export const Login: React.FC = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+              className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
               placeholder="ted@goosetheband.com"
             />
           </div>
           
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-fifth mb-1">
+          <div className="px-2">
+            <label htmlFor="password" className="block text-xs font-medium text-fifth mb-1">
               Password
             </label>
             <input
@@ -76,37 +76,39 @@ export const Login: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-2 py-1.5 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+              className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
               placeholder="********"
             />
           </div>
           
-          <div className="text-sm">
+          <div className="text-xs px-2">
             <Link to="/reset-password" className="text-fifth font-medium hover:underline">
               Forgot your password?
             </Link>
           </div>
           
-          <button
-            type="submit"
-            disabled={loading || authSuccess}
-            className={`w-full px-3 py-1.5 rounded-lg font-medium transition-colors border border-fourth ${
-              authSuccess 
-                ? 'bg-green-500 text-fifth cursor-not-allowed'
-                : loading
-                ? 'bg-tertiary/50 text-fifth cursor-not-allowed'
-                : 'bg-tertiary text-fifth hover:bg-tertiary/80'
-            }`}
-          >
-            {loading 
-              ? 'Signing in...'
-              : authSuccess
-              ? 'Login successful!'
-              : 'Login'}
-          </button>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              disabled={loading || authSuccess}
+              className={`px-2 py-0.5 text-sm rounded-lg font-medium transition-colors border border-fourth ${
+                authSuccess 
+                  ? 'bg-green-500 text-fifth cursor-not-allowed'
+                  : loading
+                  ? 'bg-tertiary/50 text-fifth cursor-not-allowed'
+                  : 'bg-tertiary text-fifth hover:bg-tertiary/80'
+              }`}
+            >
+              {loading 
+                ? 'Signing in...'
+                : authSuccess
+                ? 'Login successful!'
+                : 'Login'}
+            </button>
+          </div>
           
           <div className="mt-4 text-center">
-            <p className="text-fifth/70 text-sm font-light">
+            <p className="text-fifth/70 text-xs mb-1 font-light">
               Don't have an account?{' '}
               <Link to="/signup" className="font-medium text-fifth hover:underline">
                 Sign up

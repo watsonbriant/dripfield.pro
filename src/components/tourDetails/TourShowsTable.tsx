@@ -8,7 +8,7 @@ interface TourShowsTableProps {
 
 export function TourShowsTable({ gameShows }: TourShowsTableProps) {
     return (
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
             <div className="bg-tertiary text-fifth px-2 py-0.5">
                 <h2 className="text-sm font-semibold">
                     Shows
@@ -20,7 +20,7 @@ export function TourShowsTable({ gameShows }: TourShowsTableProps) {
                     <p className="text-fifth text-[0.625rem]">No shows found for this tour.</p>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto shadow-xl">
                     <table className="w-full border-collapse">
                         <colgroup>
                             <col className="w-16" />

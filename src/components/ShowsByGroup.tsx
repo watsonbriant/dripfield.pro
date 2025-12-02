@@ -26,7 +26,7 @@ export const ShowsByGroup: React.FC<ShowsByGroupProps> = ({
 
   return (
     <div className="h-full">
-      <div className="bg-primary border border-fourth w-full h-full">
+      <div className="bg-primary border border-fourth w-full h-full shadow-xl">
         <div className="bg-tertiary text-fifth px-2 py-0.5">
           <h3 className="text-sm font-semibold">Shows by Group</h3>
         </div>

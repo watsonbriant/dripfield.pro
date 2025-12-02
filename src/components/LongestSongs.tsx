@@ -123,7 +123,7 @@ const LongestSongs: React.FC<LongestSongsProps> = ({ showIds, songIdMap, tourId 
 
 
   return (
-    <div className="bg-primary border border-fourth pb-0.5">
+    <div className="bg-primary border border-fourth pb-0.5 shadow-xl">
       <div className="text-white px-2 py-0.5 mb-0.5" style={{ backgroundColor: '#3c1e40' }}>
         <h2 className="text-sm font-semibold">
         Longest Songs

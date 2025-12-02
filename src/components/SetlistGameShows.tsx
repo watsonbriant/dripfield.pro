@@ -41,7 +41,7 @@ export function SetlistGameShows({ gameShows, loading }: SetlistGameShowsProps) 
 
     if (loading) {
         return (
-            <div className="bg-primary border border-fourth rounded-lg p-3">
+            <div className="bg-primary border border-fourth rounded-lg p-3 shadow-xl">
                 <div className="text-center py-8">
                     <div className="flex items-center justify-center space-x-2">
                         <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
@@ -55,7 +55,7 @@ export function SetlistGameShows({ gameShows, loading }: SetlistGameShowsProps) 
     }
 
     return (
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
             <div className="bg-tertiary text-fifth px-2 py-0.5">
                 <h2 className="text-sm font-semibold">
                     Show Statistics
@@ -67,7 +67,7 @@ export function SetlistGameShows({ gameShows, loading }: SetlistGameShowsProps) 
                     <p className="text-fifth">No shows found for this tour.</p>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto shadow-xl">
                     <table className="w-full border-collapse min-w-max table-fixed">
                         <colgroup>
                             <col className="w-20" />

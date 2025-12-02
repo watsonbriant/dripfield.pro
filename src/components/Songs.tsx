@@ -226,7 +226,7 @@ export function Songs() {
     
     return (
       <div className="mb-8">
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-fourth text-white px-2 py-0.5">
             <h3 className="text-sm font-semibold">
               {title}
@@ -235,7 +235,7 @@ export function Songs() {
         </div>
         <div className={gridClasses}>
           {organizedColumns.map((columnCategories, columnIndex) => (
-            <div key={columnIndex} className="flex flex-col gap-0">
+            <div key={columnIndex} className="flex flex-col gap-0 shadow-xl">
               {columnCategories.map((category, categoryIndex) => {
               const categorySongs = songsByCategory[category.category] || [];
               const isFirstInColumn = categoryIndex === 0;
@@ -307,7 +307,7 @@ export function Songs() {
   return (
     <div className="w-full max-w-[1280px]">
       <div className="mb-4">
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
             <h1 className="text-sm font-semibold pl-2">
               Songs

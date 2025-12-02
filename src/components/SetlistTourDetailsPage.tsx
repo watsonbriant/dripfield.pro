@@ -20,7 +20,7 @@ export function TourDetailsPage() {
     return (
         <div className="max-w-[1280px] mx-auto">
             {/* Breadcrumbs */}
-            <div className="flex items-center mb-6 font-semibold text-sm text-fifth">
+            <div className="flex items-center mb-6 font-semibold text-sm text-fifth shadow-xl">
                 <Link to="/setlistgame" className="hover:underline transition-colors">
                     <div className="flex items-center bg-tertiary rounded-lg py-1 px-2 border border-fourth text-fifth">
                         <ArrowLeft className="w-4 h-4 mr-2" />

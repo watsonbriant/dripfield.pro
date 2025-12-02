@@ -230,7 +230,7 @@ export function Venue() {
   if (loading) {
     return (
       <div className="max-w-[1280px]">
-        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3 shadow-xl">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
             <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
@@ -245,7 +245,7 @@ export function Venue() {
   if (!venue) {
     return (
       <div className="max-w-[1280px]">
-        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+        <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3 shadow-xl">
           <p className="text-fifth">Venue not found</p>
         </div>
       </div>
@@ -255,7 +255,7 @@ export function Venue() {
   return (
     <div className="max-w-[1280px]">
       <div className="mb-4">
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-fourth text-white py-0.5 pr-1 flex justify-between items-center">
             <div className="flex items-center gap-2 pl-2">
               <h2 className="text-sm font-semibold">
@@ -281,7 +281,7 @@ export function Venue() {
 
       <div className="space-y-2 mb-8">
         {/* Shows List */}
-        <div className="bg-primary border border-fourth">
+        <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-tertiary text-fifth px-2 py-0.5">
             <h2 className="text-sm font-semibold">Shows</h2>
           </div>
@@ -398,7 +398,7 @@ export function Venue() {
         
         {/* Venue Song Matrix */}
         {shows.length > 0 && (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto shadow-xl">
             <VenueSongMatrix 
               shows={shows}
               songIdMap={songIdMap}

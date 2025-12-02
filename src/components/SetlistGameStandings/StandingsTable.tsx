@@ -26,7 +26,7 @@ export function StandingsTable({
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto shadow-xl">
       <table className="w-full border-collapse min-w-max table-fixed">
         <colgroup>
           <col className="w-12" /> {/* Rank column - narrow */}
