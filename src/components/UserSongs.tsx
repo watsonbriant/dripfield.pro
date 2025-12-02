@@ -256,7 +256,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
                         </div>
                       )}
                     </div>
-                    <ul className={title === "Cover Songs" ? "grid grid-cols-1 sm:grid-cols-2 gap-0" : ""}>
+                    <ul className={title === "Cover Songs" ? "grid grid-cols-1 sm:grid-cols-2 gap-0" : "py-0.5"}>
                       {categorySongs.map(song => {
                         const { count } = getSongStats(song.song_id);
                         const seen = count > 0;
