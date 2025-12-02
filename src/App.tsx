@@ -278,7 +278,16 @@ function App() {
       </div>
 
       {/* Content container */}
-      <div className="flex-1 flex md:overflow-x-auto md:overflow-y-hidden">
+      <div 
+        className="flex-1 flex md:overflow-auto"
+        style={{
+          backgroundImage: `url(${bgTile})`,
+          backgroundRepeat: 'repeat',
+          backgroundAttachment: 'scroll',
+          backgroundPosition: '0 0',
+          backgroundSize: 'auto'
+        }}
+      >
         {/* Overlay - make sure it's behind the sidebar */}
         {isSidebarOpen && (
           <div
@@ -302,13 +311,8 @@ function App() {
 
         {/* Main content wrapper */}
         <div 
-          className="flex-1 flex flex-col overflow-auto relative"
+          className="flex-1 flex flex-col relative"
           style={{
-            backgroundImage: `url(${bgTile})`,
-            backgroundRepeat: 'repeat',
-            backgroundAttachment: isMobile ? 'scroll' : 'fixed',
-            backgroundPosition: '0 0',
-            backgroundSize: 'auto',
             minHeight: isMobile ? '100dvh' : '100vh'
           }}
         >
