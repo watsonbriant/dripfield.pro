@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface PlacementSong {
     song_name: string;
@@ -50,12 +50,12 @@ export function PlacementTable({ songs }: PlacementTableProps) {
                             </td>
                             <td className="pl-2 text-fifth">
                                 <div className="flex items-center justify-between">
-                                    <button
-                                        onClick={() => navigate(`/song/${song.song_id}`)}
+                                    <Link
+                                        to={`/song/${song.song_id}`}
                                         className="font-medium text-fifth hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left"
                                     >
                                         {song.song_name}
-                                    </button>
+                                    </Link>
                                     {song.category_artwork && (
                                         <img
                                             src={song.category_artwork}

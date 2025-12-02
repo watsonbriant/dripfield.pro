@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { formatInTimeZone } from 'date-fns-tz';
 import { Star } from 'lucide-react';
@@ -306,8 +306,8 @@ export function Venue() {
                     } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                   >
                     <td className="pl-2 pr-3 text-fifth whitespace-nowrap text-center">
-                      <button
-                        onClick={() => navigate(`/setlist/${show.show_id}`)}
+                      <Link
+                        to={`/setlist/${show.show_id}`}
                         className="font-medium hover:underline transition-colors table-link"
                       >
                         {formatInTimeZone(
@@ -315,7 +315,7 @@ export function Venue() {
                           'UTC',
                           'MM.dd.yy'
                         )}
-                      </button>
+                      </Link>
                     </td>
                     <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {show.show_group}
@@ -325,12 +325,16 @@ export function Venue() {
                     </td>
                     <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {show.show_tour && (
-                        <button
-                          onClick={() => navigate(`/tours/${show.tours?.tour_id}`)}
-                          className="hover:underline transition-colors"
-                        >
-                          {show.show_tour}
-                        </button>
+                        show.tours?.tour_id ? (
+                          <Link
+                            to={`/tours/${show.tours.tour_id}`}
+                            className="hover:underline transition-colors"
+                          >
+                            {show.show_tour}
+                          </Link>
+                        ) : (
+                          <span>{show.show_tour}</span>
+                        )
                       )}
                     </td>
                     <td className="px-2 text-fifth whitespace-nowrap">

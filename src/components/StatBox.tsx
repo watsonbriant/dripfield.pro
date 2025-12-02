@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Copy, Check } from 'lucide-react';
 import { getStatBgColor, copyToClipboard, formatTimeInterval } from '../utils/userStatsUtils';
 
@@ -88,22 +88,19 @@ const StatBox: React.FC<StatBoxProps> = ({
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col">
                         <div className="text-fifth text-sm text-left items-center">
-                          <span 
-                            onClick={() => navigate(`/song/${item[songIdKey]}`)}
+                          <Link 
+                            to={`/song/${item[songIdKey]}`}
                             className='font-medium hover:underline cursor-pointer'
                           >
                             {item[songNameKey]}
-                          </span>
+                          </Link>
                           {showDate && item.show_date && (
-                            <span 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/setlist/${item.show_id}`);
-                              }}
+                            <Link 
+                              to={`/setlist/${item.show_id}`}
                               className="hover:underline font-light text-xs text-fifth ml-2 cursor-pointer"
                             >
                               [{item.show_date}]
-                            </span>
+                            </Link>
                           )}
                         </div>
                       </div>

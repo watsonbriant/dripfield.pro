@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AttendedShows from './AttendedShows';
 import AttendedByGroupChart from './AttendedByGroupChart';
@@ -255,12 +255,12 @@ export const PublicProfile: React.FC = () => {
         <div className="bg-white/20 border border-fourth rounded-lg p-6 text-center">
           <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-full border border-fourth mb-2">Error</h3>
           <p className="text-fifth/80">{error}</p>
-          <button 
-            onClick={() => navigate('/')} 
-            className="mt-4 px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-fifth rounded-full border border-fourth font-semibold"
+          <Link 
+            to="/"
+            className="mt-4 px-4 py-2 bg-tertiary hover:bg-tertiary/80 text-fifth rounded-full border border-fourth font-semibold inline-block"
           >
             Return Home
-          </button>
+          </Link>
         </div>
       </div>
     );

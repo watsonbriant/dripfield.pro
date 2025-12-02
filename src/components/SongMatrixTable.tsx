@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getColumnBackgroundColor, groupShowsByYear } from '../utils/songMatrixUtils';
 
 interface SongMatrixTableProps {
@@ -82,12 +82,12 @@ export const SongMatrixTable: React.FC<SongMatrixTableProps> = ({
                     borderRight: '1px solid #b4b2b2'
                   }}
                 >
-                  <button 
-                    onClick={() => navigate(`/setlist/${showId}`)}
+                  <Link 
+                    to={`/setlist/${showId}`}
                     className="hover:underline transition-colors"
                   >
                     {date}
-                  </button>
+                  </Link>
                 </th>
               );
             })}

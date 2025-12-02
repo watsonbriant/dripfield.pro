@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 type Song = {
   song: string;
@@ -109,16 +109,16 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                       return (
                         <li 
                           key={song.song_id} 
-                          className="text-xs hover:bg-tertiary/40 transition-colors py-0.5 px-1 rounded cursor-pointer"
-                          onClick={() => navigate(`/song/${song.song_id}`)}
+                          className="text-xs hover:bg-tertiary/40 transition-colors py-0.5 px-1 rounded"
                         >
-                          <span 
+                          <Link 
+                            to={`/song/${song.song_id}`}
                             className={`${seen 
                               ? 'font-medium hover:underline transition-colors text-left text-xs text-fourth' 
-                              : 'font-light text-fifth/70'}`}
+                              : 'font-light text-fifth/70'} block`}
                           >
                             {song.song}
-                          </span>
+                          </Link>
                           {seen && (
                             <span className="ml-2 text-fifth font-medium">({count})</span>
                           )}

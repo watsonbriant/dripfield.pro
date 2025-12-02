@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ChartPerformance, PerformanceWithFormattedDate } from './types';
 import { shouldHighlight, shouldHighlightForSong } from './utils';
 
@@ -48,9 +48,9 @@ export default function TimelineView({
                   const isHighlightedForSong = shouldHighlightForSong(perf.show_id, selectedSong, songShowMap);
                   
                   return (
-                    <button
+                    <Link
                       key={`${year}-${perf.formattedDate}-${index}`}
-                      onClick={() => navigate(`/setlist/${perf.show_id}`)}
+                      to={`/setlist/${perf.show_id}`}
                       onMouseEnter={(e) => onHover(perf, e)}
                       onMouseMove={onMouseMove}
                       onMouseLeave={onMouseLeave}
@@ -64,7 +64,7 @@ export default function TimelineView({
                       }`}
                     >
                       {perf.formattedDate}
-                    </button>
+                    </Link>
                   );
                 })}
               </div>

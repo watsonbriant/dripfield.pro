@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { MoveRight } from 'lucide-react';
 import { formatInTimeZone } from 'date-fns-tz';
 import JOTYBadge from './JOTYBadge';
@@ -151,8 +151,8 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                   }}
                 >
                   <span className="font-medium">
-                    <button
-                      onClick={() => navigate(`/setlist/${perf.show_id}`)}
+                    <Link
+                      to={`/setlist/${perf.show_id}`}
                       className="hover:underline transition-colors table-link"
                     >
                       {formatInTimeZone(
@@ -160,7 +160,7 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                         'UTC',
                         'MM.dd.yy'
                       )}
-                    </button>
+                    </Link>
                   </span>
                 </td>
                 <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>
@@ -213,12 +213,12 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                       {perf.entry_segue && <MoveRight className="text-red-600 inline w-[1rem] h-[1rem]" />}
                     </span>
                   ) : (
-                    <button
-                      onClick={() => navigate(`/setlist/${perf.show_id}`)}
+                    <Link
+                      to={`/setlist/${perf.show_id}`}
                       className="text-red-600 hover:text-red-800 transition-colors"
                     >
                       &gt;
-                    </button>
+                    </Link>
                   )}
                 </td>
                 <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-center">

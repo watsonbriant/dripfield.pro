@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AttendShow } from '../../hooks/useAttendShowData';
 import { SortColumn, SortDirection } from '../../hooks/useTableSort';
 import { formatDate } from '../../utils/dateUtils';
@@ -121,23 +121,23 @@ export const ShowTable: React.FC<ShowTableProps> = ({
                   </button>
                 </td>
                 <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
-                  <button
-                    onClick={() => navigate(`/setlist/${show.show_id}`)}
+                  <Link
+                    to={`/setlist/${show.show_id}`}
                     className="font-medium hover:underline transition-colors table-link"
                   >
                     {formatDate(show.show_date)}
-                  </button>
+                  </Link>
                 </td>
                 <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                   {show.show_group}
                 </td>
                 <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
-                  <button
-                    onClick={() => navigate(`/venue/${encodeURIComponent(show.show_subvenue_venue)}`)}
+                  <Link
+                    to={`/venue/${encodeURIComponent(show.show_subvenue_venue)}`}
                     className="hover:underline transition-colors"
                   >
                     {show.show_subvenue}
-                  </button>
+                  </Link>
                 </td>
                 <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                   {show.show_venue_location}

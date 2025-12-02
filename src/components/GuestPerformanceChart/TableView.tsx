@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ChartPerformance, HoveredPerformance, SortDirection } from './types';
 import { shouldHighlight, shouldHighlightForSong, formatDateForDisplay } from './utils';
 
@@ -130,12 +130,12 @@ export default function TableView({
               >
                 <td className="pl-2 pr-3 py-0.5 text-fifth whitespace-nowrap text-center">
                   <span className="font-medium">
-                    <button
-                      onClick={() => navigate(`/setlist/${perf.show_id}`)}
+                    <Link
+                      to={`/setlist/${perf.show_id}`}
                       className="hover:underline transition-colors table-link"
                     >
                       {formatDateForDisplay(perf.show_date)}
-                    </button>
+                    </Link>
                   </span>
                 </td>
                 <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">{perf.show_group}</td>

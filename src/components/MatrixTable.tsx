@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getColumnBackgroundColor } from '../utils/songMatrixUtils';
 
 interface MatrixTableProps {
@@ -51,12 +51,12 @@ const MatrixTable: React.FC<MatrixTableProps> = ({
                   className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border" 
                   style={{ width: 'min-content', borderColor: 'rgb(180, 178, 178)' }}
                 >
-                  <button 
-                    onClick={() => navigate(`/setlist/${showId}`)}
+                  <Link 
+                    to={`/setlist/${showId}`}
                     className="hover:underline transition-colors"
                   >
                     {date}
-                  </button>
+                  </Link>
                 </th>
               );
             })}

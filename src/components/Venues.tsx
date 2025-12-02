@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import gooseLogo from '../img/Goose2.png';
@@ -207,13 +207,15 @@ export function Venues() {
                     key={venue.subvenue}
                     className={`${
                       index % 2 === 0 ? 'bg-primary' : 'bg-primary'
-                    } hover:bg-tertiary/40 transition-colors text-[0.625rem] cursor-pointer`}
-                    onClick={() => navigate(`/venue/${venue.venue_id}`)}
+                    } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                   >
                     <td className="px-2 text-fifth whitespace-nowrap">
-                      <span className="font-medium hover:underline transition-colors table-link">
+                      <Link
+                        to={`/venue/${venue.venue_id}`}
+                        className="font-medium hover:underline transition-colors table-link"
+                      >
                         {venue.subvenue}
-                      </span>
+                      </Link>
                     </td>
                     <td className="px-2 text-fifth font-light whitespace-nowrap">
                       {venue.subvenue_venue_location}

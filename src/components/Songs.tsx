@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { SongSearch } from './SongSearch';
 
@@ -268,12 +268,14 @@ export function Songs() {
                   {categorySongs.map(song => (
                     <li 
                       key={song.song_id} 
-                      className="bg-primary hover:bg-tertiary/30 transition-colors text-[0.625rem] leading-[0.625rem] py-0.5 px-2 cursor-pointer"
-                      onClick={() => navigate(`/song/${song.song_id}`)}
+                      className="bg-primary hover:bg-tertiary/30 transition-colors text-[0.625rem] leading-[0.625rem] py-0.5 px-2"
                     >
-                      <span className="font-normal tracking-tight hover:underline transition-colors text-left text-fifth">
+                      <Link 
+                        to={`/song/${song.song_id}`}
+                        className="font-normal tracking-tight hover:underline transition-colors text-left text-fifth block"
+                      >
                         {song.song}
-                      </span>
+                      </Link>
                     </li>
                   ))}
                 </ul>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
 import { getRarityColor } from '../utils/songUtils';
 import { SongData, Stats, LastPlayed } from '../types/song';
@@ -51,12 +51,12 @@ export function SongInfo({ song, stats, lastPlayed, selectedGroup, onGroupClick 
                 <div>
                   <div className="text-fifth text-xs font-medium">Last Time Played</div>
                   <div className="text-fifth text-[0.625rem] font-light">
-                    <button
-                      onClick={() => navigate(`/setlist/${lastPlayed.show_id}`)}
+                    <Link
+                      to={`/setlist/${lastPlayed.show_id}`}
                       className="hover:underline cursor-pointer font-medium pr-2"
                     >
                       {formatInTimeZone(new Date(lastPlayed.show_date), 'UTC', 'MM.dd.yy')}
-                    </button> ({lastPlayed.showsAgo === 1 ? 'most recent show' : `${lastPlayed.showsAgo} shows ago`})
+                    </Link> ({lastPlayed.showsAgo === 1 ? 'most recent show' : `${lastPlayed.showsAgo} shows ago`})
                   </div>
                 </div>
               )}

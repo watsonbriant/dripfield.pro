@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { SlotData, SongEntryWithId } from '../types/userSlots';
 import { getColumnBackgroundColor, formatColumnHeader, formatShowDate } from '../utils/userSlotsUtils';
 import SongList from './SongList';
@@ -47,12 +47,12 @@ const SlotsTable: React.FC<SlotsTableProps> = ({ slots, activeColumns, songIdMap
             >
               <td className="w-[85px] min-w-[85px] px-4 py-1 text-left text-s font-semibold text-fifth">
                 <span className="font-medium">
-                  <button
-                    onClick={() => navigate(`/setlist/${slot.show_id}`)}
+                  <Link
+                    to={`/setlist/${slot.show_id}`}
                     className="hover:underline transition-colors table-link"
                   >
                     {formatShowDate(slot.Show_Date)}
-                  </button>
+                  </Link>
                 </span>
               </td>
               {activeColumns.map(column => (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { MoveRight } from 'lucide-react';
 
 interface PlaceholderItem {
@@ -72,12 +72,12 @@ export function UnfinishedTable({ items }: UnfinishedTableProps) {
                                 </td>
                                 <td className="pl-2 text-fifth">
                                     <div className="flex items-center justify-between">
-                                        <button
-                                            onClick={() => navigate(`/song/${item.item_id}`)}
+                                        <Link
+                                            to={`/song/${item.item_id}`}
                                             className="font-medium text-fifth hover:underline cursor-pointer text-[0.625rem] leading-[0.75rem] text-left"
                                         >
                                             {item.item_name}
-                                        </button>
+                                        </Link>
                                         {item.category_artwork && (
                                             <img
                                                 src={item.category_artwork}

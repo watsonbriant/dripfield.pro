@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { placementColors, years } from '../utils/performanceUtils';
 
 interface ChartPerformance {
@@ -84,9 +84,9 @@ const PerformanceTimelineView: React.FC<PerformanceTimelineViewProps> = ({
                   const isHighlighted = shouldHighlight(perf.fullData);
                   
                   return (
-                    <button
+                    <Link
                       key={`${year}-${perf.formattedDate}-${index}`}
-                      onClick={() => navigate(`/setlist/${perf.show_id}`)}
+                      to={`/setlist/${perf.show_id}`}
                       onMouseEnter={(e) => {
                         setHoveredPerformance(perf);
                         setMousePosition({ x: e.clientX, y: e.clientY });
@@ -105,7 +105,7 @@ const PerformanceTimelineView: React.FC<PerformanceTimelineViewProps> = ({
                       }`}
                     >
                       {perf.formattedDate}
-                    </button>
+                    </Link>
                   );
                 })}
               </div>

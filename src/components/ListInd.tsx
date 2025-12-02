@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft } from 'lucide-react';
 import { LongestPerformancesList } from './lists/LongestPerformancesList';
@@ -188,13 +188,13 @@ export function ListInd() {
             <div className="mb-4">
                 <div className="bg-primary border border-fourth">
                     <div className="bg-tertiary text-fifth px-2 py-0.5 flex flex-col">
-                        <button
-                            onClick={() => navigate('/lists')}
+                        <Link
+                            to="/lists"
                             className="flex items-center bg-canvas rounded-lg px-1 border border-fourth text-fifth hover:underline transition-colors text-xs font-semibold w-fit mt-0.5"
                         >
                             <ArrowLeft className="w-3 h-3 mr-1" />
                             Back to Lists
-                        </button>
+                        </Link>
                         <h1 className="text-sm font-semibold">
                             {list.list_name}
                         </h1>

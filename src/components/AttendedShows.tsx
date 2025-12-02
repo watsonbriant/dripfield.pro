@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -40,7 +40,6 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
     }
   }, [isManageMode, onManagingToggle]);
   
-  const navigate = useNavigate();
   
   // Fetch username if viewing someone else's profile
   useEffect(() => {
@@ -198,8 +197,8 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                     ) : ''}
                   </td>
                   <td className="px-4 py-0.5 text-center whitespace-nowrap">
-                    <button
-                      onClick={() => navigate(`/setlist/${attendedShow.show_id}`)}
+                    <Link
+                      to={`/setlist/${attendedShow.show_id}`}
                       className="font-medium hover:underline transition-colors table-link text-fifth"
                     >
                       {attendedShow.show?.show_date && formatInTimeZone(
@@ -207,23 +206,23 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                         'UTC',
                         'MM.dd.yy'
                       )}
-                    </button>
+                    </Link>
                   </td>
                   <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_group}
                   </td>
                   <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_tour && (
-                      <button
-                        onClick={() => {
-                          if (attendedShow.show?.tours?.tour_id) {
-                            navigate(`/tours/${attendedShow.show.tours.tour_id}`);
-                          }
-                        }}
-                        className="hover:underline transition-colors"
-                      >
-                        {attendedShow.show.show_tour}
-                      </button>
+                      attendedShow.show?.tours?.tour_id ? (
+                        <Link
+                          to={`/tours/${attendedShow.show.tours.tour_id}`}
+                          className="hover:underline transition-colors"
+                        >
+                          {attendedShow.show.show_tour}
+                        </Link>
+                      ) : (
+                        <span>{attendedShow.show.show_tour}</span>
+                      )
                     )}
                   </td>
                   <td className="px-4 py-0.5 font-light text-center whitespace-nowrap">
@@ -260,16 +259,16 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                     )}
                   </td>
                   <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
-                    <button
-                      onClick={() => {
-                        if (attendedShow.show?.show_subvenue_venue) {
-                          navigate(`/venue/${encodeURIComponent(attendedShow.show.show_subvenue_venue)}`);
-                        }
-                      }}
-                      className="hover:underline transition-colors"
-                    >
-                      {attendedShow.show?.show_subvenue}
-                    </button>
+                    {attendedShow.show?.show_subvenue_venue ? (
+                      <Link
+                        to={`/venue/${encodeURIComponent(attendedShow.show.show_subvenue_venue)}`}
+                        className="hover:underline transition-colors"
+                      >
+                        {attendedShow.show?.show_subvenue}
+                      </Link>
+                    ) : (
+                      <span>{attendedShow.show?.show_subvenue}</span>
+                    )}
                   </td>
                   <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_venue_location}

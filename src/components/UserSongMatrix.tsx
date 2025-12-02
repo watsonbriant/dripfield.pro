@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ChartBarDecreasing } from '../components/icons/ChartBarDecreasing';
 import { useAuth } from '../context/AuthContext';
 import { SortControls } from './SortControls';
@@ -194,17 +194,16 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                       borderTop: '1px solid #b4b2b2'
                     }}
                   >
-                    <button 
-                      onClick={() => {
-                        const yearId = yearIdMap[group.year];
-                        if (yearId) {
-                          navigate(`/years/${yearId}`);
-                        }
-                      }}
-                      className="hover:underline transition-colors"
-                    >
-                      {group.year}
-                    </button>
+                    {yearIdMap[group.year] ? (
+                      <Link 
+                        to={`/years/${yearIdMap[group.year]}`}
+                        className="hover:underline transition-colors"
+                      >
+                        {group.year}
+                      </Link>
+                    ) : (
+                      <span>{group.year}</span>
+                    )}
                   </th>
                 );
               })}
@@ -223,12 +222,12 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                       width: 'min-content'
                     }}
                   >
-                    <button 
-                      onClick={() => navigate(`/setlist/${showId}`)}
+                    <Link 
+                      to={`/setlist/${showId}`}
                       className="hover:text-[#a9682e] hover:underline transition-colors"
                     >
                       {formatShowDate(show.show_date)}
-                    </button>
+                    </Link>
                   </th>
                 );
               })}
@@ -246,17 +245,16 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
               >
                 <td className="font-medium text-fifth text-xs pl-2 whitespace-nowrap border"
                     style={{ borderColor: 'rgb(180, 178, 178)' }}>
-                  <button 
-                    onClick={() => {
-                      const songId = songIdMap[song];
-                      if (songId) {
-                        navigate(`/song/${songId}`);
-                      }
-                    }}
-                    className="hover:underline transition-colors cursor-pointer"
-                  >
-                    {song}
-                  </button>
+                  {songIdMap[song] ? (
+                    <Link 
+                      to={`/song/${songIdMap[song]}`}
+                      className="hover:underline transition-colors cursor-pointer"
+                    >
+                      {song}
+                    </Link>
+                  ) : (
+                    <span>{song}</span>
+                  )}
                 </td>
                 
                 {shows.map((show) => {

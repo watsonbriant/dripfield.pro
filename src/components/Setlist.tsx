@@ -36,6 +36,9 @@ export function Setlist() {
   const { tours } = useTours();
   const { showDates } = useShowDates(show, showId);
   
+  // State for show position in tour
+  const [showPositionInTour, setShowPositionInTour] = useState<{ position: number; total: number } | null>(null);
+  
   // Custom hook for navigation and state management
   const {
     openChangesModal,
@@ -77,6 +80,61 @@ export function Setlist() {
     setYoutubeEmbed(null);
     setYoutubeLoading(false);
   }, [showId]);
+
+  // Calculate show position in tour
+  useEffect(() => {
+    async function calculateShowPosition() {
+      if (!show?.show_tour || !showId) {
+        setShowPositionInTour(null);
+        return;
+      }
+
+      try {
+        // Fetch all shows in the tour
+        const { data, error } = await supabase
+          .from('shows')
+          .select('show_id, show_canonid, show_date')
+          .eq('show_tour', show.show_tour);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          setShowPositionInTour(null);
+          return;
+        }
+
+        // Sort by show_canonid first, then show_date (nulls last)
+        const sortedShows = [...data].sort((a, b) => {
+          // First sort by show_canonid (nulls last)
+          if (a.show_canonid === null && b.show_canonid === null) {
+            return new Date(a.show_date).getTime() - new Date(b.show_date).getTime();
+          }
+          if (a.show_canonid === null) return 1;
+          if (b.show_canonid === null) return -1;
+          if (a.show_canonid !== b.show_canonid) {
+            return a.show_canonid - b.show_canonid;
+          }
+          // If canonid is the same, sort by date
+          return new Date(a.show_date).getTime() - new Date(b.show_date).getTime();
+        });
+
+        // Find current show's position (1-indexed)
+        const position = sortedShows.findIndex(s => s.show_id === showId) + 1;
+        const total = sortedShows.length;
+
+        if (position > 0) {
+          setShowPositionInTour({ position, total });
+        } else {
+          setShowPositionInTour(null);
+        }
+      } catch (error) {
+        console.error('Error calculating show position:', error);
+        setShowPositionInTour(null);
+      }
+    }
+
+    calculateShowPosition();
+  }, [show?.show_tour, showId]);
   
   // Handle category hover from SongSpread
   const handleCategoryHover = useCallback((category: string | null) => {
@@ -263,21 +321,30 @@ export function Setlist() {
       {/* Header Bar with Navigation Row */}
       <div className="bg-primary border border-fourth mb-4 w-max min-w-max relative overflow-visible">
         {/* Header */}
-        <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
+        <div className="bg-tertiary text-fifth pl-2 pr-1 py-0.5 flex items-center">
           <h2 className="text-sm font-semibold">
             Setlist
           </h2>
-          {show?.tour_id && (
-            <Link
-              to={`/tours/${show.tour_id}`}
-              className="relative flex items-center group"
-            >
-              <span className="text-[0.625rem] font-medium text-fifth whitespace-nowrap mr-2 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-200">
-                (Tour Info)
+          <div className="ml-auto flex items-center gap-1">
+            {showPositionInTour && (
+              <span className="text-[0.625rem] font-medium bg-primary border border-fourth rounded-md px-1">
+                Show {showPositionInTour.position} of {showPositionInTour.total}
               </span>
-              <Info className="w-4 h-4 text-fifth transition-colors" strokeWidth={2.5} />
-            </Link>
-          )}
+            )}
+            {show?.tour_id && (
+              <div className="bg-fourth border border-fourth rounded-md px-1">
+                <Link
+                  to={`/tours/${show.tour_id}`}
+                  className="relative flex items-center"
+                >
+                  <Info className="w-3 h-3 text-white transition-colors" strokeWidth={2.5} />
+                  <span className="text-[0.625rem] font-medium text-white hover:underline whitespace-nowrap ml-1">
+                    Tour Info
+                  </span>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Navigation Row */}

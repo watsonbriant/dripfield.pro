@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { formatInTimeZone } from 'date-fns-tz';
 
@@ -345,19 +345,19 @@ export function LongestPerformancesList({ listId, onProgressUpdate }: LongestPer
                                     } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                             >
                                 <td className="pl-2 pr-3 text-fifth w-[250px] max-w-[250px]">
-                                    <button
-                                        onClick={() => navigate(`/song/${perf.song_id}`)}
+                                    <Link
+                                        to={`/song/${perf.song_id}`}
                                         className="font-medium hover:underline transition-colors break-words text-left"
                                     >
                                         {perf.song_name}
-                                    </button>
+                                    </Link>
                                 </td>
                                 <td className="px-2 text-fifth font-light whitespace-nowrap text-center">
                                     {formatLength(perf.entry_length)}
                                 </td>
                                 <td className="px-2 text-fifth whitespace-nowrap text-center">
-                                    <button
-                                        onClick={() => navigate(`/setlist/${perf.show_id}`)}
+                                    <Link
+                                        to={`/setlist/${perf.show_id}`}
                                         className="font-medium hover:underline transition-colors"
                                     >
                                         {formatInTimeZone(
@@ -365,15 +365,15 @@ export function LongestPerformancesList({ listId, onProgressUpdate }: LongestPer
                                             'UTC',
                                             'MM.dd.yy'
                                         )}
-                                    </button>
+                                    </Link>
                                 </td>
                                 <td className="px-2 text-fifth font-light whitespace-nowrap">
-                                    <button
-                                        onClick={() => navigate(`/venue/${perf.venue_id}`)}
+                                    <Link
+                                        to={`/venue/${perf.venue_id}`}
                                         className="hover:underline transition-colors"
                                     >
                                         {perf.show_venue_location}
-                                    </button>
+                                    </Link>
                                 </td>
                                 <td className="px-2 text-fifth leading-[0.75rem] font-light">
                                     {perf.entry_coachnotes ? (

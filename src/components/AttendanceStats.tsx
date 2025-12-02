@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Calendar, Building2, Music } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import CircularProgress from './CircularProgress';
 import { useAttendanceStats } from '../hooks/useAttendanceStats';
@@ -119,12 +119,12 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
                       key={tour.tour}
                       className="text-left"
                     >
-                      <button 
-                        onClick={() => navigate(`/tours/${tour.tour_id}`)}
+                      <Link 
+                        to={`/tours/${tour.tour_id}`}
                         className="text-fifth hover:text-fourth hover:underline font-medium"
                       >
                         {tour.tour}
-                      </button>
+                      </Link>
                       <span className="text-fifth/90 ml-2 font-light">({tour.count})</span>
                     </li>
                   ))}

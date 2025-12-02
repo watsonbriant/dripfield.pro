@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { Search } from 'lucide-react';
 import { Modal } from './Modal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface Album {
   title: string;
@@ -374,12 +374,12 @@ export function Discography() {
                                 <span className="absolute left-0 top-0 text-fifth/70 w-4 text-right">
                                   {Number(track.song_categoryorder)}.
                                 </span>
-                                <button
-                                  onClick={() => navigate(`/song/${track.id}`)}
+                                <Link
+                                  to={`/song/${track.id}`}
                                   className="font-medium hover:underline transition-colors text-left"
                                 >
                                   {track.name}
-                                </button>
+                                </Link>
                               </li>
                             ))}
                           </ol>

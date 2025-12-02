@@ -1,6 +1,6 @@
 import React from 'react';
 import { supabase } from '../lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { GuestSearch } from './GuestSearch';
 
 interface GuestData {
@@ -136,12 +136,12 @@ export function Guests() {
               {data.map((item, index) => (
                 <tr key={item.guest} className={`${index % 2 === 0 ? 'bg-primary' : 'bg-primary'} hover:bg-tertiary/40 transition-colors text-[0.625rem]`}>
                   <td className="px-2 text-fifth whitespace-nowrap">
-                    <span 
+                    <Link 
+                      to={`/personnel/${item.guest_id}`}
                       className="font-medium hover:underline transition-colors table-link cursor-pointer"
-                      onClick={() => navigate(`/personnel/${item.guest_id}`)}
                     >
                       {item.guest}
-                    </span>
+                    </Link>
                   </td>
                   {showInstrument && (
                     <td className="px-2 text-fifth font-light whitespace-nowrap">

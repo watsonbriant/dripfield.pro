@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { Link, Pencil } from 'lucide-react';
 import ShowAttendButton from './ShowAttendButton';
 import { useAuth } from '../context/AuthContext';
@@ -204,12 +204,12 @@ const ShowInfoContent = React.memo(({
             <hr className="border-fourth" />
             <div className="space-y-0">
               <p className="text-md font-medium text-fifth leading-5 text-center">
-                <span 
+                <RouterLink 
+                  to={`/tours/${show.tour_id}`}
                   className="cursor-pointer hover:underline transition-colors"
-                  onClick={() => navigate(`/tours/${show.tour_id}`)}
                 >
                   {show.show_tour}
-                </span>
+                </RouterLink>
               </p>
               {showPosition ? (
                 <div className="space-y-2">

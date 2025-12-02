@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Guest } from '../types/guests';
 
 interface GuestTableProps {
@@ -44,12 +44,12 @@ const GuestTable: React.FC<GuestTableProps> = ({ category, guests, count }) => {
                 } hover:bg-tertiary/40 transition-colors text-xs`}
               >
                 <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
-                  <button
-                    onClick={() => navigate(`/personnel/${guest.guest_id}`)}
+                  <Link
+                    to={`/personnel/${guest.guest_id}`}
                     className="font-medium hover:underline transition-colors"
                   >
                     {guest.guest}
-                  </button>
+                  </Link>
                 </td>
                 <td className="px-4 py-0.5 text-center text-fifth font-light whitespace-nowrap">{guest.song_count}</td>
                 <td className="px-4 py-0.5 text-center text-fifth font-light whitespace-nowrap">{guest.show_count}</td>
