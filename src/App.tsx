@@ -231,7 +231,7 @@ function App() {
 
   return (
     <div 
-      className="flex flex-col h-screen lg:min-w-[1500px]"
+      className="flex flex-col min-h-screen lg:min-w-[1500px] min-w-0 max-w-full overflow-x-hidden"
     >
       {/* Header with integrated navigation - Only shown on desktop */}
       <div className="hidden lg:block">
@@ -279,7 +279,7 @@ function App() {
 
       {/* Content container */}
       <div 
-        className="flex-1 flex md:overflow-auto"
+        className="flex-1 flex overflow-x-hidden max-w-full"
         style={{
           backgroundImage: `url(${bgTile})`,
           backgroundRepeat: 'repeat',
@@ -311,17 +311,14 @@ function App() {
 
         {/* Main content wrapper */}
         <div 
-          className="flex-1 flex flex-col relative"
-          style={{
-            minHeight: isMobile ? '100dvh' : '100vh'
-          }}
+          className="flex-1 flex flex-col relative max-w-full min-w-0 w-full"
         >
           {/* Mobile-only header */}
           <header className="z-20 bg-canvas border-b border-fourth p-2 lg:hidden">
-            <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full">
+            <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full px-2">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute left-0 p-1 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-fifth"
+                className="absolute left-2 p-1 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-fifth"
               >
                 <Menu className="w-6 h-6" />
               </button>
@@ -340,72 +337,74 @@ function App() {
                   className="h-10 w-auto absolute top-0 left-0 iris-reveal"
                 />
               </button>
-              <div className="absolute right-0 flex items-center">
+              <div className="absolute right-2 flex items-center">
                 <UserMenu />
               </div>
             </div>
           </header>
 
           {/* Main content */}
-          <main className="flex-1 p-4 md:p-4 w-full">
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/years/:year?" element={<Years />} />
-              <Route path="/tours/:tour?" element={<Tours />} />
-              <Route path="/songs" element={<Songs />} />
-              <Route path="/personnel" element={<Guests />} />
-              <Route path="/venues" element={<Venues />} />
-              <Route path="/personnel/:PersonnelID" element={<Guest />} />
-              <Route path="/venue/:venueId" element={<Venue />} />
-              <Route path="/setlist/:showId" element={<Setlist />} />
-              <Route path="/song/:songId" element={<Song />} />
-              <Route path="/user/:userId" element={<PublicProfile />} />
-              <Route path="/discography" element={<Discography />} />
-              <Route path="/lists" element={<Lists />} />
-              <Route path="/lists/:listId" element={<ListInd />} />
-              <Route path="/joty/:year?" element={<Joty />} />
-              <Route path="/submit" element={<Submit />} />
-              
-              {/* Authentication routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/update-password" element={<UpdatePassword />} />
-              
-              {/* Protected routes */}
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin" element={
-                <ProtectedRoute adminOnly>
-                  <Admin />
-                </ProtectedRoute>
-              } />
-              <Route path="/bugs" element={
-                <ProtectedRoute adminOnly>
-                  <Bugs />
-                </ProtectedRoute>
-              } />
-              <Route path="/setlistgame" element={<SetlistGame />} />
-              <Route path="/setlistgame/tour/:tourId" element={<TourDetailsPage />} />
-              <Route path="/setlistgame/:showId" element={<SetlistGameShowPage />} />
-            </Routes>
-          </main>
-          
-          {/* Footer */}
-          <footer className="text-center text-fifth/70 text-[0.625rem] leading-[0.75rem]">
-            <div className="bg-primary lg:max-w-none max-w-[1280px] lg:mx-0 mx-auto px-4 py-1 mt-4 border-t border-fourth">
-              <p>All statistical information and computations copyright ©2025, Brian Watson and Dripfield.pro. No portion of this website's content may be reproduced without permission. Song lyrics and titles are the copyright of No Coincidence Records, Factory Underground Records, and their respective publishers, including Lantern Collective, Master Cat Music, Gong Gang, Potato Party, Space Panther Music, and Spun Haus Productions. Show posters and artwork are the copyright of their respective artists.</p>
+          <main className="flex-1 w-full max-w-full min-w-0 overflow-x-hidden flex flex-col">
+            <div className="flex-1 p-4">
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/years/:year?" element={<Years />} />
+                <Route path="/tours/:tour?" element={<Tours />} />
+                <Route path="/songs" element={<Songs />} />
+                <Route path="/personnel" element={<Guests />} />
+                <Route path="/venues" element={<Venues />} />
+                <Route path="/personnel/:PersonnelID" element={<Guest />} />
+                <Route path="/venue/:venueId" element={<Venue />} />
+                <Route path="/setlist/:showId" element={<Setlist />} />
+                <Route path="/song/:songId" element={<Song />} />
+                <Route path="/user/:userId" element={<PublicProfile />} />
+                <Route path="/discography" element={<Discography />} />
+                <Route path="/lists" element={<Lists />} />
+                <Route path="/lists/:listId" element={<ListInd />} />
+                <Route path="/joty/:year?" element={<Joty />} />
+                <Route path="/submit" element={<Submit />} />
+                
+                {/* Authentication routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
+                
+                {/* Protected routes */}
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute adminOnly>
+                    <Admin />
+                  </ProtectedRoute>
+                } />
+                <Route path="/bugs" element={
+                  <ProtectedRoute adminOnly>
+                    <Bugs />
+                  </ProtectedRoute>
+                } />
+                <Route path="/setlistgame" element={<SetlistGame />} />
+                <Route path="/setlistgame/tour/:tourId" element={<TourDetailsPage />} />
+                <Route path="/setlistgame/:showId" element={<SetlistGameShowPage />} />
+              </Routes>
             </div>
-          </footer>
+            
+            {/* Footer */}
+            <footer className="text-center text-fifth/70 text-[0.625rem] leading-[0.75rem] mt-4">
+              <div className="bg-primary lg:max-w-none max-w-[1280px] lg:mx-0 mx-auto px-4 py-1 border-t border-fourth">
+                <p>All statistical information and computations copyright ©2025, Brian Watson and Dripfield.pro. No portion of this website's content may be reproduced without permission. Song lyrics and titles are the copyright of No Coincidence Records, Factory Underground Records, and their respective publishers, including Lantern Collective, Master Cat Music, Gong Gang, Potato Party, Space Panther Music, and Spun Haus Productions. Show posters and artwork are the copyright of their respective artists.</p>
+              </div>
+            </footer>
+          </main>
         </div>
       </div>
 
