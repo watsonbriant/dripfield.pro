@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AttendedShows from './AttendedShows';
 import AttendedByGroupChart from './AttendedByGroupChart';
@@ -15,10 +15,28 @@ import { ChevronDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import LooseEnds from './LooseEnds';
 
+// Helper functions to convert between tab names and URL slugs
+const tabToSlug = (tab: string): string => {
+  return tab.toLowerCase().replace(/\s+/g, '-');
+};
+
+const slugToTab = (slug: string): string => {
+  const tabMap: { [key: string]: string } = {
+    'overview': 'Overview',
+    'shows': 'Shows',
+    'songs': 'Songs',
+    'slots': 'Slots',
+    'personnel': 'Personnel',
+    'loose-ends': 'Loose Ends'
+  };
+  return tabMap[slug] || 'Overview';
+};
+
 export const PublicProfile: React.FC = () => {
   const { user } = useAuth();
-  const { userId } = useParams<{ userId: string }>();
+  const { userId, tab: tabParam } = useParams<{ userId: string; tab?: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('Overview');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSongMatrix, setShowSongMatrix] = useState(false);
@@ -136,6 +154,36 @@ export const PublicProfile: React.FC = () => {
   }, []);
 
   const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Personnel', 'Loose Ends'];
+
+  // Sync activeTab with URL parameter
+  useEffect(() => {
+    if (tabParam) {
+      const tabFromUrl = slugToTab(tabParam);
+      if (tabs.includes(tabFromUrl)) {
+        setActiveTab(tabFromUrl);
+      } else {
+        // Invalid tab in URL, redirect to overview
+        if (userId) {
+          navigate(`/user/${userId}/overview`, { replace: true });
+        }
+      }
+    } else {
+      // No tab in URL, default to overview and update URL
+      if (userId && location.pathname === `/user/${userId}`) {
+        navigate(`/user/${userId}/overview`, { replace: true });
+      } else {
+        setActiveTab('Overview');
+      }
+    }
+  }, [tabParam, userId, navigate, location.pathname]);
+
+  // Handle tab change - update URL
+  const handleTabChange = (tab: string) => {
+    if (!userId) return;
+    setActiveTab(tab);
+    const slug = tabToSlug(tab);
+    navigate(`/user/${userId}/${slug}`, { replace: true });
+  };
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -265,7 +313,8 @@ export const PublicProfile: React.FC = () => {
 
   // If the user is viewing their own profile, redirect to the profile page
   if (user && user.id === userId) {
-    navigate('/profile');
+    const currentTab = tabParam ? tabToSlug(slugToTab(tabParam)) : 'overview';
+    navigate(`/profile/${currentTab}`);
     return null;
   }
 
@@ -292,7 +341,7 @@ export const PublicProfile: React.FC = () => {
                 <button
                   key={tab}
                   onClick={() => {
-                    setActiveTab(tab);
+                    handleTabChange(tab);
                     setDropdownOpen(false);
                   }}
                   className={`w-full text-left px-2 py-0.5 text-xs font-light text-fifth hover:bg-tertiary/40 transition-colors ${
@@ -314,7 +363,7 @@ export const PublicProfile: React.FC = () => {
                 <button
                   key={tab}
                   ref={el => tabsRef.current[index] = el}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => handleTabChange(tab)}
                   className={`py-0.5 px-2 font-medium relative z-10 text-xs transition-colors duration-200 ${
                     activeTab === tab
                       ? 'text-fifth'

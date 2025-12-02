@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AttendShow } from '../../hooks/useAttendShowData';
 import { SortColumn, SortDirection } from '../../hooks/useTableSort';
 import { formatDate } from '../../utils/dateUtils';
@@ -20,13 +20,9 @@ export const ShowTable: React.FC<ShowTableProps> = ({
   shows,
   loading,
   searchQuery,
-  sortColumn,
-  sortDirection,
   onSort,
-  getSortIcon,
   onAttendanceToggle
 }) => {
-  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -46,47 +42,35 @@ export const ShowTable: React.FC<ShowTableProps> = ({
       <table className="w-full border-collapse min-w-max">
         <thead>
           <tr className="bg-canvas border-y border-white/10">
-            <th className="px-2 py-2 text-center text-s font-semibold text-fifth">
-              <Check size={16} className="text-fifth" strokeWidth={2.5} />
+            <th className="px-2 py-2 text-center justify-center text-xs font-semibold text-fifth">
+              <Check size={16} className="text-fifth mx-auto" strokeWidth={2.5} />
             </th>
             <th 
-              className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+              className="px-2 py-1 text-center text-sm font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
               onClick={() => onSort('show_date')}
             >
-              <div className="flex items-center gap-1">
-                Date
-                {getSortIcon('show_date')}
-              </div>
+              Date
             </th>
             <th 
-              className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+              className="px-2 py-1 text-left text-sm font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
               onClick={() => onSort('show_group')}
             >
-              <div className="flex items-center gap-1">
-                Group
-                {getSortIcon('show_group')}
-              </div>
+              Group
             </th>
             <th 
-              className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+              className="px-2 py-1 text-left text-sm font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
               onClick={() => onSort('show_subvenue')}
             >
-              <div className="flex items-center gap-1">
-                Venue
-                {getSortIcon('show_subvenue')}
-              </div>
+              Venue
             </th>
             <th 
-              className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
+              className="px-2 py-1 text-left text-sm font-semibold text-fifth whitespace-nowrap cursor-pointer hover:bg-black/10"
               onClick={() => onSort('show_venue_location')}
             >
-              <div className="flex items-center gap-1">
-                Location
-                {getSortIcon('show_venue_location')}
-              </div>
+              Location
             </th>
             <th 
-              className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap"
+              className="px-2 py-1 text-left text-sm font-semibold text-fifth whitespace-nowrap"
             >
               Detail
             </th>
@@ -104,8 +88,8 @@ export const ShowTable: React.FC<ShowTableProps> = ({
               <tr
                 key={show.show_id}
                 className={`${
-                  index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                } hover:bg-tertiary/40 transition-colors text-xs`}
+                  index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+                } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
               >
                 <td className="text-center">
                   <button
@@ -117,10 +101,10 @@ export const ShowTable: React.FC<ShowTableProps> = ({
                     }`}
                     title={show.attended ? "Remove from attended shows" : "Mark as attended"}
                   >
-                    <Check size={14} className={show.attended ? "text-white" : "text-fifth/60"} />
+                    <Check size={12} className={show.attended ? "text-white" : "text-fifth/60"} />
                   </button>
                 </td>
-                <td className="px-4 py-0.5 text-fifth whitespace-nowrap">
+                <td className="px-2 text-center text-fifth whitespace-nowrap">
                   <Link
                     to={`/setlist/${show.show_id}`}
                     className="font-medium hover:underline transition-colors table-link"
@@ -128,10 +112,10 @@ export const ShowTable: React.FC<ShowTableProps> = ({
                     {formatDate(show.show_date)}
                   </Link>
                 </td>
-                <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                <td className="px-2 font-light text-fifth whitespace-nowrap">
                   {show.show_group}
                 </td>
-                <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                <td className="px-2 font-light text-fifth whitespace-nowrap">
                   <Link
                     to={`/venue/${encodeURIComponent(show.show_subvenue_venue)}`}
                     className="hover:underline transition-colors"
@@ -139,10 +123,10 @@ export const ShowTable: React.FC<ShowTableProps> = ({
                     {show.show_subvenue}
                   </Link>
                 </td>
-                <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                <td className="px-2 font-light text-fifth whitespace-nowrap">
                   {show.show_venue_location}
                 </td>
-                <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                <td className="px-2 font-light text-fifth whitespace-nowrap">
                   {show.show_detail || (show.show_alert && 
                     <span className="text-red-600 font-medium">
                       [{show.show_alert}]

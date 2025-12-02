@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AttendedShows from './AttendedShows';
 import AttendedByGroupChart from './AttendedByGroupChart';
@@ -14,15 +14,32 @@ import UserStats from './UserStats';
 import LooseEnds from './LooseEnds';
 import { ChevronDown, Link2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { MatrixSortMode } from './UserSongMatrix'; // Import the type from UserSongMatrix
+
+// Helper functions to convert between tab names and URL slugs
+const tabToSlug = (tab: string): string => {
+  return tab.toLowerCase().replace(/\s+/g, '-');
+};
+
+const slugToTab = (slug: string): string => {
+  const tabMap: { [key: string]: string } = {
+    'overview': 'Overview',
+    'shows': 'Shows',
+    'songs': 'Songs',
+    'slots': 'Slots',
+    'personnel': 'Personnel',
+    'loose-ends': 'Loose Ends'
+  };
+  return tabMap[slug] || 'Overview';
+};
 
 export const Profile: React.FC = () => {
-  const { signOut, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const { tab: tabParam } = useParams<{ tab?: string }>();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('Overview');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSongMatrix, setShowSongMatrix] = useState(false);
-  const [matrixSortMode, setMatrixSortMode] = useState<MatrixSortMode>('alphabetical'); // Add matrix sort mode with proper type
   const [songIdMap, setSongIdMap] = useState<{[songName: string]: string}>({});
   const [yearIdMap, setYearIdMap] = useState<{[year: string]: string}>({});
   const [isManagingShows, setIsManagingShows] = useState(false);
@@ -37,14 +54,14 @@ export const Profile: React.FC = () => {
   useEffect(() => {
     const checkDatabaseRecords = async () => {
       try {
-        const { data, error } = await supabase
+        await supabase
           .from('user_attended_shows')
           .select('*')
           .eq('user_id', '75f1ef5d-6b9a-4064-9b21-8b8550dc34bc');
         
         if (user) {
           // Also check with the current logged-in user ID
-          const { data: userData, error: userError } = await supabase
+          await supabase
             .from('user_attended_shows')
             .select('*')
             .eq('user_id', user.id);
@@ -98,11 +115,6 @@ export const Profile: React.FC = () => {
     fetchMappings();
   }, []);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/login');
-  };
-
   const handleShareStats = async () => {
     if (user) {
       const shareUrl = `https://dripfield.pro/user/${user.id}`;
@@ -124,6 +136,33 @@ export const Profile: React.FC = () => {
   };
 
   const tabs = ['Overview', 'Shows', 'Songs', 'Slots', 'Personnel', 'Loose Ends'];
+
+  // Sync activeTab with URL parameter
+  useEffect(() => {
+    if (tabParam) {
+      const tabFromUrl = slugToTab(tabParam);
+      if (tabs.includes(tabFromUrl)) {
+        setActiveTab(tabFromUrl);
+      } else {
+        // Invalid tab in URL, redirect to overview
+        navigate('/profile/overview', { replace: true });
+      }
+    } else {
+      // No tab in URL, default to overview and update URL
+      if (location.pathname === '/profile') {
+        navigate('/profile/overview', { replace: true });
+      } else {
+        setActiveTab('Overview');
+      }
+    }
+  }, [tabParam, navigate, location.pathname]);
+
+  // Handle tab change - update URL
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    const slug = tabToSlug(tab);
+    navigate(`/profile/${slug}`, { replace: true });
+  };
 
   // Handle click outside to close dropdown and check for screen size changes
   useEffect(() => {
@@ -271,7 +310,7 @@ export const Profile: React.FC = () => {
                 <button
                   key={tab}
                   onClick={() => {
-                    setActiveTab(tab);
+                    handleTabChange(tab);
                     setDropdownOpen(false);
                   }}
                   className={`w-full text-left px-2 py-0.5 text-xs font-light text-fifth hover:bg-tertiary/40 transition-colors ${
@@ -293,7 +332,7 @@ export const Profile: React.FC = () => {
                 <button
                   key={tab}
                   ref={el => tabsRef.current[index] = el}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => handleTabChange(tab)}
                   className={`py-0.5 px-2 font-medium relative z-10 text-xs transition-colors duration-200 ${
                     activeTab === tab
                       ? 'text-fifth'

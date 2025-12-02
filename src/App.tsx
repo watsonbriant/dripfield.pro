@@ -358,7 +358,7 @@ function App() {
                 <Route path="/venue/:venueId" element={<Venue />} />
                 <Route path="/setlist/:showId" element={<Setlist />} />
                 <Route path="/song/:songId" element={<Song />} />
-                <Route path="/user/:userId" element={<PublicProfile />} />
+                <Route path="/user/:userId/:tab?" element={<PublicProfile />} />
                 <Route path="/discography" element={<Discography />} />
                 <Route path="/lists" element={<Lists />} />
                 <Route path="/lists/:listId" element={<ListInd />} />
@@ -372,7 +372,7 @@ function App() {
                 <Route path="/update-password" element={<UpdatePassword />} />
                 
                 {/* Protected routes */}
-                <Route path="/profile" element={
+                <Route path="/profile/:tab?" element={
                   <ProtectedRoute>
                     <Profile />
                   </ProtectedRoute>
