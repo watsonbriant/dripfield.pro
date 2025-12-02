@@ -135,7 +135,7 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
               <tr 
                 key={`${perf.show_id}-${index}`}
                 className={`${
-                  index % 2 === 0 ? 'bg-canvas/40' : 'bg-canvas'
+                  index % 2 === 0 ? 'bg-primary' : 'bg-primary'
                 } hover:bg-tertiary/40 transition-colors text-[0.625rem] ${
                   isHighlighted ? 'bg-tertiary/40' : ''
                 } ${

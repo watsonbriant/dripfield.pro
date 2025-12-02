@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, Link } from 'react-router-dom';
 import { ChartPerformance, HoveredPerformance, SortDirection } from './types';
 import { shouldHighlight, shouldHighlightForSong, formatDateForDisplay } from './utils';
@@ -121,7 +122,7 @@ export default function TableView({
               <tr 
                 key={`${perf.show_id}-${index}`}
                 className={`${
-                  index % 2 === 0 ? 'bg-canvas/40' : 'bg-canvas'
+                  index % 2 === 0 ? 'bg-primary' : 'bg-primary'
                 } hover:bg-tertiary/40 transition-colors text-[0.625rem] ${
                   isHighlighted || isHighlightedForSong ? 'bg-tertiary/40' : ''
                 } ${
@@ -171,10 +172,10 @@ export default function TableView({
                   >
                     {perf.show_venue_location}
                   </button>
-                  {hoveredPerformance?.show_id === perf.show_id && (
-                  <div 
-                    className="fixed bg-tertiary text-fifth px-3 py-1.5 rounded shadow-lg z-[9999] text-xs tooltip-bubble border border-fourth"
-                    style={{
+                  {hoveredPerformance?.show_id === perf.show_id && createPortal(
+                    <div 
+                      className="fixed bg-primary text-fifth px-1.5 py-1 rounded shadow-lg z-[9999] text-[0.625rem] tooltip-bubble border border-fourth"
+                      style={{
                         left: `${mousePosition.x + 10}px`,
                         top: `${mousePosition.y - 10}px`,
                         maxWidth: '250px',
@@ -183,7 +184,8 @@ export default function TableView({
                       }}
                     >
                       <div>{perf.show_subvenue || ''}</div>
-                    </div>
+                    </div>,
+                    document.body
                   )}
                 </td>
               </tr>

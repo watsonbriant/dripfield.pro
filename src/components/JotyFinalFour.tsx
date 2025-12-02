@@ -17,7 +17,7 @@ const FinalFour: React.FC<FinalFourProps> = ({ matches, selectedYear, onMatchupC
   return (
     <div className="min-w-[300px]">
       <div className='bg-canvas border border-fourth'>
-        <div className="bg-tertiary text-fifth px-2 py-0.5">
+        <div className="bg-fourth text-white px-2 py-0.5">
           <h2 className="text-sm font-semibold">
             Final Four
           </h2>
@@ -33,7 +33,7 @@ const FinalFour: React.FC<FinalFourProps> = ({ matches, selectedYear, onMatchupC
               // For match 61: top seed from region 1 (green), bottom seed from region 2 (teal)
               return (
                 <div>
-                  <div className="bg-primary border border-fourth overflow-hidden">
+                  <div className="bg-tertiary/20 border border-fourth overflow-hidden">
                     <div 
                       className={`pl-0.5 pr-2 py-0.5 hover:bg-tertiary/40 transition-colors cursor-pointer ${
                         match.team1.percentage > match.team2.percentage ? 'bg-tertiary/80' : ''
@@ -95,7 +95,7 @@ const FinalFour: React.FC<FinalFourProps> = ({ matches, selectedYear, onMatchupC
               // For match 62: top seed from region 3 (orange), bottom seed from region 4 (dark red)
               return (
                 <div>
-                  <div className="bg-primary border border-fourth overflow-hidden">
+                  <div className="bg-tertiary/20 border border-fourth overflow-hidden">
                     <div 
                       className={`pl-0.5 pr-2 py-0.5 hover:bg-tertiary/40 transition-colors cursor-pointer ${
                         match.team1.percentage > match.team2.percentage ? 'bg-tertiary/80' : ''
@@ -150,7 +150,7 @@ const FinalFour: React.FC<FinalFourProps> = ({ matches, selectedYear, onMatchupC
           
           {/* Championship */}
           <div>
-            <div className="bg-tertiary text-fifth px-2 py-0.5 mt-4 mb-2">
+            <div className="bg-fourth text-white px-2 py-0.5 mt-4 mb-2">
               <h2 className="text-sm font-semibold">
                 Championship
               </h2>
@@ -167,7 +167,7 @@ const FinalFour: React.FC<FinalFourProps> = ({ matches, selectedYear, onMatchupC
               
               return (
                 <div className='mx-2 mt-2'>
-                  <div className="bg-primary border border-fourth overflow-hidden">
+                  <div className="bg-tertiary/20 border border-fourth overflow-hidden">
                     <div 
                       className={`pl-0.5 pr-2 py-0.5 hover:bg-tertiary/40 transition-colors cursor-pointer ${
                         match.team1.percentage > match.team2.percentage ? 'bg-tertiary/80' : ''

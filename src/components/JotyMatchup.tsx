@@ -31,7 +31,7 @@ const Matchup: React.FC<MatchupProps> = ({ team1, team2, roundName, matchNumber,
 
   return (
     <div>
-      <div className="bg-primary border border-fourth overflow-hidden">
+      <div className="bg-tertiary/10 border border-fourth overflow-hidden">
         <div 
           className={`pl-0.5 pr-2 py-0.5 hover:bg-tertiary/40 transition-colors cursor-pointer ${
             team1.percentage > team2.percentage ? 'bg-tertiary/80' : ''

@@ -81,7 +81,7 @@ export default function JotyMatchupModal({
           
           <div className="p-2 space-y-2">
           {/* Team 1 */}
-            <div className={`bg-primary border border-fourth p-2 ${team1.percentage > team2.percentage ? 'bg-tertiary/40' : ''}`}>
+            <div className={`bg-tertiary/20 border border-fourth p-2 ${team1.percentage > team2.percentage ? 'bg-tertiary/60' : ''}`}>
             <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-3">
                 <span className={`${team1DisplayColor} text-white px-2 py-0.5 rounded font-medium text-xs`}>
@@ -132,7 +132,7 @@ export default function JotyMatchupModal({
             </div>
 
             {/* Team 2 */}
-            <div className={`bg-primary border border-fourth p-2 ${team2.percentage > team1.percentage ? 'bg-tertiary/40' : ''}`}>
+            <div className={`bg-tertiary/20 border border-fourth p-2 ${team2.percentage > team1.percentage ? 'bg-tertiary/60' : ''}`}>
             <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-3">
                 <span className={`${team2DisplayColor} text-white px-2 py-0.5 rounded font-medium text-xs`}>

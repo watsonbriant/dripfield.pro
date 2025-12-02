@@ -48,7 +48,7 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
           
           {/* Credits */}
           <div className="bg-primary border border-fourth px-2 py-1 max-w-[350px]">
-            <p className="text-[0.625rem] font-light text-fifth">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
+            <p className="text-[0.625rem] leading-[0.75rem] font-light text-fifth">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
         
         {/* Credits */}
         <div className="bg-primary border border-fourth px-2 py-1 mb-4 mx-auto max-w-[350px]">
-          <p className="text-[0.625rem] font-light text-fifth text-center">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
+          <p className="text-[0.625rem] leading-[0.75rem] font-light text-fifth text-center">Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.</p>
         </div>
       </div>
     </div>
