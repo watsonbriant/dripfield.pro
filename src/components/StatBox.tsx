@@ -87,10 +87,10 @@ const StatBox: React.FC<StatBoxProps> = ({
                   <td className="pl-4 text-fifth">
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col">
-                        <div className="text-fifth text-[1rem] leading-[0.875rem] text-left items-center pb-0.5">
+                        <div className="text-fifth text-sm text-left items-center">
                           <span 
                             onClick={() => navigate(`/song/${item[songIdKey]}`)}
-                            className='font-trad hover:underline cursor-pointer'
+                            className='font-medium hover:underline cursor-pointer'
                           >
                             {item[songNameKey]}
                           </span>

@@ -40,7 +40,7 @@ export const renderShowImage = async (
 
     // Calculate dimensions
     const canvasWidth = 800;
-    const logoWidth = 500;
+    const logoWidth = 600;
     const logoHeight = (logo.height / logo.width) * logoWidth;
     const logoY = 50;
     const padding = 50;
@@ -50,18 +50,25 @@ export const renderShowImage = async (
     canvas.width = canvasWidth;
     canvas.height = 2000; // Temporary large height
 
-    // Draw background
-    const bgAspectRatio = background.width / background.height;
-    let bgWidth = canvasWidth;
-    let bgHeight = bgWidth / bgAspectRatio;
+    // Draw background - scaled and centered
+    drawBackground(ctx, background, canvasWidth, canvas.height);
 
-    if (bgHeight < canvas.height) {
-        bgHeight = canvas.height;
-        bgWidth = bgHeight * bgAspectRatio;
-    }
+    // Draw logo container with border and rounded corners
+    const logoPadding = 10;
+    const logoContainerWidth = logoWidth + (logoPadding * 2);
+    const logoContainerHeight = logoHeight + (logoPadding * 2);
+    const logoContainerX = (canvas.width - logoContainerWidth) / 2;
+    const logoContainerY = logoY - logoPadding;
+    const cornerRadius = 18;
 
-    const bgX = (canvasWidth - bgWidth) / 2;
-    ctx.drawImage(background, bgX, 0, bgWidth, bgHeight);
+    // Draw logo container background
+    ctx.fillStyle = 'rgb(254, 229, 188)';
+    drawRoundedRect(ctx, logoContainerX, logoContainerY, logoContainerWidth, logoContainerHeight, cornerRadius, true, false);
+
+    // Draw logo container border
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    drawRoundedRect(ctx, logoContainerX, logoContainerY, logoContainerWidth, logoContainerHeight, cornerRadius, false, true);
 
     // Draw logo
     const logoX = (canvas.width - logoWidth) / 2;
@@ -73,11 +80,16 @@ export const renderShowImage = async (
     const maxTextWidth = 700;
     let currentY = contentStartY;
 
-    currentY = renderShowInfo(ctx, show, centerX, currentY, maxTextWidth, lineHeight);
+    const showInfoResult = renderShowInfo(ctx, show, centerX, currentY, maxTextWidth, lineHeight);
+    currentY = showInfoResult.currentY;
+    const showInfoContainerBottom = showInfoResult.containerBottom;
 
     // Render setlist if provided
     if (setlist.length > 0) {
-        currentY = renderSetlist(ctx, setlist, canvasWidth, currentY, maxTextWidth, lineHeight);
+        // Calculate spacing to match logo-to-show-info gap (10px)
+        const containerGap = 10;
+        const setlistStartY = showInfoContainerBottom + containerGap;
+        currentY = renderSetlist(ctx, setlist, canvasWidth, setlistStartY, maxTextWidth, lineHeight);
     }
 
     // Create final canvas with exact height
@@ -89,17 +101,8 @@ export const renderShowImage = async (
     finalCanvas.width = canvasWidth;
     finalCanvas.height = finalHeight;
 
-    // Draw background on final canvas
-    let finalBgWidth = canvasWidth;
-    let finalBgHeight = finalBgWidth / bgAspectRatio;
-
-    if (finalBgHeight < finalHeight) {
-        finalBgHeight = finalHeight;
-        finalBgWidth = finalBgHeight * bgAspectRatio;
-    }
-
-    const finalBgX = (canvasWidth - finalBgWidth) / 2;
-    finalCtx.drawImage(background, finalBgX, 0, finalBgWidth, finalBgHeight);
+    // Draw background on final canvas - scaled and centered
+    drawBackground(finalCtx, background, canvasWidth, finalHeight);
 
     // Copy rendered content to final canvas
     finalCtx.drawImage(canvas, 0, 0);
@@ -116,6 +119,37 @@ export const renderShowImage = async (
     });
 };
 
+// Helper function to draw background image scaled and centered
+const drawBackground = (
+    ctx: CanvasRenderingContext2D,
+    background: HTMLImageElement,
+    canvasWidth: number,
+    canvasHeight: number
+) => {
+    const bgAspectRatio = background.width / background.height;
+    
+    let bgWidth: number;
+    let bgHeight: number;
+    let bgX: number;
+    let bgY: number;
+    
+    // If canvas is taller than wide, scale to 100% height and center horizontally
+    if (canvasHeight > canvasWidth) {
+        bgHeight = canvasHeight;
+        bgWidth = bgHeight * bgAspectRatio;
+        bgX = (canvasWidth - bgWidth) / 2;
+        bgY = 0;
+    } else {
+        // If canvas is wider than tall, scale to 100% width and center vertically
+        bgWidth = canvasWidth;
+        bgHeight = bgWidth / bgAspectRatio;
+        bgX = 0;
+        bgY = (canvasHeight - bgHeight) / 2;
+    }
+    
+    ctx.drawImage(background, bgX, bgY, bgWidth, bgHeight);
+};
+
 const renderShowInfo = (
     ctx: CanvasRenderingContext2D,
     show: Show,
@@ -123,7 +157,7 @@ const renderShowInfo = (
     currentY: number,
     maxTextWidth: number,
     lineHeight: number
-): number => {
+): { currentY: number; containerBottom: number } => {
     const containerPadding = 10;
     const containerWidth = maxTextWidth + (containerPadding * 2);
     const containerX = (centerX - containerWidth / 2);
@@ -160,7 +194,7 @@ const renderShowInfo = (
     const cornerRadius = 18;
 
     // Draw container
-    ctx.fillStyle = 'rgb(240, 240, 240)';
+    ctx.fillStyle = 'rgb(224, 220, 195)';
     drawRoundedRect(ctx, containerX, containerStartY, containerWidth, containerHeight, cornerRadius, true, false);
 
     ctx.strokeStyle = '#000000';
@@ -185,7 +219,8 @@ const renderShowInfo = (
     currentY -= 30;
     currentY = renderTextLines(ctx, locationLines, centerX, currentY, lineHeight, locationFont);
 
-    return currentY;
+    const containerBottom = containerStartY + containerHeight;
+    return { currentY, containerBottom };
 };
 
 const renderTextLines = (
@@ -215,12 +250,11 @@ const renderSetlist = (
     maxTextWidth: number,
     lineHeight: number
 ): number => {
-    currentY += 40;
 
     const setlistContainerPadding = 10;
     const setlistContainerWidth = maxTextWidth + (setlistContainerPadding * 2);
     const setlistContainerX = (canvasWidth - setlistContainerWidth) / 2;
-    const setlistContainerStartY = currentY - 30;
+    const setlistContainerStartY = currentY;
 
     // Calculate setlist height
     let estimatedSetlistHeight = 0;
@@ -252,25 +286,26 @@ const renderSetlist = (
             const noteLines = wrapText(ctx, plainTextNotes, maxTextWidth - 60, '16px "Rubik", "Inter", system-ui, sans-serif');
             estimatedSetlistHeight += 28 + (noteLines.length * 20) + 8;
         } else {
-            estimatedSetlistHeight += 36;
+            estimatedSetlistHeight += 33;
         }
     });
     
-    estimatedSetlistHeight += actualBreaks * 36;
+    estimatedSetlistHeight += actualBreaks * 33;
     
     const setlistContainerHeight = estimatedSetlistHeight + (setlistContainerPadding * 2);
     const cornerRadius = 18;
 
     // Draw setlist container
-    ctx.fillStyle = 'rgb(240, 240, 240)';
+    ctx.fillStyle = 'rgb(254, 229, 188)';
     drawRoundedRect(ctx, setlistContainerX, setlistContainerStartY, setlistContainerWidth, setlistContainerHeight, cornerRadius, true, false);
 
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 1;
     drawRoundedRect(ctx, setlistContainerX, setlistContainerStartY, setlistContainerWidth, setlistContainerHeight, cornerRadius, false, true);
 
-    // Render setlist entries
-    return renderSetlistEntries(ctx, setlist, canvasWidth, currentY, maxTextWidth, hasSinglePlacementType);
+    // Render setlist entries - adjust currentY to account for container padding
+    const setlistContentStartY = setlistContainerStartY + setlistContainerPadding + 20;
+    return renderSetlistEntries(ctx, setlist, canvasWidth, setlistContentStartY, maxTextWidth, hasSinglePlacementType);
 };
 
 const renderSetlistEntries = (
@@ -307,11 +342,11 @@ const renderSetlistEntries = (
         currentRunningNumber = result.currentRunningNumber;
         
         if (entry.entry_coachnotes) {
-            currentY += 24;
+            currentY += 21;
             currentY = renderCoachNotes(ctx, entry.entry_coachnotes, canvasWidth, currentY, maxTextWidth);
             currentY += 12;
         } else {
-            currentY += 36;
+            currentY += 33;
         }
     });
 
@@ -383,13 +418,13 @@ const renderSetlistEntry = (
     }
 
     ctx.fillStyle = placementColor !== 'transparent' ? '#ffffff' : '#000000';
-    ctx.font = '500 24px "Rubik", "Inter", system-ui, sans-serif';
+    ctx.font = '500 22px "Rubik", "Inter", system-ui, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(displayNumber?.toString() || '', numberX + 22, currentY + 2);
+    ctx.fillText(displayNumber?.toString() || '', numberX + 22, currentY + 1);
 
     // Draw song name
     ctx.fillStyle = '#000000';
-    ctx.font = '500 28px "Traditional", "Inter", system-ui, sans-serif';
+    ctx.font = '500 24px "Rubik", "Inter", system-ui, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(entry.entry_song, numberX + 60, currentY + 2);
 

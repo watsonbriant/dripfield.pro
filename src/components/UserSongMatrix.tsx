@@ -244,7 +244,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                 key={song} 
                 className={songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'}
               >
-                <td className="font-trad text-fifth text-[.875rem] leading-[1rem] pb-1 pl-2 whitespace-nowrap font-trad border"
+                <td className="font-medium text-fifth text-xs pl-2 whitespace-nowrap border"
                     style={{ borderColor: 'rgb(180, 178, 178)' }}>
                   <button 
                     onClick={() => {
