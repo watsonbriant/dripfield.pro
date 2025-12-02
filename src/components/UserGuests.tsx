@@ -66,7 +66,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
 
   if (error) {
     return (
-      <div className="bg-primary p-3 rounded-lg border border-fourth">
+      <div className="bg-primary border border-fourth shadow-xl">
         <div className="text-center text-red-500 py-8">{getErrorMessage()}</div>
       </div>
     );
@@ -74,7 +74,7 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
 
   if (Object.keys(guestsByCategory).length === 0) {
     return (
-      <div className="bg-primary p-3 rounded-lg border border-fourth">
+      <div className="bg-primary border border-fourth shadow-xl">
         <div className="text-center text-fifth py-12">
           <p>{getEmptyStateMessage()}</p>
         </div>
@@ -83,20 +83,43 @@ const UserGuests: React.FC<UserGuestsProps> = ({ userId }) => {
   }
 
   
+  // Define category order for grid layout
+  const categoryOrder = ['Goose (current)', 'Goose (former)', 'Guest', 'Group'];
+  
+  // Get sorted categories in the desired order
+  const sortedCategories = Object.keys(guestsByCategory)
+    .filter(cat => guestsByCategory[cat].guests.length > 0)
+    .sort((a, b) => {
+      const indexA = categoryOrder.indexOf(a);
+      const indexB = categoryOrder.indexOf(b);
+      // If both are in the order array, sort by their position
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      // If only one is in the order array, prioritize it
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      // If neither is in the order array, sort alphabetically
+      return a.localeCompare(b);
+    });
+
   // Main render
   return (
-    <div className="space-y-4 max-w-[1280px] mx-auto">
-      {/* Render all categories in alphabetical order */}
-      {Object.keys(guestsByCategory)
-        .sort((a, b) => a.localeCompare(b)) // Sort categories alphabetically
-        .map(category => (
+    <div className="bg-primary border border-fourth shadow-xl">
+      <div className="bg-tertiary text-fifth px-2 py-0.5">
+        <h2 className="text-sm font-semibold">
+          Musicians Seen
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
+        {sortedCategories.map((category, index, array) => (
           <GuestTable
             key={category}
             category={category}
             guests={guestsByCategory[category].guests}
             count={guestsByCategory[category].count}
+            isLast={index === array.length - 1}
           />
         ))}
+      </div>
     </div>
   );
 };

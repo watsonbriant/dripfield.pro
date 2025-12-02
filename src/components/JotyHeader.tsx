@@ -41,9 +41,9 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
           {/* Logos */}
           <div className="flex items-center gap-2">
             <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
-              <img src={aatLogo} alt="Always Almost There" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" />
+              <img src={aatLogo} alt="Always Almost There" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#f49b1d]" />
             </a>
-            <a href="https://www.nugs.net/" target="blank"><img src={nugsLogo} alt="nugs" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" /></a>
+            <a href="https://www.nugs.net/" target="blank"><img src={nugsLogo} alt="nugs" className="h-8 w-auto rounded-full hover:shadow-[0_0_0_2px_#f49b1d]" /></a>
           </div>
           
           {/* Credits */}
@@ -82,10 +82,10 @@ const JotyHeader: React.FC<JotyHeaderProps> = ({ selectedYear, availableYears, o
           {/* Logos */}
           <div className="flex items-center justify-center gap-3 mt-2">
             <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank">
-              <img src={aatLogo} alt="Always Almost There" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" />
+              <img src={aatLogo} alt="Always Almost There" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#f49b1d]" />
             </a>
             <a href="https://www.nugs.net/" target="_blank">
-              <img src={nugsLogo} alt="nugs" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#8ec1b6]" />
+              <img src={nugsLogo} alt="nugs" className="h-10 w-auto rounded-full hover:shadow-[0_0_0_2px_#f49b1d]" />
             </a>
           </div>
         </div>

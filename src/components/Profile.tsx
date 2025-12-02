@@ -28,7 +28,7 @@ export const Profile: React.FC = () => {
   const [isManagingShows, setIsManagingShows] = useState(false);
   const [shareButtonText, setShareButtonText] = useState(window.innerWidth < 768 ? 'Share' : 'Share My Stats');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [shareButtonColor, setShareButtonColor] = useState('bg-tertiary');
+  const [shareButtonColor, setShareButtonColor] = useState('bg-fourth text-white font-medium');
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const indicatorRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -115,7 +115,7 @@ export const Profile: React.FC = () => {
         // Reset button after 2 seconds
         setTimeout(() => {
           setShareButtonText(isMobile ? 'Share' : 'Share My Stats');
-          setShareButtonColor('bg-tertiary');
+          setShareButtonColor('bg-fourth text-white font-medium');
         }, 2000);
       } catch (err) {
         console.error('Failed to copy to clipboard:', err);
@@ -200,8 +200,8 @@ export const Profile: React.FC = () => {
       case 'Songs':
         return (
           <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Songs You've Seen</h3>
+            <div className="flex justify-between items-center mb-4 bg-tertiary border border-fourth shadow-xl">
+              <h3 className="text-sm font-semibold text-fifth px-2 py-0.5">Songs Seen</h3>
               <UserSongToggleSwitch
                 isRight={showSongMatrix}
                 onToggle={setShowSongMatrix}
@@ -221,14 +221,12 @@ export const Profile: React.FC = () => {
       case 'Slots':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">My Slots</h3>
             <UserSlots userId={user.id} />
           </div>
         );
       case 'Personnel':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Musicians You've Seen</h3>
             <UserGuests userId={user.id} />
           </div>
         );
@@ -247,13 +245,13 @@ export const Profile: React.FC = () => {
     <div className="max-w-[1280px] mx-auto">
       <div className="flex flex-row justify-between items-center">
         <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">My Stats</h2>
+          <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 border border-fourth shadow-xl">My Stats</h2>
           <button
             onClick={handleShareStats}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg ${shareButtonColor} text-fifth font-semibold transition-colors duration-200 hover:opacity-90 border border-fourth`}
+            className={`flex items-center gap-1 px-2 py-0.5 ${shareButtonColor} text-fifth text-sm font-semibold transition-colors duration-200 hover:opacity-90 border border-fourth shadow-xl`}
           >
             <Link2 className="w-4 h-4" />
-            <span>{shareButtonText}</span>
+            <span className='font-medium'>{shareButtonText}</span>
           </button>
         </div>
         
@@ -261,14 +259,14 @@ export const Profile: React.FC = () => {
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-fourth"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-tertiary text-fifth text-sm font-semibold border border-fourth"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-4 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-4 py-1 bg-primary border border-fourth shadow-xl z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -276,8 +274,8 @@ export const Profile: React.FC = () => {
                     setActiveTab(tab);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-0.5 text-sm font-light text-fifth hover:bg-canvas transition-colors ${
-                    activeTab === tab ? 'bg-canvas font-medium' : ''
+                  className={`w-full text-left px-2 py-0.5 text-xs font-light text-fifth hover:bg-tertiary/40 transition-colors ${
+                    activeTab === tab ? 'bg-tertiary/80 font-medium' : ''
                   }`}
                 >
                   {tab}
@@ -289,14 +287,14 @@ export const Profile: React.FC = () => {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-primary px-1 py-1 rounded-lg border border-fourth">
+          <div className="bg-primary border border-fourth shadow-xl">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
                   key={tab}
                   ref={el => tabsRef.current[index] = el}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-1 px-3 font-medium relative z-10 text-sm transition-colors duration-200 ${
+                  className={`py-0.5 px-2 font-medium relative z-10 text-xs transition-colors duration-200 ${
                     activeTab === tab
                       ? 'text-fifth'
                       : 'text-fifth hover:underline'
@@ -309,7 +307,7 @@ export const Profile: React.FC = () => {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-fourth"
+                className="absolute h-5 bg-tertiary top-0 transition-all duration-300 ease-in-out"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>

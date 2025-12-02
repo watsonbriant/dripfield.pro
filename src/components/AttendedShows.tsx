@@ -92,7 +92,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
 
   if (!effectiveUserId) {
     return (
-      <div className="bg-primary border border-fourth rounded-lg p-3">
+      <div className="bg-primary border border-fourth shadow-xl">
         <p className="text-fifth">Please log in to see attended shows.</p>
       </div>
     );
@@ -109,7 +109,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-primary border border-fourth rounded-lg p-3">
+      <div className="bg-primary border border-fourth shadow-xl">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
           <p className="text-fifth mt-4">
@@ -135,25 +135,27 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
   };
 
   return (
-    <div className="bg-primary p-3 rounded-lg border border-fourth">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Shows Attended</h3>
-        
-        {/* Only show manage button for user's own profile and if not readOnly */}
-        {isOwnProfile && !readOnly && (
-          <button
-            onClick={() => {
-              setIsManageMode(true);
-              if (onManagingToggle) {
-                onManagingToggle(true);
-              }
-            }}
-            className="flex items-center gap-2 bg-tertiary hover:bg-tertiary/70 text-fifth px-3 py-1 rounded-lg text-sm font-semibold transition-colors border border-fourth"
-          >
-            <span className="hidden md:inline font-semibold">Manage Shows</span>
-            <TicketPlus className="w-4 h-4" />
-          </button>
-        )}
+    <div className="bg-primary border border-fourth shadow-xl">
+      <div className="relative bg-tertiary px-2 py-0.5">
+        <div className="flex justify-between items-center">
+          <h3 className="text-sm font-semibold text-fifth">Shows Attended</h3>
+          
+          {/* Only show manage button for user's own profile and if not readOnly */}
+          {isOwnProfile && !readOnly && (
+            <button
+              onClick={() => {
+                setIsManageMode(true);
+                if (onManagingToggle) {
+                  onManagingToggle(true);
+                }
+              }}
+              className="relative z-10 flex items-center gap-2 bg-fourth hover:bg-fourth/70 rounded text-white px-2 py-0.5 text-[0.625rem] font-semibold transition-colors border border-fourth"
+            >
+              <span className="hidden md:inline font-semibold">Manage Shows</span>
+              <TicketPlus className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {attendedShows.length === 0 ? (
@@ -163,27 +165,27 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
           <table className="w-full border-collapse min-w-max">
             <thead>
               <tr className="bg-canvas border-y border-white/10">
-                <th className="px-2 py-2 text-center text-s font-semibold text-fifth">#</th>
-                <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Date</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Group</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Tour</th>
-                <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Length</th>
-                <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Rarity</th>
-                <th className="px-4 py-2 text-center text-s font-semibold text-fifth">Gap</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Venue</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Location</th>
-                <th className="px-4 py-2 text-left text-s font-semibold text-fifth">Detail</th>
+                <th className="px-2 text-center text-sm font-medium text-fifth">#</th>
+                <th className="px-2 text-center text-sm font-medium text-fifth">Date</th>
+                <th className="px-2 text-left text-sm font-medium text-fifth">Group</th>
+                <th className="px-2 text-left text-sm font-medium text-fifth">Tour</th>
+                <th className="px-2 text-center text-sm font-medium text-fifth">Length</th>
+                <th className="px-2 text-center text-sm font-medium text-fifth">Rarity</th>
+                <th className="px-2 text-center text-sm font-medium text-fifth">Gap</th>
+                <th className="px-2 text-left text-sm font-medium text-fifth">Venue</th>
+                <th className="px-2 text-left text-sm font-medium text-fifth">Location</th>
+                <th className="px-2 text-left text-sm font-medium text-fifth">Detail</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody>
               {attendedShows.map((attendedShow, index) => (
                 <tr
                   key={attendedShow.id}
                   className={`${
-                    index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                  } hover:bg-tertiary/40 transition-colors text-xs`}
+                    index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+                  } hover:bg-tertiary/40 transition-colors text-[0.625rem]`}
                 >
-                  <td className="px-2 py-0.5 text-white font-medium text-center whitespace-nowrap" style={{ 
+                  <td className="px-2 text-white font-medium text-center whitespace-nowrap" style={{ 
                     backgroundColor: attendedShow.show?.show_group === 'Goose' && attendedShow.show?.show_canonid ? '#006400' : 'transparent' 
                   }}>
                     {attendedShow.show?.show_group === 'Goose' && attendedShow.show?.show_canonid ? (
@@ -196,7 +198,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       })()
                     ) : ''}
                   </td>
-                  <td className="px-4 py-0.5 text-center whitespace-nowrap">
+                  <td className="px-2 text-center whitespace-nowrap">
                     <Link
                       to={`/setlist/${attendedShow.show_id}`}
                       className="font-medium hover:underline transition-colors table-link text-fifth"
@@ -208,10 +210,10 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       )}
                     </Link>
                   </td>
-                  <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                  <td className="px-2 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_group}
                   </td>
-                  <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                  <td className="px-2 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_tour && (
                       attendedShow.show?.tours?.tour_id ? (
                         <Link
@@ -225,15 +227,15 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       )
                     )}
                   </td>
-                  <td className="px-4 py-0.5 font-light text-center whitespace-nowrap">
+                  <td className="px-2 font-light text-center whitespace-nowrap">
                     <span className="text-fifth">
                       {formatShowLength(attendedShow.show?.show_length ?? null)}
                     </span>
                   </td>
-                  <td className="px-4 text-center whitespace-nowrap">
+                  <td className="px-2 text-center whitespace-nowrap">
                     {attendedShow.show?.show_rarity ? (
                       <span 
-                        className="text-white font-normal px-2 py-0.5 rounded-md inline-block"
+                        className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
                         style={{ 
                           backgroundColor: getRarityColor(attendedShow.show.show_rarity) 
                         }}
@@ -244,10 +246,10 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       <span className="text-fifth"></span>
                     )}
                   </td>
-                  <td className="px-4 text-center whitespace-nowrap">
+                  <td className="px-2 text-center whitespace-nowrap">
                     {attendedShow.show?.show_gap ? (
                       <span 
-                        className="text-white font-normal px-2 py-0.5 rounded-md inline-block"
+                        className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
                         style={{ 
                           backgroundColor: getGapColor(attendedShow.show.show_gap) 
                         }}
@@ -258,7 +260,7 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       <span className="text-fifth"></span>
                     )}
                   </td>
-                  <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                  <td className="px-2 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_subvenue_venue ? (
                       <Link
                         to={`/venue/${encodeURIComponent(attendedShow.show.show_subvenue_venue)}`}
@@ -270,10 +272,10 @@ const AttendedShows: React.FC<AttendedShowsProps> = ({
                       <span>{attendedShow.show?.show_subvenue}</span>
                     )}
                   </td>
-                  <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                  <td className="px-2 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_venue_location}
                   </td>
-                  <td className="px-4 py-0.5 font-light text-fifth whitespace-nowrap">
+                  <td className="px-2 font-light text-fifth whitespace-nowrap">
                     {attendedShow.show?.show_detail && attendedShow.show.show_detail}
                     {attendedShow.show?.show_detail && attendedShow.show?.show_alert && <>&nbsp;&nbsp;</>}
                     {attendedShow.show?.show_alert && 

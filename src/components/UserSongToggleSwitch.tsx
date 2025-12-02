@@ -13,26 +13,26 @@ const UserSongToggleSwitch: React.FC<UserSongToggleSwitchProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`flex items-center gap-3 ${className} bg-tertiary px-1.5 py-1 rounded-lg border border-fourth`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       <LayoutList 
         size={16} 
-        className={`${!isRight ? 'text-fifth' : 'text-fifth'}`} 
+        className={!isRight ? 'text-fifth' : 'text-secondary'} 
       />
       <button
         role="switch"
         aria-checked={isRight}
         onClick={() => onToggle(!isRight)}
-        className="relative inline-flex h-6 w-[3.125rem] items-center rounded-full border border-fourth transition-colors bg-primary"
+        className="relative inline-flex h-4 w-[47px] items-center rounded-full border border-fourth transition-colors bg-primary"
       >
         <span
-          className={`absolute h-4 w-4 rounded-full bg-fourth transition-transform duration-200 ${
-            isRight ? 'left-7' : 'left-1'
+          className={`absolute h-[10px] w-[10px] rounded-lg bg-black transition-transform duration-200 ${
+            isRight ? 'left-[33px]' : 'left-[2px]'
           }`}
         />
       </button>
       <Columns3 
         size={16} 
-        className={`${isRight ? 'text-fifth' : 'text-fifth'}`} 
+        className={isRight ? 'text-fifth' : 'text-secondary'} 
       />
     </div>
   );

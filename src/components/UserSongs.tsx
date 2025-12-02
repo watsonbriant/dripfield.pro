@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import CircularProgress from './CircularProgress';
-import CategorySection from './CategorySection';
 import { useUserSongsData } from '../hooks/useUserSongsData';
-import { useResponsiveColumns } from '../hooks/useResponsiveColumns';
-import { useCategoryColumns } from '../hooks/useCategoryColumns';
 
 type Song = {
   song: string;
@@ -13,6 +11,15 @@ type Song = {
   song_category: string;
   song_categoryorder: number;
   song_originalartist: string;
+};
+
+type Category = {
+  category: string;
+  category_canonid: number;
+  category_display_name: string;
+  category_color1: string;
+  category_color2: string;
+  category_artwork: string;
 };
 
 interface UserSongsProps {
@@ -29,9 +36,8 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
   // Is this the current user's profile or someone else's?
   const isOwnProfile = !userId || (user && user.id === userId);
 
-  // Use custom hooks for data and responsive behavior
+  // Use custom hooks for data
   const { categories, songs, userSongStats, loading, loadingProgress } = useUserSongsData(effectiveUserId);
-  const currentColumnCount = useResponsiveColumns();
 
   // Fetch username if viewing someone else's profile
   useEffect(() => {
@@ -87,40 +93,58 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
     return grouped;
   }, [songs, categories]);
 
-  // Separate categories into three sections based on category_canonid
+  // Separate categories into sections based on category_canonid (matching Songs.tsx)
   const sectionedCategories = React.useMemo(() => {
-    // First section: Categories with canonid 1-98
-    const section1 = categories.filter(cat => cat.category_canonid >= 1 && cat.category_canonid <= 98);
+    // Sort all categories by category_canonid first
+    const sortedCategories = [...categories].sort((a, b) => a.category_canonid - b.category_canonid);
     
-    // Second section: Categories with canonid 99 and 100
-    const section2 = categories.filter(cat => cat.category_canonid === 99 || cat.category_canonid === 100);
+    // Studio Releases: category_canonid <= 20
+    const studioReleases = sortedCategories.filter(cat => cat.category_canonid <= 20);
     
-    // Third section: Categories with canonid 101+
-    const section3 = categories.filter(cat => cat.category_canonid >= 101);
-
-    return { section1, section2, section3 };
+    // Live-Only Songs: category_canonid between 21 and 70, OR category_canonid = 98
+    const liveOnlySongs = sortedCategories.filter(cat => 
+      (cat.category_canonid >= 21 && cat.category_canonid <= 70) || cat.category_canonid === 98
+    );
+    
+    // Ted Tapes Songs/Jams: category_canonid between 71 and 97
+    const tedTapesSongs = sortedCategories.filter(cat => 
+      cat.category_canonid >= 71 && cat.category_canonid <= 97
+    );
+    
+    // Cover Songs: category_canonid = 99 or 100
+    const coverSongs = sortedCategories.filter(cat => 
+      cat.category_canonid === 99 || cat.category_canonid === 100
+    );
+    
+    // Side Projects: category_canonid > 100
+    const sideProjects = sortedCategories.filter(cat => cat.category_canonid > 100);
+    
+    return { 
+      studioReleases, 
+      liveOnlySongs, 
+      tedTapesSongs,
+      coverSongs,
+      sideProjects
+    };
   }, [categories]);
 
-  // Create columns for each section, using the currentColumnCount for responsive sizing
-  const section1Columns = React.useMemo(() => {
-    // For original songs: 4 columns on xl, 3 on lg, 2 on sm, 1 on xs
-    let cols = currentColumnCount;
-    return useCategoryColumns(sectionedCategories.section1, cols);
-  }, [sectionedCategories.section1, currentColumnCount]);
-  
-  // Section 2: Covers - maximum of 2 columns
-  const section2Columns = React.useMemo(() => {
-    // For covers: 2 columns max, 1 on mobile
-    let cols = Math.min(currentColumnCount, 2);
-    return useCategoryColumns(sectionedCategories.section2, cols);
-  }, [sectionedCategories.section2, currentColumnCount]);
-  
-  // Section 3: Other Songs - same responsive behavior as section 1
-  const section3Columns = React.useMemo(() => {
-    // For other songs: 4 columns on xl, 3 on lg, 2 on sm, 1 on xs
-    let cols = currentColumnCount;
-    return useCategoryColumns(sectionedCategories.section3, cols);
-  }, [sectionedCategories.section3, currentColumnCount]);
+  // Organize categories into columns (top-to-bottom instead of left-to-right)
+  const organizeIntoColumns = (categories: Category[], numColumns: number): Category[][] => {
+    if (numColumns === 1) return [categories];
+    
+    const columns: Category[][] = Array.from({ length: numColumns }, () => []);
+    const numRows = Math.ceil(categories.length / numColumns);
+    
+    categories.forEach((category, index) => {
+      const column = Math.floor(index / numRows);
+      if (column < numColumns) {
+        columns[column].push(category);
+      }
+    });
+    
+    return columns;
+  };
+
 
   // Get loading and empty state messages based on whose profile is being viewed
   const getLoadingMessage = () => {
@@ -140,37 +164,140 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
     );
   }
 
+  // Render a category section component (matching Songs.tsx structure)
+  const CategorySection = ({ sectionCategories, title }: { sectionCategories: Category[], title: string }) => {
+    const isCoverSongs = title === "Cover Songs";
+    const isStudioReleases = title === "Studio Releases";
+    const isTedTapes = title === "Ted Tapes Songs/Jams";
+    const [columnCount, setColumnCount] = React.useState(1);
+    
+    React.useEffect(() => {
+      const handleResize = () => {
+        const width = window.innerWidth;
+        if (isCoverSongs) {
+          setColumnCount(width >= 640 ? 2 : 1);
+        } else {
+          if (width >= 1024) {
+            setColumnCount(5);
+          } else if (width >= 768) {
+            setColumnCount(3);
+          } else if (width >= 640) {
+            setColumnCount(2);
+          } else {
+            setColumnCount(1);
+          }
+        }
+      };
+      
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, [isCoverSongs]);
+    
+    const organizedColumns = organizeIntoColumns(sectionCategories, columnCount);
+    
+    if (sectionCategories.length === 0) return null;
+    
+    // Get song stats for a specific song
+    const getSongStats = (songId: string): { count: number, lastSeenDate?: string } => {
+      const stat = userSongStats.find(s => s.song_id === songId);
+      return {
+        count: stat ? stat.count : 0,
+        lastSeenDate: stat?.last_seen_date
+      };
+    };
+    
+    // Cover Songs section uses 2 columns, others use responsive 1-5 columns
+    const gridClasses = isCoverSongs
+      ? "grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0 items-start -my-[1px]"
+      : isStudioReleases
+        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-0 items-start -my-[1px]"
+        : isTedTapes
+          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-2 gap-y-0 items-start -my-[1px]"
+          : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-2 gap-y-0 items-start -my-[1px]";
+    
+    return (
+      <div className="mb-8">
+        <div className="bg-primary border border-fourth shadow-xl">
+          <div className="bg-fourth text-white px-2 py-0.5">
+            <h3 className="text-sm font-semibold">
+              {title}
+            </h3>
+          </div>
+        </div>
+        <div className={gridClasses}>
+          {organizedColumns.map((columnCategories, columnIndex) => (
+            <div key={columnIndex} className="flex flex-col gap-0 shadow-xl">
+              {columnCategories.map((category, categoryIndex) => {
+                const categorySongs = songsByCategory[category.category] || [];
+                const isFirstInColumn = categoryIndex === 0;
+                const isLastInColumn = categoryIndex === columnCategories.length - 1;
+                
+                return (
+                  <div 
+                    key={category.category} 
+                    className={`bg-primary border-l border-r border-fourth w-full ${
+                      isFirstInColumn ? 'border-t' : ''
+                    } ${
+                      isLastInColumn ? 'border-b' : ''
+                    } ${!isFirstInColumn ? '-mt-[1px]' : ''}`}
+                  >
+                    <div className="bg-tertiary/50 text-fifth py-[3px] flex items-center justify-between">
+                      <h4 className="text-xs font-semibold text-fifth pl-2 leading-[0.75rem] pr-2">
+                        {category.category}
+                      </h4>
+                      {category.category_artwork && (
+                        <div className="flex-shrink-0 pr-0.5">
+                          <img 
+                            src={category.category_artwork} 
+                            alt={`${category.category} artwork`}
+                            className="h-[16px] object-contain rounded border border-fourth"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <ul className={title === "Cover Songs" ? "grid grid-cols-1 sm:grid-cols-2 gap-0" : ""}>
+                      {categorySongs.map(song => {
+                        const { count } = getSongStats(song.song_id);
+                        const seen = count > 0;
+                        
+                        return (
+                          <li 
+                            key={song.song_id} 
+                            className="bg-primary hover:bg-tertiary/30 transition-colors text-[0.625rem] leading-[0.625rem] py-0.5 px-2"
+                          >
+                            <Link 
+                              to={`/song/${song.song_id}`}
+                              className={`tracking-tight hover:underline transition-colors text-left block ${
+                                seen ? 'text-fifth font-medium' : 'text-fifth/70 font-light'
+                              }`}
+                            >
+                              {song.song}
+                              {seen && (
+                                <span className="ml-2 text-fifth font-normal">({count})</span>
+                              )}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
-      {/* Section 1: Categories with canonid 1-98 */}
-      <CategorySection 
-        columns={section1Columns}
-        title="Original Songs"
-        sectionType="original"
-        songsByCategory={songsByCategory}
-        userSongStats={userSongStats}
-        currentColumnCount={currentColumnCount}
-      />
-      
-      {/* Section 2: Categories with canonid 99-100 */}
-      <CategorySection 
-        columns={section2Columns}
-        title="Covers"
-        sectionType="covers"
-        songsByCategory={songsByCategory}
-        userSongStats={userSongStats}
-        currentColumnCount={currentColumnCount}
-      />
-      
-      {/* Section 3: Categories with canonid 101+ */}
-      <CategorySection 
-        columns={section3Columns}
-        title="Other Songs"
-        sectionType="other"
-        songsByCategory={songsByCategory}
-        userSongStats={userSongStats}
-        currentColumnCount={currentColumnCount}
-      />
+      <CategorySection sectionCategories={sectionedCategories.studioReleases} title="Studio Releases" />
+      <CategorySection sectionCategories={sectionedCategories.liveOnlySongs} title="Live-Only Songs" />
+      <CategorySection sectionCategories={sectionedCategories.tedTapesSongs} title="Ted Tapes Songs/Jams" />
+      <CategorySection sectionCategories={sectionedCategories.coverSongs} title="Cover Songs" />
+      <CategorySection sectionCategories={sectionedCategories.sideProjects} title="Side Projects" />
     </div>
   );
 }

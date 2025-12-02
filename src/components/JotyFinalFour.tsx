@@ -18,7 +18,7 @@ const FinalFour: React.FC<FinalFourProps> = ({ matches, selectedYear, onMatchupC
     <div className="min-w-[300px]">
       <div className='bg-canvas border border-fourth shadow-xl'>
         <div className="bg-fourth text-white px-2 py-0.5">
-          <h2 className="text-sm font-semibold">
+          <h2 className="text-sm font-medium">
             Final Four
           </h2>
         </div>
@@ -151,7 +151,7 @@ const FinalFour: React.FC<FinalFourProps> = ({ matches, selectedYear, onMatchupC
           {/* Championship */}
           <div>
             <div className="bg-fourth text-white px-2 py-0.5 mt-4 mb-2">
-              <h2 className="text-sm font-semibold">
+              <h2 className="text-sm font-medium">
                 Championship
               </h2>
             </div>

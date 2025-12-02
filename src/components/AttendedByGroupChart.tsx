@@ -217,8 +217,8 @@ const AttendedByGroupChart: React.FC<AttendedByGroupChartProps> = ({ userId }) =
   };
 
   return (
-    <div className="bg-primary p-3 rounded-lg border border-fourth">
-      <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">{getTitle()}</h3>
+    <div className="bg-primary border border-fourth shadow-xl">
+      <h3 className="text-sm font-semibold bg-tertiary text-fifth px-2 py-0.5">{getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">
@@ -228,7 +228,7 @@ const AttendedByGroupChart: React.FC<AttendedByGroupChartProps> = ({ userId }) =
       ) : chartData.length === 0 ? (
         <div className="text-fifth flex justify-center items-center h-40">{getEmptyMessage()}</div>
       ) : (
-        <div className="h-60">
+        <div className="h-60 mb-4">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
               <Pie

@@ -2,21 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate, Link } from 'react-router-dom';
 import { ChartBarDecreasing } from '../components/icons/ChartBarDecreasing';
+import { ArrowDownUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { SortControls } from './SortControls';
+import { CompactModal } from './CompactModal';
 import { SongSpreadModal } from './SongSpreadModal';
 import { useUserShows } from '../hooks/useUserShows';
 import { useUserSongMatrix } from '../hooks/useUserSongMatrix';
 import { 
   formatShowDate, 
   groupShowsByYear, 
-  getMatrixColumnBackgroundColor,
   getLoadingMessage,
   getTitle,
   getNoShowsMessage,
   getNoSongDataMessage,
   getErrorMessage
 } from '../utils/userSongMatrixUtils';
+import { getColumnBackgroundColor } from '../utils/songMatrixUtils';
 
 // Define matrix sort mode type (same as in TourSongsCombined)
 export type MatrixSortMode = 'alphabetical' | 'chronological' | 'playcount';
@@ -96,7 +97,6 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   if (isLoading) {
     return (
       <div className="bg-primary border border-fourth rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">Song Matrix</h2>
         <div className="flex justify-center items-center h-40">
           <div className="animate-pulse text-fifth">{getLoadingMessage(!!isOwnProfile, username)}</div>
         </div>
@@ -107,7 +107,6 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   if (errorMessage) {
     return (
       <div className="bg-primary border border-fourth rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">{getTitle(songMatrix.songs.length, !!isOwnProfile, username)}</h2>
         <div className="text-center py-6 text-red-500">{getErrorMessage(errorMessage, !!isOwnProfile, username)}</div>
       </div>
     );
@@ -121,7 +120,6 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   if (noShows) {
     return (
       <div className="bg-primary border border-fourth rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
         <div className="text-center py-6 text-fifth">
           {getNoShowsMessage(!!isOwnProfile, username)}
         </div>
@@ -132,34 +130,76 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
   if (noSongData) {
     return (
       <div className="bg-primary border border-fourth rounded-lg p-3">
-        <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">{isOwnProfile ? "Your Song Matrix" : `${username ? username + "'s" : "Their"} Song Matrix`}</h2>
         <div className="text-center py-6 text-fifth">{getNoSongDataMessage(!!isOwnProfile, username)}</div>
       </div>
     );
   }
   
   return (
-    <div className={`${!hideTitle ? "bg-primary border border-fourth rounded-lg p-3" : ""} ${className}`}>
+    <div className={`${!hideTitle ? "bg-primary border border-fourth shadow-xl" : ""} ${className}`}>
       {!hideTitle && (
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 rounded-lg border border-fourth">
+        <div className="bg-tertiary text-fifth px-2 py-0.5 flex justify-between items-center">
+          <h2 className="text-sm font-semibold">
             {getTitle(songMatrix.songs.length, !!isOwnProfile, username)}
           </h2>
-          <div className="flex items-center gap-3">
-            <SortControls
-              matrixSortMode={matrixSortMode}
-              setMatrixSortMode={setMatrixSortMode}
-              isSortModalOpen={isSortModalOpen}
-              setIsSortModalOpen={setIsSortModalOpen}
-            />
+          
+          <div className="flex items-center gap-4">
+            {/* Matrix Sort Toggle */}
+            <>
+              {/* Desktop version - hidden on mobile */}
+              <div className="hidden md:flex items-center bg-canvas rounded-md border border-fourth py-0.5 px-1">
+                <span className="text-fifth text-[0.625rem] ml-1 mr-2 font-medium">Sort:</span>
+                <div className="flex gap-1 font-light">
+                  <button 
+                    onClick={() => setMatrixSortMode('alphabetical')}
+                    className={`px-1 text-[0.625rem] rounded ${
+                      matrixSortMode === 'alphabetical' 
+                        ? 'bg-tertiary text-fifth' 
+                        : 'text-fifth hover:bg-tertiary/40'
+                    }`}
+                  >
+                    A-Z
+                  </button>
+                  <button 
+                    onClick={() => setMatrixSortMode('chronological')}
+                    className={`px-1 text-[0.625rem] rounded ${
+                      matrixSortMode === 'chronological' 
+                        ? 'bg-tertiary text-fifth' 
+                        : 'text-fifth hover:bg-tertiary/40'
+                    }`}
+                  >
+                    Chronological
+                  </button>
+                  <button 
+                    onClick={() => setMatrixSortMode('playcount')}
+                    className={`px-1 text-[0.625rem] rounded ${
+                      matrixSortMode === 'playcount' 
+                        ? 'bg-tertiary text-fifth' 
+                        : 'text-fifth hover:bg-tertiary/40'
+                    }`}
+                  >
+                    Most Played
+                  </button>
+                </div>
+              </div>
+              
+              {/* Mobile version - only visible on mobile */}
+              <button 
+                onClick={() => setIsSortModalOpen(true)}
+                className="md:hidden flex items-center justify-center bg-fourth rounded border border-fourth p-0.5"
+                aria-label="Sort options"
+              >
+                <ArrowDownUp className="w-4 h-4 text-white" />
+              </button>
+            </>
             
             {/* Chart button */}
             <button 
               onClick={() => setIsSpreadModalOpen(true)} 
-              className="text-fourth hover:text-tertiary transition-colors"
+              className="text-fourth hover:text-white transition-colors"
               aria-label="Show song spread"
             >
-              <ChartBarDecreasing size={20} />
+              <ChartBarDecreasing size={16} />
             </button>
           </div>
         </div>
@@ -169,13 +209,14 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
         <table className="w-full border-collapse min-w-max">
           <thead>
             {/* Year headers row */}
-            <tr className="bg-canvas border-y border-[#b4b2b2]">
+            <tr className="bg-canvas">
               {/* Song cell that spans both rows */}
               <th 
-                className="px-2 py-1 text-left text-xs font-medium text-fifth border-l border-r border-fourth"
+                className="px-2 py-1 text-left text-xs font-medium text-fifth border"
                 rowSpan={2}
                 style={{ 
-                  verticalAlign: 'bottom'
+                  verticalAlign: 'bottom',
+                  borderColor: 'rgb(180, 178, 178)'
                 }}
               >
                 Song
@@ -188,10 +229,9 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                   <th 
                     key={`year-${i}`} 
                     colSpan={colSpan}
-                    className="px-1 py-1 text-center text-xs font-semibold bg-canvas"
+                    className="px-1 py-1 text-center text-xs font-semibold bg-canvas border"
                     style={{
-                      borderRight: '1px solid #b4b2b2',
-                      borderTop: '1px solid #b4b2b2'
+                      borderColor: 'rgb(180, 178, 178)'
                     }}
                   >
                     {yearIdMap[group.year] ? (
@@ -210,21 +250,22 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
             </tr>
             
             {/* Date headers row */}
-            <tr className="bg-canvas border-y border-[#b4b2b2]">
+            <tr className="bg-canvas">
               {shows.map((show, index) => {
                 const showId = show.show_id;
                 
                 return (
                   <th 
                     key={index} 
-                    className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border-l border-r border-fourth" 
+                    className="px-1 py-1 text-center text-xs font-medium text-fifth whitespace-nowrap border" 
                     style={{ 
-                      width: 'min-content'
+                      width: 'min-content',
+                      borderColor: 'rgb(180, 178, 178)'
                     }}
                   >
                     <Link 
                       to={`/setlist/${showId}`}
-                      className="hover:text-[#a9682e] hover:underline transition-colors"
+                      className="hover:underline transition-colors"
                     >
                       {formatShowDate(show.show_date)}
                     </Link>
@@ -233,17 +274,16 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#b4b2b2]">
-          {sortedSongs.map((song) => {
+          <tbody className="divide-y divide-[#d9c3a5]">
+          {sortedSongs.map((song, songIndex) => {
             const performances = songMatrix.data[song] || [];
-            const songIndex = sortedSongs.indexOf(song);
             
             return (
               <tr 
                 key={song} 
-                className={songIndex % 2 === 0 ? 'bg-primary' : 'bg-canvas'}
+                className={`${songIndex % 2 === 0 ? 'bg-primary' : 'bg-primary'} hover:bg-tertiary/40`}
               >
-                <td className="font-medium text-fifth text-xs pl-2 whitespace-nowrap border"
+                <td className="font-medium text-fifth text-[0.625rem] px-2 whitespace-nowrap border"
                     style={{ borderColor: 'rgb(180, 178, 178)' }}>
                   {songIdMap[song] ? (
                     <Link 
@@ -259,7 +299,7 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
                 
                 {shows.map((show) => {
                   const performance = performances.find(p => p.showId === show.show_id);
-                  const bgColor = performance ? getMatrixColumnBackgroundColor(performance.placement) : '';
+                  const bgColor = performance ? getColumnBackgroundColor(performance.placement) : '';
                   
                   return (
                     <td 
@@ -281,6 +321,55 @@ const UserSongMatrix: React.FC<UserSongMatrixProps> = ({
           </tbody>
         </table>
       </div>
+      
+      {/* Sort Modal for Mobile */}
+      <CompactModal
+        isOpen={isSortModalOpen}
+        onClose={() => setIsSortModalOpen(false)}
+        title="Sort Songs By"
+      >
+        <div className="flex flex-col w-full">
+          <button 
+            onClick={() => {
+              setMatrixSortMode('alphabetical');
+              setIsSortModalOpen(false);
+            }}
+            className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
+              matrixSortMode === 'alphabetical' 
+                ? 'bg-tertiary text-fifth font-semibold' 
+                : 'text-fifth hover:bg-black/10 font-medium'
+            }`}
+          >
+            A-Z
+          </button>
+          <button 
+            onClick={() => {
+              setMatrixSortMode('chronological');
+              setIsSortModalOpen(false);
+            }}
+            className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
+              matrixSortMode === 'chronological' 
+                ? 'bg-tertiary text-fifth font-semibold' 
+                : 'text-fifth hover:bg-black/10 font-medium'
+            }`}
+          >
+            Chronological
+          </button>
+          <button 
+            onClick={() => {
+              setMatrixSortMode('playcount');
+              setIsSortModalOpen(false);
+            }}
+            className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
+              matrixSortMode === 'playcount' 
+                ? 'bg-tertiary text-fifth font-semibold' 
+                : 'text-fifth hover:bg-black/10 font-medium'
+            }`}
+          >
+            Most Played
+          </button>
+        </div>
+      </CompactModal>
       
       {/* Song Spread Modal */}
       <SongSpreadModal

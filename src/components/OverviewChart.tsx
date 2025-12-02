@@ -287,7 +287,7 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
 
   if (loading) {
     return (
-      <div className="bg-primary border border-fourth rounded-lg p-3">
+      <div className="bg-primary border border-fourth shadow-xl p-3">
         <div className="flex flex-col justify-center items-center h-56">
           <CircularProgress value={loadingProgress} />
           <p className="text-fifth mt-4">{getLoadingMessage()}</p>
@@ -297,15 +297,15 @@ const OverviewChart: React.FC<OverviewChartProps> = ({ userId }) => {
   }
 
   if (showData.length === 0) {
-    return <div className="text-center text-fifth py-10 bg-primary p-4 rounded-lg border border-fourth">
+    return <div className="text-center text-fifth py-10 bg-primary p-4 border border-fourth shadow-xl">
       {getEmptyStateMessage()}
     </div>;
   }
   
   // Filter out years with no shows if needed
   return (
-    <div className="bg-primary p-3 rounded-lg border border-fourth">
-      <h3 className="text-lg font-medium bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">{getChartTitle()}</h3>
+    <div className="bg-primary border border-fourth shadow-xl">
+      <h3 className="text-sm font-medium bg-fourth text-white text-fifth px-2 py-0.5 shadow-xl">{getChartTitle()}</h3>
       <div className="overflow-x-auto">
         <div className="h-80 min-w-[768px]">
           <ResponsiveContainer width="100%" height="100%">

@@ -172,8 +172,7 @@ export const PublicProfile: React.FC = () => {
       case 'Overview':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Profile Overview</h3>
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4">
               <OverviewChart userId={userId} />
               <UserStats userId={userId} showCopyButton={false} />
             </div>
@@ -184,7 +183,7 @@ export const PublicProfile: React.FC = () => {
           <div>
             <AttendedShows userId={userId} readOnly={true} onManagingToggle={handleShowManagementToggle} />
             {!isManagingShows && (
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-4">
                 <div className="lg:col-span-2">
                   <AttendedByGroupChart userId={userId} />
                 </div>
@@ -198,8 +197,8 @@ export const PublicProfile: React.FC = () => {
       case 'Songs':
         return (
           <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Songs Seen</h3>
+            <div className="flex justify-between items-center mb-4 bg-tertiary border border-fourth shadow-xl">
+              <h3 className="text-sm font-semibold text-fifth px-2 py-0.5">Songs Seen</h3>
               <UserSongToggleSwitch
                 isRight={showSongMatrix}
                 onToggle={setShowSongMatrix}
@@ -219,14 +218,12 @@ export const PublicProfile: React.FC = () => {
       case 'Slots':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Slots</h3>
             <UserSlots userId={userId} />
           </div>
         );
       case 'Personnel':
         return (
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">Personnel Seen</h3>
             <UserGuests userId={userId} />
           </div>
         );
@@ -275,7 +272,7 @@ export const PublicProfile: React.FC = () => {
   return (
     <div className="max-w-[1280px] mx-auto">
       <div className="flex flex-row justify-between items-center">
-        <h2 className="text-3xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">
+        <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 border border-fourth shadow-xl">
           {formatUsername(profileUsername)}'s Stats
         </h2>
         
@@ -283,14 +280,14 @@ export const PublicProfile: React.FC = () => {
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary text-fifth font-medium border border-fourth"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-tertiary text-fifth text-sm font-semibold border border-fourth"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-4 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-4 py-1 bg-primary border border-fourth shadow-xl z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -298,8 +295,8 @@ export const PublicProfile: React.FC = () => {
                     setActiveTab(tab);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-0.5 text-sm font-light text-fifth hover:bg-canvas transition-colors ${
-                    activeTab === tab ? 'bg-canvas font-medium' : ''
+                  className={`w-full text-left px-2 py-0.5 text-xs font-light text-fifth hover:bg-tertiary/40 transition-colors ${
+                    activeTab === tab ? 'bg-tertiary/80 font-medium' : ''
                   }`}
                 >
                   {tab}
@@ -311,14 +308,14 @@ export const PublicProfile: React.FC = () => {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-primary px-1 py-1 rounded-lg border border-fourth">
+          <div className="bg-primary border border-fourth shadow-xl">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
                   key={tab}
                   ref={el => tabsRef.current[index] = el}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-1 px-3 font-medium relative z-10 text-sm transition-colors duration-200 ${
+                  className={`py-0.5 px-2 font-medium relative z-10 text-xs transition-colors duration-200 ${
                     activeTab === tab
                       ? 'text-fifth'
                       : 'text-fifth hover:underline'
@@ -331,7 +328,7 @@ export const PublicProfile: React.FC = () => {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-tertiary rounded-lg top-0 transition-all duration-300 ease-in-out border border-fourth"
+                className="absolute h-5 bg-tertiary top-0 transition-all duration-300 ease-in-out"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>
@@ -340,8 +337,10 @@ export const PublicProfile: React.FC = () => {
       </div>
       
       {/* Tab content */}
-      <div className="mt-8">
-        {renderTabContent()}
+      <div className="mt-4">
+        <div>
+          {renderTabContent()}
+        </div>
       </div>
     </div>
   );

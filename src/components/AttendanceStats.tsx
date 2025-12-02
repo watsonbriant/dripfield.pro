@@ -57,8 +57,8 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
   }, [userId, isOwnProfile, user]);
 
   return (
-    <div className="bg-primary p-3 rounded-lg border border-fourth">
-      <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2">{texts.getTitle()}</h3>
+    <div className="bg-primary border border-fourth shadow-xl">
+      <h3 className="text-sm font-semibold bg-tertiary text-fifth px-2 py-0.5">{texts.getTitle()}</h3>
       
       {loading ? (
         <div className="flex flex-col justify-center items-center h-56">
@@ -66,54 +66,60 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
           <p className="text-fifth mt-4">{texts.getLoadingMessage()}</p>
         </div>
       ) : (
-        <div className="md:space-y-2">
+        <div>
           {/* Desktop view - cards */}
-          <div className="hidden md:grid grid-cols-3 gap-4">
-            <div className="bg-canvas p-3 rounded-md relative border border-fourth">
-              <div className="text-fifth text-sm font-medium">{texts.getShowsLabel()}</div>
-              <div className="text-2xl font-semibold text-fifth mt-1">{data.showsCount}</div>
-              <Calendar className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
+          <div className="hidden md:grid grid-cols-3">
+            <div className="bg-canvas px-2 py-1 border-r border-fourth">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-fourth" />
+                <div className="text-fifth text-xs font-medium">{texts.getShowsLabel()}</div>
+                <div className="text-sm font-medium text-white bg-fourth px-1.5 py-[1px] rounded-md">{data.showsCount}</div>
+              </div>
             </div>
-            <div className="bg-canvas p-3 rounded-md relative border border-fourth">
-              <div className="text-fifth text-sm font-medium">{texts.getVenuesLabel()}</div>
-              <div className="text-2xl font-semibold text-fifth mt-1">{data.venuesCount}</div>
-              <Building2 className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
+            <div className="bg-canvas px-2 py-1 border-r border-fourth">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-fourth" />
+                <div className="text-fifth text-xs font-medium">{texts.getVenuesLabel()}</div>
+                <div className="text-sm font-medium text-white bg-fourth px-1.5 py-[1px] rounded-md">{data.venuesCount}</div>
+              </div>
             </div>
-            <div className="bg-canvas p-3 rounded-md relative border border-fourth">
-              <div className="text-fifth text-sm font-medium">{texts.getSongsLabel()}</div>
-              <div className="text-2xl font-semibold text-fifth mt-1">{data.songsCount}</div>
-              <Music className="h-5 w-5 text-fourth absolute bottom-2 right-2" />
+            <div className="bg-canvas px-2 py-1">
+              <div className="flex items-center gap-2">
+                <Music className="h-5 w-5 text-fourth" />
+                <div className="text-fifth text-xs font-medium">{texts.getSongsLabel()}</div>
+                <div className="text-sm font-medium text-white bg-fourth px-1.5 py-[1px] rounded-md">{data.songsCount}</div>
+              </div>
             </div>
           </div>
           
           {/* Mobile view - list */}
           <div className="md:hidden">
-            <ul className="space-y-2 text-sm mb-4">
+            <ul className="space-y-1 text-sm my-1 mx-2">
               <li className="flex items-center">
                 <Calendar className="h-4 w-4 text-fourth mr-2" />
-                <span className="text-fifth font-semibold">{data.showsCount}</span>
-                <span className="text-fifth font-light ml-2">{texts.getShowsLabel()}</span>
+                <span className="text-fifth text-xs font-medium mr-2">{texts.getShowsLabel()}</span>
+                <span className="text-fifth font-medium text-white bg-fourth px-1.5 py-[1px] rounded-md">{data.showsCount}</span>
               </li>
               <li className="flex items-center">
                 <Building2 className="h-4 w-4 text-fourth mr-2" />
-                <span className="text-fifth font-semibold">{data.venuesCount}</span>
-                <span className="text-fifth font-light ml-2">{texts.getVenuesLabel()}</span>
+                <span className="text-fifth text-xs font-medium mr-2">{texts.getVenuesLabel()}</span>
+                <span className="text-fifth font-medium text-white bg-fourth px-1.5 py-[1px] rounded-md">{data.venuesCount}</span>
               </li>
               <li className="flex items-center">
                 <Music className="h-4 w-4 text-fourth mr-2" />
-                <span className="text-fifth font-semibold">{data.songsCount}</span>
-                <span className="text-fifth font-light ml-2">{texts.getSongsLabel()}</span>
+                <span className="text-fifth text-xs font-medium mr-2">{texts.getSongsLabel()}</span>
+                <span className="text-fifth font-medium text-white bg-fourth px-1.5 py-[1px] rounded-md">{data.songsCount}</span>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth mb-2 mt-2">{texts.getToursLabel()}</h3>
-            <div className="space-y-1 max-h-64 overflow-y-auto pr-2">
+            <h3 className="text-sm font-semibold bg-tertiary text-fifth px-2 py-0.5">{texts.getToursLabel()}</h3>
+            <div className="space-y-1">
               {data.tourCounts.length === 0 ? (
                 <p className="text-fifth/60 italic">{texts.getNoToursMessage()}</p>
               ) : (
-                <ul className="space-y-1 text-sm">
+                <ul className="space-y-0.5 text-xs mx-2 my-1">
                   {data.tourCounts.map((tour) => (
                     <li 
                       key={tour.tour}
@@ -125,7 +131,7 @@ const AttendanceStats: React.FC<AttendanceStatsProps> = ({ userId }) => {
                       >
                         {tour.tour}
                       </Link>
-                      <span className="text-fifth/90 ml-2 font-light">({tour.count})</span>
+                      <span className="text-fifth/90 ml-2 text-[0.625rem] font-light">({tour.count})</span>
                     </li>
                   ))}
                 </ul>

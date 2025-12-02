@@ -65,28 +65,24 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
     }
   }, [userId, isOwnProfile, user]);
 
-  // Create stats data array in the desired order
+  // Mobile order mapping (for 1 column layout)
+  const mobileOrderMap: { [key: string]: number } = {
+    'topSongs': 1,
+    'longestPerformances': 2,
+    'showOpeners': 3,
+    'setOpeners': 4,
+    'setClosers': 5,
+    'encoreSongs': 6,
+    'notSeenSongs': 7
+  };
+
+  // Create stats data array in the desired desktop order
   const statData: StatData[] = [
     {
       type: 'topSongs',
       title: 'Most Seen Songs',
       data: topSongs,
       loading: loadingTop
-    },
-    {
-      type: 'longestPerformances',
-      title: 'Longest Song Performances',
-      data: longestPerformances,
-      loading: loadingLongest,
-      countKey: 'length_seconds',
-      showDate: true,
-      showLength: true
-    },
-    {
-      type: 'notSeenSongs',
-      title: 'Most Common Not Seen',
-      data: notSeenSongs,
-      loading: loadingNotSeen
     },
     {
       type: 'showOpeners',
@@ -105,6 +101,15 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
       songNameKey: 'song_name'
     },
     {
+      type: 'longestPerformances',
+      title: 'Longest Song Performances',
+      data: longestPerformances,
+      loading: loadingLongest,
+      countKey: 'length_seconds',
+      showDate: true,
+      showLength: true
+    },
+    {
       type: 'setClosers',
       title: 'Most Seen Set Closers',
       data: setClosers,
@@ -119,6 +124,12 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
       loading: loadingEncores,
       countKey: 'times_played',
       songNameKey: 'song_name'
+    },
+    {
+      type: 'notSeenSongs',
+      title: 'Most Common Not Seen',
+      data: notSeenSongs,
+      loading: loadingNotSeen
     }
   ];
 
@@ -169,9 +180,22 @@ const UserStats: React.FC<UserStatsProps> = ({ userId, showCopyButton = true }) 
   
   return (
     <div className="mb-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-auto grid-flow-row">
+      <style>{`
+        @media (min-width: 1024px) {
+          .stat-box-item {
+            order: unset !important;
+          }
+        }
+      `}</style>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 auto-rows-auto grid-flow-row">
         {statData.map((stat, index) => (
-          <div key={`stat-${index}`} className="w-full h-auto">
+          <div 
+            key={`stat-${index}`} 
+            className="w-full h-auto stat-box-item"
+            style={{
+              order: mobileOrderMap[stat.type] || index + 1
+            }}
+          >
             <StatBox
               title={stat.title}
               data={stat.data}
