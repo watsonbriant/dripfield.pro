@@ -60,7 +60,7 @@ export function GroupFilters({
                     {groupData.group}
                   </button>
                   {' '}
-                  <span className="font-light">({groupData.count})</span>
+                  <span className="font-light ml-2 text-[0.625rem] leading-[0.75rem]">({groupData.count})</span>
                 </div>
               </div>
             ))}

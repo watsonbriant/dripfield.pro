@@ -36,23 +36,23 @@ export function ToursSection({ tours, currentYear, loading }: ToursSectionProps)
           <p className="text-fifth text-xs text-center py-2">No tours found</p>
         ) : (
           tours.map((tour) => (
-            <div key={tour.tour_count} className="text-fifth text-xs flex items-center">
+            <div key={tour.tour_count} className="text-fifth text-xs flex items-stretch">
               <div 
-                className="w-1 h-5 flex-shrink-0"
+                className="w-1 flex-shrink-0 self-stretch"
                 style={{ 
                   width: '5px',
                   padding: 0,
                   backgroundColor: tour.color
                 }}
               />
-              <div className="flex-1 text-left leading-tight ml-2 font-light">
+              <div className="flex-1 text-left leading-tight ml-2 my-0.5 font-light">
                 <Link 
                   to={`/tours/${tour.tour_id}`}
-                  className="hover:underline transition-colors font-medium text-left"
+                  className="hover:underline transition-colors font-medium text-left inline leading-[0.75rem]"
                 >
                   {tour.tour_count.split(' (')[0]}
                 </Link>
-                {' (' + tour.tour_count.split(' (')[1]}
+                <span className="ml-2 text-[0.625rem] leading-[0.75rem]">{' (' + tour.tour_count.split(' (')[1]}</span>
               </div>
             </div>
           ))
