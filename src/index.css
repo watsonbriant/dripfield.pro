@@ -296,3 +296,17 @@ body {
 .highlight-releases {
   animation: highlight 2s ease-in-out;
 }
+
+/* Ensure background tiles properly on all devices, especially mobile */
+@media (max-width: 767px) {
+  /* Use dynamic viewport height on mobile to account for browser UI */
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    min-height: 100dvh;
+  }
+}

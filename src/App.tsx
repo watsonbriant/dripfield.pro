@@ -306,8 +306,10 @@ function App() {
           style={{
             backgroundImage: `url(${bgTile})`,
             backgroundRepeat: 'repeat',
-            backgroundAttachment: 'fixed',
-            backgroundPosition: '0 0'
+            backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+            backgroundPosition: '0 0',
+            backgroundSize: 'auto',
+            minHeight: isMobile ? '100dvh' : '100vh'
           }}
         >
           {/* Mobile-only header */}
