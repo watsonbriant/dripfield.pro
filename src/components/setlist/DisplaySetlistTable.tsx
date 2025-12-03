@@ -48,7 +48,7 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
     return (
       <div className="border border-fourth rounded-lg p-3 overflow-x-auto w-fit shadow-xl">
         <table className="border-collapse w-auto">
-          <SetlistTableHeader show={show} />
+          <SetlistTableHeader show={show} setlist={setlist} />
           <tbody>
             <tr>
               <td colSpan={show?.show_canonid !== null ? 8 : 5} className="text-center text-fifth py-8">
@@ -71,7 +71,7 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   return (
     <div className="border border-fourth overflow-x-auto w-fit shadow-xl">
       <table className="border-collapse table-auto" style={{ minWidth: 'max-content' }}>
-        <SetlistTableHeader show={show} />
+        <SetlistTableHeader show={show} setlist={setlist} />
         <tbody>
           {setlist.map((entry, index) => {
             const shouldSkipNumbering = entry.entry_short && 

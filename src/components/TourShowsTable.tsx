@@ -1,4 +1,5 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Check, ArrowUp, ArrowDown, FileMusic, Users, Star, AudioLines } from 'lucide-react';
 import { Show } from '../types/tourTypes';
@@ -31,6 +32,46 @@ export function TourShowsTable({
   showsWithSetlists,
   showsWithReleases
 }: TourShowsTableProps) {
+  const [tooltipState, setTooltipState] = useState<{
+    isVisible: boolean;
+    text: string;
+    position: { x: number; y: number } | null;
+  }>({
+    isVisible: false,
+    text: '',
+    position: null
+  });
+
+  const updateTooltip = (text: string, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    setTooltipState({
+      isVisible: true,
+      text,
+      position: { x: rect.left + rect.width / 2, y: rect.top - 5 }
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltipState({ isVisible: false, text: '', position: null });
+  };
+
+  // Update tooltip position on scroll/resize
+  useEffect(() => {
+    if (!tooltipState.isVisible || !tooltipState.position) return;
+
+    const updatePosition = () => {
+      // Tooltip position will be recalculated on next hover
+      hideTooltip();
+    };
+
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [tooltipState.isVisible, tooltipState.position]);
 
   const getSortIcon = (column: string) => {
     if (sortColumn !== column) {
@@ -56,7 +97,11 @@ export function TourShowsTable({
     { 
       key: 'setlist', 
       label: (
-        <div className="flex justify-center items-center">
+        <div 
+          className="flex justify-center items-center"
+          onMouseEnter={(e) => updateTooltip('Setlist Scan', e.currentTarget)}
+          onMouseLeave={hideTooltip}
+        >
           <div className="text-white bg-[#006400] rounded p-0.5">
             <FileMusic size={12} strokeWidth={2} />
           </div>
@@ -66,15 +111,39 @@ export function TourShowsTable({
     { 
       key: 'releases', 
       label: (
-        <div className="flex justify-center items-center">
+        <div 
+          className="flex justify-center items-center"
+          onMouseEnter={(e) => updateTooltip('Media Available', e.currentTarget)}
+          onMouseLeave={hideTooltip}
+        >
           <div className="text-white bg-[#7c2128] rounded p-0.5">
             <AudioLines size={12} strokeWidth={2} />
           </div>
         </div>
       )
     },
-    { key: 'attendees', label: <Users size={12} className="text-fifth" strokeWidth={2} /> },
-    { key: 'wl_link', label: <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" /> },
+    { 
+      key: 'attendees', 
+      label: (
+        <div
+          onMouseEnter={(e) => updateTooltip('Show Attendees', e.currentTarget)}
+          onMouseLeave={hideTooltip}
+        >
+          <Users size={12} className="text-fifth" strokeWidth={2} />
+        </div>
+      )
+    },
+    { 
+      key: 'wl_link', 
+      label: (
+        <div
+          onMouseEnter={(e) => updateTooltip('Chat on WysteriaLane.org', e.currentTarget)}
+          onMouseLeave={hideTooltip}
+        >
+          <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
+        </div>
+      )
+    },
     { key: 'show_detail', label: 'Detail' }
   ];
 
@@ -98,11 +167,23 @@ export function TourShowsTable({
                   <th
                     key={key}
                     onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? onSort(key) : null}
+                    onMouseEnter={(e) => {
+                      if (key === 'show_gap') {
+                        updateTooltip('Average Show Gap', e.currentTarget);
+                      } else if (key === 'show_rarity') {
+                        updateTooltip('Show Setlist Rarity', e.currentTarget);
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (key === 'show_gap' || key === 'show_rarity') {
+                        hideTooltip();
+                      }
+                    }}
                     className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'rating' || key === 'attendees' ? 'text-center' : 'text-left'}
                       text-sm font-medium text-fifth whitespace-nowrap 
                       ${key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? 'px-2 cursor-pointer hover:bg-black/10' : key === 'setlist' || key === 'releases' ? 'w-8 px-1 text-center' : 'w-8 px-1 text-center'}`}
                   >
-                    <div className={`flex items-center ${key === 'show_length' || key === 'attended' || key === 'show_rarity' || key === 'show_gap' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'users' || key === 'releases' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
+                    <div className={`flex items-center ${key === 'show_length' || key === 'attended' || key === 'show_rarity' || key === 'show_gap' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'attendees' || key === 'releases' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
                       {label}
                     </div>
                   </th>
@@ -231,6 +312,8 @@ export function TourShowsTable({
                           to={`/setlist/${show.show_id}`}
                           state={{ openChangesModal: true }}
                           className="text-[#006400] hover:text-white hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
+                          onMouseEnter={(e) => updateTooltip('Setlist Scan', e.currentTarget)}
+                          onMouseLeave={hideTooltip}
                         >
                           <FileMusic size={12} strokeWidth={2} />
                         </Link>
@@ -243,6 +326,8 @@ export function TourShowsTable({
                         <Link
                           to={`/setlist/${show.show_id}`}
                           className="text-[#7c2128] hover:text-white hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
+                          onMouseEnter={(e) => updateTooltip('Media Available', e.currentTarget)}
+                          onMouseLeave={hideTooltip}
                         >
                           <AudioLines size={12} strokeWidth={2} />
                         </Link>
@@ -260,6 +345,8 @@ export function TourShowsTable({
                         <button
                           onClick={() => show.show_wl_link && window.open(show.show_wl_link, '_blank')}
                           className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
+                          onMouseEnter={(e) => updateTooltip('Chat on WysteriaLane.org', e.currentTarget)}
+                          onMouseLeave={hideTooltip}
                         >
                           <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
                         </button>
@@ -277,6 +364,22 @@ export function TourShowsTable({
           </table>
         </div>
       </div>
+
+      {/* Tooltip Portal */}
+      {tooltipState.isVisible && tooltipState.position && createPortal(
+        <div 
+          className="fixed text-[0.625rem] leading-[0.75rem] font-normal bg-canvas text-fifth px-1.5 py-1 rounded border border-fourth shadow-lg whitespace-nowrap pointer-events-none z-[99999]"
+          style={{ 
+            left: `${tooltipState.position.x}px`,
+            top: `${tooltipState.position.y}px`,
+            transform: 'translate(-50%, -100%)',
+            marginTop: '2px'
+          }}
+        >
+          {tooltipState.text}
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

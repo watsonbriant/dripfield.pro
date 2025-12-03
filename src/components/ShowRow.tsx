@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Check, FileMusic, Users, Star, AudioLines } from 'lucide-react';
@@ -52,6 +53,45 @@ export function ShowRow({
   const { user } = useAuth();
   const [hoveredTour, setHoveredTour] = useState<string | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [tooltipState, setTooltipState] = useState<{
+    isVisible: boolean;
+    text: string;
+    position: { x: number; y: number } | null;
+  }>({
+    isVisible: false,
+    text: '',
+    position: null
+  });
+
+  const updateTooltip = (text: string, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    setTooltipState({
+      isVisible: true,
+      text,
+      position: { x: rect.left + rect.width / 2, y: rect.top - 5 }
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltipState({ isVisible: false, text: '', position: null });
+  };
+
+  // Update tooltip position on scroll/resize
+  useEffect(() => {
+    if (!tooltipState.isVisible || !tooltipState.position) return;
+
+    const updatePosition = () => {
+      hideTooltip();
+    };
+
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [tooltipState.isVisible, tooltipState.position]);
 
   const getTourColor = (tourName: string): string => {
     const tour = tours.find(t => t.tour === tourName);
@@ -181,6 +221,8 @@ export function ShowRow({
               to={`/setlist/${show.show_id}`}
               state={{ openChangesModal: true }}
               className="text-[#006400] hover:text-white hover:bg-[#006400] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
+              onMouseEnter={(e) => updateTooltip('Setlist Scan', e.currentTarget)}
+              onMouseLeave={hideTooltip}
             >
               <FileMusic size={12} strokeWidth={2} />
             </Link>
@@ -193,6 +235,8 @@ export function ShowRow({
             <Link
               to={`/setlist/${show.show_id}`}
               className="text-[#7c2128] hover:text-white hover:bg-[#7c2128] hover:shadow-[0_0_0_1px_black] rounded transition-all p-[1px] inline-block"
+              onMouseEnter={(e) => updateTooltip('Media Available', e.currentTarget)}
+              onMouseLeave={hideTooltip}
             >
               <AudioLines size={12} strokeWidth={2} />
             </Link>
@@ -210,6 +254,8 @@ export function ShowRow({
             <button
               onClick={() => window.open(show.show_wl_link, '_blank')}
               className="hover:text-[#a9682e] hover:bg-[#78b1a1]/30 hover:shadow-[0_0_0_1px_#78b1a1] rounded transition-all p-[1px]"
+              onMouseEnter={(e) => updateTooltip('Chat on WysteriaLane.org', e.currentTarget)}
+              onMouseLeave={hideTooltip}
             >
               <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
             </button>
@@ -221,6 +267,21 @@ export function ShowRow({
         {show.show_detail && show.show_alert && <>&nbsp;&nbsp;</>}
         {show.show_alert && <span className="text-[#CE1126] font-medium">[{show.show_alert}]</span>}
       </td>
+      {/* Tooltip Portal */}
+      {tooltipState.isVisible && tooltipState.position && createPortal(
+        <div 
+          className="fixed text-[0.625rem] leading-[0.75rem] font-normal bg-canvas text-fifth px-1.5 py-1 rounded border border-fourth shadow-lg whitespace-nowrap pointer-events-none z-[99999]"
+          style={{ 
+            left: `${tooltipState.position.x}px`,
+            top: `${tooltipState.position.y}px`,
+            transform: 'translate(-50%, -100%)',
+            marginTop: '3px'
+          }}
+        >
+          {tooltipState.text}
+        </div>,
+        document.body
+      )}
     </tr>
   );
 }
