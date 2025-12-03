@@ -33,7 +33,7 @@ export const ShowStatTable: React.FC<ShowStatTableProps> = ({
       const badge = rankRefs.current[hoveredRank];
       if (badge) {
         const rect = badge.getBoundingClientRect();
-        setRankTooltipPosition({ x: rect.left, y: rect.top + rect.height + 4 });
+        setRankTooltipPosition({ x: rect.left + rect.width + 4, y: rect.top });
       }
     };
 
@@ -104,7 +104,7 @@ export const ShowStatTable: React.FC<ShowStatTableProps> = ({
                           className="text-fifth text-[0.625rem] font-medium px-1 py-[1px] rounded bg-yellow-500 inline-block"
                           onMouseEnter={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect();
-                            setRankTooltipPosition({ x: rect.left, y: rect.top + rect.height + 4 });
+                            setRankTooltipPosition({ x: rect.left + rect.width + 4, y: rect.top });
                             setHoveredRank(item.show_id);
                           }}
                           onMouseLeave={() => {
