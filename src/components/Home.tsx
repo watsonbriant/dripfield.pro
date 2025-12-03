@@ -31,6 +31,13 @@ export function Home() {
     setClosers,
     encores,
     notPlayedSongs,
+    longestSongs,
+    liberatedSongs,
+    longestShows,
+    lowestRarityShows,
+    highestGapShows,
+    highestAttendedShows,
+    highestRatedShows,
     isAnyStatLoading
   } = useStatsData(selectedYear);
 
@@ -101,17 +108,6 @@ export function Home() {
 
         {/* Middle Column */}
         <div className="w-full lg:w-[60%] space-y-4">
-          <div className="bg-primary border border-fourth shadow-xl">
-            <img 
-              src={cover7Image} 
-              alt="Cover7" 
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className="w-full lg:w-[20%]">
           <div className="border border-fourth shadow-xl">
             <StatsSection
               selectedYear={selectedYear}
@@ -122,8 +118,26 @@ export function Home() {
               setClosers={setClosers}
               encores={encores}
               notPlayedSongs={notPlayedSongs}
+              longestSongs={longestSongs}
+              liberatedSongs={liberatedSongs}
+              longestShows={longestShows}
+              lowestRarityShows={lowestRarityShows}
+              highestGapShows={highestGapShows}
+              highestAttendedShows={highestAttendedShows}
+              highestRatedShows={highestRatedShows}
               isAnyStatLoading={isAnyStatLoading}
               showYearSelector={false}
+            />
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="w-full lg:w-[20%]">
+          <div className="bg-primary border border-fourth shadow-xl">
+            <img 
+              src={cover7Image} 
+              alt="Cover7" 
+              className="w-full h-auto"
             />
           </div>
         </div>
