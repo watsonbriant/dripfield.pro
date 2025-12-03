@@ -70,6 +70,10 @@ export const usePerformanceSorting = () => {
           valueA = a.entry_song || '';
           valueB = b.entry_song || '';
           break;
+        case 'entry_set':
+          valueA = a.entry_set || '';
+          valueB = b.entry_set || '';
+          break;
         case 'entry_length':
           const timeToSeconds = (timeStr: string | null) => {
             if (!timeStr) return 0;

@@ -104,6 +104,12 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
             >
               Song
             </th>
+            <th 
+              className="px-2 py-0.5 text-center text-xs font-medium text-white whitespace-nowrap cursor-pointer hover:bg-white/20"
+              onClick={() => handleSort('entry_set')}
+            >
+              Set
+            </th>
             <th className="px-2 py-0.5 text-left text-xs font-medium text-white whitespace-nowrap">
               JOTY
             </th>
@@ -220,6 +226,9 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                       &gt;
                     </Link>
                   )}
+                </td>
+                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-center">
+                  {perf.entry_set || ''}
                 </td>
                 <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap text-center">
                   {perf.joty_round && (
