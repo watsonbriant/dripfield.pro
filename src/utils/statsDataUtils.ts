@@ -231,14 +231,10 @@ export const fetchLongestSongsData = async (selectedYear: number | string): Prom
   }));
 };
 
-// Fetch liberated songs (2025 only)
+// Fetch liberated songs
 export const fetchLiberatedSongsData = async (selectedYear: number | string): Promise<LiberatedSong[]> => {
-  if (selectedYear !== 2025) {
-    return [];
-  }
-
   const allData = await fetchAllData(async (from, batchSize) => {
-    return supabase
+    let query = supabase
       .from('setlist_entries')
       .select(`
         entry_song,
@@ -263,11 +259,11 @@ export const fetchLiberatedSongsData = async (selectedYear: number | string): Pr
       `)
       .eq('shows.show_group', 'Goose')
       .not('shows.show_canonid', 'is', null)
-      .gte('shows.show_date', '2025-01-01')
-      .lte('shows.show_date', '2025-12-31')
       .not('last_count', 'is', null)
-      .not('last_show_date', 'is', null)
-      .range(from, from + batchSize - 1);
+      .not('last_show_date', 'is', null);
+    
+    query = buildYearFilter(query, selectedYear);
+    return query.range(from, from + batchSize - 1);
   });
 
   const extractNumberFromLastCount = (lastCount: string | null): number => {
