@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import TourSongStats from './TourSongStats';
 import TourSongMatrix from './TourSongMatrix';
 import { CompactModal } from './CompactModal';
@@ -36,9 +37,72 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
   onSongCountChange,
   tourId = ""
 }) => {
-  const [viewMode, setViewMode] = useState<'list' | 'matrix'>('list');
-  const [matrixSortMode, setMatrixSortMode] = useState<MatrixSortMode>('alphabetical');
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Initialize view mode from URL or default to 'list'
+  const getViewModeFromUrl = (params: URLSearchParams): 'list' | 'matrix' => {
+    const viewParam = params.get('songsView');
+    return (viewParam === 'list' || viewParam === 'matrix') ? viewParam : 'list';
+  };
+  
+  // Initialize matrix sort mode from URL or default to 'alphabetical'
+  const getMatrixSortModeFromUrl = (params: URLSearchParams): MatrixSortMode => {
+    const sortParam = params.get('songsSort');
+    if (sortParam === 'alphabetical' || sortParam === 'chronological' || sortParam === 'playcount') {
+      return sortParam;
+    }
+    return 'alphabetical';
+  };
+  
+  const [viewMode, setViewMode] = useState<'list' | 'matrix'>(() => getViewModeFromUrl(searchParams));
+  const [matrixSortMode, setMatrixSortMode] = useState<MatrixSortMode>(() => getMatrixSortModeFromUrl(searchParams));
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+
+  // Sync view mode and sort mode with URL when URL changes
+  useEffect(() => {
+    const urlViewMode = getViewModeFromUrl(searchParams);
+    const urlSortMode = getMatrixSortModeFromUrl(searchParams);
+    
+    if (urlViewMode !== viewMode) {
+      setViewMode(urlViewMode);
+    }
+    if (urlSortMode !== matrixSortMode) {
+      setMatrixSortMode(urlSortMode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Update URL when view mode changes
+  const handleViewModeChange = (newViewMode: 'list' | 'matrix') => {
+    setViewMode(newViewMode);
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (newViewMode === 'list') {
+      // Remove songsView param if it's the default
+      newSearchParams.delete('songsView');
+      // Also remove songsSort when switching to list view
+      newSearchParams.delete('songsSort');
+    } else {
+      newSearchParams.set('songsView', newViewMode);
+      // Ensure sort mode is set when switching to matrix view
+      if (!newSearchParams.has('songsSort')) {
+        newSearchParams.set('songsSort', matrixSortMode);
+      }
+    }
+    setSearchParams(newSearchParams, { replace: true });
+  };
+
+  // Update URL when matrix sort mode changes
+  const handleMatrixSortModeChange = (newSortMode: MatrixSortMode) => {
+    setMatrixSortMode(newSortMode);
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (newSortMode === 'alphabetical') {
+      // Remove songsSort param if it's the default
+      newSearchParams.delete('songsSort');
+    } else {
+      newSearchParams.set('songsSort', newSortMode);
+    }
+    setSearchParams(newSearchParams, { replace: true });
+  };
 
   return (
     <div className="bg-primary border border-fourth shadow-xl">
@@ -57,7 +121,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
                 <span className="text-fifth text-[0.625rem] ml-1 mr-2 font-medium">Sort:</span>
                 <div className="flex gap-1 font-light">
                   <button 
-                    onClick={() => setMatrixSortMode('alphabetical')}
+                    onClick={() => handleMatrixSortModeChange('alphabetical')}
                     className={`px-1 text-[0.625rem] rounded ${
                       matrixSortMode === 'alphabetical' 
                         ? 'bg-tertiary text-fifth' 
@@ -67,7 +131,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
                     A-Z
                   </button>
                   <button 
-                    onClick={() => setMatrixSortMode('chronological')}
+                    onClick={() => handleMatrixSortModeChange('chronological')}
                     className={`px-1 text-[0.625rem] rounded ${
                       matrixSortMode === 'chronological' 
                         ? 'bg-tertiary text-fifth' 
@@ -77,7 +141,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
                     Tour Order
                   </button>
                   <button 
-                    onClick={() => setMatrixSortMode('playcount')}
+                    onClick={() => handleMatrixSortModeChange('playcount')}
                     className={`px-1 text-[0.625rem] rounded ${
                       matrixSortMode === 'playcount' 
                         ? 'bg-tertiary text-fifth' 
@@ -125,7 +189,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
             <button
               role="switch"
               aria-checked={viewMode === 'matrix'}
-              onClick={() => setViewMode(viewMode === 'list' ? 'matrix' : 'list')}
+              onClick={() => handleViewModeChange(viewMode === 'list' ? 'matrix' : 'list')}
               className="relative inline-flex h-4 w-[47px] items-center rounded-full border border-fourth transition-colors bg-primary"
             >
               <span
@@ -184,7 +248,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
         <div className="flex flex-col w-full">
           <button 
             onClick={() => {
-              setMatrixSortMode('alphabetical');
+              handleMatrixSortModeChange('alphabetical');
               setIsSortModalOpen(false);
             }}
             className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
@@ -197,7 +261,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
           </button>
           <button 
             onClick={() => {
-              setMatrixSortMode('chronological');
+              handleMatrixSortModeChange('chronological');
               setIsSortModalOpen(false);
             }}
             className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${
@@ -210,7 +274,7 @@ const TourSongsCombined: React.FC<TourSongsCombinedProps> = ({
           </button>
           <button 
             onClick={() => {
-              setMatrixSortMode('playcount');
+              handleMatrixSortModeChange('playcount');
               setIsSortModalOpen(false);
             }}
             className={`w-full px-1.5 py-0.5 text-xs text-left rounded ${

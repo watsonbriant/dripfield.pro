@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePerformanceData } from '../hooks/usePerformanceData';
 import { usePerformanceSorting } from '../hooks/usePerformanceSorting';
@@ -50,6 +51,7 @@ interface PerformanceChartProps {
 
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selectedGroup }) => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredPerformance, setHoveredPerformance] = useState<{
     formattedDate: string;
@@ -57,8 +59,37 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
     entry_placement: string;
     fullData: ChartPerformance;
   } | null>(null);
-  const [viewMode, setViewMode] = useState<'timeline' | 'table'>('timeline');
+  
+  // Initialize view mode from URL or default to 'timeline'
+  const getViewModeFromUrl = (params: URLSearchParams): 'timeline' | 'table' => {
+    const viewParam = params.get('view');
+    return (viewParam === 'table' || viewParam === 'timeline') ? viewParam : 'timeline';
+  };
+  
+  const [viewMode, setViewMode] = useState<'timeline' | 'table'>(() => getViewModeFromUrl(searchParams));
   const [showOnlyAttended, setShowOnlyAttended] = useState(false);
+
+  // Sync view mode with URL when URL changes (but not when we update it ourselves)
+  useEffect(() => {
+    const urlViewMode = getViewModeFromUrl(searchParams);
+    if (urlViewMode !== viewMode) {
+      setViewMode(urlViewMode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Update URL when view mode changes
+  const handleViewModeChange = (newViewMode: 'timeline' | 'table') => {
+    setViewMode(newViewMode);
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (newViewMode === 'timeline') {
+      // Remove view param if it's the default
+      newSearchParams.delete('view');
+    } else {
+      newSearchParams.set('view', newViewMode);
+    }
+    setSearchParams(newSearchParams, { replace: true });
+  };
 
   const { performancesWithGaps, attendedShowIds, loadingAttended } = usePerformanceData(performances);
   const { sortColumn, sortDirection, handleSort, sortPerformances } = usePerformanceSorting();
@@ -198,7 +229,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
               <button
                 role="switch"
                 aria-checked={viewMode === 'table'}
-                onClick={() => setViewMode(viewMode === 'timeline' ? 'table' : 'timeline')}
+                onClick={() => handleViewModeChange(viewMode === 'timeline' ? 'table' : 'timeline')}
                 className="relative inline-flex h-4 w-[47px] items-center rounded-full border border-fourth transition-colors bg-primary"
               >
                 <span
