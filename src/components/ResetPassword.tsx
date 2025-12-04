@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 
 export const ResetPassword: React.FC = () => {
@@ -27,7 +28,11 @@ export const ResetPassword: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto">
+    <>
+      <Helmet>
+        <title>Reset Password — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-[1280px] mx-auto">
       <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
         <h2 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">
           Reset your password
@@ -94,6 +99,7 @@ export const ResetPassword: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 }
 

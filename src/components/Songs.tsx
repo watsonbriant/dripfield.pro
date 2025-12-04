@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { SongSearch } from './SongSearch';
 
@@ -305,7 +306,11 @@ export function Songs() {
   }
 
   return (
-    <div className="w-full max-w-[1280px]">
+    <>
+      <Helmet>
+        <title>Songs — Dripfield.pro</title>
+      </Helmet>
+      <div className="w-full max-w-[1280px]">
       <div className="mb-4">
         <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
@@ -324,5 +329,6 @@ export function Songs() {
         <CategorySection sectionCategories={sectionedCategories.sideProjects} title="Side Projects" />
       </div>
     </div>
+    </>
   );
 }

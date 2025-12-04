@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { Search } from 'lucide-react';
 import { Modal } from './Modal';
@@ -196,7 +197,11 @@ export function Discography() {
   });
 
   return (
-    <div className="max-w-[1280px]">
+    <>
+      <Helmet>
+        <title>Discography — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-[1280px]">
       <div className="mb-4 shadow-xl">
         <div className="bg-primary border border-fourth">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
@@ -394,6 +399,7 @@ export function Discography() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

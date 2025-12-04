@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import gooseLogo from '../img/Goose2.png';
@@ -137,7 +138,11 @@ export function Venues() {
   }
 
   return (
-    <div className="w-full max-w-[1280px]">
+    <>
+      <Helmet>
+        <title>Venues — Dripfield.pro</title>
+      </Helmet>
+      <div className="w-full max-w-[1280px]">
       <div className="mb-4 shadow-xl">
         <div className="bg-primary border border-fourth">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
@@ -234,5 +239,6 @@ export function Venues() {
         )}
       </div>
     </div>
+    </>
   );
 }

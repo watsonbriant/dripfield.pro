@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import JotyMatchupModal from './JotyMatchupModal';
 import JotyHeader from './JotyHeader';
@@ -214,7 +215,11 @@ export function Joty() {
   };
 
   return (
-    <div className="max-w-[1600px]">
+    <>
+      <Helmet>
+        <title>{`Jam of the Year (${selectedYear}) — Dripfield.pro`}</title>
+      </Helmet>
+      <div className="max-w-[1600px]">
       {/* Header with Year Selector */}
       <JotyHeader 
         selectedYear={selectedYear}
@@ -264,5 +269,6 @@ export function Joty() {
         />
       )}
     </div>
+    </>
   );
 }

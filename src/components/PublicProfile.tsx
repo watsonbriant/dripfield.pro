@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import AttendedShows from './AttendedShows';
 import AttendedByGroupChart from './AttendedByGroupChart';
@@ -319,7 +320,11 @@ export const PublicProfile: React.FC = () => {
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto">
+    <>
+      <Helmet>
+        <title>Profile — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-[1280px] mx-auto">
       <div className="flex flex-row justify-between items-center">
         <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 border border-fourth shadow-xl">
           {formatUsername(profileUsername)}'s Stats
@@ -392,6 +397,7 @@ export const PublicProfile: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

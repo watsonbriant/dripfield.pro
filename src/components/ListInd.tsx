@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft } from 'lucide-react';
 import { LongestPerformancesList } from './lists/LongestPerformancesList';
@@ -184,7 +185,11 @@ export function ListInd() {
     const SpecialListComponent = listId ? SPECIAL_LIST_COMPONENTS[listId] : null;
 
     return (
-        <div className="max-w-[1024px]">
+        <>
+            <Helmet>
+                <title>{list ? `${list.list_name} — Dripfield.pro` : 'List — Dripfield.pro'}</title>
+            </Helmet>
+            <div className="max-w-[1024px]">
             <div className="mb-4">
                 <div className="bg-primary border border-fourth shadow-xl">
                     <div className="bg-tertiary text-fifth px-2 py-0.5 flex flex-col">
@@ -235,5 +240,6 @@ export function ListInd() {
                 )}
             </div>
         </div>
+        </>
     );
 }

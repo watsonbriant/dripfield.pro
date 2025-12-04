@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { formatInTimeZone } from 'date-fns-tz';
 import { Star } from 'lucide-react';
@@ -253,7 +254,11 @@ export function Venue() {
   }
 
   return (
-    <div className="max-w-[1280px]">
+    <>
+      <Helmet>
+        <title>{venue ? `${venue.venue} — Dripfield.pro` : 'Venue — Dripfield.pro'}</title>
+      </Helmet>
+      <div className="max-w-[1280px]">
       <div className="mb-4">
         <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-fourth text-white py-0.5 pr-1 flex justify-between items-center">
@@ -408,5 +413,6 @@ export function Venue() {
         )}
       </div>
     </div>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 
 export const Login: React.FC = () => {
@@ -38,7 +39,11 @@ export const Login: React.FC = () => {
   };
   
   return (
-    <div className="max-w-[1280px] mx-auto">
+    <>
+      <Helmet>
+        <title>Login — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-[1280px] mx-auto">
       <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
         <h1 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">Sign in to your account</h1>
         
@@ -118,6 +123,7 @@ export const Login: React.FC = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { formatInTimeZone } from 'date-fns-tz';
 import { SongHeader } from './SongHeader';
@@ -350,7 +351,11 @@ export function Song() {
   }
 
   return (
-    <div className="max-w-[1280px]">
+    <>
+      <Helmet>
+        <title>{song ? `${song.song} — Dripfield.pro` : 'Song — Dripfield.pro'}</title>
+      </Helmet>
+      <div className="max-w-[1280px]">
       <div className={`grid grid-cols-1 gap-2 space-y-0 ${
         song.song_lyrics 
           ? "lg:grid-cols-[936px_1fr]" 
@@ -389,5 +394,6 @@ export function Song() {
         {song.song_lyrics && <SongLyrics lyrics={song.song_lyrics} />}
       </div>
     </div>
+    </>
   );
 }

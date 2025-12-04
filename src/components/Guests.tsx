@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useNavigate, Link } from 'react-router-dom';
 import { GuestSearch } from './GuestSearch';
@@ -159,12 +160,16 @@ export function Guests() {
 
 
   return (
-    <div className="w-full max-w-[1280px]">
+    <>
+      <Helmet>
+        <title>Personnel — Dripfield.pro</title>
+      </Helmet>
+      <div className="w-full max-w-[1280px]">
       <div className="mb-4">
         <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
             <h1 className="text-sm font-semibold pl-2">
-              Guests
+              Personnel
             </h1>
             <GuestSearch />
           </div>
@@ -210,5 +215,6 @@ export function Guests() {
         </div>
       </div>
     </div>
+    </>
   );
 }

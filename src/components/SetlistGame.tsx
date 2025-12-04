@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { SongSelectionModal } from './SongSelectionModal';
@@ -124,7 +125,11 @@ export function SetlistGame() {
   };
 
   return (
-    <div className="max-w-[1280px]">
+    <>
+      <Helmet>
+        <title>Echo of a Show — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-[1280px]">
       <SetlistGameHeader 
         isAdminUser={isAdminUser}
         onShowRules={() => setShowRulesModal(true)}
@@ -178,5 +183,6 @@ export function SetlistGame() {
         onClose={() => setShowRulesModal(false)}
       />
     </div>
+    </>
   );
 }

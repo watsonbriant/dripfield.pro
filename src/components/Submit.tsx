@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 
 export function Submit() {
@@ -144,7 +145,11 @@ export function Submit() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto shadow-xl">
+    <>
+      <Helmet>
+        <title>Submit — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-3xl mx-auto shadow-xl">
       <div className="bg-primary border border-fourth">
         <div className="bg-tertiary text-fifth px-2 py-0.5">
           <h2 className="text-sm font-semibold">Submit Information</h2>
@@ -286,5 +291,6 @@ export function Submit() {
         </div>
       </div>
     </div>
+    </>
   );
 }

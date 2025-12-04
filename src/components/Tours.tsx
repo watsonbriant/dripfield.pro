@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import { useTourData } from '../hooks/useTourData';
 import { TourShowsTable } from './TourShowsTable';
@@ -166,7 +167,11 @@ export function Tours() {
   }
 
   return (
-    <div className="max-w-[1500px]">
+    <>
+      <Helmet>
+        <title>{currentTour ? `${currentTour} — Dripfield.pro` : 'Tours — Dripfield.pro'}</title>
+      </Helmet>
+      <div className="max-w-[1500px]">
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Side: Shows Table and other content */}
         <div className="w-full lg:w-auto lg:min-w-0">
@@ -306,5 +311,6 @@ export function Tours() {
         currentShowId=""
       />
     </div>
+    </>
   );
 }

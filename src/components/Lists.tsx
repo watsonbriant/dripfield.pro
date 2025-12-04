@@ -1,4 +1,5 @@
   import React, { useEffect, useState } from 'react';
+  import { Helmet } from 'react-helmet-async';
   import { supabase } from '../lib/supabase';
   import { useNavigate } from 'react-router-dom';
 
@@ -69,7 +70,11 @@
     }
 
     return (
-      <div className="max-w-[960px]">
+      <>
+        <Helmet>
+          <title>Lists — Dripfield.pro</title>
+        </Helmet>
+        <div className="max-w-[960px]">
         <div className="mb-4 shadow-xl">
           <div className="bg-primary border border-fourth">
             <div className="bg-tertiary text-fifth pr-1 py-0.5">
@@ -132,5 +137,6 @@
           </div>
         </div>
       </div>
+      </>
     );
   }

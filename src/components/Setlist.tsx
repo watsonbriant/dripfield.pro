@@ -1,5 +1,6 @@
 import { useState, useCallback, lazy, Suspense } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ArrowRight, Link as LinkIcon, Pencil, Loader2, Info } from 'lucide-react';
 import { DisplaySetlistTable } from './setlist/DisplaySetlistTable';
 import { TourDropdown } from './setlist/TourDropdown';
@@ -149,8 +150,31 @@ export function Setlist() {
     );
   }
 
+  // Format date as MM.DD.YY (matching TourShowsTable format)
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '';
+    try {
+      return dateString
+        .split('-')
+        .slice(1)
+        .concat(dateString.substring(2, 4))
+        .join('.');
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Construct title
+  const title = show 
+    ? `${formatDate(show.show_date)}${show.show_group && show.show_venue_location ? ` (${show.show_group} - ${show.show_venue_location})` : show.show_group ? ` (${show.show_group})` : show.show_venue_location ? ` (${show.show_venue_location})` : ''} — Dripfield.pro`
+    : 'Setlist — Dripfield.pro';
+
   return (
-    <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto overflow-x-auto">
+    <>
+      <Helmet>
+        <title>{title}</title>
+      </Helmet>
+      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto overflow-x-auto">
       {/* Header Bar with Navigation Row */}
       <div className="bg-primary border border-fourth mb-4 w-max min-w-max relative overflow-visible shadow-md">
         {/* Header */}
@@ -554,5 +578,6 @@ export function Setlist() {
         currentShowId={show?.show_id || ''}
       />
     </div>
+    </>
   );
 }

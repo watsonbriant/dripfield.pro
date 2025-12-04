@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { GuestSearch } from './GuestSearch';
 import GuestPerformanceChart from './GuestPerformanceChart';
 import { GuestSongsSection } from './GuestSongsSection';
@@ -49,7 +50,11 @@ export function Guest() {
   }
 
   return (
-    <div className="max-w-[1024px]">
+    <>
+      <Helmet>
+        <title>{guest ? `${guest.guest} — Dripfield.pro` : 'Personnel — Dripfield.pro'}</title>
+      </Helmet>
+      <div className="max-w-[1024px]">
       <div className="mb-4">
         <div className="bg-primary border border-fourth shadow-xl">
           <div className="bg-fourth text-white py-0.5 pr-1">
@@ -122,5 +127,6 @@ export function Guest() {
         )}
       </div>
     </div>
+    </>
   );
 }

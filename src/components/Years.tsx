@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { ShowsTable } from './ShowsTable';
 import { ToursSection } from './ToursSection';
 import { GroupFilters } from './GroupFilters';
@@ -129,7 +130,11 @@ export function Years() {
   }, [year, previousYearId]);
 
   return (
-    <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+    <>
+      <Helmet>
+        <title>{currentYear ? `${currentYear} Shows — Dripfield.pro` : 'Shows — Dripfield.pro'}</title>
+      </Helmet>
+      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
       {/* Mobile: Header and Year Buttons */}
       <div className="lg:hidden mb-4">
         <div className="flex flex-wrap gap-1">
@@ -188,5 +193,6 @@ export function Years() {
         </div>
       </div>
     </div>
+    </>
   );
 }

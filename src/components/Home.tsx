@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { HomeShowTable } from './HomeShowTable';
 import { MostRecentShow } from './MostRecentShow';
@@ -59,7 +60,11 @@ export function Home() {
 
 
   return (
-    <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+    <>
+      <Helmet>
+        <title>Dripfield.pro — A Setlist Archive for Goose the Band</title>
+      </Helmet>
+      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
       {!isSupabaseConfigured() && (
         <div className="bg-primary border border-white/10 rounded-lg p-4 mb-6">
           <p className="text-fifth">
@@ -143,5 +148,6 @@ export function Home() {
         </div>
       </div>
     </div>
+    </>
   );
 }
