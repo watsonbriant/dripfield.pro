@@ -7,9 +7,10 @@ interface LongestSongsTableProps {
   items: LongestSong[];
   isLast?: boolean;
   showAllTimeBorder?: boolean;
+  showEmptyState?: boolean;
 }
 
-export const LongestSongsTable: React.FC<LongestSongsTableProps> = ({ items, isLast = false, showAllTimeBorder = false }) => {
+export const LongestSongsTable: React.FC<LongestSongsTableProps> = ({ items, isLast = false, showAllTimeBorder = false, showEmptyState = false }) => {
   const baseClasses = isLast ? "pb-0 border-x-[0.5px] border-fourth" : "pb-1 border-x-[0.5px] border-fourth";
   const borderClasses = showAllTimeBorder ? "border-y-[0.5px] border-fourth" : "";
   const className = `${baseClasses} ${borderClasses}`.trim();
@@ -22,6 +23,11 @@ export const LongestSongsTable: React.FC<LongestSongsTableProps> = ({ items, isL
       </h3>
     </div>
     <div className="overflow-y-auto max-h-64">
+      {items.length === 0 && showEmptyState ? (
+        <div className="bg-primary text-fifth px-2 py-4 text-center text-[0.625rem]">
+          No data to display for this year.
+        </div>
+      ) : (
       <table className="w-full border-collapse min-w-max">
         <tbody>
           {items.map((song, index) => (
@@ -73,6 +79,7 @@ export const LongestSongsTable: React.FC<LongestSongsTableProps> = ({ items, isL
           ))}
         </tbody>
       </table>
+      )}
     </div>
   </div>
   );

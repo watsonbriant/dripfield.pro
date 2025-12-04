@@ -7,9 +7,10 @@ import { formatDate, extractShowCount } from '../../utils/statsFormattingUtils';
 interface LiberatedSongsTableProps {
   items: LiberatedSong[];
   isLast?: boolean;
+  showEmptyState?: boolean;
 }
 
-export const LiberatedSongsTable: React.FC<LiberatedSongsTableProps> = ({ items, isLast = false }) => {
+export const LiberatedSongsTable: React.FC<LiberatedSongsTableProps> = ({ items, isLast = false, showEmptyState = false }) => {
   const [hoveredLibBadge, setHoveredLibBadge] = useState<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
   const badgeRefs = useRef<{ [key: string]: HTMLSpanElement | null }>({});
@@ -42,6 +43,11 @@ export const LiberatedSongsTable: React.FC<LiberatedSongsTableProps> = ({ items,
         </h3>
       </div>
       <div className="overflow-x-auto">
+        {items.length === 0 && showEmptyState ? (
+          <div className="bg-primary text-fifth px-2 py-4 text-center text-[0.625rem]">
+            No data to display for this year.
+          </div>
+        ) : (
         <table className="w-full border-collapse min-w-max">
           <tbody>
             {items.map((song, index) => (
@@ -144,6 +150,7 @@ export const LiberatedSongsTable: React.FC<LiberatedSongsTableProps> = ({ items,
             ))}
           </tbody>
         </table>
+        )}
       </div>
       {/* Tooltip Portal */}
       {hoveredLibBadge && tooltipPosition && createPortal(

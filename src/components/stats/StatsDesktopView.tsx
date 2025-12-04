@@ -40,146 +40,133 @@ export const StatsDesktopView: React.FC<StatsDesktopViewProps> = ({
   highestAttendedShows,
   highestRatedShows
 }) => {
+  const showEmptyState = selectedYear !== 'all-time';
+
   return (
     <div className="hidden md:block">
       <div className="grid grid-cols-3">
-        {topSongs.length > 0 && (
-          <StatTable
-            title="Top Songs Played"
-            bgColor="bg-fourth"
-            items={topSongs}
-            getDisplayName={(item) => item.song}
-            getCount={(item) => item.play_count}
-          />
-        )}
-        {showOpeners.length > 0 && (
-          <StatTable
-            title="Top Show Openers"
-            bgColor="bg-[#047857]"
-            items={showOpeners}
-            getDisplayName={(item) => item.song_name}
-            getCount={(item) => item.times_played}
-          />
-        )}
-        {setOpeners.length > 0 && (
-          <StatTable
-            title="Top Set Openers"
-            bgColor="bg-[#10b981]"
-            items={setOpeners}
-            getDisplayName={(item) => item.song_name}
-            getCount={(item) => item.times_played}
-          />
-        )}
-        {setClosers.length > 0 && (
-          <StatTable
-            title="Top Set Closers"
-            bgColor="bg-[#3b82f6]"
-            items={setClosers}
-            getDisplayName={(item) => item.song_name}
-            getCount={(item) => item.times_played}
-          />
-        )}
-        {encores.length > 0 && (
-          <StatTable
-            title="Top Encores"
-            bgColor="bg-[#be123c]"
-            items={encores}
-            getDisplayName={(item) => item.song_name}
-            getCount={(item) => item.times_played}
-          />
-        )}
-        {selectedYear === 'all-time' && longestSongs.length > 0 ? (
-          <LongestSongsTable items={longestSongs} showAllTimeBorder={true} />
-        ) : selectedYear !== 'all-time' && notPlayedSongs.length > 0 ? (
+        <StatTable
+          title="Top Songs Played"
+          bgColor="bg-fourth"
+          items={topSongs}
+          getDisplayName={(item) => item.song}
+          getCount={(item) => item.play_count}
+          showEmptyState={showEmptyState}
+        />
+        <StatTable
+          title="Top Show Openers"
+          bgColor="bg-[#047857]"
+          items={showOpeners}
+          getDisplayName={(item) => item.song_name}
+          getCount={(item) => item.times_played}
+          showEmptyState={showEmptyState}
+        />
+        <StatTable
+          title="Top Set Openers"
+          bgColor="bg-[#10b981]"
+          items={setOpeners}
+          getDisplayName={(item) => item.song_name}
+          getCount={(item) => item.times_played}
+          showEmptyState={showEmptyState}
+        />
+        <StatTable
+          title="Top Set Closers"
+          bgColor="bg-[#3b82f6]"
+          items={setClosers}
+          getDisplayName={(item) => item.song_name}
+          getCount={(item) => item.times_played}
+          showEmptyState={showEmptyState}
+        />
+        <StatTable
+          title="Top Encores"
+          bgColor="bg-[#be123c]"
+          items={encores}
+          getDisplayName={(item) => item.song_name}
+          getCount={(item) => item.times_played}
+          showEmptyState={showEmptyState}
+        />
+        {selectedYear === 'all-time' ? (
+          <LongestSongsTable items={longestSongs} showAllTimeBorder={true} showEmptyState={false} />
+        ) : (
           <StatTable
             title="Most Common Not Played"
             bgColor="bg-fifth"
             items={notPlayedSongs}
             getDisplayName={(item) => item.song}
             getCount={(item) => item.play_count}
+            showEmptyState={showEmptyState}
           />
-        ) : null}
+        )}
       </div>
-      {selectedYear !== 'all-time' && (longestSongs.length > 0 || liberatedSongs.length > 0) && (
+      {selectedYear !== 'all-time' && (
         <div className="grid" style={{ gridTemplateColumns: '40% 60%' }}>
-          {longestSongs.length > 0 && (
-            <LongestSongsTable items={longestSongs} />
-          )}
-          {liberatedSongs.length > 0 && (
-            <LiberatedSongsTable items={liberatedSongs} isLast={true} />
-          )}
+          <LongestSongsTable items={longestSongs} showEmptyState={showEmptyState} />
+          <LiberatedSongsTable items={liberatedSongs} isLast={true} showEmptyState={showEmptyState} />
         </div>
       )}
-      {selectedYear === 'all-time' && liberatedSongs.length > 0 && (
+      {selectedYear === 'all-time' && (
         <div className="grid" style={{ gridTemplateColumns: '100%' }}>
-          <LiberatedSongsTable items={liberatedSongs} isLast={true} />
+          <LiberatedSongsTable items={liberatedSongs} isLast={true} showEmptyState={false} />
         </div>
       )}
-      {(longestShows.length > 0 || lowestRarityShows.length > 0 || highestGapShows.length > 0 || highestAttendedShows.length > 0 || highestRatedShows.length > 0) && (
-        <div className="grid grid-cols-3 border-t-[1px] border-fifth">
-          {longestShows.length > 0 && (
-            <ShowStatTable
-              title="Longest Shows"
-              bgColor="bg-tertiary text-fifth"
-              items={longestShows}
-              showLengthRank={true}
-            />
+      <div className="grid grid-cols-3 border-t-[1px] border-fifth">
+        <ShowStatTable
+          title="Longest Shows"
+          bgColor="bg-tertiary text-fifth"
+          items={longestShows}
+          showLengthRank={true}
+          showEmptyState={showEmptyState}
+        />
+        <ShowStatTable
+          title="Shows With Rarest Setlist"
+          bgColor="bg-tertiary text-fifth"
+          items={lowestRarityShows}
+          valueFormatter={(value) => (
+            <span
+              className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
+              style={{ backgroundColor: getRarityColor(value as string) }}
+            >
+              {value}
+            </span>
           )}
-          {lowestRarityShows.length > 0 && (
-            <ShowStatTable
-              title="Shows With Rarest Setlist"
-              bgColor="bg-tertiary text-fifth"
-              items={lowestRarityShows}
-              valueFormatter={(value) => (
-                <span
-                  className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
-                  style={{ backgroundColor: getRarityColor(value as string) }}
-                >
-                  {value}
-                </span>
-              )}
-            />
+          showEmptyState={showEmptyState}
+        />
+        <ShowStatTable
+          title="Shows With Longest Average Show Gap"
+          bgColor="bg-tertiary text-fifth"
+          items={highestGapShows}
+          valueFormatter={(value) => (
+            <span
+              className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
+              style={{ backgroundColor: getGapColor(value as string) }}
+            >
+              {value}
+            </span>
           )}
-          {highestGapShows.length > 0 && (
-            <ShowStatTable
-              title="Shows With Longest Average Show Gap"
-              bgColor="bg-tertiary text-fifth"
-              items={highestGapShows}
-              valueFormatter={(value) => (
-                <span
-                  className="text-white font-normal px-1.5 py-[1px] rounded-md inline-block"
-                  style={{ backgroundColor: getGapColor(value as string) }}
-                >
-                  {value}
-                </span>
-              )}
+          showEmptyState={showEmptyState}
+        />
+        <ShowStatTable
+          title="Most Attended Shows"
+          bgColor="bg-tertiary text-fifth"
+          items={highestAttendedShows}
+          showEmptyState={showEmptyState}
+        />
+        <ShowStatTable
+          title="Highest Rated Shows"
+          bgColor="bg-tertiary text-fifth"
+          items={highestRatedShows}
+          showEmptyState={showEmptyState}
+        />
+        <div className="pb-1 border-x-[0.5px] bg-canvas border-y-[0.5px] border-fourth">
+          <div className="p-2 flex items-center justify-center min-h-full">
+            <img 
+              src={logo7HeaderImage} 
+              alt="Dripfield.pro Logo" 
+              className="w-full h-auto"
             />
-          )}
-          {highestAttendedShows.length > 0 && (
-            <ShowStatTable
-              title="Most Attended Shows"
-              bgColor="bg-tertiary text-fifth"
-              items={highestAttendedShows}
-            />
-          )}
-          {highestRatedShows.length > 0 && (
-            <ShowStatTable
-              title="Highest Rated Shows"
-              bgColor="bg-tertiary text-fifth"
-              items={highestRatedShows}
-            />
-          )}
-          <div className="pb-1 border-x-[0.5px] bg-canvas border-y-[0.5px] border-fourth">
-            <div className="p-2 flex items-center justify-center min-h-full">
-              <img 
-                src={logo7HeaderImage} 
-                alt="Dripfield.pro Logo" 
-                className="w-full h-auto"
-              />
-            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

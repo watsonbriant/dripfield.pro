@@ -205,7 +205,7 @@ export function Home() {
         {/* Middle Column */}
         <div className="w-full lg:w-[60%] space-y-4">
           <div className="border border-fourth shadow-xl">
-            <div className="bg-primary relative">
+            <div className="bg-primary relative border-x-[0.5px] border-fourth border-t-[0.5px]">
               <div className="bg-tertiary text-fifth py-0.5 flex justify-between items-center">
                 <h2 className="pl-2 text-sm font-semibold">
                   {getYearDisplayText()} Stats

@@ -12,6 +12,7 @@ interface ShowStatTableProps {
   valueFormatter?: (value: string | number) => string | React.ReactNode;
   isLast?: boolean;
   showLengthRank?: boolean;
+  showEmptyState?: boolean;
 }
 
 export const ShowStatTable: React.FC<ShowStatTableProps> = ({ 
@@ -20,7 +21,8 @@ export const ShowStatTable: React.FC<ShowStatTableProps> = ({
   items, 
   valueFormatter, 
   isLast = false, 
-  showLengthRank = false 
+  showLengthRank = false,
+  showEmptyState = false
 }) => {
   const [hoveredRank, setHoveredRank] = useState<string | null>(null);
   const [rankTooltipPosition, setRankTooltipPosition] = useState<{ x: number; y: number } | null>(null);
@@ -80,6 +82,11 @@ export const ShowStatTable: React.FC<ShowStatTableProps> = ({
         )}
       </div>
       <div className="overflow-x-auto relative">
+        {items.length === 0 && showEmptyState ? (
+          <div className="bg-primary text-fifth px-2 py-4 text-center text-[0.625rem]">
+            No data to display for this year.
+          </div>
+        ) : (
         <table className="w-full border-collapse min-w-max">
           <tbody>
             {items.map((item) => (
@@ -162,6 +169,7 @@ export const ShowStatTable: React.FC<ShowStatTableProps> = ({
             ))}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Rank Tooltip Portal */}

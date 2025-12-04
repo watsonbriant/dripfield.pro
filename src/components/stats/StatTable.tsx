@@ -8,9 +8,10 @@ interface StatTableProps {
   getDisplayName: (item: any) => string;
   getCount: (item: any) => number | string;
   isLast?: boolean;
+  showEmptyState?: boolean;
 }
 
-export const StatTable: React.FC<StatTableProps> = ({ title, bgColor, items, getDisplayName, getCount, isLast = false }) => (
+export const StatTable: React.FC<StatTableProps> = ({ title, bgColor, items, getDisplayName, getCount, isLast = false, showEmptyState = false }) => (
   <div className={isLast ? "pb-0 border-x-[0.5px] border-y-[0.5px] border-fourth" : "pb-1 border-x-[0.5px] border-y-[0.5px] border-fourth"}>
     <div className={`${bgColor} text-white px-2 py-0.5 mb-0.5`}>
       <h3 className="text-sm font-medium">
@@ -18,6 +19,11 @@ export const StatTable: React.FC<StatTableProps> = ({ title, bgColor, items, get
       </h3>
     </div>
     <div className="overflow-x-auto relative">
+      {items.length === 0 && showEmptyState ? (
+        <div className="bg-primary text-fifth px-2 py-4 text-center text-[0.625rem]">
+          No data to display for this year.
+        </div>
+      ) : (
       <table className="w-full border-collapse">
         <tbody>
           {items.map((item, index) => (
@@ -53,6 +59,7 @@ export const StatTable: React.FC<StatTableProps> = ({ title, bgColor, items, get
           ))}
         </tbody>
       </table>
+      )}
     </div>
   </div>
 );
