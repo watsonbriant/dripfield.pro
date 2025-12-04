@@ -349,6 +349,7 @@ function App() {
               <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Home />} />
+                <Route path="/home/:year?" element={<Home />} />
                 <Route path="/years/:year?" element={<Years />} />
                 <Route path="/tours/:tour?" element={<Tours />} />
                 <Route path="/songs" element={<Songs />} />

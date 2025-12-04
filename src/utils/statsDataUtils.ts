@@ -185,12 +185,8 @@ export const fetchEncoresData = (selectedYear: number | string) =>
 
 // Fetch longest songs (2025 only)
 export const fetchLongestSongsData = async (selectedYear: number | string): Promise<LongestSong[]> => {
-  if (selectedYear !== 2025) {
-    return [];
-  }
-
   const allData = await fetchAllData(async (from, batchSize) => {
-    return supabase
+    let query = supabase
       .from('setlist_entries')
       .select(`
         entry_song,
@@ -212,10 +208,10 @@ export const fetchLongestSongsData = async (selectedYear: number | string): Prom
       `)
       .eq('shows.show_group', 'Goose')
       .not('shows.show_canonid', 'is', null)
-      .gte('shows.show_date', '2025-01-01')
-      .lte('shows.show_date', '2025-12-31')
-      .not('entry_length', 'is', null)
-      .range(from, from + batchSize - 1);
+      .not('entry_length', 'is', null);
+    
+    query = buildYearFilter(query, selectedYear);
+    return query.range(from, from + batchSize - 1);
   });
 
   const sortedData = allData.sort((a: any, b: any) => {

@@ -1,5 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { HomeShowTable } from './HomeShowTable';
 import { MostRecentShow } from './MostRecentShow';
@@ -10,7 +12,23 @@ import { useShowMetadata } from '../hooks/useShowMetadata';
 import cover7Image from '../img/Cover7.png';
 
 export function Home() {
-  const [selectedYear, setSelectedYear] = useState<number | string>(new Date().getFullYear());
+  const { year: yearParam } = useParams<{ year?: string }>();
+  const navigate = useNavigate();
+  const [selectedYear, setSelectedYear] = useState<number | string>(() => {
+    // Initialize from URL param if available, otherwise use current year
+    if (yearParam) {
+      if (yearParam === 'all-time') {
+        return 'all-time';
+      }
+      const yearNum = parseInt(yearParam, 10);
+      if (!isNaN(yearNum)) {
+        return yearNum;
+      }
+    }
+    return new Date().getFullYear();
+  });
+  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
+  const yearDropdownRef = useRef<HTMLDivElement>(null);
   
   const {
     recentShows,
@@ -46,6 +64,65 @@ export function Home() {
   const allShows = useMemo(() => [...recentShows, ...upcomingShows, ...historicalShows], [recentShows, upcomingShows, historicalShows]);
   const { showsWithSetlists, showsWithReleases } = useShowMetadata(allShows, selectedYear.toString());
 
+  // Available years for dropdown
+  const availableYears = useMemo(() => {
+    const years = ['all-time', ...Array.from({ length: 12 }, (_, i) => 2025 - i)];
+    return years;
+  }, []);
+
+  // Sync URL when selectedYear changes
+  useEffect(() => {
+    const yearValue = selectedYear === 'all-time' ? 'all-time' : selectedYear.toString();
+    const currentPath = window.location.pathname;
+    
+    // Always update URL to include the year
+    if (currentPath === '/' || currentPath === '/home' || !currentPath.startsWith('/home/')) {
+      // If on root or /home without year, navigate to /home/year
+      navigate(`/home/${yearValue}`, { replace: true });
+    } else if (currentPath.startsWith('/home/')) {
+      // Extract current year from URL
+      const urlYear = currentPath.split('/home/')[1];
+      // Only update if the year has changed
+      if (urlYear !== yearValue) {
+        navigate(`/home/${yearValue}`, { replace: true });
+      }
+    }
+  }, [selectedYear, navigate]);
+
+  // Sync selectedYear when URL param changes
+  useEffect(() => {
+    if (yearParam) {
+      if (yearParam === 'all-time') {
+        if (selectedYear !== 'all-time') {
+          setSelectedYear('all-time');
+        }
+      } else {
+        const yearNum = parseInt(yearParam, 10);
+        if (!isNaN(yearNum) && selectedYear !== yearNum) {
+          setSelectedYear(yearNum);
+        }
+      }
+    } else {
+      // If no year param, default to current year (only if not already set)
+      const currentYear = new Date().getFullYear();
+      if (selectedYear !== currentYear && selectedYear !== 'all-time') {
+        setSelectedYear(currentYear);
+      }
+    }
+  }, [yearParam]); // Note: intentionally not including selectedYear to avoid loops
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (yearDropdownRef.current && !yearDropdownRef.current.contains(event.target as Node)) {
+        setIsYearDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   useEffect(() => {
     const testConnection = async () => {
       try {
@@ -57,6 +134,20 @@ export function Home() {
 
     testConnection();
   }, []);
+
+  const handleYearChange = (year: number | string) => {
+    setSelectedYear(year);
+    setIsYearDropdownOpen(false);
+  };
+
+  const getHeaderBgColor = () => {
+    // Use a color that matches the theme - similar to tertiary but with more saturation for the button
+    return '#3c1e40'; // Teal color matching the stats theme
+  };
+
+  const getYearDisplayText = () => {
+    return selectedYear === 'all-time' ? 'All-Time' : selectedYear.toString();
+  };
 
 
   return (
@@ -114,6 +205,47 @@ export function Home() {
         {/* Middle Column */}
         <div className="w-full lg:w-[60%] space-y-4">
           <div className="border border-fourth shadow-xl">
+            <div className="bg-primary relative">
+              <div className="bg-tertiary text-fifth py-0.5 flex justify-between items-center">
+                <h2 className="pl-2 text-sm font-semibold">
+                  {getYearDisplayText()} Stats
+                </h2>
+                
+                {/* Year Dropdown */}
+                <div className="relative pr-1" ref={yearDropdownRef}>
+                  <button
+                    onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)}
+                    className="relative flex items-center gap-2 text-white px-2 border border-fourth transition-colors text-sm font-semibold overflow-hidden"
+                    style={{ backgroundColor: getHeaderBgColor() }}
+                  >
+                    <div className="absolute inset-0 bg-fourth pointer-events-none"></div>
+                    <span className="relative z-10">{getYearDisplayText()}</span>
+                    <ChevronDown className="w-3 h-3 relative z-10" />
+                  </button>
+                  
+                  {isYearDropdownOpen && (
+                    <div className="absolute right-0 bg-canvas text-fifth border border-fourth shadow-lg z-50 overflow-y-auto w-[100px] max-h-64">
+                      {availableYears.map((year) => {
+                        const yearValue = year === 'all-time' ? 'all-time' : year;
+                        const isSelected = selectedYear === yearValue;
+                        return (
+                          <button
+                            key={year}
+                            onClick={() => handleYearChange(yearValue)}
+                            className={`w-full text-left px-2 text-xs py-1 font-medium transition-colors ${
+                              isSelected ? 'text-white' : 'hover:bg-tertiary/40'
+                            }`}
+                            style={isSelected ? { backgroundColor: getHeaderBgColor() } : {}}
+                          >
+                            {year === 'all-time' ? 'All-Time' : year.toString()}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
             <StatsSection
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
@@ -132,6 +264,7 @@ export function Home() {
               highestRatedShows={highestRatedShows}
               isAnyStatLoading={isAnyStatLoading}
               showYearSelector={false}
+              hideHeader={true}
             />
           </div>
         </div>

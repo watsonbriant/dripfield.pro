@@ -6,10 +6,16 @@ import { formatTime, formatDate } from '../../utils/statsFormattingUtils';
 interface LongestSongsTableProps {
   items: LongestSong[];
   isLast?: boolean;
+  showAllTimeBorder?: boolean;
 }
 
-export const LongestSongsTable: React.FC<LongestSongsTableProps> = ({ items, isLast = false }) => (
-  <div className={isLast ? "pb-0 border-x-[0.5px] border-fourth" : "pb-1 border-x-[0.5px] border-fourth"}>
+export const LongestSongsTable: React.FC<LongestSongsTableProps> = ({ items, isLast = false, showAllTimeBorder = false }) => {
+  const baseClasses = isLast ? "pb-0 border-x-[0.5px] border-fourth" : "pb-1 border-x-[0.5px] border-fourth";
+  const borderClasses = showAllTimeBorder ? "border-y-[0.5px] border-fourth" : "";
+  const className = `${baseClasses} ${borderClasses}`.trim();
+  
+  return (
+  <div className={className}>
     <div className="bg-[#3c1e40] text-white px-2 py-0.5 mb-0.5">
       <h3 className="text-sm font-medium">
         Longest Songs
@@ -69,5 +75,6 @@ export const LongestSongsTable: React.FC<LongestSongsTableProps> = ({ items, isL
       </table>
     </div>
   </div>
-);
+  );
+};
 

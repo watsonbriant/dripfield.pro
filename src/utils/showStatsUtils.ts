@@ -13,6 +13,7 @@ interface ShowWithLength {
   show_rarity?: number;
   show_gap?: number;
   show_length: string | null;
+  show_canonid?: number | null;
   venue_id?: string;
   tour_id?: string;
   show_rarity_formatted: string | null;
@@ -83,7 +84,60 @@ const extractTourId = (show: any): string | undefined => {
 };
 
 // Fetch all shows for the year
-const fetchYearShows = async (): Promise<any[]> => {
+const fetchYearShows = async (selectedYear: number | string): Promise<any[]> => {
+  // Handle all-time case - fetch all shows
+  if (selectedYear === 'all-time') {
+    const allShowsData: any[] = [];
+    let from = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('shows')
+        .select(`
+          show_id,
+          show_date,
+          show_subvenue,
+          show_venue_location,
+          show_tour,
+          show_rarity,
+          show_gap,
+          show_canonid,
+          setlist_entries (
+            entry_length
+          ),
+          subvenues:show_subvenue(
+            venues:subvenue_venue(
+              venue_id
+            )
+          ),
+          tours:show_tour(
+            tour_id
+          )
+        `)
+        .eq('show_group', 'Goose')
+        .not('show_canonid', 'is', null)
+        .range(from, from + BATCH_SIZE - 1);
+
+      if (error) throw error;
+
+      allShowsData.push(...(data || []));
+      
+      if (!data || data.length < BATCH_SIZE) {
+        hasMore = false;
+      } else {
+        from += BATCH_SIZE;
+      }
+    }
+
+    return allShowsData;
+  }
+
+  // Handle specific year case
+  const year = typeof selectedYear === 'number' ? selectedYear : parseInt(selectedYear, 10);
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+  
   const allShowsData: any[] = [];
   let from = 0;
   let hasMore = true;
@@ -99,6 +153,7 @@ const fetchYearShows = async (): Promise<any[]> => {
         show_tour,
         show_rarity,
         show_gap,
+        show_canonid,
         setlist_entries (
           entry_length
         ),
@@ -113,8 +168,8 @@ const fetchYearShows = async (): Promise<any[]> => {
       `)
       .eq('show_group', 'Goose')
       .not('show_canonid', 'is', null)
-      .gte('show_date', '2025-01-01')
-      .lte('show_date', '2025-12-31')
+      .gte('show_date', startDate)
+      .lte('show_date', endDate)
       .range(from, from + BATCH_SIZE - 1);
 
     if (error) throw error;
@@ -161,38 +216,49 @@ const fetchAttendeeCounts = async (showIds: string[]): Promise<Record<string, nu
 
   if (showIds.length === 0) return attendeeCounts;
 
-  // Batch showIds into chunks of 1000
+  // Use smaller chunk size to avoid URL length issues
+  const CHUNK_SIZE = 500;
   const idChunks: string[][] = [];
-  for (let i = 0; i < showIds.length; i += 1000) {
-    idChunks.push(showIds.slice(i, i + 1000));
+  for (let i = 0; i < showIds.length; i += CHUNK_SIZE) {
+    idChunks.push(showIds.slice(i, i + CHUNK_SIZE));
   }
 
   for (const chunk of idChunks) {
-    const { count, error: countError } = await supabase
-      .from('user_attended_shows')
-      .select('*', { count: 'exact', head: true })
-      .in('show_id', chunk);
+    try {
+      let attendeeFrom = 0;
+      let attendeeHasMore = true;
 
-    if (countError) throw countError;
+      while (attendeeHasMore) {
+        const { data: attendeeData, error: attendeeError } = await supabase
+          .from('user_attended_shows')
+          .select('show_id')
+          .in('show_id', chunk)
+          .range(attendeeFrom, attendeeFrom + BATCH_SIZE - 1);
 
-    const attendeeBatchSize = 1000;
-    const totalBatches = Math.ceil((count || 0) / attendeeBatchSize);
+        if (attendeeError) {
+          console.error('Error fetching attendee data for chunk:', attendeeError);
+          attendeeHasMore = false;
+          continue; // Skip this chunk and continue with others
+        }
 
-    for (let i = 0; i < totalBatches; i++) {
-      const start = i * attendeeBatchSize;
-      const end = Math.min(start + attendeeBatchSize - 1, (count || 0) - 1);
+        if (attendeeData && attendeeData.length > 0) {
+          attendeeData.forEach((record: any) => {
+            if (record?.show_id) {
+              attendeeCounts[record.show_id] = (attendeeCounts[record.show_id] || 0) + 1;
+            }
+          });
+        }
 
-      const { data: attendeeData, error: attendeeError } = await supabase
-        .from('user_attended_shows')
-        .select('show_id')
-        .in('show_id', chunk)
-        .range(start, end);
-
-      if (attendeeError) throw attendeeError;
-
-      (attendeeData || []).forEach((record: any) => {
-        attendeeCounts[record.show_id] = (attendeeCounts[record.show_id] || 0) + 1;
-      });
+        // Check if we got fewer records than the batch size, meaning we're done
+        if (!attendeeData || attendeeData.length < BATCH_SIZE) {
+          attendeeHasMore = false;
+        } else {
+          attendeeFrom += BATCH_SIZE;
+        }
+      }
+    } catch (error) {
+      console.error('Error processing attendee chunk:', error);
+      // Continue with next chunk
     }
   }
 
@@ -208,44 +274,54 @@ const fetchShowRatings = async (showIds: string[]): Promise<Record<string, numbe
 
   if (showIds.length === 0) return showRatings;
 
-  // Batch showIds into chunks of 1000
+  // Use smaller chunk size to avoid URL length issues
+  const CHUNK_SIZE = 500;
   const idChunks: string[][] = [];
-  for (let i = 0; i < showIds.length; i += 1000) {
-    idChunks.push(showIds.slice(i, i + 1000));
+  for (let i = 0; i < showIds.length; i += CHUNK_SIZE) {
+    idChunks.push(showIds.slice(i, i + CHUNK_SIZE));
   }
 
   const allRatingsData: any[] = [];
 
   for (const chunk of idChunks) {
-    let ratingsFrom = 0;
-    let ratingsHasMore = true;
+    try {
+      let ratingsFrom = 0;
+      let ratingsHasMore = true;
 
-    while (ratingsHasMore) {
-      const { data: ratingsData, error: ratingsError } = await supabase
-        .from('show_ratings')
-        .select('show_id, rating')
-        .in('show_id', chunk)
-        .range(ratingsFrom, ratingsFrom + BATCH_SIZE - 1);
+      while (ratingsHasMore) {
+        const { data: ratingsData, error: ratingsError } = await supabase
+          .from('show_ratings')
+          .select('show_id, rating')
+          .in('show_id', chunk)
+          .range(ratingsFrom, ratingsFrom + BATCH_SIZE - 1);
 
-      if (ratingsError) throw ratingsError;
+        if (ratingsError) {
+          console.error('Error fetching ratings for chunk:', ratingsError);
+          ratingsHasMore = false;
+          continue; // Skip this chunk and continue with others
+        }
 
-      if (ratingsData) {
-        allRatingsData.push(...ratingsData);
+        if (ratingsData && ratingsData.length > 0) {
+          allRatingsData.push(...ratingsData);
+        }
+
+        if (!ratingsData || ratingsData.length < BATCH_SIZE) {
+          ratingsHasMore = false;
+        } else {
+          ratingsFrom += BATCH_SIZE;
+        }
       }
-
-      if (!ratingsData || ratingsData.length < BATCH_SIZE) {
-        ratingsHasMore = false;
-      } else {
-        ratingsFrom += BATCH_SIZE;
-      }
+    } catch (error) {
+      console.error('Error processing ratings chunk:', error);
+      // Continue with next chunk
     }
   }
 
   // Calculate averages for each show
   showIds.forEach((id: string) => {
-    const showRatingsData = allRatingsData.filter((r: any) => r.show_id === id);
+    const showRatingsData = allRatingsData.filter((r: any) => r?.show_id === id);
     if (showRatingsData.length > 0) {
-      const average = showRatingsData.reduce((sum: number, r: any) => sum + r.rating, 0) / showRatingsData.length;
+      const average = showRatingsData.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / showRatingsData.length;
       showRatings[id] = Math.round(average * 100) / 100;
     }
   });
@@ -303,7 +379,7 @@ const generateShowStat = (
   value: string,
   sortValue: number,
   showLengthRank?: number | null
-): ShowStat => ({
+): ShowStat & { _canonid?: number | null } => ({
   show_id: show.show_id,
   show_date: formatDate(show.show_date),
   show_subvenue: show.show_subvenue,
@@ -312,81 +388,143 @@ const generateShowStat = (
   value,
   venue_id: show.venue_id,
   tour_id: show.tour_id,
-  show_length_rank: showLengthRank || null
+  show_length_rank: showLengthRank || null,
+  _canonid: show.show_canonid || null
 });
 
 // Main function to fetch all show stats
-export const fetchShowStatsData = async (): Promise<ShowStatsResult> => {
-  // Fetch 2025 shows
-  const allShowsData = await fetchYearShows();
-  const showsWithLength = processShowsWithLength(allShowsData);
+export const fetchShowStatsData = async (selectedYear: number | string): Promise<ShowStatsResult> => {
+  try {
+    // Fetch shows for the selected year
+    const allShowsData = await fetchYearShows(selectedYear);
+    const showsWithLength = processShowsWithLength(allShowsData);
 
-  const showIds = showsWithLength.map((s: any) => s.show_id);
-  
-  // Fetch parallel data
-  const [attendeeCounts, showRatings, showLengthRanks] = await Promise.all([
-    fetchAttendeeCounts(showIds),
-    fetchShowRatings(showIds),
-    fetchShowLengthRanks()
-  ]);
+    const showIds = showsWithLength.map((s: any) => s.show_id);
+    
+    // Fetch parallel data with error handling
+    let attendeeCounts: Record<string, number> = {};
+    let showRatings: Record<string, number> = {};
+    let showLengthRanks: Record<string, number> = {};
 
-  // Generate stats
-  const longest = showsWithLength
-    .filter((s: any) => s.show_length)
-    .map((s: any) => ({
-      ...generateShowStat(s, s.show_length!, timeToSeconds(s.show_length!), showLengthRanks[s.show_id]),
-      _sortValue: timeToSeconds(s.show_length!)
-    }))
-    .sort((a: any, b: any) => b._sortValue - a._sortValue)
-    .slice(0, 10)
-    .map(({ _sortValue, ...rest }: any) => rest);
+    try {
+      [attendeeCounts, showRatings, showLengthRanks] = await Promise.all([
+        fetchAttendeeCounts(showIds),
+        fetchShowRatings(showIds),
+        fetchShowLengthRanks()
+      ]);
+    } catch (error) {
+      console.error('Error fetching parallel data for show stats:', error);
+      // Continue with empty data - stats will still work, just without attendee/rating data
+    }
 
-  const lowestRarity = showsWithLength
-    .filter((s: any) => s.show_rarity !== null && s.show_rarity !== undefined)
-    .map((s: any) => ({
-      ...generateShowStat(s, s.show_rarity_formatted!, s.show_rarity!),
-      _sortValue: s.show_rarity!
-    }))
-    .sort((a: any, b: any) => a._sortValue - b._sortValue)
-    .slice(0, 10)
-    .map(({ _sortValue, ...rest }: any) => rest);
+    // Generate stats
+    const longest = showsWithLength
+      .filter((s: any) => s.show_length)
+      .map((s: any) => ({
+        ...generateShowStat(s, s.show_length!, timeToSeconds(s.show_length!), showLengthRanks[s.show_id]),
+        _sortValue: timeToSeconds(s.show_length!)
+      }))
+      .sort((a: any, b: any) => {
+        if (b._sortValue !== a._sortValue) {
+          return b._sortValue - a._sortValue;
+        }
+        // Secondary sort by show_canonid ascending
+        const canonidA = a._canonid ?? 0;
+        const canonidB = b._canonid ?? 0;
+        return canonidA - canonidB;
+      })
+      .slice(0, 10)
+      .map(({ _sortValue, _canonid, ...rest }: any) => rest);
 
-  const highestGap = showsWithLength
-    .filter((s: any) => s.show_gap !== null && s.show_gap !== undefined)
-    .map((s: any) => ({
-      ...generateShowStat(s, s.show_gap_formatted!, s.show_gap!),
-      _sortValue: s.show_gap!
-    }))
-    .sort((a: any, b: any) => b._sortValue - a._sortValue)
-    .slice(0, 10)
-    .map(({ _sortValue, ...rest }: any) => rest);
+    const lowestRarity = showsWithLength
+      .filter((s: any) => s.show_rarity !== null && s.show_rarity !== undefined)
+      .map((s: any) => ({
+        ...generateShowStat(s, s.show_rarity_formatted!, s.show_rarity!),
+        _sortValue: s.show_rarity!
+      }))
+      .sort((a: any, b: any) => {
+        if (a._sortValue !== b._sortValue) {
+          return a._sortValue - b._sortValue;
+        }
+        // Secondary sort by show_canonid ascending
+        const canonidA = a._canonid ?? 0;
+        const canonidB = b._canonid ?? 0;
+        return canonidA - canonidB;
+      })
+      .slice(0, 10)
+      .map(({ _sortValue, _canonid, ...rest }: any) => rest);
 
-  const highestAttended = showsWithLength
-    .filter((s: any) => attendeeCounts[s.show_id] > 0)
-    .map((s: any) => ({
-      ...generateShowStat(s, attendeeCounts[s.show_id].toString(), attendeeCounts[s.show_id]),
-      _sortValue: attendeeCounts[s.show_id]
-    }))
-    .sort((a: any, b: any) => b._sortValue - a._sortValue)
-    .slice(0, 10)
-    .map(({ _sortValue, ...rest }: any) => rest);
+    const highestGap = showsWithLength
+      .filter((s: any) => s.show_gap !== null && s.show_gap !== undefined)
+      .map((s: any) => ({
+        ...generateShowStat(s, s.show_gap_formatted!, s.show_gap!),
+        _sortValue: s.show_gap!
+      }))
+      .sort((a: any, b: any) => {
+        if (b._sortValue !== a._sortValue) {
+          return b._sortValue - a._sortValue;
+        }
+        // Secondary sort by show_canonid ascending
+        const canonidA = a._canonid ?? 0;
+        const canonidB = b._canonid ?? 0;
+        return canonidA - canonidB;
+      })
+      .slice(0, 10)
+      .map(({ _sortValue, _canonid, ...rest }: any) => rest);
 
-  const highestRated = showsWithLength
-    .filter((s: any) => showRatings[s.show_id] > 0)
-    .map((s: any) => ({
-      ...generateShowStat(s, showRatings[s.show_id].toFixed(2), showRatings[s.show_id]),
-      _sortValue: showRatings[s.show_id]
-    }))
-    .sort((a: any, b: any) => b._sortValue - a._sortValue)
-    .slice(0, 10)
-    .map(({ _sortValue, ...rest }: any) => rest);
+    const highestAttended = showsWithLength
+      .filter((s: any) => attendeeCounts[s.show_id] > 0)
+      .map((s: any) => ({
+        ...generateShowStat(s, attendeeCounts[s.show_id].toString(), attendeeCounts[s.show_id]),
+        _sortValue: attendeeCounts[s.show_id]
+      }))
+      .sort((a: any, b: any) => {
+        if (b._sortValue !== a._sortValue) {
+          return b._sortValue - a._sortValue;
+        }
+        // Secondary sort by show_canonid ascending
+        const canonidA = a._canonid ?? 0;
+        const canonidB = b._canonid ?? 0;
+        return canonidA - canonidB;
+      })
+      .slice(0, 10)
+      .map(({ _sortValue, _canonid, ...rest }: any) => rest);
 
-  return {
-    longest,
-    lowestRarity,
-    highestGap,
-    highestAttended,
-    highestRated
-  };
+    const highestRated = showsWithLength
+      .filter((s: any) => showRatings[s.show_id] > 0)
+      .map((s: any) => ({
+        ...generateShowStat(s, showRatings[s.show_id].toFixed(2), showRatings[s.show_id]),
+        _sortValue: showRatings[s.show_id]
+      }))
+      .sort((a: any, b: any) => {
+        if (b._sortValue !== a._sortValue) {
+          return b._sortValue - a._sortValue;
+        }
+        // Secondary sort by show_canonid ascending
+        const canonidA = a._canonid ?? 0;
+        const canonidB = b._canonid ?? 0;
+        return canonidA - canonidB;
+      })
+      .slice(0, 10)
+      .map(({ _sortValue, _canonid, ...rest }: any) => rest);
+
+    return {
+      longest,
+      lowestRarity,
+      highestGap,
+      highestAttended,
+      highestRated
+    };
+  } catch (error) {
+    console.error('Error in fetchShowStatsData:', error);
+    // Return empty stats on error
+    return {
+      longest: [],
+      lowestRarity: [],
+      highestGap: [],
+      highestAttended: [],
+      highestRated: []
+    };
+  }
 };
 

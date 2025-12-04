@@ -95,13 +95,13 @@ export const StatsMobileView: React.FC<StatsMobileViewProps> = ({
           getCount={(item) => item.play_count}
         />
       )}
-      {selectedYear === 2025 && longestSongs.length > 0 && (
+      {longestSongs.length > 0 && (
         <LongestSongsTable items={longestSongs} />
       )}
-      {selectedYear === 2025 && liberatedSongs.length > 0 && (
+      {liberatedSongs.length > 0 && (
         <LiberatedSongsTable items={liberatedSongs} />
       )}
-      {selectedYear === 2025 && longestShows.length > 0 && (
+      {longestShows.length > 0 && (
         <ShowStatTable
           title="Longest Shows"
           bgColor="bg-tertiary text-fifth"
@@ -109,7 +109,7 @@ export const StatsMobileView: React.FC<StatsMobileViewProps> = ({
           showLengthRank={true}
         />
       )}
-      {selectedYear === 2025 && lowestRarityShows.length > 0 && (
+      {lowestRarityShows.length > 0 && (
         <ShowStatTable
           title="Shows With Rarest Setlist"
           bgColor="bg-tertiary text-fifth"
@@ -124,7 +124,7 @@ export const StatsMobileView: React.FC<StatsMobileViewProps> = ({
           )}
         />
       )}
-      {selectedYear === 2025 && highestGapShows.length > 0 && (
+      {highestGapShows.length > 0 && (
         <ShowStatTable
           title="Shows With Longest Average Show Gap"
           bgColor="bg-tertiary text-fifth"
@@ -139,14 +139,14 @@ export const StatsMobileView: React.FC<StatsMobileViewProps> = ({
           )}
         />
       )}
-      {selectedYear === 2025 && highestAttendedShows.length > 0 && (
+      {highestAttendedShows.length > 0 && (
         <ShowStatTable
           title="Most Attended Shows"
           bgColor="bg-tertiary text-fifth"
           items={highestAttendedShows}
         />
       )}
-      {selectedYear === 2025 && highestRatedShows.length > 0 && (
+      {highestRatedShows.length > 0 && (
         <ShowStatTable
           title="Highest Rated Shows"
           bgColor="bg-tertiary text-fifth"

@@ -88,7 +88,9 @@ export const StatsDesktopView: React.FC<StatsDesktopViewProps> = ({
             getCount={(item) => item.times_played}
           />
         )}
-        {selectedYear !== 'all-time' && notPlayedSongs.length > 0 && (
+        {selectedYear === 'all-time' && longestSongs.length > 0 ? (
+          <LongestSongsTable items={longestSongs} showAllTimeBorder={true} />
+        ) : selectedYear !== 'all-time' && notPlayedSongs.length > 0 ? (
           <StatTable
             title="Most Common Not Played"
             bgColor="bg-fifth"
@@ -96,19 +98,24 @@ export const StatsDesktopView: React.FC<StatsDesktopViewProps> = ({
             getDisplayName={(item) => item.song}
             getCount={(item) => item.play_count}
           />
-        )}
+        ) : null}
       </div>
-      {(selectedYear === 2025 && (longestSongs.length > 0 || liberatedSongs.length > 0)) && (
+      {selectedYear !== 'all-time' && (longestSongs.length > 0 || liberatedSongs.length > 0) && (
         <div className="grid" style={{ gridTemplateColumns: '40% 60%' }}>
-          {selectedYear === 2025 && longestSongs.length > 0 && (
+          {longestSongs.length > 0 && (
             <LongestSongsTable items={longestSongs} />
           )}
-          {selectedYear === 2025 && liberatedSongs.length > 0 && (
+          {liberatedSongs.length > 0 && (
             <LiberatedSongsTable items={liberatedSongs} isLast={true} />
           )}
         </div>
       )}
-      {selectedYear === 2025 && (longestShows.length > 0 || lowestRarityShows.length > 0 || highestGapShows.length > 0 || highestAttendedShows.length > 0 || highestRatedShows.length > 0) && (
+      {selectedYear === 'all-time' && liberatedSongs.length > 0 && (
+        <div className="grid" style={{ gridTemplateColumns: '100%' }}>
+          <LiberatedSongsTable items={liberatedSongs} isLast={true} />
+        </div>
+      )}
+      {(longestShows.length > 0 || lowestRarityShows.length > 0 || highestGapShows.length > 0 || highestAttendedShows.length > 0 || highestRatedShows.length > 0) && (
         <div className="grid grid-cols-3 border-t-[1px] border-fifth">
           {longestShows.length > 0 && (
             <ShowStatTable

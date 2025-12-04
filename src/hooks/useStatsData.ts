@@ -138,18 +138,8 @@ export const useStatsData = (selectedYear: number | string) => {
   };
 
   const fetchShowStats = async () => {
-    if (selectedYear !== 2025) {
-      setLongestShows([]);
-      setLowestRarityShows([]);
-      setHighestGapShows([]);
-      setHighestAttendedShows([]);
-      setHighestRatedShows([]);
-      setLoadingShowStats(false);
-      return;
-    }
-
     try {
-      const stats = await fetchShowStatsData();
+      const stats = await fetchShowStatsData(selectedYear);
       setLongestShows(stats.longest);
       setLowestRarityShows(stats.lowestRarity);
       setHighestGapShows(stats.highestGap);

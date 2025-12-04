@@ -21,6 +21,7 @@ interface StatsSectionProps {
   highestRatedShows: ShowStat[];
   isAnyStatLoading: boolean;
   showYearSelector?: boolean;
+  hideHeader?: boolean;
 }
 
 export const StatsSection: React.FC<StatsSectionProps> = ({
@@ -40,15 +41,18 @@ export const StatsSection: React.FC<StatsSectionProps> = ({
   highestAttendedShows,
   highestRatedShows,
   isAnyStatLoading,
-  showYearSelector = true
+  showYearSelector = true,
+  hideHeader = false
 }) => {
   return (
     <div className="bg-primary relative">
-      <div className="bg-tertiary text-fifth px-2 py-0.5">
-        <h2 className="text-sm font-semibold">
-          {selectedYear === 'all-time' ? 'All-Time' : selectedYear} Stats
-        </h2>
-      </div>
+      {!hideHeader && (
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <h2 className="text-sm font-semibold">
+            {selectedYear === 'all-time' ? 'All-Time' : selectedYear} Stats
+          </h2>
+        </div>
+      )}
       {showYearSelector && (
         <div className="px-2 pb-0.5">
           <select
