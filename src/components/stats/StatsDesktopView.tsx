@@ -5,7 +5,7 @@ import { LongestSongsTable } from './LongestSongsTable';
 import { LiberatedSongsTable } from './LiberatedSongsTable';
 import { ShowStatTable } from './ShowStatTable';
 import { getRarityColor, getGapColor } from '../../utils/tourUtils';
-import logo7HeaderImage from '../../img/Logo7_Header.jpg';
+import logo7HeaderImage from '../../img/Logo7-2_Header.jpg';
 
 interface StatsDesktopViewProps {
   selectedYear: number | string;

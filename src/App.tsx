@@ -37,7 +37,7 @@ import { Joty } from './components/Joty';
 import sparklePic from './img/sparkle.png';
 import bgTile from './img/bg_tile.jpg';
 
-import logo from './img/Logo7_Header.jpg';
+import logo from './img/Logo7-2_Header.jpg';
 import logo2 from './img/Logo4_Text.jpg';
 
 function App() {

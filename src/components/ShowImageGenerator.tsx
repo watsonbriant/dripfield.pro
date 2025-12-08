@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Share, X, Copy } from 'lucide-react';
 import { formatInTimeZone } from 'date-fns-tz';
-import logoImage from '../img/Logo7_Header.jpg';
+import logoImage from '../img/Logo7-2_Header.jpg';
 import backgroundImage from '../img/bg.jpg';
 import { SetlistEntry, Show } from '../utils/imageGeneratorUtils';
 import { renderShowImage } from '../utils/canvasRenderer';
