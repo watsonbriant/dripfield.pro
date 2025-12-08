@@ -8,6 +8,7 @@ export interface SetlistEntry {
     entry_set: string;
     entry_placement: string;
     entry_coachnotes?: string | null;
+    last_count?: string | null;
 }
 
 export interface Show {

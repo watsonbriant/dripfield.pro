@@ -463,6 +463,47 @@ const renderSetlistEntry = (
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.stroke();
+        
+        currentX += arrowSize;
+    }
+
+    // Draw TD, LIB, or Debut indicators if present
+    if (entry.last_count) {
+        let indicatorText = '';
+        let indicatorColor = '';
+        
+        if (entry.last_count.includes('TD')) {
+            indicatorText = 'TD';
+            indicatorColor = '#059669'; // emerald-600
+        } else if (entry.last_count.includes('LIB')) {
+            indicatorText = 'LIB';
+            indicatorColor = '#ca8a04'; // yellow-600
+        } else if (entry.last_count.includes('Debut')) {
+            indicatorText = 'Debut';
+            indicatorColor = '#e11d48'; // rose-600
+        }
+        
+        if (indicatorText && indicatorColor) {
+            currentX += 20;
+            ctx.font = '500 14px "Rubik", "Inter", system-ui, sans-serif';
+            const textMetrics = ctx.measureText(indicatorText);
+            const badgePadding = 4;
+            const badgeWidth = textMetrics.width + (badgePadding * 2);
+            const badgeHeight = 20;
+            const badgeX = currentX;
+            const badgeY = currentY - 6 - badgeHeight / 2;
+            
+            // Draw badge background
+            ctx.fillStyle = indicatorColor;
+            drawRoundedRect(ctx, badgeX, badgeY, badgeWidth, badgeHeight, 4, true, false);
+            
+            // Draw badge text
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'left';
+            ctx.fillText(indicatorText, badgeX + badgePadding, currentY - 2);
+            
+            currentX += badgeWidth;
+        }
     }
 
     return { currentY, currentRunningNumber };

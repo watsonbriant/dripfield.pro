@@ -266,7 +266,7 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
                     element: (
                       <div className="px-1 leading-[0.625rem] py-0.5 flex items-center gap-1">
                         {explanation.badge}
-                        <span className='font-light'>{explanation.description}</span>
+                        <span className='font-medium'>{explanation.description}</span>
                       </div>
                     )
                   });
@@ -311,7 +311,7 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
                 element: (
                   <div className="px-1 leading-[0.625rem] py-0.5 flex items-center gap-1">
                     <MoveRight className="text-red-600 w-5 h-5" />
-                    <span className='font-light'>Song segues into the next song without stopping.</span>
+                    <span className='font-medium'>Song segues into the next song without stopping.</span>
                   </div>
                 )
               });
@@ -326,7 +326,7 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
                 element: (
                   <div className="px-1 leading-[0.625rem] py-0.5 flex items-center gap-1">
                     <span className="text-red-600 font-medium">{explanation.label}</span>
-                    <span className='font-light'>{explanation.description}</span>
+                    <span className='font-medium'>{explanation.description}</span>
                   </div>
                 )
               });
@@ -341,7 +341,7 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
                 element: (
                   <div className="px-1 leading-[0.625rem] py-0.5 flex items-center gap-1">
                     {explanation.badge}
-                    <span className='font-light'>{explanation.description}</span>
+                    <span className='font-medium'>{explanation.description}</span>
                   </div>
                 )
               });
