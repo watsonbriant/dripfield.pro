@@ -85,11 +85,29 @@ export const renderShowImage = async (
     const showInfoContainerBottom = showInfoResult.containerBottom;
 
     // Render setlist if provided
+    let setlistContainerBottom = showInfoContainerBottom;
     if (setlist.length > 0) {
         // Calculate spacing to match logo-to-show-info gap (10px)
         const containerGap = 10;
         const setlistStartY = showInfoContainerBottom + containerGap;
         currentY = renderSetlist(ctx, setlist, canvasWidth, setlistStartY, maxTextWidth, lineHeight);
+        // Calculate setlist container bottom for spacing
+        setlistContainerBottom = currentY;
+    }
+
+    // Render show coachnotes container if provided
+    if (show.show_coachnotes) {
+        const containerGap = 10;
+        const coachnotesStartY = setlistContainerBottom + containerGap;
+        currentY = renderShowCoachnotes(ctx, show, canvasWidth, coachnotesStartY, maxTextWidth, lineHeight);
+        setlistContainerBottom = currentY;
+    }
+
+    // Render show callbacks container if provided
+    if (show.show_callbacks) {
+        const containerGap = 10;
+        const callbacksStartY = setlistContainerBottom + containerGap;
+        currentY = renderShowCallbacks(ctx, show, canvasWidth, callbacksStartY, maxTextWidth, lineHeight);
     }
 
     // Create final canvas with exact height
@@ -533,4 +551,296 @@ const renderCoachNotes = (
     }
     
     return currentY;
+};
+
+// Helper function to render HTML content on canvas with styling support
+const renderHTMLContent = (
+    ctx: CanvasRenderingContext2D,
+    html: string,
+    startX: number,
+    startY: number,
+    maxWidth: number,
+    lineHeight: number,
+    baseFont: string,
+    baseColor: string,
+    linkColor?: string
+): number => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    let currentX = startX;
+    let currentY = startY;
+    let currentColor = baseColor;
+    let isBold = false;
+    let isItalic = false;
+    let isInLink = false; // Track if we're inside an <a> tag
+    let isStartOfLine = true; // Track if we're at the start of a line
+    
+    // Parse base font to extract size
+    const fontMatch = baseFont.match(/(\d+)px/);
+    const fontSize = fontMatch ? fontMatch[1] : '16';
+    
+    const buildFontString = (): string => {
+        let weight = 'normal';
+        let style = 'normal';
+        
+        // Links should be semibold (600 weight)
+        if (isBold && isItalic) {
+            weight = 'bold';
+            style = 'italic';
+        } else if (isBold) {
+            weight = 'bold';
+        } else if (isInLink && isItalic) {
+            weight = '600'; // semibold
+            style = 'italic';
+        } else if (isInLink) {
+            weight = '600'; // semibold
+        } else if (isItalic) {
+            style = 'italic';
+        }
+        
+        return `${style} ${weight} ${fontSize}px "Rubik", "Inter", system-ui, sans-serif`;
+    };
+    
+    const walkNodes = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent || '';
+            const trimmedText = text.trim();
+            if (trimmedText) {
+                ctx.font = buildFontString();
+                ctx.fillStyle = currentColor;
+                
+                // Handle text wrapping - filter out empty strings from split
+                const words = trimmedText.split(/\s+/).filter(word => word.length > 0);
+                for (let i = 0; i < words.length; i++) {
+                    const word = words[i];
+                    // Only add space if not at start of line and not the last word
+                    const testText = (isStartOfLine ? '' : ' ') + word;
+                    const metrics = ctx.measureText(testText);
+                    
+                    if (currentX + metrics.width > startX + maxWidth && currentX > startX) {
+                        currentX = startX;
+                        currentY += lineHeight;
+                        isStartOfLine = true;
+                        // Re-measure without leading space since we're on a new line
+                        const newMetrics = ctx.measureText(word);
+                        ctx.fillText(word, currentX, currentY);
+                        currentX += newMetrics.width;
+                        isStartOfLine = false;
+                    } else {
+                        ctx.fillText(testText, currentX, currentY);
+                        currentX += metrics.width;
+                        isStartOfLine = false;
+                    }
+                }
+            }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as HTMLElement;
+            const tagName = element.tagName.toLowerCase();
+            
+            // Save current state
+            const prevBold = isBold;
+            const prevItalic = isItalic;
+            const prevColor = currentColor;
+            const prevInLink = isInLink;
+            
+            // Apply tag styling
+            if (tagName === 'br') {
+                // Handle line break - don't process children
+                currentX = startX;
+                currentY += lineHeight;
+                isStartOfLine = true; // Mark that we're at the start of a new line
+                return; // Don't process children for br tags
+            } else if (tagName === 'b' || tagName === 'strong') {
+                isBold = true;
+            } else if (tagName === 'i' || tagName === 'em') {
+                isItalic = true;
+            } else if (tagName === 'a') {
+                isInLink = true;
+                if (linkColor) {
+                    currentColor = linkColor;
+                }
+            }
+            
+            // Process child nodes (skip for br tags)
+            Array.from(element.childNodes).forEach(child => walkNodes(child));
+            
+            // Restore previous state
+            isBold = prevBold;
+            isItalic = prevItalic;
+            currentColor = prevColor;
+            isInLink = prevInLink;
+        }
+    };
+    
+    Array.from(tempDiv.childNodes).forEach(child => walkNodes(child));
+    
+    return currentY + lineHeight;
+};
+
+// Helper function to estimate height of HTML content including <br /> tags
+const estimateHTMLHeight = (
+    html: string,
+    maxWidth: number,
+    font: string,
+    lineHeight: number
+): number => {
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return 0;
+    
+    tempCtx.font = font;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    let lineCount = 0;
+    let currentLineWidth = 0;
+    
+    const countLines = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent || '';
+            if (text.trim()) {
+                const words = text.split(' ');
+                for (const word of words) {
+                    const testText = word + ' ';
+                    const metrics = tempCtx.measureText(testText);
+                    
+                    if (currentLineWidth + metrics.width > maxWidth && currentLineWidth > 0) {
+                        lineCount++;
+                        currentLineWidth = metrics.width;
+                    } else {
+                        currentLineWidth += metrics.width;
+                    }
+                }
+            }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as HTMLElement;
+            const tagName = element.tagName.toLowerCase();
+            
+            if (tagName === 'br') {
+                lineCount++;
+                currentLineWidth = 0;
+            } else {
+                Array.from(element.childNodes).forEach(child => countLines(child));
+            }
+        }
+    };
+    
+    Array.from(tempDiv.childNodes).forEach(child => countLines(child));
+    
+    // Add one more line if there's content on the current line
+    if (currentLineWidth > 0) {
+        lineCount++;
+    }
+    
+    return lineCount * lineHeight;
+};
+
+const renderShowCoachnotes = (
+    ctx: CanvasRenderingContext2D,
+    show: Show,
+    canvasWidth: number,
+    currentY: number,
+    maxTextWidth: number,
+    lineHeight: number
+): number => {
+    const containerPadding = 10;
+    const containerWidth = maxTextWidth + (containerPadding * 2);
+    const containerX = (canvasWidth - containerWidth) / 2;
+    const containerStartY = currentY;
+
+    const notesFont = '16px "Rubik", "Inter", system-ui, sans-serif';
+    const lineHeightValue = 20;
+    
+    // Estimate height including <br /> tags
+    const contentHeight = estimateHTMLHeight(
+        show.show_coachnotes || '',
+        maxTextWidth,
+        notesFont,
+        lineHeightValue
+    );
+    const estimatedHeight = contentHeight + (containerPadding * 2);
+    
+    const containerHeight = estimatedHeight;
+    const cornerRadius = 18;
+
+    // Draw container background (same as show info)
+    ctx.fillStyle = 'rgb(224, 220, 195)';
+    drawRoundedRect(ctx, containerX, containerStartY, containerWidth, containerHeight, cornerRadius, true, false);
+
+    // Draw container border
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    drawRoundedRect(ctx, containerX, containerStartY, containerWidth, containerHeight, cornerRadius, false, true);
+
+    // Render HTML content
+    const contentStartX = containerX + containerPadding;
+    const contentStartY = containerStartY + containerPadding + 16;
+    renderHTMLContent(
+        ctx,
+        show.show_coachnotes || '',
+        contentStartX,
+        contentStartY,
+        maxTextWidth,
+        lineHeightValue,
+        notesFont,
+        '#000000'
+    );
+
+    return containerStartY + containerHeight;
+};
+
+const renderShowCallbacks = (
+    ctx: CanvasRenderingContext2D,
+    show: Show,
+    canvasWidth: number,
+    currentY: number,
+    maxTextWidth: number,
+    lineHeight: number
+): number => {
+    const containerPadding = 10;
+    const containerWidth = maxTextWidth + (containerPadding * 2);
+    const containerX = (canvasWidth - containerWidth) / 2;
+    const containerStartY = currentY;
+
+    const callbacksFont = '16px "Rubik", "Inter", system-ui, sans-serif';
+    const lineHeightValue = 16;
+    
+    // Estimate height including <br /> tags
+    const contentHeight = estimateHTMLHeight(
+        show.show_callbacks || '',
+        maxTextWidth,
+        callbacksFont,
+        lineHeightValue
+    );
+    const estimatedHeight = contentHeight + (containerPadding * 2);
+    
+    const containerHeight = estimatedHeight;
+    const cornerRadius = 18;
+
+    // Draw container background (dark purple like Callbacks component)
+    ctx.fillStyle = '#3c1e40'; // bg-fourth
+    drawRoundedRect(ctx, containerX, containerStartY, containerWidth, containerHeight, cornerRadius, true, false);
+
+    // Draw container border
+    ctx.strokeStyle = '#4e4e4e'; // border-fourth
+    ctx.lineWidth = 1;
+    drawRoundedRect(ctx, containerX, containerStartY, containerWidth, containerHeight, cornerRadius, false, true);
+
+    // Render HTML content with link color (emerald-400 like Callbacks component)
+    const contentStartX = containerX + containerPadding;
+    const contentStartY = containerStartY + containerPadding + 14;
+    renderHTMLContent(
+        ctx,
+        show.show_callbacks || '',
+        contentStartX,
+        contentStartY,
+        maxTextWidth,
+        lineHeightValue,
+        callbacksFont,
+        '#ffffff',
+        '#34d399' // emerald-400 for links
+    );
+
+    return containerStartY + containerHeight;
 };

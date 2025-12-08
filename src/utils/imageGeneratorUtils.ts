@@ -23,6 +23,8 @@ export interface Show {
     show_tour: string | null;
     tour_id?: string;
     show_wl_link?: string | null;
+    show_coachnotes?: string | null;
+    show_callbacks?: string | null;
 }
 
 export const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number, font: string): string[] => {
