@@ -257,7 +257,8 @@ const renderSetlist = (
     const setlistContainerStartY = currentY;
 
     // Calculate setlist height
-    let estimatedSetlistHeight = 0;
+    // Start with the initial offset that's added to content start position
+    let estimatedSetlistHeight = 20;
     const uniquePlacements = new Set(setlist.map(entry => entry.entry_placement));
     const hasSinglePlacementType = uniquePlacements.size === 1;
     
@@ -284,13 +285,15 @@ const renderSetlist = (
             tempDiv.innerHTML = entry.entry_coachnotes;
             const plainTextNotes = tempDiv.textContent || tempDiv.innerText || '';
             const noteLines = wrapText(ctx, plainTextNotes, maxTextWidth - 60, '16px "Rubik", "Inter", system-ui, sans-serif');
-            estimatedSetlistHeight += 28 + (noteLines.length * 20) + 8;
+            // Match actual rendering: 21 + (noteLines.length * 20) + 12
+            estimatedSetlistHeight += 21 + (noteLines.length * 20) + 11;
         } else {
-            estimatedSetlistHeight += 33;
+            estimatedSetlistHeight += 32;
         }
     });
     
-    estimatedSetlistHeight += actualBreaks * 33;
+    // Match actual rendering: breaks return currentY + 36, which adds 36 pixels
+    estimatedSetlistHeight += actualBreaks * 27;
     
     const setlistContainerHeight = estimatedSetlistHeight + (setlistContainerPadding * 2);
     const cornerRadius = 18;
@@ -344,7 +347,7 @@ const renderSetlistEntries = (
         if (entry.entry_coachnotes) {
             currentY += 21;
             currentY = renderCoachNotes(ctx, entry.entry_coachnotes, canvasWidth, currentY, maxTextWidth);
-            currentY += 12;
+            currentY += 11;
         } else {
             currentY += 33;
         }
