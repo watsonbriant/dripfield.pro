@@ -14,6 +14,7 @@ interface ShowWithLength {
   show_gap?: number;
   show_length: string | null;
   show_canonid?: number | null;
+  show_setlistcomplete?: boolean;
   venue_id?: string;
   tour_id?: string;
   show_rarity_formatted: string | null;
@@ -103,6 +104,7 @@ const fetchYearShows = async (selectedYear: number | string): Promise<any[]> => 
           show_rarity,
           show_gap,
           show_canonid,
+          show_setlistcomplete,
           setlist_entries (
             entry_length
           ),
@@ -143,34 +145,35 @@ const fetchYearShows = async (selectedYear: number | string): Promise<any[]> => 
   let hasMore = true;
 
   while (hasMore) {
-    const { data, error } = await supabase
-      .from('shows')
-      .select(`
-        show_id,
-        show_date,
-        show_subvenue,
-        show_venue_location,
-        show_tour,
-        show_rarity,
-        show_gap,
-        show_canonid,
-        setlist_entries (
-          entry_length
-        ),
-        subvenues:show_subvenue(
-          venues:subvenue_venue(
-            venue_id
+      const { data, error } = await supabase
+        .from('shows')
+        .select(`
+          show_id,
+          show_date,
+          show_subvenue,
+          show_venue_location,
+          show_tour,
+          show_rarity,
+          show_gap,
+          show_canonid,
+          show_setlistcomplete,
+          setlist_entries (
+            entry_length
+          ),
+          subvenues:show_subvenue(
+            venues:subvenue_venue(
+              venue_id
+            )
+          ),
+          tours:show_tour(
+            tour_id
           )
-        ),
-        tours:show_tour(
-          tour_id
-        )
-      `)
-      .eq('show_group', 'Goose')
-      .not('show_canonid', 'is', null)
-      .gte('show_date', startDate)
-      .lte('show_date', endDate)
-      .range(from, from + BATCH_SIZE - 1);
+        `)
+        .eq('show_group', 'Goose')
+        .not('show_canonid', 'is', null)
+        .gte('show_date', startDate)
+        .lte('show_date', endDate)
+        .range(from, from + BATCH_SIZE - 1);
 
     if (error) throw error;
 
@@ -265,11 +268,16 @@ const fetchAttendeeCounts = async (showIds: string[]): Promise<Record<string, nu
   return attendeeCounts;
 };
 
-// Fetch show ratings
-const fetchShowRatings = async (showIds: string[]): Promise<Record<string, number>> => {
-  const showRatings: Record<string, number> = {};
+// Fetch show ratings and review counts
+interface ShowRatingData {
+  averageRating: number;
+  reviewCount: number;
+}
+
+const fetchShowRatings = async (showIds: string[]): Promise<Record<string, ShowRatingData>> => {
+  const showRatings: Record<string, ShowRatingData> = {};
   showIds.forEach((id: string) => {
-    showRatings[id] = 0;
+    showRatings[id] = { averageRating: 0, reviewCount: 0 };
   });
 
   if (showIds.length === 0) return showRatings;
@@ -317,12 +325,15 @@ const fetchShowRatings = async (showIds: string[]): Promise<Record<string, numbe
     }
   }
 
-  // Calculate averages for each show
+  // Calculate averages and counts for each show
   showIds.forEach((id: string) => {
     const showRatingsData = allRatingsData.filter((r: any) => r?.show_id === id);
     if (showRatingsData.length > 0) {
       const average = showRatingsData.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / showRatingsData.length;
-      showRatings[id] = Math.round(average * 100) / 100;
+      showRatings[id] = {
+        averageRating: Math.round(average * 100) / 100,
+        reviewCount: showRatingsData.length
+      };
     }
   });
 
@@ -403,7 +414,7 @@ export const fetchShowStatsData = async (selectedYear: number | string): Promise
     
     // Fetch parallel data with error handling
     let attendeeCounts: Record<string, number> = {};
-    let showRatings: Record<string, number> = {};
+    let showRatings: Record<string, ShowRatingData> = {};
     let showLengthRanks: Record<string, number> = {};
 
     try {
@@ -437,7 +448,7 @@ export const fetchShowStatsData = async (selectedYear: number | string): Promise
       .map(({ _sortValue, _canonid, ...rest }: any) => rest);
 
     const lowestRarity = showsWithLength
-      .filter((s: any) => s.show_rarity !== null && s.show_rarity !== undefined)
+      .filter((s: any) => s.show_rarity !== null && s.show_rarity !== undefined && s.show_setlistcomplete === true)
       .map((s: any) => ({
         ...generateShowStat(s, s.show_rarity_formatted!, s.show_rarity!),
         _sortValue: s.show_rarity!
@@ -455,7 +466,7 @@ export const fetchShowStatsData = async (selectedYear: number | string): Promise
       .map(({ _sortValue, _canonid, ...rest }: any) => rest);
 
     const highestGap = showsWithLength
-      .filter((s: any) => s.show_gap !== null && s.show_gap !== undefined)
+      .filter((s: any) => s.show_gap !== null && s.show_gap !== undefined && s.show_setlistcomplete === true)
       .map((s: any) => ({
         ...generateShowStat(s, s.show_gap_formatted!, s.show_gap!),
         _sortValue: s.show_gap!
@@ -491,11 +502,17 @@ export const fetchShowStatsData = async (selectedYear: number | string): Promise
       .map(({ _sortValue, _canonid, ...rest }: any) => rest);
 
     const highestRated = showsWithLength
-      .filter((s: any) => showRatings[s.show_id] > 0)
-      .map((s: any) => ({
-        ...generateShowStat(s, showRatings[s.show_id].toFixed(2), showRatings[s.show_id]),
-        _sortValue: showRatings[s.show_id]
-      }))
+      .filter((s: any) => {
+        const ratingData = showRatings[s.show_id];
+        return ratingData && ratingData.reviewCount >= 5 && ratingData.averageRating > 0;
+      })
+      .map((s: any) => {
+        const ratingData = showRatings[s.show_id];
+        return {
+          ...generateShowStat(s, ratingData.averageRating.toFixed(2), ratingData.averageRating),
+          _sortValue: ratingData.averageRating
+        };
+      })
       .sort((a: any, b: any) => {
         if (b._sortValue !== a._sortValue) {
           return b._sortValue - a._sortValue;

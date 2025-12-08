@@ -118,7 +118,7 @@ export const StatsDesktopView: React.FC<StatsDesktopViewProps> = ({
           showEmptyState={showEmptyState}
         />
         <ShowStatTable
-          title="Shows With Rarest Setlist"
+          title="Shows with Rarest Setlist"
           bgColor="bg-tertiary text-fifth"
           items={lowestRarityShows}
           valueFormatter={(value) => (
@@ -132,7 +132,7 @@ export const StatsDesktopView: React.FC<StatsDesktopViewProps> = ({
           showEmptyState={showEmptyState}
         />
         <ShowStatTable
-          title="Shows With Longest Average Show Gap"
+          title="Shows with Longest Average Show Gap"
           bgColor="bg-tertiary text-fifth"
           items={highestGapShows}
           valueFormatter={(value) => (

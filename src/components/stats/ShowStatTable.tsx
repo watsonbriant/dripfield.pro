@@ -51,20 +51,14 @@ export const ShowStatTable: React.FC<ShowStatTableProps> = ({
   const getTitleIcon = () => {
     if (title === 'Longest Shows') {
       return <Clock className="w-3.5 h-3.5" />;
-    } else if (title === 'Shows With Longest Average Show Gap') {
+    } else if (title === 'Shows with Longest Average Show Gap') {
       return <Space className="w-3.5 h-3.5" />;
-    } else if (title === 'Shows With Rarest Setlist') {
+    } else if (title === 'Shows with Rarest Setlist') {
       return <Flame className="w-3.5 h-3.5" />;
     } else if (title === 'Most Attended Shows') {
       return <Users className="w-3.5 h-3.5" />;
     } else if (title === 'Highest Rated Shows') {
-      return (
-        <div className="flex items-center">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Star key={i} className="w-3.5 h-3.5" fill="currentColor" stroke="currentColor" />
-          ))}
-        </div>
-      );
+      return <Star className="w-3.5 h-3.5" fill="currentColor" stroke="currentColor" />;
     }
     return null;
   };
@@ -72,14 +66,23 @@ export const ShowStatTable: React.FC<ShowStatTableProps> = ({
   return (
     <div className={isLast ? "pb-1 border-x-[0.5px] border-y-[0.5px] border-fourth" : "pb-1 border-x-[0.5px] border-y-[0.5px] border-fourth"}>
       <div className={`${bgColor} px-2 py-0.5 mb-0.5 flex justify-between items-center`}>
-        <h3 className="text-sm font-medium">
-          {title}
-        </h3>
-        {getTitleIcon() && (
+        <div className="flex items-center gap-1">
+          <h3 className="text-sm font-medium">
+            {title}
+          </h3>
+          {title === 'Highest Rated Shows' && getTitleIcon() && (
+            <div className="flex items-center">
+              {getTitleIcon()}
+            </div>
+          )}
+        </div>
+        {title === 'Highest Rated Shows' ? (
+          <span className="text-[0.625rem] font-normal">(min. 5 reviews)</span>
+        ) : getTitleIcon() ? (
           <div className="flex items-center">
             {getTitleIcon()}
           </div>
-        )}
+        ) : null}
       </div>
       <div className="overflow-x-auto relative">
         {items.length === 0 && showEmptyState ? (
