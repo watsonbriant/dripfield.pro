@@ -99,7 +99,7 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
             
             {/* Image Modal */}
             {showModal && generatedImageUrl && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9001] p-4" onClick={() => setShowModal(false)}>
                     <div className="bg-primary border border-fourth rounded-lg p-4 max-w-4xl max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
