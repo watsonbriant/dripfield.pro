@@ -118,7 +118,7 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
                     className="w-full px-3 py-0.5 pr-8 rounded-md border border-fourth bg-tertiary/30 text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
                     onClick={(e) => e.stopPropagation()}
                   />
-                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
+                  <Search className="absolute right-2 top-1/4 transform w-3.5 h-3.5 text-fifth/60" />
                 </div>
               </div>
               
