@@ -246,7 +246,7 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
 
   // Regular view for non-scored or edit mode
   return (
-    <div className="space-y-1">
+    <div>
       {uniqueSets.map(setId => (
         <div key={setId} className="border border-fourth overflow-hidden mb-2">
           <div className="flex justify-between items-center px-0.5 py-0.5 bg-fifth">

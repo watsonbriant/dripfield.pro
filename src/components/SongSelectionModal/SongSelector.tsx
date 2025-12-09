@@ -1,5 +1,5 @@
-import React from 'react';
-import { Plus } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Plus, ChevronDown, Search } from 'lucide-react';
 import { Song } from './types';
 
 interface SongSelectorProps {
@@ -29,40 +29,129 @@ export const SongSelector: React.FC<SongSelectorProps> = ({
   canAddEncoreBreak,
   error
 }) => {
+  const [isSongDropdownOpen, setIsSongDropdownOpen] = useState(false);
+  const [songSearchTerm, setSongSearchTerm] = useState('');
+  const songSearchInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle clicks outside the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsSongDropdownOpen(false);
+      }
+    };
+    if (isSongDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isSongDropdownOpen]);
+
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (isSongDropdownOpen && songSearchInputRef.current) {
+      setTimeout(() => {
+        songSearchInputRef.current?.focus();
+      }, 50);
+    }
+  }, [isSongDropdownOpen]);
+
+  // Filter and group songs by category
+  const filteredSongsByCategory = React.useMemo(() => {
+    // Filter songs based on search term and placeholder
+    const filtered = songs.filter(song => {
+      const matchesSearch = !songSearchTerm || 
+        song.song.toLowerCase().includes(songSearchTerm.toLowerCase());
+      const notPlaceholder = !(song as any).song_placeholder;
+      return matchesSearch && notPlaceholder;
+    });
+
+    // Group by category
+    const gooseSongs = filtered.filter(song => 
+      song.category_type === 'Goose' || song.category_type === 'Goose Misc'
+    );
+    const tedTapesSongs = filtered.filter(song => 
+      song.category_type === 'Ted Tapes'
+    );
+    const coverSongs = filtered.filter(song => 
+      song.category_type === 'Cover Songs'
+    );
+
+    return [
+      { category: 'Goose', songs: gooseSongs },
+      { category: 'Ted Tapes', songs: tedTapesSongs },
+      { category: 'Cover Songs', songs: coverSongs }
+    ].filter(group => group.songs.length > 0);
+  }, [songs, songSearchTerm]);
+
+  const handleSongClick = (songName: string) => {
+    setSelectedSong(songName);
+    setIsSongDropdownOpen(false);
+    setSongSearchTerm('');
+  };
+
   return (
     <>
       {/* Song selection */}
       <div className="flex gap-2">
-        <div className="flex-1">
-          <select
-            value={selectedSong}
-            onChange={(e) => setSelectedSong(e.target.value)}
-            className="w-full px-2 py-0.5 bg-canvas border border-fourth text-sm text-fifth font-medium focus:outline-none focus:ring-2 focus:ring-tertiary appearance-none"
+        <div className="flex-1 relative" ref={dropdownRef}>
+          <div
+            className="w-full px-2 py-0.5 bg-canvas border border-fourth text-sm text-fifth font-medium focus:outline-none focus:ring-2 focus:ring-tertiary cursor-pointer flex items-center justify-between"
+            onClick={() => setIsSongDropdownOpen(!isSongDropdownOpen)}
           >
-            <option value="">Select a song...</option>
-            
-            {/* Goose Songs Section */}
-            <optgroup label="Goose Songs">
-              {songs
-                .filter(song => song.category_type === 'Goose' && !song.song.includes("[New") && !(song as any).song_placeholder)
-                .map((song) => (
-                  <option key={song.song_id} value={song.song}>
-                    {song.song}
-                  </option>
-                ))}
-            </optgroup>
-            
-            {/* Cover Songs Section */}
-            <optgroup label="Cover Songs">
-              {songs
-                .filter(song => song.category_type === 'Cover Songs' && !song.song.includes("[New") && !(song as any).song_placeholder)
-                .map((song) => (
-                  <option key={song.song_id} value={song.song}>
-                    {song.song}
-                  </option>
-                ))}
-            </optgroup>
-          </select>
+            <span className={selectedSong ? 'text-fifth' : 'text-fifth/60'}>
+              {selectedSong || 'Select a song...'}
+            </span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${isSongDropdownOpen ? 'rotate-180' : ''}`} />
+          </div>
+          
+          {isSongDropdownOpen && (
+            <div className="absolute z-10 w-full mt-1 bg-canvas border border-fourth rounded-md shadow-lg">
+              <div className="px-2 pt-1 pb-1.5">
+                <div className="relative">
+                  <input
+                    ref={songSearchInputRef}
+                    type="text"
+                    value={songSearchTerm}
+                    onChange={(e) => setSongSearchTerm(e.target.value)}
+                    placeholder="Search songs..."
+                    className="w-full px-3 py-0.5 pr-8 rounded-md border border-fourth bg-tertiary/30 text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
+                </div>
+              </div>
+              
+              <div className="max-h-60 overflow-y-auto">
+                {filteredSongsByCategory.length > 0 ? (
+                  <>
+                    {filteredSongsByCategory.map((group) => (
+                      <div key={group.category}>
+                        <div className="px-3 py-0.5 bg-tertiary text-xs font-medium text-fifth sticky top-0">
+                          {group.category}
+                        </div>
+                        {group.songs.map((song) => (
+                          <div
+                            key={song.song_id}
+                            className={`px-3 hover:bg-tertiary/20 cursor-pointer text-[0.625rem] ${
+                              selectedSong === song.song ? 'bg-tertiary/10' : ''
+                            }`}
+                            onClick={() => handleSongClick(song.song)}
+                          >
+                            {song.song}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <div className="px-3 py-2 text-sm text-fifth/60">
+                    {songSearchTerm ? 'No songs found matching your search' : 'No songs available'}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         <button
           onClick={onAddSong}

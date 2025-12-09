@@ -37,7 +37,7 @@ export const useSongSelection = (props: SongSelectionModalProps) => {
     return calculateTimeRemaining(showTime);
   }, []);
 
-  // Fetch songs from "Goose" or "Cover Songs" categories with pagination
+  // Fetch songs from "Goose", "Goose Misc", "Ted Tapes", or "Cover Songs" categories with pagination
   useEffect(() => {
     async function fetchSongs() {
       try {
@@ -56,12 +56,14 @@ export const useSongSelection = (props: SongSelectionModalProps) => {
               song, 
               song_id,
               song_category,
+              setlistgame_omit,
               categories!inner(
                 category,
                 category_type
               )
             `)
-            .in('categories.category_type', ['Goose', 'Cover Songs'])
+            .in('categories.category_type', ['Goose', 'Goose Misc', 'Ted Tapes', 'Cover Songs'])
+            .or('setlistgame_omit.is.null,setlistgame_omit.eq.false')
             .order('song')
             .range(page * pageSize, (page + 1) * pageSize - 1);
           
@@ -76,9 +78,10 @@ export const useSongSelection = (props: SongSelectionModalProps) => {
           }
         }
         
-        // Group songs by category type
-        const gooseSongs: Song[] = [];
-        const coverSongs: Song[] = [];
+        // Group songs by category type into three groups
+        const gooseSongs: Song[] = []; // Contains "Goose" and "Goose Misc"
+        const tedTapesSongs: Song[] = []; // Contains "Ted Tapes"
+        const coverSongs: Song[] = []; // Contains "Cover Songs"
         
         allSongs.forEach(item => {
           const songData = {
@@ -87,15 +90,18 @@ export const useSongSelection = (props: SongSelectionModalProps) => {
             category_type: item.categories?.category_type
           };
           
-          if (item.categories?.category_type === 'Goose') {
+          const categoryType = item.categories?.category_type;
+          if (categoryType === 'Goose' || categoryType === 'Goose Misc') {
             gooseSongs.push(songData);
-          } else if (item.categories?.category_type === 'Cover Songs') {
+          } else if (categoryType === 'Ted Tapes') {
+            tedTapesSongs.push(songData);
+          } else if (categoryType === 'Cover Songs') {
             coverSongs.push(songData);
           }
         });
         
-        // Combine arrays with Goose songs first
-        const songsData = [...gooseSongs, ...coverSongs];
+        // Combine arrays: Goose first, then Ted Tapes, then Cover Songs
+        const songsData = [...gooseSongs, ...tedTapesSongs, ...coverSongs];
         setSongs(songsData);
       } catch (error) {
         console.error('Error fetching songs:', error);
