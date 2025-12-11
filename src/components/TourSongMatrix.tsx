@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MatrixSortMode } from './TourSongsCombined';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
 import MatrixTable from './MatrixTable';
 import { useSongMatrix } from '../hooks/useSongMatrix';
+import { supabase } from '../lib/supabase';
 
 interface SongSpreadProps {
   shows: Array<any>;
@@ -27,7 +28,59 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
     songName: ''
   });
 
-  const { songMatrix, sortedSongs, isLoading, errorMessage } = useSongMatrix(shows, sortMode);
+  const [showsWithEntries, setShowsWithEntries] = useState<Set<string>>(new Set());
+  const [isFiltering, setIsFiltering] = useState(true);
+
+  // Query which shows have setlist_entries
+  useEffect(() => {
+    async function filterShowsWithEntries() {
+      if (!shows || shows.length === 0) {
+        setShowsWithEntries(new Set());
+        setIsFiltering(false);
+        return;
+      }
+
+      try {
+        const showIds = shows.map(show => show.show_id);
+        
+        // Query setlist_entries to find which shows have entries
+        const { data: entriesData, error } = await supabase
+          .from('setlist_entries')
+          .select('entry_show')
+          .in('entry_show', showIds);
+
+        if (error) throw error;
+
+        // Create a set of show IDs that have entries
+        const showIdsWithEntries = new Set<string>();
+        entriesData?.forEach(entry => {
+          if (entry.entry_show) {
+            showIdsWithEntries.add(entry.entry_show);
+          }
+        });
+
+        setShowsWithEntries(showIdsWithEntries);
+        setIsFiltering(false);
+      } catch (error) {
+        console.error('Error filtering shows with setlist entries:', error);
+        // On error, include all shows to avoid breaking the UI
+        setShowsWithEntries(new Set(shows.map(show => show.show_id)));
+        setIsFiltering(false);
+      }
+    }
+
+    filterShowsWithEntries();
+  }, [shows]);
+
+  // Filter shows to only include those with setlist_entries
+  const filteredShows = useMemo(() => {
+    if (isFiltering || showsWithEntries.size === 0) {
+      return [];
+    }
+    return shows.filter(show => showsWithEntries.has(show.show_id));
+  }, [shows, showsWithEntries, isFiltering]);
+
+  const { songMatrix, sortedSongs, isLoading, errorMessage } = useSongMatrix(filteredShows, sortMode);
 
   const handleSongClick = (songName: string) => {
     setModalSongData({
@@ -36,7 +89,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
     });
   };
 
-  if (isLoading) {
+  if (isFiltering || isLoading) {
     return (
       <div className="bg-primary border border-fourth rounded-lg p-3">
         <div className="flex justify-center items-center h-40">
@@ -73,7 +126,7 @@ const TourSongMatrix: React.FC<SongSpreadProps> = ({
       <MatrixTable
         songMatrix={songMatrix}
         sortedSongs={sortedSongs}
-        shows={shows}
+        shows={filteredShows}
         onSongClick={handleSongClick}
       />
       
