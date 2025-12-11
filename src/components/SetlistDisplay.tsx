@@ -10,16 +10,19 @@ interface SetlistEntry {
   entry_setorder: number;
   entry_set: string;
   entry_setnum: number;
+  averageLength?: string | null;
   songs: {
     song_id: string;
+    category_artwork?: string | null;
   };
 }
 
 interface SetlistDisplayProps {
   setlist: SetlistEntry[];
+  horizontalMargin?: string; // Optional prop to control horizontal margin (default: 'mx-3')
 }
 
-const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist }) => {
+const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist, horizontalMargin = 'mx-3' }) => {
   // Keep track of which songs we've seen
   const skipNumberingShorts = ["fake", "tease", "reprise"];
   // Instead of tracking seen songs with a simple Set, we'll track songs with valid numbers
@@ -27,7 +30,7 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist }) => {
   let currentRunningNumber = 1;
   
   return (
-    <div className='mx-3'>
+    <div className={horizontalMargin}>
       {setlist.map((entry, index) => {
         // Check if this entry has a short value that should skip numbering
         const shouldSkipNumbering = entry.entry_short && 
@@ -94,7 +97,7 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist }) => {
               >
                 {/* {displayNumber || '\u00A0'} */}&nbsp;
               </div>
-              <div className="flex-1 pl-2">
+              <div className="flex-1 pl-2 flex items-center justify-between">
                 <span className="font-medium">
                   <Link
                     to={`/song/${entry.songs.song_id}`}
@@ -109,6 +112,24 @@ const SetlistDisplay: React.FC<SetlistDisplayProps> = ({ setlist }) => {
                     <MoveRight className="text-red-500 inline pb-0.5 w-[1rem] h-[1rem]" />
                   )}
                 </span>
+                <div className="flex items-center gap-2">
+                  {entry.averageLength && (
+                    <span className="text-fifth text-[0.625rem] font-normal">
+                      {entry.averageLength}
+                    </span>
+                  )}
+                  {entry.songs.category_artwork && (
+                    <img
+                      src={entry.songs.category_artwork}
+                      alt={`${entry.entry_song} artwork`}
+                      className="w-4 h-4 rounded object-cover border border-fourth"
+                      onError={(e) => {
+                        // Hide the image if it fails to load
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </React.Fragment>

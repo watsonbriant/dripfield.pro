@@ -11,6 +11,7 @@ import { useGroupsData } from '../hooks/useGroupsData';
 import { useAttendeeData } from '../hooks/useAttendeeData';
 import { useShowRatings } from '../hooks/useShowRatings';
 import { useShowMetadata } from '../hooks/useShowMetadata';
+import { AverageSetlist } from './AverageSetlist';
 
 interface Show {
   show_iscanon: boolean;
@@ -189,6 +190,13 @@ export function Years() {
             onToggleGroup={toggleGroupSelection}
             onClearFilters={clearGroupFilters}
             loading={loading}
+          />
+
+          {/* Average Setlist Section */}
+          <AverageSetlist
+            shows={shows}
+            type="year"
+            title={currentYear ? `${currentYear} Average Setlist` : 'Average Setlist'}
           />
         </div>
       </div>

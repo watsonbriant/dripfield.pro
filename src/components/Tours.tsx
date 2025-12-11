@@ -7,6 +7,7 @@ import { TourShowsTable } from './TourShowsTable';
 import { TourSlotsTable } from './TourSlotsTable';
 import { TourStats } from './TourStats';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
+import { AverageSetlist } from './AverageSetlist';
 import { Show, Tour, ModalSongData } from '../types/tourTypes';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -202,6 +203,17 @@ export function Tours() {
         />
       )}
 
+              {/* Average Setlist Section - Mobile only */}
+              {shows.length > 0 && currentTourShowFields && (
+                <div className="lg:hidden">
+                  <AverageSetlist
+                    shows={shows}
+                    type="tour"
+                    title="Average Setlist"
+                  />
+                </div>
+              )}
+
               {hasTourSetlistEntries && (
         <TourStats
           shows={shows}
@@ -300,6 +312,17 @@ export function Tours() {
               )}
             </div>
           </div>
+
+          {/* Average Setlist Section - Desktop only */}
+          {shows.length > 0 && currentTourShowFields && (
+            <div className="hidden lg:block">
+              <AverageSetlist
+                shows={shows}
+                type="tour"
+                title="Average Setlist"
+              />
+            </div>
+          )}
         </div>
       </div>
 
