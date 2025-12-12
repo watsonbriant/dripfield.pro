@@ -72,27 +72,27 @@ export function TopPicksSection({ topSongs, topOpeners, topClosers, activePill, 
             <div className="flex gap-2">
               <button
                 onClick={() => onPillChange('songs')}
-                className={`px-2 py-0.5 rounded text-xs font-medium transition-colors border ${activePill === 'songs'
-                    ? 'bg-fourth text-white border-fourth'
-                    : 'bg-canvas text-fifth border-fourth hover:bg-primary'
+                className={`px-2 py-0.5 rounded text-xs font-medium border border-fourth/30 ${activePill === 'songs'
+                    ? 'bg-fourth text-white'
+                    : 'bg-canvas text-fifth hover:bg-primary'
                   }`}
               >
                 Songs
               </button>
               <button
                 onClick={() => onPillChange('openers')}
-                className={`px-2 py-0.5 rounded text-xs font-medium transition-colors border ${activePill === 'openers'
-                    ? 'bg-[#006400] text-white border-fourth'
-                    : 'bg-canvas text-fifth border-fourth hover:bg-primary'
+                className={`px-2 py-0.5 rounded text-xs font-medium border border-fourth/30 ${activePill === 'openers'
+                    ? 'bg-[#006400] text-white'
+                    : 'bg-canvas text-fifth hover:bg-primary'
                   }`}
               >
                 Openers
               </button>
               <button
                 onClick={() => onPillChange('closers')}
-                className={`px-2 py-0.5 rounded text-xs font-medium transition-colors border ${activePill === 'closers'
-                    ? 'bg-[#E17401] text-white border-fourth'
-                    : 'bg-canvas text-fifth border-fourth hover:bg-primary'
+                className={`px-2 py-0.5 rounded text-xs font-medium border border-fourth/30 ${activePill === 'closers'
+                    ? 'bg-[#E17401] text-white'
+                    : 'bg-canvas text-fifth hover:bg-primary'
                   }`}
               >
                 Closers

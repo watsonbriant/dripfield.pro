@@ -281,16 +281,18 @@ export const SetlistDisplay: React.FC<SetlistDisplayProps> = ({
                   >
                     {index + 1}
                   </span>
-                  <div className="flex flex-col justify-center">
-                    <span className="break-words pr-2 font-medium text-xs">
+                  <div className="flex items-center gap-1.5 flex-1">
+                    <span className="break-words font-medium text-xs leading-[0.75rem]">
                       {pick.song}
                     </span>
                     {/* Only show placement labels if not in view mode or if the show isn't closed */}
-                    {pick.placement && (!viewMode || !isSelectionClosed) && (
-                      <span className="text-[0.625rem] leading-[0.625rem] text-fourth font-base">
-                        {pick.placement.startsWith('Main Set') ? '' : 
-                         pick.placement.startsWith('Encore') ? '' : 
-                         pick.placement}
+                    {pick.placement && (!viewMode || !isSelectionClosed) && 
+                     !pick.placement.startsWith('Main Set') && (
+                      <span 
+                        className="inline-block text-[0.625rem] leading-[0.625rem] text-white font-medium px-1.5 py-0.5 rounded-full shrink-0"
+                        style={{ backgroundColor: getPlacementColor(pick.placement) }}
+                      >
+                        {pick.placement}
                       </span>
                     )}
                   </div>
