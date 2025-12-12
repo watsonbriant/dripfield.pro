@@ -60,15 +60,15 @@ export function ShowHeader({ show, totalPlayers, userSubmission, user, onViewSub
           </div>
           <div className="mt-0.5">
             {show.show_scored ? (
-              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-700 rounded text-xs border border-blue-500/30">
+              <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-xs border border-fourth/30">
                 Game Completed
               </span>
             ) : show.isSelectionClosed ? (
-              <span className="px-2 py-0.5 bg-red-500/20 text-red-700 rounded text-xs border border-red-500/30">
+              <span className="px-2 py-0.5 bg-red-600 text-white rounded text-xs border border-fourth/30">
                 Picks Closed
               </span>
             ) : (
-              <span className="px-2 py-0.5 bg-green-500/20 text-green-700 rounded text-xs border border-green-500/30">
+              <span className="px-2 py-0.5 bg-green-600 text-white rounded text-xs border border-fourth/30">
                 {show.timeRemaining} left to submit
               </span>
             )}
