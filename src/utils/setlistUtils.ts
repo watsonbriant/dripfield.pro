@@ -84,7 +84,7 @@ export const formatLength = (length: string | null): string => {
     if (hours === 0) {
       return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
-    return `${hours}:${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   } else if (parts.length === 2) {
     const [minutes, seconds] = parts;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
