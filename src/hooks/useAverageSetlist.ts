@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 interface Show {
@@ -77,10 +77,35 @@ export function useAverageSetlist(
   const [stats, setStats] = useState<SetlistStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Keep a ref to the latest shows array so we always use the most current data
+  const showsRef = useRef(shows);
+  showsRef.current = shows;
+
+  // Create a stable dependency key based only on canonical show IDs
+  // This prevents recalculation when the shows array reference changes
+  // but the actual canonical show IDs remain the same
+  const showsKey = useMemo(() => {
+    if (!shows || shows.length === 0) {
+      return '';
+    }
+    
+    // Filter to canonical shows and extract IDs
+    const canonicalShowIds = shows
+      .filter(show => show.show_iscanon === true || show.show_canonid !== null)
+      .map(show => show.show_id)
+      .sort(); // Sort for consistent key generation
+    
+    // Create a stable string key from sorted show IDs
+    return canonicalShowIds.join('|');
+  }, [shows]);
 
   useEffect(() => {
     async function calculateAverageSetlist() {
-      if (!shows || shows.length === 0) {
+      // Use the ref to always get the latest shows array
+      const currentShows = showsRef.current;
+      
+      if (!currentShows || currentShows.length === 0) {
         setAverageSetlist([]);
         setStats(null);
         setIsLoading(false);
@@ -92,7 +117,7 @@ export function useAverageSetlist(
         setError(null);
 
         // Step 1: Filter to canonical shows only
-        const canonicalShows = shows.filter(
+        const canonicalShows = currentShows.filter(
           show => show.show_iscanon === true || show.show_canonid !== null
         );
 
@@ -638,7 +663,7 @@ export function useAverageSetlist(
     }
 
     calculateAverageSetlist();
-  }, [shows, type]);
+  }, [showsKey, type]);
 
   return {
     averageSetlist,
