@@ -34,7 +34,7 @@ export const GuestLegend: React.FC<GuestLegendProps> = ({
               className="w-4 h-4 rounded border border-fourth"
               style={{ backgroundColor: group.color }}
             />
-            <div className="text-fifth text-xs flex items-center flex-wrap">
+            <div className="text-fifth text-xs leading-[0.75rem] flex items-center flex-wrap">
               {group.guests
                 .sort((a, b) => a.guest_canonid - b.guest_canonid)
                 .map((g, gIndex) => (
