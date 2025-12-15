@@ -69,8 +69,8 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
   const hasSinglePlacementType = uniquePlacements.size === 1;
 
   return (
-    <div className="border border-fourth overflow-x-auto w-fit shadow-xl">
-      <table className="border-collapse table-auto" style={{ minWidth: 'max-content' }}>
+    <div className="border border-fourth overflow-x-auto w-fit shadow-xl relative z-0 lg:z-auto">
+      <table className="border-collapse table-auto relative z-0" style={{ minWidth: 'max-content' }}>
         <SetlistTableHeader show={show} setlist={setlist} />
         <tbody>
           {setlist.map((entry, index) => {

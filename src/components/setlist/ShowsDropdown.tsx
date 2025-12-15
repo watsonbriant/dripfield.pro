@@ -124,7 +124,7 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
       {isShowDatesDropdownOpen && (
         <div 
           ref={showDatesDropdownListRef}
-          className="fixed bg-canvas border border-fourth shadow-lg z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 -mt-[9px] gap-0"
+          className="fixed bg-canvas border border-fourth shadow-lg z-[200] lg:z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 -mt-[9px] gap-0"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`

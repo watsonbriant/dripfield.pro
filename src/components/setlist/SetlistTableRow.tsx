@@ -145,7 +145,7 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
       >
         {/* Absolute positioned background that fills parent row */}
         <div 
-          className="absolute inset-0 z-10 pointer-events-none"
+          className="absolute inset-0 z-[1] pointer-events-none"
           style={{
             backgroundColor: copiedEntries.has(entry.entry_id) 
               ? '#22c55e' 
@@ -153,7 +153,7 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
           }}
         />
         {/* Content with relative positioning to appear above background */}
-        <span className="relative z-20 inline-block w-full h-full flex items-center justify-center">
+        <span className="relative z-[2] inline-block w-full h-full flex items-center justify-center">
           {copiedEntries.has(entry.entry_id) 
             ? '✓' 
             : (displayNumber || '\u00A0')

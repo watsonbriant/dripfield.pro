@@ -174,7 +174,7 @@ export function Setlist() {
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto lg:overflow-x-auto overflow-x-visible overflow-y-visible">
+      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto lg:overflow-x-auto overflow-x-visible overflow-y-visible relative z-0 lg:z-auto">
       {/* Header Bar with Navigation Row */}
       <div className="bg-primary border border-fourth mb-4 w-max min-w-max relative overflow-visible shadow-md">
         {/* Header */}
@@ -207,7 +207,7 @@ export function Setlist() {
         {/* Navigation Row */}
         <div className="flex items-center gap-4 relative overflow-visible min-w-max w-max">
           {/* Tours Dropdown */}
-          <div className="flex-shrink-0 relative z-[9000]">
+          <div className="flex-shrink-0 relative z-[1] lg:z-[9000]">
             <TourDropdown
               tours={tours}
               currentTour={show?.show_tour || undefined}
@@ -216,7 +216,7 @@ export function Setlist() {
           </div>
 
           {/* Navigation Arrows with Shows Dropdown */}
-          <div className="flex items-center gap-0.5 flex-shrink-0 relative z-[9000]">
+          <div className="flex items-center gap-0.5 flex-shrink-0 relative z-[1] lg:z-[9000]">
             <button 
               className={`p-0.5 transition-colors flex-shrink-0 ${
                 showPosition?.prevShowId 
@@ -301,7 +301,7 @@ export function Setlist() {
                   />
                 </button>
                 {wlHovered && (
-                  <div className="absolute left-0 top-full mt-1 text-xs font-medium bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg whitespace-nowrap z-[9999]">
+                  <div className="absolute left-0 top-full mt-1 text-xs font-medium bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg whitespace-nowrap z-[50] lg:z-[9999]">
                     Chat on WysteriaLane.org!
                   </div>
                 )}
@@ -371,7 +371,7 @@ export function Setlist() {
         {setlist && setlist.length > 0 ? (
           <div className="flex border-t border-fourth -mt-[1px]">
             {/* Left Column - 200px wide */}
-            <div className="w-[200px] flex-shrink-0 -mt-[1px] pt-2 border-r border-t border-fourth bg-canvas/60">
+            <div className="w-[200px] flex-shrink-0 -mt-[1px] pt-2 border-r border-t border-fourth bg-canvas/60 relative z-0 lg:z-auto">
               {/* Show Stats and Show Changes */}
               <div>
                 {setlist && setlist.length > 0 && (
@@ -443,7 +443,7 @@ export function Setlist() {
             </div>
 
             {/* Right Column - naturally as wide as needed */}
-            <div className="flex-1 px-2 py-2 space-y-2 -mt-[1px]">
+            <div className="flex-1 px-2 py-2 space-y-2 -mt-[1px] relative z-0 lg:z-auto">
               {show?.show_detail && (
                 <div className="text-fifth font-semibold text-base">
                   {show.show_detail}
