@@ -53,14 +53,27 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
   // Effect for auto-scrolling in the Shows dropdown and positioning
   useEffect(() => {
     if (isShowDatesDropdownOpen) {
-      // Calculate position for fixed positioning
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + window.scrollY + 8, // 8px for mt-2 equivalent
-          left: rect.left + window.scrollX
-        });
-      }
+      const updatePosition = () => {
+        // Calculate position for fixed positioning (viewport-relative, no scroll offset needed)
+        if (buttonRef.current) {
+          const rect = buttonRef.current.getBoundingClientRect();
+          const dropdownWidth = 256; // w-64 = 256px
+          const viewportWidth = window.innerWidth;
+          
+          // Ensure dropdown stays within viewport bounds
+          let left = rect.left;
+          if (left + dropdownWidth > viewportWidth) {
+            left = Math.max(0, viewportWidth - dropdownWidth);
+          }
+          
+          setDropdownPosition({
+            top: rect.bottom + 8, // 8px for mt-2 equivalent, fixed is viewport-relative
+            left: left
+          });
+        }
+      };
+
+      updatePosition();
       
       // Scroll to the current show when dropdown opens
       if (showDatesDropdownListRef.current && currentShowId) {
@@ -73,6 +86,15 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
           }
         }
       }
+
+      // Update position on scroll/resize
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
+
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
+      };
     }
   }, [isShowDatesDropdownOpen, currentShowId]);
 
@@ -102,7 +124,7 @@ export const ShowsDropdown: React.FC<ShowsDropdownProps> = ({
       {isShowDatesDropdownOpen && (
         <div 
           ref={showDatesDropdownListRef}
-          className="fixed bg-canvas border border-fourth shadow-lg z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 gap-0"
+          className="fixed bg-canvas border border-fourth shadow-lg z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 -mt-[9px] gap-0"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`

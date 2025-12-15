@@ -44,14 +44,27 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
   // Effect for auto-scrolling in the Tours dropdown and positioning
   useEffect(() => {
     if (isDropdownOpen) {
-      // Calculate position for fixed positioning
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + window.scrollY + 8, // 8px for mt-2 equivalent
-          left: rect.left + window.scrollX
-        });
-      }
+      const updatePosition = () => {
+        // Calculate position for fixed positioning (viewport-relative, no scroll offset needed)
+        if (buttonRef.current) {
+          const rect = buttonRef.current.getBoundingClientRect();
+          const dropdownWidth = 256; // w-64 = 256px
+          const viewportWidth = window.innerWidth;
+          
+          // Ensure dropdown stays within viewport bounds
+          let left = rect.left;
+          if (left + dropdownWidth > viewportWidth) {
+            left = Math.max(0, viewportWidth - dropdownWidth);
+          }
+          
+          setDropdownPosition({
+            top: rect.bottom + 8, // 8px for mt-2 equivalent, fixed is viewport-relative
+            left: left
+          });
+        }
+      };
+
+      updatePosition();
       
       // Scroll to the current tour when dropdown opens
       if (dropdownListRef.current && currentTour) {
@@ -64,6 +77,15 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
           }
         }
       }
+
+      // Update position on scroll/resize
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
+
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
+      };
     }
   }, [isDropdownOpen, currentTour]);
 
@@ -86,7 +108,7 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
       {isDropdownOpen && (
         <div 
           ref={dropdownListRef}
-          className="fixed bg-canvas border border-fourth shadow-lg z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 gap-0"
+          className="fixed bg-canvas border border-fourth shadow-lg z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 -mt-[9px] gap-0"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`
