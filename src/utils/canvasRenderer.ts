@@ -179,36 +179,45 @@ const renderShowInfo = (
     const containerPadding = 10;
     const containerWidth = maxTextWidth + (containerPadding * 2);
     const containerX = (centerX - containerWidth / 2);
-    const containerStartY = currentY - 60;
+    const containerStartY = currentY - 50;
 
-    // Calculate container height
+    // Calculate container height based on actual spacing adjustments
     let estimatedHeight = 0;
     
-    const dateFont = '500 48px "Rubik", "Inter", system-ui, sans-serif';
+    const dateFont = '500 36px "Rubik", "Inter", system-ui, sans-serif';
     const formattedDate = formatInTimeZone(new Date(show.show_date), 'UTC', 'MM.dd.yy');
     const dateLines = wrapText(ctx, formattedDate, maxTextWidth, dateFont);
     estimatedHeight += (dateLines.length * 60);
 
-    const groupFont = '500 36px "Rubik", "Inter", system-ui, sans-serif';
+    const groupFont = '500 28px "Rubik", "Inter", system-ui, sans-serif';
     const groupLines = wrapText(ctx, show.show_group, maxTextWidth, groupFont);
     estimatedHeight += (groupLines.length * 60);
+    // Date to Group spacing adjustment: -20
+    estimatedHeight -= 20;
 
-    const detailFont = '28px "Rubik", "Inter", system-ui, sans-serif';
+    const detailFont = '20px "Rubik", "Inter", system-ui, sans-serif';
     let detailLines: string[] = [];
     if (show.show_detail) {
         detailLines = wrapText(ctx, show.show_detail, maxTextWidth, detailFont);
-        estimatedHeight += (detailLines.length * 60) + 5;
+        // Group to Detail spacing: -30 before, +30 after (net 0), Detail to Subvenue: -40
+        estimatedHeight += (detailLines.length * 60);
+        estimatedHeight -= 40; // before subvenue (net effect: -30 before detail + +30 after detail - 40 before subvenue = -40)
+    } else {
+        // Group to Subvenue spacing adjustment: -25
+        estimatedHeight -= 25;
     }
 
-    const subvenueFont = '500 28px "Rubik", "Inter", system-ui, sans-serif';
+    const subvenueFont = '500 24px "Rubik", "Inter", system-ui, sans-serif';
     const subvenueLines = wrapText(ctx, show.show_subvenue, maxTextWidth, subvenueFont);
     estimatedHeight += (subvenueLines.length * 60);
+    // Subvenue to Location spacing adjustment: -33
+    estimatedHeight -= 33;
 
-    const locationFont = '24px "Rubik", "Inter", system-ui, sans-serif';
+    const locationFont = '20px "Rubik", "Inter", system-ui, sans-serif';
     const locationLines = wrapText(ctx, show.show_venue_location, maxTextWidth, locationFont);
     estimatedHeight += (locationLines.length * 60);
 
-    const containerHeight = estimatedHeight + (containerPadding * 2) - 50;
+    const containerHeight = estimatedHeight + (containerPadding * 2);
     const cornerRadius = 18;
 
     // Draw container
@@ -223,18 +232,20 @@ const renderShowInfo = (
 
     // Render text elements
     currentY = renderTextLines(ctx, dateLines, centerX, currentY, lineHeight, dateFont);
+    currentY -= 20;
     currentY = renderTextLines(ctx, groupLines, centerX, currentY, lineHeight, groupFont);
     
     if (show.show_detail) {
-        currentY -= 25;
+        currentY -= 30;
         currentY = renderTextLines(ctx, detailLines, centerX, currentY, lineHeight, detailFont);
         currentY += 30;
+        currentY -= 40;
+    } else {
+        currentY -= 25;
     }
-    
-    currentY -= 30;
     currentY = renderTextLines(ctx, subvenueLines, centerX, currentY, lineHeight, subvenueFont);
     
-    currentY -= 30;
+    currentY -= 33;
     currentY = renderTextLines(ctx, locationLines, centerX, currentY, lineHeight, locationFont);
 
     const containerBottom = containerStartY + containerHeight;
@@ -302,7 +313,7 @@ const renderSetlist = (
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = entry.entry_coachnotes;
             const plainTextNotes = tempDiv.textContent || tempDiv.innerText || '';
-            const noteLines = wrapText(ctx, plainTextNotes, maxTextWidth - 60, '16px "Rubik", "Inter", system-ui, sans-serif');
+            const noteLines = wrapText(ctx, plainTextNotes, maxTextWidth - 60, '18px "Rubik", "Inter", system-ui, sans-serif');
             // Match actual rendering: 21 + (noteLines.length * 20) + 12
             estimatedSetlistHeight += 21 + (noteLines.length * 20) + 11;
         } else {
@@ -503,13 +514,13 @@ const renderSetlistEntry = (
         
         if (indicatorText && indicatorColor) {
             currentX += 20;
-            ctx.font = '500 14px "Rubik", "Inter", system-ui, sans-serif';
+            ctx.font = '500 18px "Rubik", "Inter", system-ui, sans-serif';
             const textMetrics = ctx.measureText(indicatorText);
             const badgePadding = 4;
             const badgeWidth = textMetrics.width + (badgePadding * 2);
-            const badgeHeight = 20;
+            const badgeHeight = 24;
             const badgeX = currentX;
-            const badgeY = currentY - 6 - badgeHeight / 2;
+            const badgeY = currentY - 8 - badgeHeight / 2;
             
             // Draw badge background
             ctx.fillStyle = indicatorColor;
@@ -534,15 +545,15 @@ const renderCoachNotes = (
     currentY: number,
     maxTextWidth: number
 ): number => {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.font = '14px "Rubik", "Inter", system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.font = '18px "Rubik", "Inter", system-ui, sans-serif';
     ctx.textAlign = 'left';
     
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = coachNotes;
     const plainTextNotes = tempDiv.textContent || tempDiv.innerText || '';
     
-    const noteLines = wrapText(ctx, plainTextNotes, maxTextWidth - 60, '16px "Rubik", "Inter", system-ui, sans-serif');
+    const noteLines = wrapText(ctx, plainTextNotes, maxTextWidth - 60, '18px "Rubik", "Inter", system-ui, sans-serif');
     const numberX = (canvasWidth - maxTextWidth) / 2;
     
     for (const line of noteLines) {
@@ -749,7 +760,7 @@ const renderShowCoachnotes = (
     const containerX = (canvasWidth - containerWidth) / 2;
     const containerStartY = currentY;
 
-    const notesFont = '16px "Rubik", "Inter", system-ui, sans-serif';
+    const notesFont = '20px "Rubik", "Inter", system-ui, sans-serif';
     const lineHeightValue = 20;
     
     // Estimate height including <br /> tags
@@ -803,8 +814,8 @@ const renderShowCallbacks = (
     const containerX = (canvasWidth - containerWidth) / 2;
     const containerStartY = currentY;
 
-    const callbacksFont = '16px "Rubik", "Inter", system-ui, sans-serif';
-    const lineHeightValue = 16;
+    const callbacksFont = '20px "Rubik", "Inter", system-ui, sans-serif';
+    const lineHeightValue = 20;
     
     // Estimate height including <br /> tags
     const contentHeight = estimateHTMLHeight(
