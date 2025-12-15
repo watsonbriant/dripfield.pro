@@ -7,6 +7,238 @@ export interface ScoringState {
   scoringError: string | null;
 }
 
+// Helper function to calculate potential score for a pick against an instance
+function calculatePotentialScore(
+  pick: { song: string; set: string; setnum: number; placement: string },
+  instance: { set: string; setnum: number; placement: string },
+  isFirstPick: boolean,
+  isLastPick: boolean,
+  actualFirstSong: any,
+  actualLastSong: any
+): { score: number; result: string; showopenerBonus: boolean; showcloserBonus: boolean } {
+  let pickScore = 0;
+  let resultString = 'not_played';
+  let showopenerBonus = false;
+  let showcloserBonus = false;
+
+  // Start with basic song match (2 points)
+  pickScore = 2;
+  resultString = 'correct_song';
+
+  // Check for correct set match
+  const correctSetMatch = pick.set === instance.set;
+  let setAndPositionMatch = false;
+
+  if (correctSetMatch) {
+    pickScore = 4;
+    resultString = 'correct_song_set';
+
+    // Check for correct setnum within that set
+    setAndPositionMatch = pick.setnum === instance.setnum;
+
+    if (setAndPositionMatch) {
+      pickScore = 7;
+      resultString = 'correct_song_set_setnum';
+    }
+  }
+
+  // Check for special placements (Opener, Closer, Encore)
+  const userPlacement = pick.placement || '';
+  const hasOpener = userPlacement.includes('Opener');
+  const hasCloser = userPlacement.includes('Closer');
+  const hasEncore = userPlacement.includes('Encore');
+
+  const actualPlacement = instance.placement || '';
+  const hasMatchingPlacement = 
+    (hasOpener && actualPlacement.includes('Opener')) ||
+    (hasCloser && actualPlacement.includes('Closer')) ||
+    (hasEncore && actualPlacement.includes('Encore'));
+
+  if (hasMatchingPlacement) {
+    if (correctSetMatch && instance.set === pick.set) {
+      if (setAndPositionMatch && instance.setnum === pick.setnum) {
+        // Correct song, set, setnum, and placement
+        pickScore = 10;
+        resultString = 'correct_song_set_setnum_openercloserencore';
+      } else {
+        // Correct song, set, and placement
+        pickScore = 7;
+        resultString = 'correct_song_set_openercloserencore';
+      }
+    } else if (pickScore <= 2) {
+      // Only the song and placement are correct (no set match)
+      pickScore = 5;
+      resultString = 'correct_song_openercloserencore';
+    }
+  }
+
+  // Check for show opener bonus
+  if (isFirstPick && actualFirstSong) {
+    const isShowOpenerMatch = 
+      (pick.song === "[New Original Song]" && actualFirstSong.entry_new === "New Original Song") ||
+      (pick.song === "[New Cover Song]" && actualFirstSong.entry_new === "New Cover Song");
+    
+    if (isShowOpenerMatch) {
+      showopenerBonus = true;
+      pickScore += 3;
+    }
+  }
+
+  // Check for show closer bonus
+  if (isLastPick && actualLastSong) {
+    const isShowCloserMatch = 
+      (pick.song === "[New Original Song]" && actualLastSong.entry_new === "New Original Song") ||
+      (pick.song === "[New Cover Song]" && actualLastSong.entry_new === "New Cover Song");
+    
+    if (isShowCloserMatch) {
+      showcloserBonus = true;
+      pickScore += 3;
+    }
+  }
+
+  return { score: pickScore, result: resultString, showopenerBonus, showcloserBonus };
+}
+
+// Helper function to generate all combinations of selecting k items from n items
+function generateCombinations<T>(items: T[], k: number): T[][] {
+  if (k === 0) return [[]];
+  if (k > items.length) return [];
+  if (k === items.length) return [items];
+
+  const combinations: T[][] = [];
+  
+  for (let i = 0; i <= items.length - k; i++) {
+    const head = items[i];
+    const tailCombinations = generateCombinations(items.slice(i + 1), k - 1);
+    for (const tail of tailCombinations) {
+      combinations.push([head, ...tail]);
+    }
+  }
+  
+  return combinations;
+}
+
+// Helper function to find optimal matching using brute force
+function findOptimalMatching(
+  picks: Array<{ pick: any; index: number }>,
+  instances: Array<{ set: string; setnum: number; placement: string }>,
+  actualFirstSong: any,
+  actualLastSong: any,
+  allPicksSorted: any[]
+): { matchedPicks: Set<number>; assignments: Map<number, number> } {
+  if (instances.length === 0) {
+    return { matchedPicks: new Set(), assignments: new Map() };
+  }
+
+  if (picks.length === 0) {
+    return { matchedPicks: new Set(), assignments: new Map() };
+  }
+
+  // Calculate potential scores for each pick against each instance
+  const scoreMatrix: Array<Array<{ score: number; result: string; showopenerBonus: boolean; showcloserBonus: boolean }>> = [];
+  
+  picks.forEach((pickWrapper) => {
+    const pick = pickWrapper.pick;
+    const isFirstPick = allPicksSorted[0]?.pick_id === pick.pick_id;
+    const isLastPick = allPicksSorted[allPicksSorted.length - 1]?.pick_id === pick.pick_id;
+    
+    const row: Array<{ score: number; result: string; showopenerBonus: boolean; showcloserBonus: boolean }> = [];
+    instances.forEach(instance => {
+      const potential = calculatePotentialScore(pick, instance, isFirstPick, isLastPick, actualFirstSong, actualLastSong);
+      row.push(potential);
+    });
+    scoreMatrix.push(row);
+  });
+
+  // If we have fewer or equal picks to instances, match all picks optimally
+  if (picks.length <= instances.length) {
+    // Try all permutations of assigning picks to instances
+    const instanceIndices = instances.map((_, idx) => idx);
+    const pickIndices = picks.map((_, idx) => idx);
+    const permutations = generatePermutations(instanceIndices.slice(0, picks.length));
+    
+    let bestTotalScore = -1;
+    let bestAssignments: Map<number, number> = new Map();
+
+    for (const permutation of permutations) {
+      let totalScore = 0;
+      const assignments = new Map<number, number>();
+      
+      for (let i = 0; i < picks.length; i++) {
+        const pickIdx = picks[i].index;
+        const instanceIdx = permutation[i];
+        const score = scoreMatrix[i][instanceIdx].score;
+        totalScore += score;
+        assignments.set(pickIdx, instanceIdx);
+      }
+      
+      if (totalScore > bestTotalScore) {
+        bestTotalScore = totalScore;
+        bestAssignments = assignments;
+      }
+    }
+
+    const matchedPicks = new Set(picks.map(p => p.index));
+    return { matchedPicks, assignments: bestAssignments };
+  }
+
+  // If we have more picks than instances, find optimal combination
+  // Generate all combinations of selecting instances.length picks from picks.length picks
+  const combinations = generateCombinations(picks.map((_, idx) => idx), instances.length);
+  
+  let bestTotalScore = -1;
+  let bestCombination: number[] = [];
+  let bestAssignments: Map<number, number> = new Map();
+
+  // Try each combination
+  for (const combination of combinations) {
+    // For each combination, try all permutations of assigning picks to instances
+    const selectedPicks = combination.map(idx => picks[idx]);
+    
+    // Generate all permutations of instance assignments
+    const instanceIndices = instances.map((_, idx) => idx);
+    const permutations = generatePermutations(instanceIndices);
+    
+    for (const permutation of permutations) {
+      let totalScore = 0;
+      const assignments = new Map<number, number>();
+      
+      for (let i = 0; i < selectedPicks.length; i++) {
+        const pickIdx = selectedPicks[i].index;
+        const instanceIdx = permutation[i];
+        const score = scoreMatrix[combination[i]][instanceIdx].score;
+        totalScore += score;
+        assignments.set(pickIdx, instanceIdx);
+      }
+      
+      if (totalScore > bestTotalScore) {
+        bestTotalScore = totalScore;
+        bestCombination = combination;
+        bestAssignments = assignments;
+      }
+    }
+  }
+
+  const matchedPicks = new Set(bestCombination.map(idx => picks[idx].index));
+  return { matchedPicks, assignments: bestAssignments };
+}
+
+// Helper function to generate all permutations
+function generatePermutations<T>(items: T[]): T[][] {
+  if (items.length <= 1) return [items];
+  
+  const permutations: T[][] = [];
+  for (let i = 0; i < items.length; i++) {
+    const head = items[i];
+    const tail = items.slice(0, i).concat(items.slice(i + 1));
+    const tailPermutations = generatePermutations(tail);
+    for (const tailPerm of tailPermutations) {
+      permutations.push([head, ...tailPerm]);
+    }
+  }
+  return permutations;
+}
+
 export function useSetlistScoring() {
   const [isScoring, setIsScoring] = useState(false);
   const [scoringComplete, setScoringComplete] = useState(false);
@@ -99,6 +331,13 @@ export function useSetlistScoring() {
 
         console.log(`Found ${picksData.length} picks to score`);
 
+        // Sort picks by set and setnum for determining first/last picks
+        const sortedPicks = [...picksData].sort((a, b) => {
+          const setCompare = a.set.localeCompare(b.set);
+          if (setCompare !== 0) return setCompare;
+          return a.setnum - b.setnum;
+        });
+
         // Create a dictionary of songs in setlist for quick lookup
         const setlistSongs = {};
         // Create a separate dictionary for new songs
@@ -131,41 +370,39 @@ export function useSetlistScoring() {
           }
         });
 
-        // Score each pick
-        for (const pick of picksData) {
+        // Separate regular picks from new song picks
+        const regularPicks: any[] = [];
+        const newOriginalPicks: Array<{ pick: any; index: number }> = [];
+        const newCoverPicks: Array<{ pick: any; index: number }> = [];
+
+        picksData.forEach((pick, index) => {
+          if (pick.song === "[New Original Song]") {
+            newOriginalPicks.push({ pick, index });
+          } else if (pick.song === "[New Cover Song]") {
+            newCoverPicks.push({ pick, index });
+          } else {
+            regularPicks.push(pick);
+          }
+        });
+
+        // Score regular picks (existing logic)
+        for (const pick of regularPicks) {
           let pickScore = 0;
           let resultString = 'not_played';
           console.log(`\nScoring pick: ${pick.song} in Set ${pick.set}, Position ${pick.setnum}, Placement ${pick.placement || 'None'}`);
 
-          // Check if this is a New Original Song or New Cover Song pick
-          const isNewSongPick = pick.song === "[New Original Song]" || pick.song === "[New Cover Song]";
-          
-          // Get song instances based on pick type
-          let songInstances = [];
-          if (isNewSongPick) {
-            // For new song types, look in the new songs dictionary
-            // Convert bracketed format to non-bracketed format for lookup
-            const lookupKey = pick.song === "[New Original Song]" ? "New Original Song" : "New Cover Song";
-            songInstances = setlistNewSongs[lookupKey] || [];
-            console.log(`Checking for ${lookupKey} in entry_new, found ${songInstances.length} instances`);
-          } else {
-            // For regular songs, use normal lookup
-            songInstances = setlistSongs[pick.song] || [];
-            console.log(`Checking for ${pick.song} in entry_song, found ${songInstances.length} instances`);
-          }
+          const songInstances = setlistSongs[pick.song] || [];
+          console.log(`Checking for ${pick.song} in entry_song, found ${songInstances.length} instances`);
 
           if (songInstances.length > 0) {
-            console.log(`${isNewSongPick ? "New song type" : "Song"} was ${isNewSongPick ? "found" : "played"} ${songInstances.length} times in the setlist`);
+            console.log(`Song was played ${songInstances.length} times in the setlist`);
 
             // Start with basic song match (2 points)
             pickScore = 2;
             resultString = 'correct_song';
 
-            // The rest of the scoring logic remains the same...
             // Check for correct set match
             const correctSetMatch = songInstances.some(instance => pick.set === instance.set);
-
-            // Define setAndPositionMatch outside the if block so it's available in all scopes
             let setAndPositionMatch = false;
 
             if (correctSetMatch) {
@@ -220,7 +457,7 @@ export function useSetlistScoring() {
               }
             }
           } else {
-            console.log(`${isNewSongPick ? "New song type" : "Song"} was not ${isNewSongPick ? "found" : "played"} in the setlist`);
+            console.log(`Song was not played in the setlist`);
           }
 
           // Add to total score
@@ -234,90 +471,162 @@ export function useSetlistScoring() {
             .eq('pick_id', pick.pick_id);
         }
 
-        // Step 6a: Handle show opener bonus - NEW CODE
-        const { data: firstPickData, error: firstPickError } = await supabase
-          .from('setlist_game_picks')
-          .select('pick_id, song, set, setnum, placement, score, result')
-          .eq('submission_id', submission.submission_id)
-          .order('set', { ascending: true })
-          .order('setnum', { ascending: true })
-          .limit(1);
+        // Score new song picks using optimal matching
+        const newSongTypes = [
+          { picks: newOriginalPicks, instances: setlistNewSongs["New Original Song"], type: "New Original Song" },
+          { picks: newCoverPicks, instances: setlistNewSongs["New Cover Song"], type: "New Cover Song" }
+        ];
 
-        if (firstPickError) {
-          console.error('Error getting first pick:', firstPickError);
-        } else if (firstPickData && firstPickData.length > 0 && actualSetlistData && actualSetlistData.length > 0) {
-          // Get the first song of the actual setlist
-          const actualFirstSong = actualSetlistData[0];
+        for (const { picks, instances, type } of newSongTypes) {
+          if (picks.length === 0) continue;
 
-          console.log(`User's first pick: ${firstPickData[0].song}, first song of show: ${actualFirstSong.entry_song}`);
+          console.log(`\nScoring ${picks.length} ${type} picks against ${instances.length} instances`);
 
-          // Check if first pick matches actual first song
-          const isShowOpenerCorrect = firstPickData[0].song === actualFirstSong.entry_song || 
-          (firstPickData[0].song === "[New Original Song]" && actualFirstSong.entry_new === "New Original Song") ||
-          (firstPickData[0].song === "[New Cover Song]" && actualFirstSong.entry_new === "New Cover Song");
+          // Find optimal matching
+          const { matchedPicks, assignments } = findOptimalMatching(
+            picks,
+            instances,
+            actualSetlistData[0],
+            actualLastSong,
+            sortedPicks
+          );
 
-          if (isShowOpenerCorrect) {
-            console.log(`User correctly picked the show opener`);
+          // Score matched picks
+          for (const pickWrapper of picks) {
+            const pick = pickWrapper.pick;
+            const pickIndex = pickWrapper.index;
+            const isMatched = matchedPicks.has(pickIndex);
 
-            // Add show opener bonus to both pick and total score
-            const currentPickScore = firstPickData[0].score || 0;
-            const showopenerBonus = 3;
-            const newPickScore = currentPickScore + showopenerBonus;
+            if (isMatched) {
+              const instanceIdx = assignments.get(pickIndex);
+              if (instanceIdx === undefined || instanceIdx >= instances.length) {
+                console.error(`Invalid instance index ${instanceIdx} for pick ${pick.pick_id}`);
+                // Fallback: score as unmatched
+                await supabase
+                  .from('setlist_game_picks')
+                  .update({
+                    score: 0,
+                    result: 'not_played',
+                    showopener_correct: false,
+                    showcloser_correct: false
+                  })
+                  .eq('pick_id', pick.pick_id);
+                continue;
+              }
 
-            console.log(`Adding +${showopenerBonus} points to ${firstPickData[0].song} (from ${currentPickScore} to ${newPickScore})`);
+              const instance = instances[instanceIdx];
+              const isFirstPick = sortedPicks[0]?.pick_id === pick.pick_id;
+              const isLastPick = sortedPicks[sortedPicks.length - 1]?.pick_id === pick.pick_id;
 
-            totalScore += showopenerBonus;
+              const potential = calculatePotentialScore(
+                pick,
+                instance,
+                isFirstPick,
+                isLastPick,
+                actualSetlistData[0],
+                actualLastSong
+              );
 
-            // Update the pick with new score and set showopener_correct to TRUE
-            await supabase
-              .from('setlist_game_picks')
-              .update({
-                score: newPickScore,
-                showopener_correct: true
-              })
-              .eq('pick_id', firstPickData[0].pick_id);
+              totalScore += potential.score;
+              console.log(`Score for ${type} pick: ${potential.score}, result: ${potential.result}`);
+
+              // Update the pick's score and result
+              await supabase
+                .from('setlist_game_picks')
+                .update({
+                  score: potential.score,
+                  result: potential.result,
+                  showopener_correct: potential.showopenerBonus,
+                  showcloser_correct: potential.showcloserBonus
+                })
+                .eq('pick_id', pick.pick_id);
+            } else {
+              // Unmatched pick gets 0 points
+              console.log(`${type} pick not matched, scoring 0 points`);
+              await supabase
+                .from('setlist_game_picks')
+                .update({
+                  score: 0,
+                  result: 'not_played',
+                  showopener_correct: false,
+                  showcloser_correct: false
+                })
+                .eq('pick_id', pick.pick_id);
+            }
           }
         }
 
-        // Step 6b: Handle show closer bonus - EXISTING CODE
-        const { data: lastPickData, error: lastPickError } = await supabase
-          .from('setlist_game_picks')
-          .select('pick_id, song, set, setnum, placement, score, result')
-          .eq('submission_id', submission.submission_id)
-          .order('set', { ascending: false })
-          .order('setnum', { ascending: false })
-          .limit(1);
+        // Step 6: Handle show opener/closer bonuses for regular songs
+        // (New song bonuses are handled in optimal matching)
+        if (sortedPicks.length > 0 && actualSetlistData && actualSetlistData.length > 0) {
+          const firstPick = sortedPicks[0];
+          const lastPick = sortedPicks[sortedPicks.length - 1];
+          const actualFirstSong = actualSetlistData[0];
 
-        if (lastPickError) {
-          console.error('Error getting last pick:', lastPickError);
-        } else if (lastPickData && lastPickData.length > 0 && actualLastSong) {
-          console.log(`User's last pick: ${lastPickData[0].song}, last song of show: ${actualLastSong.entry_song}`);
+          // Check show opener bonus for regular songs
+          if (firstPick.song !== "[New Original Song]" && firstPick.song !== "[New Cover Song]") {
+            const isShowOpenerCorrect = firstPick.song === actualFirstSong.entry_song;
 
-          // Check if last pick matches actual last song
-          const isShowCloserCorrect = lastPickData[0].song === actualLastSong.entry_song ||
-            (lastPickData[0].song === "[New Original Song]" && actualLastSong.entry_new === "New Original Song") ||
-            (lastPickData[0].song === "[New Cover Song]" && actualLastSong.entry_new === "New Cover Song");
+            if (isShowOpenerCorrect) {
+              console.log(`User correctly picked the show opener: ${firstPick.song}`);
 
-          if (isShowCloserCorrect) {
-            console.log(`User correctly picked the show closer`);
+              // Get current score
+              const { data: currentPickData } = await supabase
+                .from('setlist_game_picks')
+                .select('score')
+                .eq('pick_id', firstPick.pick_id)
+                .single();
 
-            // Add show closer bonus to both pick and total score
-            const currentPickScore = lastPickData[0].score || 0;
-            const showcloserBonus = 3;
-            const newPickScore = currentPickScore + showcloserBonus;
+              const currentPickScore = currentPickData?.score || 0;
+              const showopenerBonus = 3;
+              const newPickScore = currentPickScore + showopenerBonus;
 
-            console.log(`Adding +${showcloserBonus} points to ${lastPickData[0].song} (from ${currentPickScore} to ${newPickScore})`);
+              console.log(`Adding +${showopenerBonus} points to ${firstPick.song} (from ${currentPickScore} to ${newPickScore})`);
 
-            totalScore += showcloserBonus;
+              totalScore += showopenerBonus;
 
-            // Update the pick with new score and set showcloser_correct to TRUE
-            await supabase
-              .from('setlist_game_picks')
-              .update({
-                score: newPickScore,
-                showcloser_correct: true
-              })
-              .eq('pick_id', lastPickData[0].pick_id);
+              // Update the pick with new score and set showopener_correct to TRUE
+              await supabase
+                .from('setlist_game_picks')
+                .update({
+                  score: newPickScore,
+                  showopener_correct: true
+                })
+                .eq('pick_id', firstPick.pick_id);
+            }
+          }
+
+          // Check show closer bonus for regular songs
+          if (actualLastSong && lastPick.song !== "[New Original Song]" && lastPick.song !== "[New Cover Song]") {
+            const isShowCloserCorrect = lastPick.song === actualLastSong.entry_song;
+
+            if (isShowCloserCorrect) {
+              console.log(`User correctly picked the show closer: ${lastPick.song}`);
+
+              // Get current score
+              const { data: currentPickData } = await supabase
+                .from('setlist_game_picks')
+                .select('score')
+                .eq('pick_id', lastPick.pick_id)
+                .single();
+
+              const currentPickScore = currentPickData?.score || 0;
+              const showcloserBonus = 3;
+              const newPickScore = currentPickScore + showcloserBonus;
+
+              console.log(`Adding +${showcloserBonus} points to ${lastPick.song} (from ${currentPickScore} to ${newPickScore})`);
+
+              totalScore += showcloserBonus;
+
+              // Update the pick with new score and set showcloser_correct to TRUE
+              await supabase
+                .from('setlist_game_picks')
+                .update({
+                  score: newPickScore,
+                  showcloser_correct: true
+                })
+                .eq('pick_id', lastPick.pick_id);
+            }
           }
         }
 
