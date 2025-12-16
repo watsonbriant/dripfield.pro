@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { MoveRight } from 'lucide-react';
 import { SetlistEntry, Show } from '../../types/setlist';
 import { 
@@ -159,14 +160,16 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
             : (displayNumber || '\u00A0')
           }
         </span>
-        {!isMobile && hoveredEntry === entry.entry_id && !copiedEntries.has(entry.entry_id) && (
-          <div className="fixed text-[0.625rem] font-medium bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg min-w-max z-[9999]"
+        {!isMobile && hoveredEntry === entry.entry_id && !copiedEntries.has(entry.entry_id) && createPortal(
+          <div className="fixed text-[0.625rem] font-medium bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg min-w-max pointer-events-none"
             style={{
               left: `${mousePosition.x + 10}px`,
-              top: `${mousePosition.y - 10}px`
+              top: `${mousePosition.y - 10}px`,
+              zIndex: 99999
             }}>
             {entry.entry_placement}
-          </div>
+          </div>,
+          document.body
         )}
       </td>
   
@@ -221,12 +224,13 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
           )}
         </div>
         
-        {!isMobile && hoveredSong === entry.entry_id && (
+        {!isMobile && hoveredSong === entry.entry_id && createPortal(
           <div 
-            className="fixed text-[0.625rem] leading-[0.75rem] bg-canvas text-fifth px-2 py-1 rounded border font-light border-fourth shadow-lg min-w-max z-[9999] text-left"
+            className="fixed text-[0.625rem] leading-[0.75rem] bg-canvas text-fifth px-2 py-1 rounded border font-light border-fourth shadow-lg min-w-max text-left pointer-events-none"
             style={{
               left: `${mousePosition.x + 10}px`,
-              top: `${mousePosition.y - 10}px`
+              top: `${mousePosition.y - 10}px`,
+              zIndex: 99999
             }}
           >
             <div className="font-medium">
@@ -253,7 +257,8 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
                 <span dangerouslySetInnerHTML={createMarkup(entry.song_rarity_percentage)} />
               </div>
             )}
-          </div>
+          </div>,
+          document.body
         )}
       </td>
   
@@ -301,12 +306,13 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
           >
             {entry.last_count || ''}
           </span>
-          {!isMobile && hoveredEntry === entry.entry_id + '_last' && entry.last_show_id && (
+          {!isMobile && hoveredEntry === entry.entry_id + '_last' && entry.last_show_id && createPortal(
             <div 
-              className="fixed text-[0.625rem] leading-[0.75rem] bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg min-w-max z-[9999]"
+              className="fixed text-[0.625rem] leading-[0.75rem] bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg min-w-max pointer-events-none"
               style={{
                 left: `${mousePosition.x + 10}px`,
-                top: `${mousePosition.y - 10}px`
+                top: `${mousePosition.y - 10}px`,
+                zIndex: 99999
               }}
             >
               <div className="font-medium">{entry.last_show_date}</div>
@@ -314,7 +320,8 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
               {entry.last_show_tour && (
                 <div className="font-light">{entry.last_show_tour}</div>
               )}
-            </div>
+            </div>,
+            document.body
           )}
         </td>
       )}
@@ -356,12 +363,13 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
             {calculateRarity(entry.times_played_num, entry.shows_since_debut_num)}
           </span>
           
-          {!isMobile && hoveredSong === entry.entry_id + '_rarity' && (
+          {!isMobile && hoveredSong === entry.entry_id + '_rarity' && createPortal(
             <div 
-              className="fixed text-[0.625rem] leading-[0.75rem] bg-canvas text-fifth px-2 py-1 rounded border font-light border-fourth shadow-lg min-w-max z-[9999] text-left"
+              className="fixed text-[0.625rem] leading-[0.75rem] bg-canvas text-fifth px-2 py-1 rounded border font-light border-fourth shadow-lg min-w-max text-left pointer-events-none"
               style={{
                 left: `${mousePosition.x + 10}px`,
-                top: `${mousePosition.y - 10}px`
+                top: `${mousePosition.y - 10}px`,
+                zIndex: 99999
               }}
             >
               <div className="font-medium">
@@ -388,7 +396,8 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
                   <span dangerouslySetInnerHTML={createMarkup(entry.song_rarity_percentage)} />
                 </div>
               )}
-            </div>
+            </div>,
+            document.body
           )}
         </td>
       )}
@@ -417,19 +426,21 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
           className="w-4 h-4 rounded ml-auto"
           style={{ backgroundColor: getGuestColor(entry) }}
         />
-        {!isMobile && hoveredPersonnel === entry.entry_id && (
+        {!isMobile && hoveredPersonnel === entry.entry_id && createPortal(
           <div 
-            className="fixed text-[0.625rem] leading-[0.75rem] font-medium bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg z-[9999] max-w-[300px] whitespace-normal break-words"
+            className="fixed text-[0.625rem] leading-[0.75rem] font-medium bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg max-w-[300px] whitespace-normal break-words pointer-events-none"
             style={{
               left: `${mousePosition.x + 10}px`,
-              top: `${mousePosition.y - 10}px`
+              top: `${mousePosition.y - 10}px`,
+              zIndex: 99999
             }}
           >
             {entry.guests
               ?.sort((a, b) => a.guest_canonid - b.guest_canonid)
               .map(guest => guest.guest_display_name)
               .join(', ') || 'No guest information'}
-          </div>
+          </div>,
+          document.body
         )}
       </td>
       

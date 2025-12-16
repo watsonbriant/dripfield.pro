@@ -63,7 +63,7 @@ export const GuestLegend: React.FC<GuestLegendProps> = ({
                         {g.guest_display_name}
                         {!isMobile && hoveredPersonnel === g.guest_id && (
                           <div 
-                            className="fixed text-[0.625rem] font-medium bg-canvas text-fifth px-1.5 py-0.5 rounded border border-fourth shadow-lg z-[9999] whitespace-nowrap"
+                            className="fixed text-[0.625rem] font-medium bg-canvas text-fifth px-1.5 py-0.5 rounded border border-fourth shadow-lg z-[50] whitespace-nowrap"
                             style={{
                               left: `${mousePosition.x + 10}px`,
                               top: `${mousePosition.y - 10}px`
