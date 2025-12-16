@@ -113,7 +113,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
     >
       {/* Number column */}
       <td
-        className={`px-1.5 ${getPlacementColor(entry.placement || '') !== 'transparent' ? 'text-white' : 'text-fifth'} text-center font-medium text-xs whitespace-nowrap relative`}
+        className={`px-1.5 ${getPlacementColor(entry.placement || '') !== 'transparent' ? 'text-white' : 'text-fifth'} text-center font-medium text-xs whitespace-nowrap relative bg-fourth text-white`}
       >
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
@@ -197,7 +197,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
       </td>
 
       {/* Duration column */}
-      <td className="px-2 text-fifth text-center font-light text-xs whitespace-nowrap">
+      <td className="px-2 text-fifth text-center font-light text-[0.625rem] whitespace-nowrap">
         {formatLength(setlistEntry.entry_length)}
       </td>
 
