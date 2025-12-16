@@ -34,6 +34,8 @@ import { UserMenu } from './components/UserMenu';
 import { Submit } from './components/Submit';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 import { Joty } from './components/Joty';
+import { Wted } from './components/Wted';
+import { WtedEpisode } from './components/WtedEpisode';
 import sparklePic from './img/sparkle.png';
 import bgTile from './img/bg_tile.jpg';
 
@@ -364,6 +366,8 @@ function App() {
                 <Route path="/lists" element={<Lists />} />
                 <Route path="/lists/:listId" element={<ListInd />} />
                 <Route path="/joty/:year?" element={<Joty />} />
+                <Route path="/wted" element={<Wted />} />
+                <Route path="/wted/:episodeId" element={<WtedEpisode />} />
                 <Route path="/submit" element={<Submit />} />
                 
                 {/* Authentication routes */}

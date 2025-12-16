@@ -59,14 +59,23 @@ export function Sidebar({
   }
   
   // For desktop: horizontal navigation
-  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, Jam of the Year
-  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'Jam of the Year'];
+  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, Jam of the Year, Program Director
+  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'Jam of the Year', 'Program Director'];
   const mainNavItems = mainNavItemNames
-    .map(name => filteredNavigation.find(item => item.name === name && !item.adminOnly && !item.mobileOnly))
+    .map(name => {
+      const item = filteredNavigation.find(item => item.name === name && !item.mobileOnly);
+      // Allow adminOnly items in main nav if user is admin and item is in mainNavItemNames
+      if (item && item.adminOnly && !isAdmin) {
+        return undefined;
+      }
+      return item;
+    })
     .filter((item): item is NavItem => item !== undefined);
   
-  // Get admin items: Admin Panel, Bug Tracker, Find
-  const adminNavItems = filteredNavigation.filter(item => item.adminOnly && !item.mobileOnly);
+  // Get admin items: Admin Panel, Bug Tracker, Find (exclude Program Director since it's in main nav)
+  const adminNavItems = filteredNavigation.filter(item => 
+    item.adminOnly && !item.mobileOnly && item.name !== 'Program Director'
+  );
   
   // Get Submit button for right side (available to all users)
   const submitItem = filteredNavigation.find(item => item.name === 'Submit' && !item.adminOnly && !item.mobileOnly);

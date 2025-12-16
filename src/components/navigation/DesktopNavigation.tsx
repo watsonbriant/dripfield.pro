@@ -121,7 +121,7 @@ export const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         {/* Center: Main nav items and years */}
         <div className="flex-1">
           {/* Main navigation items */}
-          <ul className="flex flex-wrap items-center gap-1">
+          <ul className="flex flex-wrap items-center gap-0.5">
             {mainNavItems.map(renderNavItem)}
           </ul>
           
