@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 // Move static data outside component to prevent recreation on every render
-const EXCLUDED_TERMS = ['fake', 'tease', 'reprise'];
 
 // Update the interface to match the structure we actually have
 interface SetlistEntry {
@@ -53,45 +52,14 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
-  // Use useMemo to calculate songsToExclude only when setlist changes
-  const songsToExclude = useMemo(() => {
-    const excluded = new Set<string>();
-    
-    // Group entries by song name
-    const songEntries = setlist.reduce((acc, entry) => {
-      if (!acc[entry.entry_song]) {
-        acc[entry.entry_song] = [];
-      }
-      acc[entry.entry_song].push(entry);
-      return acc;
-    }, {} as Record<string, SetlistEntry[]>);
-
-    // Determine which songs should be excluded
-    Object.entries(songEntries).forEach(([songName, entries]) => {
-      const allEntriesHaveExcludedTerms = entries.every(entry => 
-        entry.entry_short && 
-        EXCLUDED_TERMS.some(term => 
-          entry.entry_short!.toLowerCase().includes(term.toLowerCase())
-        )
-      );
-      
-      if (allEntriesHaveExcludedTerms) {
-        excluded.add(songName);
-      }
-    });
-    
-    return excluded;
-  }, [setlist]);
-  
   // Memoize unique categories to optimize useEffect dependency
   const uniqueCategories = useMemo(() => {
     return [...new Set(
       setlist
-        .filter(entry => !songsToExclude.has(entry.entry_song))
         .map(entry => entry.songs?.song_category)
         .filter(Boolean)
     )];
-  }, [setlist, songsToExclude]);
+  }, [setlist]);
 
   // Fetch artwork for categories directly from the database
   useEffect(() => {
@@ -159,63 +127,47 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
   // Memoize expensive calculations to prevent recalculation on every render
   const categoryData = useMemo(() => {
     return setlist.reduce((acc, entry) => {
-      // Skip excluded songs
-      if (songsToExclude.has(entry.entry_song)) {
-        return acc;
-      }
-      
       const category = entry.songs?.song_category || 'undefined';
       
-      const songKey = `${entry.entry_song}-${category}`;
+      // Count every entry
+      acc.counts[category] = (acc.counts[category] || 0) + 1;
       
-      // Only count each unique song once
-      if (!acc.songsSeen.has(songKey)) {
-        acc.songsSeen.add(songKey);
-        acc.counts[category] = (acc.counts[category] || 0) + 1;
-        
-        // Initialize songs array if it doesn't exist
-        if (!acc.songs[category]) {
-          acc.songs[category] = [];
-        }
-        
-        // Add song to category's song list with original artist if applicable
-        const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
-        const originalArtist = entry.songs?.song_originalartist;
-        
-        const songWithArtist = hasArtist && originalArtist
-          ? { 
-              song: entry.entry_song,
-              artist: originalArtist,
-              isSpecialCategory: true
-            }
-          : { 
-              song: entry.entry_song,
-              isSpecialCategory: false
-            };
-        
-        const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
-        
-        if (!songExists) {
-          acc.songs[category].push(songWithArtist);
-        }
+      // Initialize songs array if it doesn't exist
+      if (!acc.songs[category]) {
+        acc.songs[category] = [];
+      }
+      
+      // Add song to category's song list with original artist if applicable
+      const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
+      const originalArtist = entry.songs?.song_originalartist;
+      
+      const songWithArtist = hasArtist && originalArtist
+        ? { 
+            song: entry.entry_song,
+            artist: originalArtist,
+            isSpecialCategory: true
+          }
+        : { 
+            song: entry.entry_song,
+            isSpecialCategory: false
+          };
+      
+      const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
+      
+      if (!songExists) {
+        acc.songs[category].push(songWithArtist);
       }
       
       return acc;
     }, { 
       counts: {} as Record<string, number>, 
-      songs: {} as Record<string, any[]>, 
-      songsSeen: new Set<string>()
+      songs: {} as Record<string, any[]>
     });
-  }, [setlist, songsToExclude]);
+  }, [setlist]);
 
   // Memoize category canonids calculation
   const categoryCanonIds = useMemo(() => {
     return setlist.reduce((acc, entry) => {
-      // Skip excluded songs
-      if (songsToExclude.has(entry.entry_song)) {
-        return acc;
-      }
-      
       // Determine the correct category
       const category = entry.songs?.song_category || 'undefined';
       
@@ -230,7 +182,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
       }
       return acc;
     }, {} as Record<string, number>);
-  }, [setlist, songsToExclude]);
+  }, [setlist]);
 
   // Memoize max count calculation
   const maxCount = useMemo(() => {
