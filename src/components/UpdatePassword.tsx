@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -89,76 +90,81 @@ export const UpdatePassword: React.FC = () => {
 
   if (sessionLoading) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg shadow-xl">
-          <div className="p-3">
-            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
+      <>
+        <Helmet>
+          <title>Update Password — Dripfield.pro</title>
+        </Helmet>
+        <div className="max-w-[1280px] mx-auto">
+          <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
+            <h2 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">
               Update Password
             </h2>
-          </div>
-          <div className="px-3 pb-3">
-            <p className="text-fifth">Setting up your password reset session...</p>
+            <div className="px-2">
+              <p className="text-fifth text-xs">Setting up your password reset session...</p>
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!session || !user) {
     return (
-      <div className="max-w-[1280px] mx-auto">
-        <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg shadow-xl">
-          <div className="p-3">
-            <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
+      <>
+        <Helmet>
+          <title>Update Password — Dripfield.pro</title>
+        </Helmet>
+        <div className="max-w-[1280px] mx-auto">
+          <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
+            <h2 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">
               Update Password
             </h2>
-          </div>
-          <div className="px-3 pb-3">
-            <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg mb-4">
-              <p className="text-sm text-fifth">
-                {error || 'No valid reset session found. This might happen if the reset link is expired or has already been used.'}
-              </p>
-            </div>
-            <div className="mt-4">
-              <Link
-                to="/reset-password"
-                className="w-full px-4 py-2 text-fifth rounded-lg font-medium transition-colors bg-tertiary hover:bg-tertiary/80 border border-fourth flex justify-center"
-              >
-                Request New Password Reset
-              </Link>
+            <div className="px-2">
+              <div className="mt-2 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300 mb-4">
+                <p>
+                  {error || 'No valid reset session found. This might happen if the reset link is expired or has already been used.'}
+                </p>
+              </div>
+              <div className="mt-4">
+                <Link
+                  to="/reset-password"
+                  className="w-full px-4 py-2 text-fifth rounded-lg font-medium transition-colors bg-tertiary hover:bg-tertiary/80 border border-fourth flex justify-center"
+                >
+                  Request New Password Reset
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto">
-      <div className="max-w-md mx-auto bg-primary border border-fourth rounded-lg shadow-xl">
-        <div className="p-3">
-          <h2 className="text-lg font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
+    <>
+      <Helmet>
+        <title>Update Password — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
+          <h2 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">
             Update Password
           </h2>
-        </div>
 
-        <div className="px-3 pb-3">
           {success ? (
-            <div className="p-3 bg-green-500 border border-fourth rounded-lg mb-4">
-              <p className="text-sm text-fifth font-medium">
+            <div className="p-3 bg-green-100 rounded-lg border border-green-300 mb-4">
+              <p className="text-sm text-green-800 font-medium">
                 Password updated successfully! Redirecting to login...
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-2">
               {error && (
-                <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg">
-                  <p className="text-sm text-fifth">{error}</p>
-                </div>
+                <p className="mt-2 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300">{error}</p>
               )}
               
-              <div className="space-y-1">
-                <label htmlFor="password" className="block text-sm font-medium text-fifth">
+              <div className="px-2">
+                <label htmlFor="password" className="block text-xs font-medium text-fifth mb-1">
                   New Password
                 </label>
                 <input
@@ -169,13 +175,13 @@ export const UpdatePassword: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas text-fifth placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                   placeholder="Enter new password"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-fifth">
+              <div className="px-2">
+                <label htmlFor="confirmPassword" className="block text-xs font-medium text-fifth mb-1">
                   Confirm New Password
                 </label>
                 <input
@@ -186,27 +192,29 @@ export const UpdatePassword: React.FC = () => {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-fourth bg-canvas text-fifth placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                   placeholder="Confirm new password"
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full px-3 py-1.5 text-fifth rounded-lg font-medium transition-colors border border-fourth ${
-                  loading
-                    ? 'bg-tertiary/50 cursor-not-allowed'
-                    : 'bg-tertiary hover:bg-tertiary/80'
-                }`}
-              >
-                {loading ? 'Updating password...' : 'Update Password'}
-              </button>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`px-2 py-0.5 text-sm rounded-lg font-medium transition-colors border border-fourth ${
+                    loading
+                      ? 'bg-tertiary/50 cursor-not-allowed'
+                      : 'bg-tertiary hover:bg-tertiary/80'
+                  } text-fifth`}
+                >
+                  {loading ? 'Updating password...' : 'Update Password'}
+                </button>
+              </div>
               
-              <div className="mt-3 text-center">
-                <p className="text-fifth font-light text-sm">
+              <div className="mt-4 text-center">
+                <p className="text-fifth/70 text-xs mb-1 font-light">
                   Remember your password?{' '}
-                  <Link to="/login" className="font-medium hover:underline">
+                  <Link to="/login" className="font-medium text-fifth hover:underline">
                     Login
                   </Link>
                 </p>
@@ -215,7 +223,7 @@ export const UpdatePassword: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
