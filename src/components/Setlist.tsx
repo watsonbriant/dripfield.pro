@@ -127,7 +127,7 @@ export function Setlist() {
 
   if (loading) {
     return (
-      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+      <div className="w-full overflow-x-auto">
         <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
@@ -142,7 +142,7 @@ export function Setlist() {
 
   if (!show) {
     return (
-      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto">
+      <div className="w-full overflow-x-auto">
         <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
           <p className="text-fifth">Show not found</p>
         </div>
@@ -174,7 +174,7 @@ export function Setlist() {
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      <div className="lg:max-w-none lg:mx-0 max-w-[1280px] mx-auto lg:overflow-x-auto overflow-x-visible overflow-y-visible relative z-0 lg:z-auto">
+      <div className="w-full overflow-x-auto relative z-0 lg:z-auto">
       {/* Header Bar with Navigation Row */}
       <div className="bg-primary border border-fourth mb-4 w-max min-w-max relative overflow-visible shadow-md">
         {/* Header */}
