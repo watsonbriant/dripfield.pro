@@ -1,7 +1,13 @@
 import React from 'react';
 import { User } from 'lucide-react';
 
-export const WtedEpisodeTableHeader: React.FC = () => {
+interface WtedEpisodeTableHeaderProps {
+  shouldShowGroupColumn?: boolean;
+}
+
+export const WtedEpisodeTableHeader: React.FC<WtedEpisodeTableHeaderProps> = ({
+  shouldShowGroupColumn = false
+}) => {
   return (
     <thead>
       <tr className="text-white text-xs bg-fourth">
@@ -12,6 +18,9 @@ export const WtedEpisodeTableHeader: React.FC = () => {
           <span className="block text-center">Location</span>
         </th>
         <th className="font-semibold px-2 py-0.5 text-center whitespace-nowrap">Time</th>
+        {shouldShowGroupColumn && (
+          <th className="font-semibold px-2 py-0.5 text-center whitespace-nowrap">Group</th>
+        )}
         <th className="font-semibold px-2 py-0.5 text-center whitespace-nowrap">
           <User strokeWidth={2} className="text-white w-3.5 h-3.5 inline" />
         </th>

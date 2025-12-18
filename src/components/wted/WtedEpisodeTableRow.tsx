@@ -32,6 +32,7 @@ interface WtedEpisodeTableRowProps {
     setHoveredPersonnel: (id: string | null) => void;
   };
   hoveredCategory: string | null;
+  shouldShowGroupColumn?: boolean;
   onSongClick: (songId: string) => void;
   onGuestClick: (guestId: string) => void;
 }
@@ -47,6 +48,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
   guestGroups,
   hoverStates,
   hoveredCategory,
+  shouldShowGroupColumn = false,
   onSongClick,
   onGuestClick
 }) => {
@@ -71,7 +73,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
         elements.push(
           <tr key={`encore-${entry.song}`}>
             <td 
-              colSpan={7}
+              colSpan={shouldShowGroupColumn ? 8 : 7}
               className="text-fifth text-[0.625rem] px-4 bg-red-800/30 font-medium text-center border-y border-fourth"
             >
               {getEncoreLabel(entry.set)}
@@ -86,7 +88,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
       elements.push(
         <tr key={`setbreak-${entry.song}`}>
           <td 
-            colSpan={7}
+            colSpan={shouldShowGroupColumn ? 8 : 7}
             className="text-fifth text-[0.625rem] px-4 bg-gray-300 font-medium text-center border-y border-fourth"
           >
             Set Break
@@ -200,6 +202,13 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
       <td className="px-2 text-fifth text-center font-light text-[0.625rem] whitespace-nowrap">
         {formatLength(setlistEntry.entry_length)}
       </td>
+
+      {/* Group column - only shown if shouldShowGroupColumn is true */}
+      {shouldShowGroupColumn && (
+        <td className="px-2 text-fifth text-center font-medium text-[0.625rem] whitespace-nowrap">
+          {entry.show_group || ''}
+        </td>
+      )}
 
       {/* Personnel column */}
       <td 

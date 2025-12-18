@@ -25,6 +25,7 @@ export interface WtedEpisodeEntry {
   show_venue_location?: string | null;
   show_id?: string | null;
   venue_id?: string | null;
+  show_group?: string | null;
 }
 
 export function useWtedEpisodeData(episodeId: string | undefined) {
@@ -110,6 +111,7 @@ export function useWtedEpisodeData(episodeId: string | undefined) {
                 show_id,
                 show_date,
                 show_venue_location,
+                show_group,
                 subvenues (
                   subvenue_venue,
                   venues (
@@ -134,6 +136,7 @@ export function useWtedEpisodeData(episodeId: string | undefined) {
                 show_venue_location: showData?.show_venue_location || null,
                 show_id: showData?.show_id || null,
                 venue_id: showData?.subvenues?.venues?.venue_id || null,
+                show_group: showData?.show_group || null,
                 setlist_entry: {
                   ...setlistEntry,
                   song_id: setlistEntry.songs?.song_id || '',
@@ -192,12 +195,17 @@ export function useWtedEpisodes(showName: string | undefined) {
       try {
         const { data, error } = await supabase
           .from('wted_episodes')
-          .select('episode, order, uuid, show')
+          .select('episode, order, uuid, show, artwork')
           .eq('show', showName)
+          .not('artwork', 'is', null)
           .order('order', { ascending: true });
 
         if (error) throw error;
-        setEpisodes(data || []);
+        // Filter to only episodes with artwork (non-null and non-empty)
+        const episodesWithArtwork = (data || []).filter(
+          episode => episode.artwork && episode.artwork.trim() !== ''
+        );
+        setEpisodes(episodesWithArtwork);
       } catch (error) {
         console.error('Error fetching WTED episodes:', error);
         setEpisodes([]);

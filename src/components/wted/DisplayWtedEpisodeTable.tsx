@@ -34,14 +34,22 @@ export const DisplayWtedEpisodeTable: React.FC<DisplayWtedEpisodeTableProps> = (
   onSongClick,
   onGuestClick
 }) => {
+  // Check if show_group column should be displayed
+  // Only show if there's at least one entry with show_group !== "Goose"
+  const showGroupValues = entries
+    ?.map(entry => entry.show_group)
+    .filter((group): group is string => group !== null && group !== undefined) || [];
+  const hasNonGooseGroup = showGroupValues.some(group => group !== 'Goose');
+  const shouldShowGroupColumn = hasNonGooseGroup;
+
   if (!entries || entries.length === 0) {
     return (
       <div className="border border-fourth rounded-lg p-3 overflow-x-auto w-fit shadow-xl">
         <table className="border-collapse w-auto">
-          <WtedEpisodeTableHeader />
+          <WtedEpisodeTableHeader shouldShowGroupColumn={shouldShowGroupColumn} />
           <tbody>
             <tr>
-              <td colSpan={7} className="text-center text-fifth py-8">
+              <td colSpan={shouldShowGroupColumn ? 8 : 7} className="text-center text-fifth py-8">
                 No episode entries available
               </td>
             </tr>
@@ -63,7 +71,7 @@ export const DisplayWtedEpisodeTable: React.FC<DisplayWtedEpisodeTableProps> = (
   return (
     <div className="border border-fourth overflow-x-auto w-fit shadow-xl relative z-0 lg:z-auto">
       <table className="border-collapse table-auto relative z-0" style={{ minWidth: 'max-content' }}>
-        <WtedEpisodeTableHeader />
+        <WtedEpisodeTableHeader shouldShowGroupColumn={shouldShowGroupColumn} />
         <tbody>
           {entries.map((entry, index) => {
             if (!entry.setlist_entry) return null;
@@ -83,6 +91,7 @@ export const DisplayWtedEpisodeTable: React.FC<DisplayWtedEpisodeTableProps> = (
                 guestGroups={guestGroups}
                 hoverStates={hoverStates}
                 hoveredCategory={hoveredCategory}
+                shouldShowGroupColumn={shouldShowGroupColumn}
                 onSongClick={onSongClick}
                 onGuestClick={onGuestClick}
               />
