@@ -27,7 +27,7 @@ export function Joty() {
 
 
   // Available years
-  const availableYears = [2024, 2023, 2022, 2021, 2020];
+  const availableYears = [2025, 2024, 2023, 2022, 2021, 2020];
 
   // Handle year change
   const handleYearChange = (newYear: number) => {
