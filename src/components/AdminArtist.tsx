@@ -121,27 +121,27 @@ export const AdminArtist: React.FC = () => {
     <div>
       {/* Header with right-aligned dropdown */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Artist Management</h3>
+        <h3 className="text-sm font-semibold bg-fourth text-white inline-block px-2 py-0.5">Artist Management</h3>
         
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 bg-fourth text-white px-4 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
+            className="flex items-center gap-2 bg-fourth text-white px-2 py-1 hover:bg-fourth/80 transition-colors text-xs whitespace-nowrap font-medium"
           >
             Current Artists
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
-              <div className="p-2">
+            <div className="absolute right-0 bg-primary border border-fourth shadow-xl z-50 w-64 max-h-96 overflow-y-auto">
+              <div className="p-1">
                 <div className="relative">
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search artists..."
-                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                    className="w-full px-2 py-0.5 pr-8 border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                   />
                   <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                 </div>
@@ -156,13 +156,13 @@ export const AdminArtist: React.FC = () => {
                       setSearchTerm('');
                       // No action when selecting an artist as per requirements
                     }}
-                    className="w-full text-left px-2 py-1 font-medium text-xs text-fifth hover:bg-canvas transition-colors"
+                    className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
                   >
                     {artist.artist}
                   </button>
                 ))}
                 {filteredArtists.length === 0 && (
-                  <div className="px-4 py-2 text-sm text-fifth/60 italic">
+                  <div className="px-2 py-0.5 text-xs text-fifth text-center">
                     No artists found
                   </div>
                 )}
@@ -173,18 +173,18 @@ export const AdminArtist: React.FC = () => {
       </div>
 
       {/* Add new artist section */}
-      <div className="flex flex-col md:flex-row gap-3">
+      <div className="px-1 pb-1 flex flex-col md:flex-row gap-1">
         <input
           type="text"
           value={newArtistName}
           onChange={(e) => setNewArtistName(e.target.value)}
           placeholder="Enter artist name"
-          className="flex-grow px-3 py-2 rounded-md border border-fourth bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-fourth font-light text-sm"
+          className="flex-grow px-2 py-0.5 border border-fourth bg-canvas text-fifth placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-tertiary font-light text-xs"
         />
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || buttonState === 'success' || buttonState === 'error'}
-          className={`px-4 py-2 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border ${
+          className={`px-2 py-0.5 font-medium transition-colors text-xs flex items-center justify-center min-w-[80px] border ${
             buttonState === 'success' 
               ? 'bg-green-500 text-white border-green-700' 
               : buttonState === 'error'
@@ -193,8 +193,8 @@ export const AdminArtist: React.FC = () => {
           } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isSubmitting ? 'Adding...' : 
-           buttonState === 'success' ? <CheckCircle className="w-5 h-5" /> : 
-           buttonState === 'error' ? <XCircle className="w-5 h-5" /> : 
+           buttonState === 'success' ? <CheckCircle className="w-4 h-4" /> : 
+           buttonState === 'error' ? <XCircle className="w-4 h-4" /> : 
            'Submit'}
         </button>
       </div>

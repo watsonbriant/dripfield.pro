@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Save, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface GuestData {
@@ -72,8 +72,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsSubmitting(true);
     setError(null);
 
@@ -144,34 +143,42 @@ const GuestModal: React.FC<GuestModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <>
-      <div 
-        className="fixed inset-0 bg-black/50 z-50"
-        onClick={onClose}
-      />
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] bottom-4 md:top-20 md:bottom-auto md:max-w-md md:w-full z-50 bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-3 border-b border-fourth">
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
-            {isNewGuest ? 'Add New Guest' : 'Edit Guest'}
-          </h2>
-          <button 
-            onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-fourth bg-red-500 transition-colors"
-          >
-            <X className="w-5 h-5 text-fifth" />
-          </button>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
+      <div className="bg-primary border border-fourth w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-semibold">
+              {isNewGuest ? 'Add New Guest' : 'Edit Guest'}
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="flex items-center gap-1 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
+              >
+                <Save className="w-4 h-4" />
+                {isSubmitting && <span className="ml-1">...</span>}
+              </button>
+              <button
+                onClick={onClose}
+                className="flex items-center justify-center px-2 py-0.5 bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth text-xs font-medium"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
-        
-        <div className="flex-1 overflow-y-auto p-3">
-          <form onSubmit={handleSubmit} className="space-y-2">
-            {error && (
-              <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-sm text-fifth">
-                {error}
-              </div>
-            )}
-            
-            <div className="space-y-1">
-              <label htmlFor="guest" className="block text-sm font-medium text-fifth">
+
+        <div className="px-2 py-1">
+          {error && (
+            <div className="mb-2 px-2 py-0.5 bg-red-500/20 border border-red-500 text-xs text-fifth">
+              {error}
+            </div>
+          )}
+          
+          <div className="space-y-2">
+            <div>
+              <label htmlFor="guest" className="block text-xs font-medium text-fifth mb-0.5">
                 Guest Name <span className="text-red-600">*</span>
               </label>
               <input
@@ -180,13 +187,13 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-0.5 border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 required
               />
             </div>
             
-            <div className="space-y-1">
-              <label htmlFor="guest_displayname" className="block text-sm font-medium text-fifth">
+            <div>
+              <label htmlFor="guest_displayname" className="block text-xs font-medium text-fifth mb-0.5">
                 Display Name
               </label>
               <input
@@ -195,12 +202,12 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest_displayname || ''}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-0.5 border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
               />
             </div>
             
-            <div className="space-y-1">
-              <label htmlFor="guest_instrument" className="block text-sm font-medium text-fifth">
+            <div>
+              <label htmlFor="guest_instrument" className="block text-xs font-medium text-fifth mb-0.5">
                 Instrument
               </label>
               <input
@@ -209,12 +216,12 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 type="text"
                 value={formData.guest_instrument || ''}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-0.5 border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
               />
             </div>
             
-            <div className="space-y-1">
-              <label htmlFor="guest_category" className="block text-sm font-medium text-fifth">
+            <div>
+              <label htmlFor="guest_category" className="block text-xs font-medium text-fifth mb-0.5">
                 Category <span className="text-red-600">*</span>
               </label>
               <select
@@ -222,7 +229,7 @@ const GuestModal: React.FC<GuestModalProps> = ({
                 name="guest_category"
                 value={formData.guest_category || ''}
                 onChange={handleInputChange}
-                className="w-full px-2 py-1.5 rounded-lg border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm"
+                className="w-full px-2 py-0.5 border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 required
               >
                 <option value="">-- Select Category --</option>
@@ -235,31 +242,14 @@ const GuestModal: React.FC<GuestModalProps> = ({
             </div>
             
             {isNewGuest && (
-              <div className="text-xs text-fifth italic pt-1">
+              <div className="text-xs text-fifth/60 italic">
                 Note: Canon ID will be automatically assigned based on the selected category.
               </div>
             )}
-            
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-2 py-1.5 rounded-lg border border-fourth bg-canvas text-fifth hover:bg-black/20 transition-colors text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-2 py-1.5 rounded-lg border border-fourth bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Saving...' : isNewGuest ? 'Add Guest' : 'Save Changes'}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

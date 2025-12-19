@@ -105,11 +105,11 @@ export function AdminReleases() {
   return (
     <>
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-2">
-        <h2 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
+        <h2 className="text-sm font-semibold bg-fourth text-white inline-block px-2 py-0.5">
           Manage Releases
         </h2>
         
-        <div className="flex gap-3 w-full lg:w-auto lg:justify-end">
+        <div className="flex gap-2 w-full lg:w-auto lg:justify-end">
           {/* Search input */}
           <div className="relative flex-1 lg:flex-initial">
             <input
@@ -117,7 +117,7 @@ export function AdminReleases() {
               placeholder="Search releases..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1 bg-canvas text-fifth border font-light border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
+              className="pl-8 pr-3 py-0.5 bg-canvas text-fifth border font-light border-fourth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary w-full lg:w-48"
             />
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-fifth/50 w-4 h-4" />
             {searchQuery && (
@@ -133,7 +133,7 @@ export function AdminReleases() {
           {/* Add new button */}
           <button
             onClick={handleAddNew}
-            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white border border-fourth rounded-lg text-sm hover:bg-green-600/80 transition-colors"
+            className="flex items-center gap-1 px-2 py-0.5 bg-fourth text-white border border-fourth hover:bg-fourth/80 transition-colors text-xs font-medium"
           >
             <Plus className="w-4 h-4" />
             <span>Add Release</span>
@@ -141,7 +141,7 @@ export function AdminReleases() {
         </div>
       </div>
 
-      <div className="mb-2 font-light text-fifth text-xs lg:text-sm">
+      <div className="mb-2 font-light text-fifth text-xs">
         Click on any release to view and edit its details.
       </div>
 
@@ -158,14 +158,14 @@ export function AdminReleases() {
         <div className="overflow-x-auto relative">
           <table className="w-full border-collapse min-w-max">
             <thead>
-              <tr className="bg-canvas border-y border-white/10">
-                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">
+              <tr className="bg-canvas border-y border-fourth/10">
+                <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth whitespace-nowrap">
                   Display Name
                 </th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">
+                <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth whitespace-nowrap">
                   Service
                 </th>
-                <th className="px-4 py-1 text-left text-s font-semibold text-fifth whitespace-nowrap">
+                <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth whitespace-nowrap">
                   Release
                 </th>
               </tr>
@@ -173,7 +173,7 @@ export function AdminReleases() {
             <tbody className="divide-y divide-white/5">
               {filteredReleases.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-4 py-4 text-center text-fifth">
+                  <td colSpan={3} className="px-2 py-2 text-center text-xs text-fifth">
                     {searchQuery ? 'No releases matching your search' : 'No releases found'}
                   </td>
                 </tr>
@@ -182,19 +182,19 @@ export function AdminReleases() {
                   <tr
                     key={release.release_id}
                     className={`${
-                      index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                    } hover:bg-tertiary/40 transition-colors text-xs cursor-pointer`}
+                      index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+                    } hover:bg-tertiary/40 transition-colors text-[0.625rem] cursor-pointer`}
                     onClick={() => handleReleaseClick(release)}
                   >
-                    <td className="px-4 py-1 text-fifth">
+                    <td className="px-2 text-fifth">
                       <span className="font-medium hover:underline transition-colors">
                         {release.release_displayname}
                       </span>
                     </td>
-                    <td className="px-4 py-1 font-light text-fifth">
+                    <td className="px-2 font-light text-fifth">
                       {release.release_service || '-'}
                     </td>
-                    <td className="px-4 py-1 font-light text-fifth">
+                    <td className="px-2 font-light text-fifth">
                       {release.release}
                     </td>
                   </tr>

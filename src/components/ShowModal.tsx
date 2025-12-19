@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Save, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface ShowData {
@@ -127,9 +127,7 @@ const ShowModal: React.FC<ShowModalProps> = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!validate()) {
       return;
     }
@@ -170,57 +168,69 @@ const ShowModal: React.FC<ShowModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3">
-      <div className="bg-primary rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-fourth">
-        <div className="sticky top-0 bg-primary border-b border-fourth p-3 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-fifth">
-            {isNewShow ? 'Add New Show' : 'Edit Show'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-fifth bg-red-600 p-2 rounded-lg border border-fourth hover:bg-red-600/70 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
+      <div className="bg-primary border border-fourth w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-semibold">
+              {isNewShow ? 'Add New Show' : 'Edit Show'}
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="flex items-center gap-1 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
+              >
+                <Save className="w-4 h-4" />
+                {isSubmitting && <span className="ml-1">...</span>}
+              </button>
+              <button
+                onClick={onClose}
+                className="flex items-center justify-center px-2 py-0.5 bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth text-xs font-medium"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-3 space-y-4">
+
+        <div className="px-2 py-1">
           {errors.submit && (
-            <div className="text-red-600 text-sm bg-red-100 px-2 py-1.5 rounded-md">
+            <div className="mb-2 px-2 py-0.5 bg-red-500/20 border border-red-500 text-xs text-fifth">
               {errors.submit}
             </div>
           )}
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-fifth">
-                Date <span className="text-red-500">*</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">
+                Date <span className="text-red-600">*</span>
               </label>
               <input
                 type="date"
                 name="show_date"
                 value={formData.show_date || ''}
                 onChange={handleChange}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${
+                className={`w-full px-2 py-0.5 font-light border ${
                   errors.show_date ? 'border-red-500' : 'border-fourth'
-                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               />
               {errors.show_date && (
-                <p className="text-red-500 text-xs mt-1">{errors.show_date}</p>
+                <p className="text-red-500 text-xs mt-0.5">{errors.show_date}</p>
               )}
             </div>
             
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-fifth">
-                Group <span className="text-red-500">*</span>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">
+                Group <span className="text-red-600">*</span>
               </label>
               <select
                 name="show_group"
                 value={formData.show_group || ''}
                 onChange={handleChange}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${
+                className={`w-full px-2 py-0.5 font-light border ${
                   errors.show_group ? 'border-red-500' : 'border-fourth'
-                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               >
                 <option value="">-- Select Group --</option>
                 {groups.map((group) => (
@@ -230,21 +240,21 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 ))}
               </select>
               {errors.show_group && (
-                <p className="text-red-500 text-xs mt-1">{errors.show_group}</p>
+                <p className="text-red-500 text-xs mt-0.5">{errors.show_group}</p>
               )}
             </div>
             
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-fifth">
-                Tour <span className="text-red-500">*</span>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">
+                Tour <span className="text-red-600">*</span>
               </label>
               <select
                 name="show_tour"
                 value={formData.show_tour || ''}
                 onChange={handleChange}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${
+                className={`w-full px-2 py-0.5 font-light border ${
                   errors.show_tour ? 'border-red-500' : 'border-fourth'
-                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               >
                 <option value="">-- Select Tour --</option>
                 {tours.map((tour) => (
@@ -254,21 +264,21 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 ))}
               </select>
               {errors.show_tour && (
-                <p className="text-red-500 text-xs mt-1">{errors.show_tour}</p>
+                <p className="text-red-500 text-xs mt-0.5">{errors.show_tour}</p>
               )}
             </div>
             
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-fifth">
-                Subvenue <span className="text-red-500">*</span>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">
+                Subvenue <span className="text-red-600">*</span>
               </label>
               <select
                 name="show_subvenue"
                 value={formData.show_subvenue || ''}
                 onChange={handleChange}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${
+                className={`w-full px-2 py-0.5 font-light border ${
                   errors.show_subvenue ? 'border-red-500' : 'border-fourth'
-                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               >
                 <option value="">-- Select Subvenue --</option>
                 {subvenues.map((subvenue) => (
@@ -278,47 +288,47 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 ))}
               </select>
               {errors.show_subvenue && (
-                <p className="text-red-500 text-xs mt-1">{errors.show_subvenue}</p>
+                <p className="text-red-500 text-xs mt-0.5">{errors.show_subvenue}</p>
               )}
             </div>
             
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-fifth flex items-center gap-2">
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5 flex items-center gap-2">
                 <input
                   type="checkbox"
                   name="show_iscanon"
                   checked={formData.show_iscanon || false}
                   onChange={handleChange}
-                  className="rounded border-fourth focus:ring-fourth"
+                  className="rounded border-fourth focus:ring-tertiary"
                 />
                 Is Canon?
               </label>
             </div>
             
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-fifth flex items-center gap-2">
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5 flex items-center gap-2">
                 <input
                   type="checkbox"
                   name="show_issetlistgame"
                   checked={formData.show_issetlistgame || false}
                   onChange={handleChange}
-                  className="rounded border-fourth focus:ring-fourth"
+                  className="rounded border-fourth focus:ring-tertiary"
                 />
                 Is Setlist Game?
               </label>
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-fifth">
-                Year <span className="text-red-500">*</span>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">
+                Year <span className="text-red-600">*</span>
               </label>
               <select
                 name="show_year"
                 value={formData.show_year || ''}
                 onChange={handleChange}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${
+                className={`w-full px-2 py-0.5 font-light border ${
                   errors.show_year ? 'border-red-500' : 'border-fourth'
-                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                } bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               >
                 <option value="">-- Select Year --</option>
                 {years.map((year) => (
@@ -328,12 +338,12 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 ))}
               </select>
               {errors.show_year && (
-                <p className="text-red-500 text-xs mt-1">{errors.show_year}</p>
+                <p className="text-red-500 text-xs mt-0.5">{errors.show_year}</p>
               )}
             </div>
             
-            <div className="space-y-2 md:col-span-2">
-              <label className="block text-sm font-medium text-fifth">
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-fifth mb-0.5">
                 Detail (Optional)
               </label>
               <textarea
@@ -341,29 +351,12 @@ const ShowModal: React.FC<ShowModalProps> = ({
                 value={formData.show_detail || ''}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 placeholder="Enter any additional details..."
               />
             </div>
           </div>
-          
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-fifth bg-canvas hover:bg-black/30 rounded-md transition-colors border border-fourth"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Saving...' : 'Save Show'}
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

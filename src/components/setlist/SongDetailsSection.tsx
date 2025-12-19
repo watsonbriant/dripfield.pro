@@ -21,14 +21,14 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
   return (
     <>
       {/* Short */}
-      <div className="space-y-2 md:col-span-2">
-        <label className="block text-sm font-medium text-fifth">Short</label>
+      <div className="md:col-span-2">
+        <label className="block text-xs font-medium text-fifth mb-0.5">Short</label>
         {isEditing || isNewEntry ? (
           <select
             name="entry_short"
             value={editedEntry?.entry_short === null ? "--" : editedEntry?.entry_short || "--"}
             onChange={handleInputChange}
-            className="font-light w-full px-2 py-2 rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="font-light w-full px-2 py-0.5 border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs font-light"
           >
             <option value="--">--</option>
             {shorts.map((short) => (
@@ -42,20 +42,20 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
             type="text"
             value={editedEntry?.entry_short || ''}
             readOnly
-            className="w-full px-2 py-2 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="w-full px-2 py-0.5 border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs font-light"
           />
         )}
       </div>
       
       {/* Segue */}
-      <div className="space-y-2 md:col-span-2">
-        <label className="block text-sm font-medium text-fifth">Segue</label>
+      <div className="md:col-span-2">
+        <label className="block text-xs font-medium text-fifth mb-0.5">Segue</label>
         {isEditing || isNewEntry ? (
           <select
             name="entry_segue"
             value={editedEntry?.entry_segue === null ? "--" : editedEntry?.entry_segue || "--"}
             onChange={handleInputChange}
-            className="font-light w-full px-2 py-2 rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="font-light w-full px-2 py-0.5 border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs font-light"
           >
             <option value="--">--</option>
             {segues.map((segue) => (
@@ -69,14 +69,14 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
             type="text"
             value={editedEntry?.entry_segue || ''}
             readOnly
-            className="w-full px-2 py-2 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+            className="w-full px-2 py-0.5 border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs font-light"
           />
         )}
       </div>
       
       {/* Length */}
-      <div className="space-y-2 md:col-span-2">
-        <label className="block text-sm font-medium text-fifth">Length (hh:mm:ss)</label>
+      <div className="md:col-span-2">
+        <label className="block text-xs font-medium text-fifth mb-0.5">Length (hh:mm:ss)</label>
         <input
           type="text"
           name="entry_length"
@@ -84,7 +84,7 @@ export const SongDetailsSection: React.FC<SongDetailsSectionProps> = ({
           onChange={handleInputChange}
           readOnly={!isEditing && !isNewEntry}
           placeholder="00:00:00"
-          className={`w-full px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+          className={`w-full px-2 py-0.5 border ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
         />
       </div>
     </>

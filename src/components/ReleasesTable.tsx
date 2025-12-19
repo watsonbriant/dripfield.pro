@@ -16,12 +16,12 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
     onEditRelease
 }) => {
     return (
-        <div className="mt-6 space-y-1">
-            <div className="flex justify-between items-center">
-                <h4 className="text-base text-fifth font-medium">Releases</h4>
+        <div className="mt-2">
+            <div className="flex justify-between items-center mb-2">
+                <h4 className="text-sm text-fifth font-medium">Releases</h4>
                 <button
                     onClick={onAddRelease}
-                    className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white border border-fourth rounded-lg text-sm hover:bg-green-600/80 transition-colors"
+                    className="flex items-center gap-1 px-2 py-0.5 bg-fourth text-white border border-fourth hover:bg-fourth/80 transition-colors text-xs font-medium"
                 >
                     <Plus className="w-4 h-4" />
                     Add Release
@@ -30,17 +30,21 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
             
             {loadingReleases ? (
                 <div className="flex justify-center items-center p-3">
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-fourth"></div>
-                    <p className="text-sm text-fifth/70 ml-2">Loading releases...</p>
+                    <div className="flex items-center justify-center space-x-2">
+                        <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                        <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                        <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+                    </div>
+                    <p className="text-xs text-fifth ml-2">Loading releases...</p>
                 </div>
             ) : showReleases.length > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-canvas border-y border-fourth/10">
-                                <th className="px-4 py-1 text-left text-sm font-medium text-fifth">Display Name</th>
-                                <th className="px-4 py-1 text-left text-sm font-medium text-fifth">Service</th>
-                                <th className="px-4 py-1 text-center text-sm font-medium text-fifth">Order</th>
+                                <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth">Display Name</th>
+                                <th className="px-2 py-0.5 text-left text-xs font-medium text-fifth">Service</th>
+                                <th className="px-2 py-0.5 text-center text-xs font-medium text-fifth">Order</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-black/5">
@@ -49,16 +53,16 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
                                     key={releaseShow.release_id}
                                     onClick={() => onEditRelease(releaseShow.release_id, releaseShow.release_order)}
                                     className={`${
-                                        index % 2 === 0 ? 'bg-primary' : 'bg-canvas'
-                                    } hover:bg-tertiary/40 transition-colors cursor-pointer`}
+                                        index % 2 === 0 ? 'bg-primary' : 'bg-primary'
+                                    } hover:bg-tertiary/40 transition-colors cursor-pointer text-[0.625rem]`}
                                 >
-                                    <td className="px-4 py-1 text-xs font-light text-fifth">
+                                    <td className="px-2 font-light text-fifth">
                                         {releaseShow.releases.release_displayname}
                                     </td>
-                                    <td className="px-4 py-1 text-xs font-light text-fifth">
+                                    <td className="px-2 font-light text-fifth">
                                         {releaseShow.releases.release_service || '-'}
                                     </td>
-                                    <td className="px-4 py-1 text-xs font-light text-fifth text-center">
+                                    <td className="px-2 font-light text-fifth text-center">
                                         {releaseShow.release_order}
                                     </td>
                                 </tr>
@@ -67,7 +71,7 @@ export const ReleasesTable: React.FC<ReleasesTableProps> = ({
                     </table>
                 </div>
             ) : (
-                <div className="text-sm text-fifth/80 italic p-3 bg-canvas rounded-md border border-fourth/10">
+                <div className="text-xs text-fifth bg-primary border border-fourth p-3 text-center">
                     No releases associated with this show
                 </div>
             )}

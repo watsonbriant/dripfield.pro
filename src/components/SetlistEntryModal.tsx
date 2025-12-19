@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Save, Edit, X, Trash2, Check } from 'lucide-react';
-import { SetlistEntryModalProps } from '../types/setlist';
+import { SetlistEntryData } from '../types/setlist';
 import { useSetlistOptions } from '../hooks/useSetlistOptions';
 import { useSetlistEntryForm } from '../hooks/useSetlistEntryForm';
 import { useSetlistEntryActions } from '../hooks/useSetlistEntryActions';
@@ -8,6 +8,15 @@ import { BasicInfoSection } from './setlist/BasicInfoSection';
 import { SongSection } from './setlist/SongSection';
 import { SongDetailsSection } from './setlist/SongDetailsSection';
 import { GuestsSection } from './setlist/GuestsSection';
+
+interface SetlistEntryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  entry: SetlistEntryData | null;
+  onSave: () => void;
+  onSaveStatusUpdate: (status: 'idle' | 'processing' | 'done' | 'error') => void;
+  isNewEntry?: boolean;
+}
 
 const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({ 
   isOpen, 
@@ -90,17 +99,17 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
-      <div className="bg-primary border border-fourth rounded-lg p-3 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+      <div className="bg-primary border border-fourth w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
         {/* Loading Overlay */}
         {isSubmitting && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 rounded-lg">
-            <div className={`px-6 py-3 rounded-lg border border-fourth transition-colors ${
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50">
+            <div className={`px-2 py-0.5 border border-fourth transition-colors ${
               saveStatus === 'processing' ? 'bg-black text-white' :
               saveStatus === 'done' ? 'bg-green-600 text-white' :
               saveStatus === 'error' ? 'bg-red-600 text-white' :
               'bg-fourth text-white'
             }`}>
-              <span className="text-lg font-semibold">
+              <span className="text-xs font-medium">
                 {saveStatus === 'processing' ? 'Processing...' :
                  saveStatus === 'done' ? 'Done!' :
                  saveStatus === 'error' ? 'Error.' :
@@ -110,69 +119,68 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           </div>
         )}
         
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
-            {isNewEntry ? 'Add Setlist Entry' : 'Edit Setlist Entry'}
-          </h3>
-          <div className="flex gap-2">
-            {!isNewEntry && (
-              <>
-                <button
-                  onClick={toggleEdit}
-                  disabled={isSubmitting}
-                  className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-blue-500 text-white text-fifth hover:bg-blue-500/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
-                >
-                  {isEditing ? (
-                    <>
-                      <Save className="w-5 h-5" />
-                    </>
-                  ) : (
-                    <>
-                      <Edit className="w-5 h-5" />
-                    </>
-                  )}
-                </button>
-                
-                {/* Only show delete button for existing entries */}
-                {entry && entry.entry_id && (
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-semibold">
+              {isNewEntry ? 'Add Setlist Entry' : 'Edit Setlist Entry'}
+            </h3>
+            <div className="flex gap-2">
+              {!isNewEntry && (
+                <>
                   <button
-                    onClick={handleDelete}
+                    onClick={toggleEdit}
                     disabled={isSubmitting}
-                    className={`flex text-white items-center justify-center w-10 h-10 rounded-md border ${
-                      isDeleteConfirming 
-                        ? 'bg-green-500 hover:bg-green-600 border-fourth' 
-                        : 'bg-red-500 hover:bg-red-600 border-fourth'
-                    } text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                    title={isDeleteConfirming ? "Confirm Delete" : "Delete"}
+                    className="flex items-center justify-center gap-1 px-2 py-0.5 bg-blue-500 text-white hover:bg-blue-500/70 transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
                   >
-                    {isDeleteConfirming ? (
-                      <Check className="w-5 h-5" />
+                    {isEditing ? (
+                      <Save className="w-4 h-4" />
                     ) : (
-                      <Trash2 className="w-5 h-5" />
+                      <Edit className="w-4 h-4" />
                     )}
                   </button>
-                )}
-              </>
-            )}
-            {isNewEntry && (
+                  
+                  {/* Only show delete button for existing entries */}
+                  {entry && entry.entry_id && (
+                    <button
+                      onClick={handleDelete}
+                      disabled={isSubmitting}
+                      className={`flex text-white items-center justify-center px-2 py-0.5 border ${
+                        isDeleteConfirming 
+                          ? 'bg-green-500 hover:bg-green-600 border-fourth' 
+                          : 'bg-red-500 hover:bg-red-600 border-fourth'
+                      } text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium`}
+                      title={isDeleteConfirming ? "Confirm Delete" : "Delete"}
+                    >
+                      {isDeleteConfirming ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                </>
+              )}
+              {isNewEntry && (
+                <button
+                  onClick={handleSaveChanges}
+                  disabled={isSubmitting || !editedEntry?.entry_set || !editedEntry?.entry_song}
+                  className="flex items-center gap-1 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
+                >
+                  <Save className="w-4 h-4" />
+                  {isSubmitting && <span className="ml-1">...</span>}
+                </button>
+              )}
               <button
-                onClick={handleSaveChanges}
-                disabled={isSubmitting || !editedEntry?.entry_set || !editedEntry?.entry_song}
-                className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/80 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
+                onClick={onClose}
+                className="flex items-center justify-center px-2 py-0.5 bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth text-xs font-medium"
               >
-                <Save className="w-5 h-5" />
-                {isSubmitting && <span className="ml-1">...</span>}
+                <X className="w-4 h-4" />
               </button>
-            )}
-            <button
-              onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            </div>
           </div>
         </div>
 
+        <div className="px-2 py-1">
         <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
           <BasicInfoSection
             sets={sets}
@@ -220,34 +228,35 @@ const SetlistEntryModal: React.FC<SetlistEntryModalProps> = ({
           />
           
           {/* Coach's Notes */}
-          <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-medium text-fifth">Coach's Notes</label>
+          <div className="md:col-span-6">
+            <label className="block text-xs font-medium text-fifth mb-0.5">Coach's Notes</label>
             <textarea
               name="entry_coachnotes"
               value={editedEntry?.entry_coachnotes || ''}
               onChange={handleInputChange}
               readOnly={!isEditing && !isNewEntry}
               rows={4}
-              className={`w-full font-light px-2 py-2 rounded-md border ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+              className={`w-full font-light px-2 py-0.5 border ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
             />
           </div>
 
-          <div className="space-y-2 md:col-span-6">
-            <label className="block text-sm font-medium text-fifth">New Song?</label>
+          <div className="md:col-span-6">
+            <label className="block text-xs font-medium text-fifth mb-0.5">New Song?</label>
             <select
               name="new_song_option"
               value={selectedNewSongOption}
               onChange={(e) => setSelectedNewSongOption(e.target.value)}
               disabled={!isEditing && !isNewEntry}
-              className={`w-full font-light px-2 py-2 rounded-md border ${
+              className={`w-full font-light px-2 py-0.5 border ${
                 isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'
-              } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+              } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
             >
               <option value="N/A">N/A</option>
               <option value="New Original Song">New Original Song</option>
               <option value="New Cover Song">New Cover Song</option>
             </select>
           </div>
+        </div>
         </div>
       </div>
     </div>

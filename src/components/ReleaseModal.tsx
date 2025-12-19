@@ -143,30 +143,35 @@ export function ReleaseModal({
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-50"
-        onClick={onClose}
-      />
-      
-      {/* Modal */}
-      <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[650px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
-        <div className="flex items-center justify-between p-3 border-b border-fourth/10 bg-canvas rounded-t-lg">
-          <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
-            {isAddMode ? 'Add New Release' : 'Edit Release'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-tertiary rounded-lg border border-fourth bg-red-500 transition-colors"
-          >
-            <X className="w-5 h-5 text-fifth" />
-          </button>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
+      <div className="bg-primary border border-fourth w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-semibold">
+              {isAddMode ? 'Add New Release' : 'Edit Release'}
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-1 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
+              >
+                <Save className="w-4 h-4" />
+                {saving && <span className="ml-1">...</span>}
+              </button>
+              <button
+                onClick={onClose}
+                className="flex items-center justify-center px-2 py-0.5 bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth text-xs font-medium"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
         
-        <div className="p-3">
+        <div className="px-2 py-1">
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
+            <div className="mb-2 px-2 py-0.5 bg-red-500/20 border border-red-500 text-xs text-fifth">
               {error}
             </div>
           )}
@@ -174,60 +179,60 @@ export function ReleaseModal({
           <div className="space-y-2">
             {!isAddMode && release && (
               <div>
-                <label className="block text-sm font-medium text-fifth mb-1">
+                <label className="block text-xs font-medium text-fifth mb-0.5">
                   Release ID
                 </label>
                 <input
                   type="text"
                   value={release.release_id}
                   disabled
-                  className="w-full px-3 py-2 bg-gray-100 text-gray-600 border border-gray-300 rounded-lg text-sm"
+                  className="w-full px-2 py-0.5 bg-canvas/50 text-fifth/60 border border-fourth text-xs"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-fifth mb-1">
-                Release <span className="text-red-500">*</span>
+              <label className="block text-xs font-medium text-fifth mb-0.5">
+                Release <span className="text-red-600">*</span>
               </label>
               <input
                 type="text"
                 value={formData.release}
                 onChange={(e) => handleInputChange('release', e.target.value)}
-                className="w-full px-2 py-1.5 font-light bg-canvas text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary"
+                className="w-full px-2 py-0.5 font-light bg-canvas text-fifth border border-fourth text-xs focus:outline-none focus:ring-2 focus:ring-tertiary"
                 placeholder="Enter release name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-fifth mb-1">
-                Display Name <span className="text-red-500">*</span>
+              <label className="block text-xs font-medium text-fifth mb-0.5">
+                Display Name <span className="text-red-600">*</span>
               </label>
               <input
                 type="text"
                 value={formData.release_displayname}
                 onChange={(e) => handleInputChange('release_displayname', e.target.value)}
-                className="w-full px-2 py-1.5 font-light bg-canvas text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary"
+                className="w-full px-2 py-0.5 font-light bg-canvas text-fifth border border-fourth text-xs focus:outline-none focus:ring-2 focus:ring-tertiary"
                 placeholder="Enter display name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-fifth mb-1">
+              <label className="block text-xs font-medium text-fifth mb-0.5">
                 Release Link
               </label>
               <input
                 type="text"
                 value={formData.release_link}
                 onChange={(e) => handleInputChange('release_link', e.target.value)}
-                className="w-full px-2 py-1.5 font-light bg-canvas text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary"
+                className="w-full px-2 py-0.5 font-light bg-canvas text-fifth border border-fourth text-xs focus:outline-none focus:ring-2 focus:ring-tertiary"
                 placeholder="Enter release link URL"
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-semibold text-fifth">
+              <div className="flex items-center justify-between mb-0.5">
+                <label className="text-xs font-medium text-fifth">
                   Service
                 </label>
                 <button
@@ -252,7 +257,7 @@ export function ReleaseModal({
                       }
                     }
                   }}
-                  className="text-xs px-2 py-1 bg-blue-500 font-medium hover:bg-blue-600 text-white rounded border border-fourth transition-colors"
+                  className="text-xs px-2 py-0.5 bg-blue-500 font-medium hover:bg-blue-600 text-white border border-fourth transition-colors"
                 >
                   Auto-detect Service
                 </button>
@@ -261,14 +266,14 @@ export function ReleaseModal({
                 type="text"
                 value={formData.release_service}
                 onChange={(e) => handleInputChange('release_service', e.target.value)}
-                className="w-full px-2 py-1.5 font-light bg-canvas text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary"
+                className="w-full px-2 py-0.5 font-light bg-canvas text-fifth border border-fourth text-xs focus:outline-none focus:ring-2 focus:ring-tertiary"
                 placeholder="Enter service name (e.g., Spotify, Apple Music)"
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-semibold text-fifth">
+              <div className="flex items-center justify-between mb-0.5">
+                <label className="text-xs font-medium text-fifth">
                   Artwork URL
                 </label>
                 <button
@@ -279,7 +284,7 @@ export function ReleaseModal({
                       handleInputChange('release_artwork', `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`);
                     }
                   }}
-                  className="text-xs px-2 py-1 bg-blue-500 font-medium hover:bg-blue-600 text-white rounded border border-fourth transition-colors"
+                  className="text-xs px-2 py-0.5 bg-blue-500 font-medium hover:bg-blue-600 text-white border border-fourth transition-colors"
                 >
                   YouTube Thumbnail
                 </button>
@@ -288,15 +293,15 @@ export function ReleaseModal({
                 type="text"
                 value={formData.release_artwork}
                 onChange={(e) => handleInputChange('release_artwork', e.target.value)}
-                className="w-full px-2 py-1.5 font-light bg-canvas text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary"
+                className="w-full px-2 py-0.5 font-light bg-canvas text-fifth border border-fourth text-xs focus:outline-none focus:ring-2 focus:ring-tertiary"
                 placeholder="Enter artwork URL"
               />
               {formData.release_artwork && (
-                <div className="mt-2">
+                <div className="mt-1">
                   <img 
                     src={formData.release_artwork} 
                     alt="Release artwork preview" 
-                    className="h-32 object-cover rounded-lg border border-fourth"
+                    className="h-32 object-cover border border-fourth"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                     }}
@@ -304,57 +309,40 @@ export function ReleaseModal({
                 </div>
               )}
             </div>
+
+            {/* Delete button - only show in edit mode */}
+            {!isAddMode && release && (
+              <div>
+                {showDeleteConfirm ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-fifth">Are you sure?</span>
+                    <button
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      className="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white border border-fourth text-xs font-medium transition-colors disabled:opacity-50"
+                    >
+                      {deleting ? 'Deleting...' : 'Yes, Delete'}
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth border border-fourth text-xs font-medium transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white border border-fourth text-xs font-medium transition-colors"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
-        
-        {/* Footer */}
-        <div className="border-t border-fourth/10 p-3 bg-canvas rounded-b-lg flex justify-between">
-        {/* Delete button - only show in edit mode */}
-        {!isAddMode && release && (
-            <div>
-            {showDeleteConfirm ? (
-                <div className="flex items-center gap-2">
-                <span className="text-sm text-fifth">Are you sure?</span>
-                <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg border border-fourth text-sm font-semibold transition-colors disabled:opacity-50"
-                >
-                    {deleting ? 'Deleting...' : 'Yes, Delete'}
-                </button>
-                <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white rounded-lg border border-fourth text-sm font-semibold transition-colors"
-                >
-                    Cancel
-                </button>
-                </div>
-            ) : (
-                <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg border border-fourth font-bold transition-colors"
-                >
-                Delete
-                </button>
-            )}
-            </div>
-        )}
-        
-        {/* Save button - move to the right when delete is shown */}
-        <button
-            onClick={handleSave}
-            disabled={saving}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border border-fourth font-medium transition-colors ${
-            saving 
-                ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
-                : 'bg-green-600 hover:bg-green-700 text-white'
-            } ${!isAddMode && release ? '' : 'mx-auto'}`}
-        >
-            <Save className="w-4 h-4" />
-            {saving ? 'Saving...' : 'Save'}
-        </button>
-        </div>
       </div>
-    </>
+    </div>
   );
 }

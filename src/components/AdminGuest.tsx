@@ -162,37 +162,39 @@ export const AdminGuest: React.FC = () => {
     <div>
       {/* Header with buttons and dropdown */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Guest Management</h3>
+        <h3 className="text-sm font-semibold bg-fourth text-white inline-block px-2 py-0.5">
+          Guest Management
+        </h3>
         
         <div className="flex items-center gap-2">
           {/* Add New Guest button */}
           <button
             onClick={handleOpenNewGuestModal}
-            className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-white"
+            className="flex items-center gap-2 bg-fourth text-white px-1 py-[3px] border border-fourth hover:bg-fourth/80 transition-colors text-xs whitespace-nowrap font-medium"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
           </button>
           
           {/* Guest Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-fourth text-white px-4 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium"
+              className="flex items-center gap-2 bg-fourth text-white px-2 py-1 hover:bg-fourth/80 transition-colors text-xs whitespace-nowrap font-medium"
             >
               Guest
               <ChevronDown className="w-4 h-4" />
             </button>
             
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-64 max-h-96 overflow-y-auto">
-                <div className="p-2">
+              <div className="absolute right-0 bg-primary border border-fourth shadow-xl z-50 w-64 max-h-96 overflow-y-auto">
+                <div className="p-1">
                   <div className="relative">
                     <input
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Search guests..."
-                      className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                      className="w-full px-2 py-0.5 pr-8 border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                     />
                     <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                   </div>
@@ -202,13 +204,13 @@ export const AdminGuest: React.FC = () => {
                     <button
                       key={guest.guest_id}
                       onClick={() => handleGuestSelect(guest)}
-                      className="w-full text-left px-2 py-1 font-medium text-xs text-fifth hover:bg-canvas transition-colors"
+                      className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
                     >
                       {guest.guest}
                     </button>
                   ))}
                   {filteredGuests.length === 0 && (
-                    <div className="px-4 py-2 text-sm text-fifth/60 italic">
+                    <div className="px-2 py-0.5 text-xs text-fifth text-center">
                       No guests found
                     </div>
                   )}
@@ -221,13 +223,13 @@ export const AdminGuest: React.FC = () => {
 
       {/* Guest details section */}
       {selectedGuest && (
-        <div>
+        <div className='px-2 pb-1'>
           <div className="flex justify-between items-center mb-2">
-            <h4 className="text-lg text-fifth font-medium">{selectedGuest.guest}</h4>
+            <h4 className="text-sm text-fifth font-medium">{selectedGuest.guest}</h4>
             <button
               onClick={toggleEdit}
               disabled={isSubmitting}
-              className="px-3 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+              className="px-2 py-0.5 font-medium transition-colors text-xs flex items-center justify-center border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-1"
             >
               {isEditing ? (
                 <>
@@ -243,51 +245,51 @@ export const AdminGuest: React.FC = () => {
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Guest Name</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">Guest Name</label>
               <input
                 type="text"
                 name="guest"
                 value={editedGuest?.guest || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               />
             </div>
             
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Display Name</label>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">Display Name</label>
               <input
                 type="text"
                 name="guest_displayname"
                 value={editedGuest?.guest_displayname || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               />
             </div>
             
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Instrument</label>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">Instrument</label>
               <input
                 type="text"
                 name="guest_instrument"
                 value={editedGuest?.guest_instrument || ''}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
               />
             </div>
             
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Category</label>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">Category</label>
               {isEditing ? (
                 <select
                   name="guest_category"
                   value={editedGuest?.guest_category || ''}
                   onChange={handleInputChange}
-                  className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                  className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 >
                   <option value="">-- Select Category --</option>
                   {guestCategories.map((category) => (
@@ -301,20 +303,20 @@ export const AdminGuest: React.FC = () => {
                   type="text"
                   value={editedGuest?.guest_category || ''}
                   readOnly
-                  className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                  className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                 />
               )}
             </div>
             
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-fifth">Canon ID</label>
+            <div>
+              <label className="block text-xs font-medium text-fifth mb-0.5">Canon ID</label>
               <input
                 type="text"
                 value={editedGuest?.guest_canonid || ''}
                 readOnly
-                className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
               />
-              <p className="text-xs text-fifth/60 italic">Auto-generated value</p>
+              <p className="text-xs text-fifth/60 italic mt-0.5">Auto-generated value</p>
             </div>
           </div>
         </div>

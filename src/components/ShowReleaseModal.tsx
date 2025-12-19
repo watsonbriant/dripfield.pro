@@ -211,49 +211,58 @@ export function ShowReleaseModal({
     if (!isOpen) return null;
 
     return (
-        <>
-            {/* Backdrop */}
-            <div
-                className="fixed inset-0 bg-black/50 z-50"
-                onClick={onClose}
-            />
-
-            {/* Modal */}
-            <div className="fixed md:absolute inset-x-4 md:inset-x-auto md:left-1/2 md:transform md:-translate-x-1/2 top-[72px] md:top-20 md:max-w-[500px] md:w-full max-h-[calc(100vh-88px)] md:max-h-[calc(100vh-100px)] overflow-y-auto z-50 bg-primary rounded-lg border border-fourth shadow-xl flex flex-col">
-                <div className="flex items-center justify-between p-3 border-b border-fourth/10 bg-canvas rounded-t-lg">
-                    <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
-                        {mode === 'add' ? 'Add Release to Show' : 'Edit Release Order'}
-                    </h2>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-tertiary rounded-lg border border-fourth bg-red-500 transition-colors"
-                    >
-                        <X className="w-5 h-5 text-fifth" />
-                    </button>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
+            <div className="bg-primary border border-fourth w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+                <div className="bg-tertiary text-fifth px-2 py-0.5">
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-semibold">
+                            {mode === 'add' ? 'Add Release to Show' : 'Edit Release Order'}
+                        </h3>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleSave}
+                                disabled={saving || (mode === 'add' && !selectedReleaseId)}
+                                className="flex items-center gap-1 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth"
+                            >
+                                <Save className="w-4 h-4" />
+                                {saving && <span className="ml-1">...</span>}
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="flex items-center justify-center px-2 py-0.5 bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth text-xs font-medium"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="p-3">
+                <div className="px-2 py-1">
                     {error && (
-                        <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
+                        <div className="mb-2 px-2 py-0.5 bg-red-500/20 border border-red-500 text-xs text-fifth">
                             {error}
                         </div>
                     )}
 
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {mode === 'add' ? (
-                            <div>
-                                <label className="block text-sm font-semibold text-fifth mb-1">
-                                    Select Release <span className="text-red-500">*</span>
+                            <div className="md:col-span-2">
+                                <label className="block text-xs font-medium text-fifth mb-0.5">
+                                    Select Release <span className="text-red-600">*</span>
                                 </label>
                                 {loading ? (
                                     <div className="flex items-center justify-center p-3">
-                                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-fourth"></div>
+                                        <div className="flex items-center justify-center space-x-2">
+                                            <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                                            <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                                            <div className="w-3 h-3 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+                                        </div>
                                     </div>
                                 ) : (
                                     <select
                                         value={selectedReleaseId}
                                         onChange={(e) => setSelectedReleaseId(e.target.value)}
-                                        className="w-full px-3 py-2 bg-canvas font-light text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary"
+                                        className="w-full px-2 py-0.5 bg-canvas font-light text-fifth border border-fourth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary"
                                     >
                                         <option value="">-- Select a release --</option>
                                         {availableReleases.map((release, index) => {
@@ -277,85 +286,70 @@ export function ShowReleaseModal({
                                 )}
                             </div>
                         ) : (
-                            <div>
-                                <label className="block text-sm font-semibold text-fifth mb-1">
+                            <div className="md:col-span-2">
+                                <label className="block text-xs font-medium text-fifth mb-0.5">
                                     Release
                                 </label>
                                 <input
                                     type="text"
                                     value={existingReleaseId || ''}
                                     disabled
-                                    className="w-full px-3 py-2 bg-gray-100 font-light text-gray-600 border border-gray-300 rounded-lg text-sm"
+                                    className="w-full px-2 py-0.5 bg-canvas/50 font-light text-fifth/60 border border-fourth text-xs"
                                 />
                             </div>
                         )}
 
-                        <div>
-                            <label className="block text-sm font-semibold text-fifth mb-1">
-                                Release Order <span className="text-red-500">*</span>
+                        <div className="md:col-span-2">
+                            <label className="block text-xs font-medium text-fifth mb-0.5">
+                                Release Order <span className="text-red-600">*</span>
                             </label>
                             <input
                                 type="number"
                                 min="1"
                                 value={releaseOrder}
                                 onChange={(e) => setReleaseOrder(parseInt(e.target.value) || 1)}
-                                className="w-full px-3 py-2 bg-canvas font-light text-fifth border border-fourth rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-tertiary"
+                                className="w-full px-2 py-0.5 bg-canvas font-light text-fifth border border-fourth text-xs focus:outline-none focus:ring-1 focus:ring-tertiary"
                                 placeholder="Enter order number"
                             />
-                            <p className="text-xs text-fifth/60 mt-1">
+                            <p className="text-xs text-fifth/60 mt-0.5">
                                 Lower numbers appear first in the list
                             </p>
                         </div>
+
+                        {/* Delete button - only show in edit mode */}
+                        {mode === 'edit' && (
+                            <div className="md:col-span-2">
+                                {showDeleteConfirm ? (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-fifth">Are you sure?</span>
+                                        <button
+                                            onClick={handleDelete}
+                                            disabled={deleting}
+                                            className="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white border border-fourth text-xs font-medium transition-colors disabled:opacity-50"
+                                        >
+                                            {deleting ? 'Deleting...' : 'Yes, Delete'}
+                                        </button>
+                                        <button
+                                            onClick={() => setShowDeleteConfirm(false)}
+                                            className="px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth border border-fourth text-xs font-medium transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                        className="flex items-center gap-1 px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white border border-fourth text-xs font-medium transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                        Delete
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
-
-                {/* Footer */}
-                <div className="border-t border-fourth/10 p-3 bg-canvas rounded-b-lg flex justify-between">
-                    {/* Delete button - only show in edit mode */}
-                    {mode === 'edit' && (
-                        <div>
-                            {showDeleteConfirm ? (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-fifth">Are you sure?</span>
-                                    <button
-                                        onClick={handleDelete}
-                                        disabled={deleting}
-                                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg border border-fourth text-sm font-semibold transition-colors disabled:opacity-50"
-                                    >
-                                        {deleting ? 'Deleting...' : 'Yes, Delete'}
-                                    </button>
-                                    <button
-                                        onClick={() => setShowDeleteConfirm(false)}
-                                        className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white rounded-lg border border-fourth text-sm font-semibold transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={() => setShowDeleteConfirm(true)}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg border border-fourth font-medium transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                    Delete
-                                </button>
-                            )}
-                        </div>
-                    )}
-
-                    <button
-                        onClick={handleSave}
-                        disabled={saving || (mode === 'add' && !selectedReleaseId)}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border border-fourth font-medium transition-colors ${saving || (mode === 'add' && !selectedReleaseId)
-                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                                : 'bg-green-600 hover:bg-green-700 text-white'
-                            } ${mode === 'add' ? 'ml-auto' : ''}`}
-                    >
-                        <Save className="w-4 h-4" />
-                        {saving ? 'Saving...' : 'Save'}
-                    </button>
-                </div>
             </div>
-        </>
+        </div>
     );
 }

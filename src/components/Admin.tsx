@@ -136,55 +136,55 @@ export function Admin() {
     switch (activeTab) {
       case 'Setlist':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminSetlist />
           </div>
         );
       case 'Artist':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminArtist />
           </div>
         );
       case 'Song':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminSong />
           </div>
         );
       case 'Guest':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminGuest />
           </div>
         );
       case 'Show':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminShow />
           </div>
         );
       case 'Changes':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminChanges />
           </div>
         );
       case 'Releases':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminReleases />
           </div>
         );
       case 'Venue':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminVenue />
           </div>
         );
       case 'Subvenue':
         return (
-          <div className="bg-primary border border-fourth rounded-lg p-3">
+          <div className="bg-primary border border-fourth">
             <AdminSubvenue />
           </div>
         );
@@ -194,12 +194,12 @@ export function Admin() {
   }, [activeTab]);
   
   return (
-    <div className="max-w-[1280px] mx-auto">
+    <div className="max-w-[1500px] mx-auto">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-semibold bg-tertiary text-fifth inline-block px-4 py-1 rounded-lg border border-fourth">Admin Panel</h2>
+          <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 rounded-lg border border-fourth">Admin Panel</h2>
           {userCount !== null && (
-            <span className="bg-fourth text-white px-3 py-1 rounded-full text-sm font-medium border border-fourth">
+            <span className="bg-fourth text-white px-2 py-0.5 rounded-full text-xs font-medium border border-fourth">
               {userCount.toLocaleString()} {userCount === 1 ? 'user' : 'users'}
             </span>
           )}
@@ -207,7 +207,7 @@ export function Admin() {
         <button
           onClick={handleUpdateStatistics}
           disabled={isUpdating || updateStatus.type === 'success'}
-          className={`px-3 py-1 rounded-md text-sm font-medium transition-colors border border-fourth
+          className={`px-2 py-0.5 rounded-lg text-xs font-medium transition-colors border border-fourth
             ${isUpdating
               ? 'bg-black/50 text-white cursor-not-allowed'
               : updateStatus.type === 'success'
@@ -224,7 +224,7 @@ export function Admin() {
       </div>
       
       {updateStatus.type === 'error' && (
-        <div className="mt-2 text-sm text-red-600 bg-red-100 px-3 py-1 rounded-md border border-red-300">
+        <div className="mt-2 text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded-lg border border-red-300">
           Error: {updateStatus.message}
         </div>
       )}
@@ -233,20 +233,20 @@ export function Admin() {
       
       {/* Tab Navigation */}
       <div className="mt-4 flex flex-row justify-between items-center">
-        <h2 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Manage Data</h2>
+        <h2 className="text-sm font-semibold bg-tertiary text-fifth inline-block px-2 py-0.5 rounded-lg border border-fourth">Manage Data</h2>
         
         {/* Mobile Dropdown */}
         <div className="lg:hidden relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-tertiary hover:bg-tertiary/80 text-fifth border border-fourth font-medium"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-tertiary hover:bg-tertiary/90 text-fifth border border-fourth font-medium text-sm"
           >
             {activeTab}
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {dropdownOpen && (
-            <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-40">
+            <div className="absolute right-0 mt-2 py-1 bg-primary border border-fourth rounded-lg shadow-xl z-50 w-40">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -254,8 +254,8 @@ export function Admin() {
                     handleTabChange(tab);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-1 text-sm hover:bg-canvas transition-colors ${
-                    activeTab === tab ? 'bg-canvas font-medium' : 'text-fifth'
+                  className={`w-full text-left px-2 py-0.5 text-xs hover:bg-tertiary/40 transition-colors ${
+                    activeTab === tab ? 'bg-tertiary/40 font-medium' : 'text-fifth'
                   }`}
                 >
                   {tab}
@@ -267,14 +267,14 @@ export function Admin() {
         
         {/* Desktop Tab Navigation */}
         <div className="hidden lg:block relative">
-          <div className="bg-primary px-1 py-1 rounded-lg border border-fourth">
+          <div className="bg-primary px-1 rounded-lg border border-fourth">
             <div className="flex relative">
               {tabs.map((tab, index) => (
                 <button
                   key={tab}
                   ref={el => tabsRef.current[index] = el}
                   onClick={() => handleTabChange(tab)}
-                  className={`py-1 px-3 font-medium relative z-10 text-sm transition-colors duration-200 ${
+                  className={`py-1 px-2 font-medium relative z-10 text-xs transition-colors duration-200 ${
                     activeTab === tab
                       ? 'text-fifth'
                       : 'text-fifth hover:underline'
@@ -287,7 +287,7 @@ export function Admin() {
               {/* Animated pill indicator */}
               <div 
                 ref={indicatorRef}
-                className="absolute h-7 bg-tertiary/80 rounded-lg top-0 transition-all duration-300 ease-in-out"
+                className="absolute h-5 bg-tertiary/80 rounded-lg top-0.5 transition-all duration-300 ease-in-out"
                 style={{ left: 0, width: '100px' }} // Initial values, will be updated by useEffect
               />
             </div>

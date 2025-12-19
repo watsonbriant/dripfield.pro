@@ -13,22 +13,22 @@ export const ShowHeader: React.FC<ShowHeaderProps> = ({
   onCreateNewEntry
 }) => {
   return (
-    <div className="mb-2 flex items-center justify-between">
+    <div className="mb-2 flex px-2 items-center justify-between">
       <div>
-        <h4 className="text-lg text-fifth font-medium">
+        <h4 className="text-sm text-fifth font-medium">
           {formatDate(selectedShow.show_date)}
           &nbsp;[{selectedShow.show_group}]
         </h4>
-        <div className="text-sm text-fifth/70 font-light">
+        <div className="text-xs text-fifth font-light">
           {selectedShow.show_subvenue} — {selectedShow.show_venue_location}
         </div>
       </div>
       
       <button
         onClick={onCreateNewEntry}
-        className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-white"
+        className="flex items-center gap-2 bg-fourth text-fifth px-1 py-1 rounded border border-fourth hover:bg-fourth/80 transition-colors text-xs whitespace-nowrap font-medium text-white"
       >
-        <Plus className="w-5 h-5" />
+        <Plus className="w-4 h-4" />
       </button>
     </div>
   );

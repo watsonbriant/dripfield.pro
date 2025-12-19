@@ -40,13 +40,13 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
   onInputChange
 }) => {
   return (
-    <div>
+    <div className='px-2'>
       <div className="flex justify-between items-center mb-2">
-        <h4 className="text-lg text-fifth font-medium">{selectedSong.song}</h4>
+        <h4 className="text-sm text-fifth font-medium">{selectedSong.song}</h4>
         <button
           onClick={onToggleEdit}
           disabled={isSubmitting}
-          className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+          className="px-2 py-0.5 font-medium transition-colors text-xs flex items-center justify-center border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-1"
         >
           {isEditing ? (
             <>
@@ -62,27 +62,27 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
         </button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <label className="block text-sm font-medium text-fifth">Song Title</label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-medium text-fifth mb-0.5">Song Title</label>
           <input
             type="text"
             name="song"
             value={editedSong?.song || ''}
             onChange={onInputChange}
             readOnly={!isEditing}
-            className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+            className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
           />
         </div>
         
-        <div className="space-y-1">
-          <label className="block text-sm font-medium text-fifth">Category</label>
+        <div>
+          <label className="block text-xs font-medium text-fifth mb-0.5">Category</label>
           {isEditing ? (
             <select
               name="song_category"
               value={editedSong?.song_category || ''}
               onChange={onInputChange}
-              className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
             >
               <option value="">-- Select Category --</option>
               {categories.map((cat) => (
@@ -96,19 +96,19 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
               type="text"
               value={editedSong?.song_category || ''}
               readOnly
-              className="w-full px-2 py-1.5 rounded-md border font-light border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-0.5 border font-light border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
             />
           )}
         </div>
         
-        <div className="space-y-1">
-          <label className="block text-sm font-medium text-fifth">Original Artist</label>
+        <div>
+          <label className="block text-xs font-medium text-fifth mb-0.5">Original Artist</label>
           {isEditing ? (
             <select
               name="song_originalartist"
               value={editedSong?.song_originalartist || ''}
               onChange={onInputChange}
-              className="w-full px-2 py-1.5 rounded-md border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-0.5 border font-light border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
             >
               <option value="">-- Select Artist --</option>
               {artists.map((artist) => (
@@ -122,32 +122,32 @@ export const SongDetailsForm: React.FC<SongDetailsFormProps> = ({
               type="text"
               value={editedSong?.song_originalartist || ''}
               readOnly
-              className="w-full px-2 py-1.5 rounded-md font-light border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+              className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
             />
           )}
         </div>
         
-        <div className="space-y-1">
-          <label className="block text-sm font-medium text-fifth">Category Order</label>
+        <div>
+          <label className="block text-xs font-medium text-fifth mb-0.5">Category Order</label>
           <input
             type="number"
             name="song_categoryorder"
             value={editedSong?.song_categoryorder === null ? '' : editedSong?.song_categoryorder}
             onChange={onInputChange}
             readOnly={!isEditing}
-            className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+            className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
           />
         </div>
         
-        <div className="space-y-1 md:col-span-2">
-          <label className="block text-sm font-medium text-fifth">Coach's Notes</label>
+        <div className="md:col-span-2">
+          <label className="block text-xs font-medium text-fifth mb-0.5">Coach's Notes</label>
           <textarea
             name="song_coachnotes"
             value={editedSong?.song_coachnotes || ''}
             onChange={onInputChange}
             readOnly={!isEditing}
             rows={4}
-            className={`w-full px-2 py-1.5 rounded-md font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+            className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
           />
         </div>
       </div>

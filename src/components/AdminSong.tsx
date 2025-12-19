@@ -88,7 +88,7 @@ export const AdminSong: React.FC = () => {
     <div>
       {/* Header with buttons and dropdown */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
+        <h3 className="text-sm font-semibold bg-fourth text-white inline-block px-2 py-0.5">
           Song Management
         </h3>
         
@@ -96,9 +96,9 @@ export const AdminSong: React.FC = () => {
           {/* Add New Song button */}
           <button
             onClick={handleOpenNewSongModal}
-            className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-white"
+            className="flex items-center gap-2 bg-fourth text-white px-1 py-[3px] border border-fourth hover:bg-fourth/80 transition-colors text-xs whitespace-nowrap font-medium"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
           </button>
           
           {/* Song Dropdown */}

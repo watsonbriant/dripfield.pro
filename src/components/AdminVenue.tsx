@@ -64,18 +64,20 @@ export const AdminVenue: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className='pb-1'>
             {/* Header with buttons and dropdown */}
             <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold bg-fourth text-white text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">Venue Management</h3>
+                <h3 className="text-sm font-semibold bg-fourth text-white inline-block px-2 py-0.5">
+                    Venue Management
+                </h3>
 
                 <div className="flex items-center gap-2">
                     {/* Add New Venue button */}
                     <button
                         onClick={handleCreateNew}
-                        className="flex items-center gap-2 bg-fourth text-fifth px-1.5 py-1.5 rounded-md border border-fourth hover:bg-fourth/80 transition-colors text-sm whitespace-nowrap font-medium text-white"
+                        className="flex items-center gap-2 bg-fourth text-white px-1 py-[3px] border border-fourth hover:bg-fourth/80 transition-colors text-xs whitespace-nowrap font-medium"
                     >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-4 h-4" />
                     </button>
 
                     <VenueDropdown
@@ -94,9 +96,9 @@ export const AdminVenue: React.FC = () => {
 
             {/* Venue details section */}
             {selectedVenue && (
-                <div>
+                <div className="px-2">
                     <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-lg text-fifth font-medium">
+                        <h4 className="text-sm text-fifth font-medium">
                             {isCreatingNew ? 'New Venue' : `${selectedVenue.venue} - ${selectedVenue.venue_location}`}
                         </h4>
                         <div className="flex items-center gap-2">
@@ -104,7 +106,7 @@ export const AdminVenue: React.FC = () => {
                                 <button
                                     onClick={handleCancel}
                                     disabled={isSubmitting}
-                                    className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-gray-500 text-white border-fourth hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-2 py-0.5 font-medium transition-colors text-xs flex items-center justify-center border bg-gray-500 text-white border-fourth hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Cancel
                                 </button>
@@ -112,7 +114,7 @@ export const AdminVenue: React.FC = () => {
                             <button
                                 onClick={toggleEdit}
                                 disabled={isSubmitting}
-                                className="px-2 py-1.5 font-medium rounded-md transition-colors text-sm flex items-center justify-center min-w-[80px] border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+                                className="px-2 py-0.5 font-medium transition-colors text-xs flex items-center justify-center border bg-fourth text-white border-fourth hover:bg-fourth/80 disabled:opacity-50 disabled:cursor-not-allowed gap-1"
                             >
                                 {isEditing ? (
                                     <>
@@ -139,7 +141,7 @@ export const AdminVenue: React.FC = () => {
 
             {!selectedVenue && !loading && (
                 <div className="text-center py-8">
-                    <p className="text-fifth/60">Select a venue from the dropdown or create a new one to get started.</p>
+                    <p className="text-xs text-fifth/60">Select a venue from the dropdown or create a new one to get started.</p>
                 </div>
             )}
         </div>

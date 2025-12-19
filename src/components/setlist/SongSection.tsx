@@ -47,12 +47,12 @@ export const SongSection: React.FC<SongSectionProps> = ({
   }, [isSongDropdownOpen]);
 
   return (
-    <div className="space-y-2 md:col-span-6">
-      <label className="block text-sm font-medium text-fifth">Song</label>
+    <div className="md:col-span-6">
+      <label className="block text-xs font-medium text-fifth mb-0.5">Song</label>
       {isEditing || isNewEntry ? (
         <div className="relative">
           <div
-            className="w-full px-2 py-2 rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light cursor-pointer flex items-center justify-between"
+            className="w-full px-2 py-0.5 border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs font-light cursor-pointer flex items-center justify-between"
             onClick={() => setIsSongDropdownOpen(!isSongDropdownOpen)}
           >
             <span className={selectedSongName ? 'text-fifth' : 'text-fifth/60'}>
@@ -62,8 +62,8 @@ export const SongSection: React.FC<SongSectionProps> = ({
           </div>
           
           {isSongDropdownOpen && (
-            <div className="absolute z-10 w-full mt-1 bg-canvas border border-fourth rounded-md shadow-lg">
-              <div className="p-2">
+            <div className="absolute z-10 w-full mt-1 bg-canvas border border-fourth shadow-xl">
+              <div className="p-1">
                 <div className="relative">
                   <input
                     ref={songSearchInputRef}
@@ -71,7 +71,7 @@ export const SongSection: React.FC<SongSectionProps> = ({
                     value={songSearchTerm}
                     onChange={(e) => setSongSearchTerm(e.target.value)}
                     placeholder="Search songs..."
-                    className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
+                    className="w-full px-2 py-0.5 pr-8 border border-fourth bg-canvas text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
                     onClick={(e) => e.stopPropagation()}
                   />
                   <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
@@ -84,8 +84,8 @@ export const SongSection: React.FC<SongSectionProps> = ({
                     {filteredSongs.map((song) => (
                       <div
                         key={song.song_id}
-                        className={`px-3 py-0.5 hover:bg-tertiary/20 cursor-pointer text-xs ${
-                          selectedSongName === song.song ? 'bg-tertiary/10' : ''
+                        className={`px-2 py-1 hover:bg-tertiary/40 cursor-pointer text-xs text-fifth ${
+                          selectedSongName === song.song ? 'bg-tertiary/40' : ''
                         }`}
                         onClick={() => handleSongSelection(song.song)}
                       >
@@ -94,7 +94,7 @@ export const SongSection: React.FC<SongSectionProps> = ({
                     ))}
                   </>
                 ) : (
-                  <div className="px-3 py-2 text-sm text-fifth/60">
+                  <div className="px-2 py-0.5 text-xs text-fifth text-center">
                     {songSearchTerm ? 'No songs found matching your search' : 'No songs available'}
                   </div>
                 )}
@@ -107,7 +107,7 @@ export const SongSection: React.FC<SongSectionProps> = ({
           type="text"
           value={editedEntry?.entry_song || ''}
           readOnly
-          className="w-full px-2 py-2 rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-light"
+          className="w-full px-2 py-0.5 border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs font-light"
         />
       )}
     </div>

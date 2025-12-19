@@ -36,22 +36,22 @@ export const SubvenueForm: React.FC<SubvenueFormProps> = ({
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-fifth">Subvenue Name</label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div>
+                <label className="block text-xs font-medium text-fifth mb-0.5">Subvenue Name</label>
                 <input
                     type="text"
                     name="subvenue"
                     value={editedSubvenue?.subvenue || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
                     placeholder="Enter subvenue name"
                 />
             </div>
 
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-fifth">Venue</label>
+            <div>
+                <label className="block text-xs font-medium text-fifth mb-0.5">Venue</label>
                 {isEditing ? (
                     <VenueFormDropdown
                         isOpen={isVenueDropdownOpen}
@@ -68,32 +68,32 @@ export const SubvenueForm: React.FC<SubvenueFormProps> = ({
                         type="text"
                         value={getSelectedVenueDisplay()}
                         readOnly
-                        className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm"
+                        className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
                     />
                 )}
             </div>
 
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-fifth">Start Date</label>
+            <div>
+                <label className="block text-xs font-medium text-fifth mb-0.5">Start Date</label>
                 <input
                     type="date"
                     name="subvenue_startdate"
                     value={editedSubvenue?.subvenue_startdate || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
                 />
             </div>
 
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-fifth">End Date</label>
+            <div>
+                <label className="block text-xs font-medium text-fifth mb-0.5">End Date</label>
                 <input
                     type="date"
                     name="subvenue_enddate"
                     value={editedSubvenue?.subvenue_enddate || ''}
                     onChange={onInputChange}
                     readOnly={!isEditing}
-                    className={`w-full px-2 py-1.5 font-light rounded-md border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm`}
+                    className={`w-full px-2 py-0.5 font-light border ${isEditing ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
                 />
             </div>
         </div>

@@ -42,16 +42,16 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
   }, [allGuests, guestSearchTerm]);
 
   return (
-    <div className="space-y-2 md:col-span-6 mt-2">
-      <div className="flex flex-col space-y-2">
+    <div className="md:col-span-6 mt-2">
+      <div className="flex flex-col space-y-0.5">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <label className="block text-sm font-medium text-fifth">Guests</label>
+            <label className="block text-xs font-medium text-fifth">Guests</label>
             {/* Move button next to the heading, only show when editing or new entry */}
             {(isEditing || isNewEntry) && (
               <button
                 onClick={handleSelectAllGooseMembers}
-                className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-canvas transition-colors text-xs font-medium border border-fourth"
+                className="px-2 py-0.5 bg-tertiary text-fifth hover:bg-canvas transition-colors text-xs font-medium border border-fourth"
               >
                 Select All Goose Members
               </button>
@@ -61,13 +61,13 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
             className="text-fifth hover:text-[#a9682e] cursor-pointer"
             onClick={() => setIsGuestSectionExpanded(!isGuestSectionExpanded)}
           >
-            {isGuestSectionExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            {isGuestSectionExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         </div>
 
         {/* Guest Pills */}
         {selectedGuestIds.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-1">
+          <div className="flex flex-wrap gap-0.5">
             {selectedGuestIds.map(guestId => {
               // Find the guest info
               const guestInfo = allGuests.flatMap(category => category.guests)
@@ -78,7 +78,7 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
               return (
                 <div 
                   key={guestId} 
-                  className="bg-tertiary text-fifth text-xs px-2 py-1 rounded-lg flex items-center border border-fourth"
+                  className="bg-tertiary text-fifth text-xs px-2 py-0.5 flex items-center border border-fourth"
                 >
                   <span>{guestInfo.guest_displayname || guestInfo.guest}</span>
                   {(isEditing || isNewEntry) && (
@@ -100,17 +100,17 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
       </div>
       
       {isGuestSectionExpanded && (
-        <div className={`border rounded-md p-3 ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'}`}>
+        <div className={`border p-2 ${isEditing || isNewEntry ? 'border-fourth bg-canvas' : 'border-fourth bg-canvas/50'}`}>
           {/* Add search input */}
           {(isEditing || isNewEntry) && (
-            <div className="mb-3">
+            <div className="mb-2">
               <div className="relative">
                 <input
                   type="text"
                   value={guestSearchTerm}
                   onChange={(e) => setGuestSearchTerm(e.target.value)}
                   placeholder="Search guests..."
-                  className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas text-sm focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
+                  className="w-full px-2 py-0.5 pr-8 border border-fourth bg-canvas text-xs focus:outline-none focus:ring-1 focus:ring-tertiary text-fifth placeholder-black/60"
                 />
                 <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
               </div>
@@ -120,8 +120,8 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
           {filteredGuestsByCategory.length > 0 ? (
             <div className="max-h-60 overflow-y-auto">
               {filteredGuestsByCategory.map(category => (
-                <div key={category.category} className="mb-4">
-                  <h4 className="text-sm font-medium text-fifth mb-2">{category.category}</h4>
+                <div key={category.category} className="mb-3">
+                  <h4 className="text-xs font-medium text-fifth mb-1">{category.category}</h4>
                   <div className="space-y-1">
                     {category.guests.map(guest => (
                       <div key={guest.guest_id} className="flex items-center">
@@ -147,14 +147,14 @@ export const GuestsSection: React.FC<GuestsSectionProps> = ({
               ))}
             </div>
           ) : (
-            <p className="text-fifth/60 text-sm">
+            <p className="text-fifth/60 text-xs text-center">
               {guestSearchTerm ? 'No guests found matching your search' : 'No guests available'}
             </p>
           )}
           
           {selectedGuestIds.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-fourth/10">
-              <p className="text-sm text-fifth">Selected guests: {selectedGuestIds.length}</p>
+            <div className="mt-2 pt-2 border-t border-fourth/10">
+              <p className="text-xs text-fifth">Selected guests: {selectedGuestIds.length}</p>
             </div>
           )}
         </div>

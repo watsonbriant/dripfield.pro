@@ -39,7 +39,7 @@ export const VenueFormDropdown: React.FC<VenueFormDropdownProps> = ({
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={onToggle}
-                className="w-full px-2 py-1.5 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-fourth text-sm text-left flex items-center justify-between"
+                className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs text-left flex items-center justify-between"
             >
                 <span className="truncate">
                     {selectedVenue || 'Select venue...'}
@@ -48,15 +48,15 @@ export const VenueFormDropdown: React.FC<VenueFormDropdownProps> = ({
             </button>
 
             {isOpen && (
-                <div className="absolute left-0 mt-1 py-1 bg-primary border border-fourth rounded-lg shadow-lg z-50 w-full max-h-60 overflow-y-auto">
-                    <div className="p-2">
+                <div className="absolute left-0 bg-primary border border-fourth shadow-xl z-50 w-full max-h-60 overflow-y-auto">
+                    <div className="p-1">
                         <div className="relative">
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => onSearchChange(e.target.value)}
                                 placeholder="Search venues..."
-                                className="w-full px-3 py-1.5 pr-8 rounded-md border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
+                                className="w-full px-2 py-0.5 pr-8 border border-fourth bg-canvas font-light text-xs focus:outline-none focus:ring-1 focus:ring-fourth text-fifth placeholder-black/60"
                             />
                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                         </div>
@@ -66,14 +66,14 @@ export const VenueFormDropdown: React.FC<VenueFormDropdownProps> = ({
                             <button
                                 key={venue.venue}
                                 onClick={() => onVenueSelect(venue)}
-                                className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-canvas transition-colors"
+                                className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
                             >
                                 <span className="font-medium">{venue.venue}</span>
                                 <span>&nbsp;&nbsp;[{venue.venue_location}]</span>
                             </button>
                         ))}
                         {filteredVenues.length === 0 && (
-                            <div className="px-4 py-2 text-sm text-fifth/60 italic">
+                            <div className="px-2 py-0.5 text-xs text-fifth text-center">
                                 No venues found
                             </div>
                         )}

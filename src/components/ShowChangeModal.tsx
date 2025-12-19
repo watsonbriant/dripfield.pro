@@ -97,8 +97,8 @@ const useSongs = () => {
 
 // Form field components
 const FormField: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
-  <div className="space-y-1">
-    <label className="block text-sm font-medium text-fifth">{label}</label>
+  <div>
+    <label className="block text-xs font-medium text-fifth mb-0.5">{label}</label>
     {children}
   </div>
 );
@@ -112,9 +112,9 @@ const ChangeOrderField: React.FC<{ value: number; onChange: (e: React.ChangeEven
         value={value || ''}
         onChange={onChange}
         readOnly={readOnly}
-        className={`w-full px-2 py-2 font-light rounded-md border ${
+        className={`w-full px-2 py-0.5 font-light border ${
           readOnly ? 'border-fourth bg-canvas/50' : 'border-fourth bg-canvas'
-        } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm`}
+        } text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs`}
       />
     </FormField>
   );
@@ -123,9 +123,9 @@ const ChangeTypeField: React.FC<{ value: string; onChange: (e: React.ChangeEvent
   ({ value, onChange, changeTypes, readOnly }) => (
     <FormField label="Type">
       {readOnly ? (
-        <input type="text" value={value || ''} readOnly className="w-full px-2 py-2 font-light rounded-md border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm" />
+        <input type="text" value={value || ''} readOnly className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas/50 text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs" />
       ) : (
-        <select name="change_type" value={value || ''} onChange={onChange} className="w-full px-2 py-2 font-light rounded-md border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm" required>
+        <select name="change_type" value={value || ''} onChange={onChange} className="w-full px-2 py-0.5 font-light border border-fourth bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs" required>
           <option value="">Select a type...</option>
           {changeTypes.map((type) => <option key={type.change} value={type.change}>{type.change}</option>)}
         </select>
@@ -135,24 +135,24 @@ const ChangeTypeField: React.FC<{ value: string; onChange: (e: React.ChangeEvent
 
 const ChangeTextField: React.FC<{ value: string; onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void; songs: SongOption[]; selectedSongId: string; onSongSelect: (songId: string) => void; onInsertArrow: () => void; readOnly: boolean }> = 
   ({ value, onChange, songs, selectedSongId, onSongSelect, onInsertArrow, readOnly }) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-fifth">Change</label>
+    <div>
+      <div className="flex items-center justify-between mb-0.5">
+        <label className="block text-xs font-medium text-fifth">Change</label>
         {!readOnly && (
           <div className="flex items-center gap-2">
-            <select value={selectedSongId} onChange={(e) => onSongSelect(e.target.value)} className="px-2 py-1 w-48 rounded-md border border-fourth font-light bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs">
+            <select value={selectedSongId} onChange={(e) => onSongSelect(e.target.value)} className="px-2 py-0.5 w-48 border border-fourth font-light bg-canvas text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs">
               <option value="">Add song link...</option>
               {songs.map((song) => <option key={song.song_id} value={song.song_id}>{song.song}</option>)}
             </select>
-            <button type="button" onClick={onInsertArrow} className="px-2 py-1 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold border border-fourth" title="Insert arrow">→</button>
+            <button type="button" onClick={onInsertArrow} className="px-2 py-0.5 bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-xs font-medium border border-fourth" title="Insert arrow">→</button>
           </div>
         )}
       </div>
-      <textarea name="change" value={value || ''} onChange={onChange} readOnly={readOnly} rows={6} placeholder="Enter the change details..." className={`w-full px-2 py-2 rounded-md border ${readOnly ? 'border-fourth bg-canvas/50' : 'border-fourth bg-canvas'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-sm font-mono`} />
+      <textarea name="change" value={value || ''} onChange={onChange} readOnly={readOnly} rows={6} placeholder="Enter the change details..." className={`w-full px-2 py-0.5 border ${readOnly ? 'border-fourth bg-canvas/50' : 'border-fourth bg-canvas'} text-fifth focus:outline-none focus:ring-2 focus:ring-tertiary text-xs font-mono`} />
       {readOnly && value && (
-        <div className="mt-2 p-3 bg-canvas rounded-md border border-fourth/20">
-          <p className="text-xs text-fifth/60 mb-2">Rendered HTML:</p>
-          <div className="text-sm font-light text-fifth [&_a]:font-medium" dangerouslySetInnerHTML={{ __html: value }} />
+        <div className="mt-2 p-2 bg-canvas border border-fourth/20">
+          <p className="text-xs text-fifth/60 mb-1">Rendered HTML:</p>
+          <div className="text-xs font-light text-fifth [&_a]:font-medium" dangerouslySetInnerHTML={{ __html: value }} />
         </div>
       )}
     </div>
@@ -278,37 +278,41 @@ const ShowChangeModal: React.FC<ShowChangeModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
-      <div className="bg-primary border border-fourth rounded-lg p-3 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold bg-tertiary text-fifth inline-block px-3 py-0.5 rounded-lg border border-fourth">
-            {isNewChange ? 'Add Show Change' : 'Edit Show Change'}
-          </h3>
-          <div className="flex gap-2">
-            {!isNewChange && (
-              <>
-                <button onClick={toggleEdit} disabled={isSubmitting} className="flex items-center justify-center gap-2 w-10 h-10 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth">
-                  {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
+      <div className="bg-primary border border-fourth w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+        <div className="bg-tertiary text-fifth px-2 py-0.5">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-semibold">
+              {isNewChange ? 'Add Show Change' : 'Edit Show Change'}
+            </h3>
+            <div className="flex gap-2">
+              {!isNewChange && (
+                <>
+                  <button onClick={toggleEdit} disabled={isSubmitting} className="flex items-center justify-center gap-1 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth">
+                    {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                  </button>
+                  <button onClick={handleDeleteClick} disabled={isSubmitting} className={`flex items-center justify-center px-2 py-0.5 border ${isDeleteConfirming ? 'bg-green-500 hover:bg-green-600 border-fourth' : 'bg-red-500 hover:bg-red-600 border-fourth'} text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium`} title={isDeleteConfirming ? "Confirm Delete" : "Delete"}>
+                    {isDeleteConfirming ? <Check className="w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
+                  </button>
+                </>
+              )}
+              {isNewChange && (
+                <button onClick={handleSaveChanges} disabled={isSubmitting || !editedChange?.change_type || !editedChange?.change} className="flex items-center gap-1 px-2 py-0.5 bg-canvas hover:bg-tertiary text-fifth transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-fourth">
+                  <Save className="w-4 h-4" />
+                  {isSubmitting && <span className="ml-1">...</span>}
                 </button>
-                <button onClick={handleDeleteClick} disabled={isSubmitting} className={`flex items-center justify-center w-10 h-10 rounded-md border ${isDeleteConfirming ? 'bg-green-500 hover:bg-green-600 border-fourth' : 'bg-red-500 hover:bg-red-600 border-fourth'} text-fifth transition-colors disabled:opacity-50 disabled:cursor-not-allowed`} title={isDeleteConfirming ? "Confirm Delete" : "Delete"}>
-                  {isDeleteConfirming ? <Check className="w-5 h-5" /> : <Trash2 className="w-5 h-5" />}
-                </button>
-              </>
-            )}
-            {isNewChange && (
-              <button onClick={handleSaveChanges} disabled={isSubmitting || !editedChange?.change_type || !editedChange?.change} className="flex items-center gap-2 px-3 py-2 rounded-md bg-tertiary text-fifth hover:bg-tertiary/70 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-fourth">
-                <Save className="w-5 h-5" />
-                {isSubmitting && <span className="ml-1">...</span>}
+              )}
+              <button onClick={onClose} className="flex items-center justify-center px-2 py-0.5 bg-fifth hover:bg-red-600 text-red-600 hover:text-fifth transition-colors border border-fourth text-xs font-medium">
+                <X className="w-4 h-4" />
               </button>
-            )}
-            <button onClick={onClose} className="flex items-center justify-center w-10 h-10 rounded-md bg-red-500 hover:bg-red-600 transition-colors border border-fourth">
-              <X className="w-5 h-5 text-fifth" />
-            </button>
+            </div>
           </div>
         </div>
-        <div className="space-y-2">
-          <ChangeOrderField value={editedChange?.change_order || 0} onChange={handleInputChange} readOnly={isReadOnly} />
-          <ChangeTypeField value={editedChange?.change_type || ''} onChange={handleInputChange} changeTypes={changeTypes} readOnly={isReadOnly} />
-          <ChangeTextField value={editedChange?.change || ''} onChange={handleInputChange} songs={songs} selectedSongId={selectedSongId} onSongSelect={handleSongSelect} onInsertArrow={handleInsertArrow} readOnly={isReadOnly} />
+        <div className="px-2 py-1">
+          <div className="space-y-2">
+            <ChangeOrderField value={editedChange?.change_order || 0} onChange={handleInputChange} readOnly={isReadOnly} />
+            <ChangeTypeField value={editedChange?.change_type || ''} onChange={handleInputChange} changeTypes={changeTypes} readOnly={isReadOnly} />
+            <ChangeTextField value={editedChange?.change || ''} onChange={handleInputChange} songs={songs} selectedSongId={selectedSongId} onSongSelect={handleSongSelect} onInsertArrow={handleInsertArrow} readOnly={isReadOnly} />
+          </div>
         </div>
       </div>
     </div>
