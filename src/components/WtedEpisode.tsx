@@ -1,6 +1,7 @@
 import { useState, useCallback, lazy, Suspense } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { useWtedEpisodeData, useWtedEpisodes, WtedEpisodeEntry } from '../hooks/useWtedEpisodeData';
 import { WtedEpisodesDropdown } from './wted/WtedEpisodesDropdown';
 import { WtedEpisodeStats } from './wted/WtedEpisodeStats';
@@ -9,6 +10,7 @@ import { GuestLegend } from './setlist/GuestLegend';
 import { useMobileDetection, useGuestGroups, useHoverStates } from '../hooks/useSetlistDisplay';
 import { getGuestColor } from '../utils/setlistUtils';
 import SongSpread from './SongSpread';
+import WLImage from '../img/WL.png';
 
 // Lazy load heavy components
 const StarRating = lazy(() => import('./StarRating'));
@@ -90,22 +92,40 @@ export function WtedEpisode() {
       {/* Header Bar with Navigation Row */}
       <div className="bg-primary border border-fourth mb-4 w-max min-w-max relative overflow-visible shadow-md">
         {/* Header */}
-        <div className="bg-tertiary text-fifth pl-2 pr-1 py-0.5 flex items-center">
-          <h2 className="text-sm font-semibold">
-            {show?.show || 'WTED Episode'}
+        <div className="bg-tertiary text-white px-2 py-0.5 flex items-center">
+          <h2 className="text-xs font-medium flex items-center gap-2">
+            {/* WL Image */}
+            <img src={WLImage} alt="WL" className="h-5 w-auto" />
+            
+            {/* WTED Program Director Pill */}
+            <Link 
+              to="/wted" 
+              className="hover:underline transition-colors flex items-center bg-fourth border border-fourth text-white px-1 rounded"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              <span className='pr-0.5 text-sm'>Program Director</span>
+            </Link>
+            
+            {/* Chevron Right */}
+            <ChevronRight className="w-4 h-4 text-fifth" />
+            
+            {/* Show Name Pill */}
+            <div className="bg-canvas border border-fourth font-semibold text-fifth px-2 py-0.5 rounded">
+              {show?.show || 'WTED Episode'}
+            </div>
+            
+            {/* Chevron Right */}
+            <ChevronRight className="w-4 h-4 text-fifth" />
+            
+            {/* Episodes Dropdown */}
+            <div className="flex-shrink-0 relative z-[1] lg:z-[9000]">
+              <WtedEpisodesDropdown
+                episodes={episodes}
+                currentEpisodeId={episodeId}
+                onEpisodeSelect={handleEpisodeSelect}
+              />
+            </div>
           </h2>
-        </div>
-
-        {/* Navigation Row */}
-        <div className="flex items-center gap-4 relative overflow-visible min-w-max w-max -mx-[1px]">
-          {/* Episodes Dropdown */}
-          <div className="flex-shrink-0 relative z-[1] lg:z-[9000]">
-            <WtedEpisodesDropdown
-              episodes={episodes}
-              currentEpisodeId={episodeId}
-              onEpisodeSelect={handleEpisodeSelect}
-            />
-          </div>
         </div>
 
         {/* Two Column Layout */}
@@ -116,6 +136,29 @@ export function WtedEpisode() {
               {/* Show Stats */}
               <div>
                 <WtedEpisodeStats artwork={episode?.artwork} />
+
+                {/* Host */}
+                {episode?.host_displayname && (
+                  <div className="pt-2">
+                    <div className="bg-fifth text-white px-1 py-0.5 flex justify-between items-center">
+                      <h2 className="text-xs font-medium">Host</h2>
+                    </div>
+                    <p className="text-fifth font-medium text-[0.625rem] px-1 py-0.5">
+                      {episode.host ? (
+                        <a
+                          href={episode.host}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline transition-colors"
+                        >
+                          @{episode.host_displayname}
+                        </a>
+                      ) : (
+                        <>@{episode.host_displayname}</>
+                      )}
+                    </p>
+                  </div>
+                )}
 
                 {/* Song Spread */}
                 {entries && entries.length > 0 && (

@@ -92,7 +92,7 @@ export const WtedEpisodesDropdown: React.FC<WtedEpisodesDropdownProps> = ({
         <button
           ref={buttonRef}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 bg-fourth text-white pl-2 pr-1 py-0.5 border border-fourth hover:bg-tertiary hover:text-fifth transition-colors text-sm font-semibold"
+          className="flex items-center gap-2 bg-fourth text-white pl-2 pr-1 py-0.5 border border-fourth hover:bg-canvas hover:text-fifth transition-colors text-xs font-semibold rounded"
         >
           {currentEpisodeName}
           <ChevronDown className="w-4 h-4" />

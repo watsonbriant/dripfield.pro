@@ -13,6 +13,8 @@ export interface WtedEpisode {
   uuid: string;
   show: string;
   artwork: string | null;
+  host: string | null;
+  host_displayname: string | null;
 }
 
 export interface WtedEpisodeEntry {
@@ -42,7 +44,7 @@ export function useWtedEpisodeData(episodeId: string | undefined) {
         // Fetch episode details
         const { data: episodeData, error: episodeError } = await supabase
           .from('wted_episodes')
-          .select('episode, order, uuid, show, artwork')
+          .select('episode, order, uuid, show, artwork, host, host_displayname')
           .eq('uuid', episodeId)
           .single();
 
