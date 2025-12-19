@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSongPerformances } from '../hooks/useSongPerformances';
@@ -47,16 +48,35 @@ export default function SongTourPerformancesModal({
 
   if (!isOpen) return null;
 
-  return (
+  // Render modal using portal to escape parent container's stacking context
+  return createPortal(
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/50 z-[9998]"
+        className="fixed inset-0 bg-black/50 z-[49999]"
         onClick={onClose}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          minHeight: '100dvh' // Dynamic viewport height for better mobile support
+        }}
       />
       
       {/* Custom Modal - centered in viewport */}
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+      <div 
+        className="fixed inset-0 z-[50000] flex items-center justify-center p-4 pointer-events-none"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          minHeight: '100dvh' // Dynamic viewport height for better mobile support
+        }}
+      >
         <div className="bg-primary border border-fourth shadow-xl flex flex-col max-w-[650px] w-full max-h-[90vh] overflow-y-auto pointer-events-auto">
         <div className="flex items-center justify-between px-0.5 py-0.5 bg-tertiary text-fifth">
             <div className="flex items-center flex-1">
@@ -123,6 +143,7 @@ export default function SongTourPerformancesModal({
         </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
