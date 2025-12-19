@@ -115,7 +115,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
     >
       {/* Number column */}
       <td
-        className={`px-1.5 ${getPlacementColor(entry.placement || '') !== 'transparent' ? 'text-white' : 'text-fifth'} text-center font-medium text-xs whitespace-nowrap relative bg-fourth text-white`}
+        className={`px-1.5 ${getPlacementColor(entry.placement || '') !== 'transparent' ? 'text-white' : 'text-fifth'} text-center font-medium text-xs whitespace-nowrap relative bg-fourth/70 text-white`}
       >
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
