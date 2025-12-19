@@ -424,6 +424,7 @@ export function Setlist() {
                         hideContainer={true}
                         hideTitle={true}
                         onCategoryHover={handleCategoryHover}
+                        variant="setlist"
                       />
                     </div>
                   </div>

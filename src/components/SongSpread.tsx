@@ -27,9 +27,10 @@ interface SongSpreadProps {
   onCategoryHover?: (category: string | null) => void;
   hideTitle?: boolean;
   hideContainer?: boolean;
+  variant?: 'setlist' | 'wted'; // 'setlist' filters entry_short and counts unique songs only
 }
 
-const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideTitle = false, hideContainer = false }) => {
+const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideTitle = false, hideContainer = false, variant = 'wted' }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [categoryArtwork, setCategoryArtwork] = useState<Record<string, string>>({});
@@ -52,14 +53,27 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
+  // Filter setlist based on variant
+  const filteredSetlist = useMemo(() => {
+    if (variant === 'setlist') {
+      // Filter out entries with entry_short in excluded list
+      const excludedShorts = ['aborted', 'fake', 'reprise', 'tease'];
+      return setlist.filter(entry => {
+        const entryShort = entry.entry_short?.toLowerCase();
+        return !entryShort || !excludedShorts.includes(entryShort);
+      });
+    }
+    return setlist;
+  }, [setlist, variant]);
+
   // Memoize unique categories to optimize useEffect dependency
   const uniqueCategories = useMemo(() => {
     return [...new Set(
-      setlist
+      filteredSetlist
         .map(entry => entry.songs?.song_category)
         .filter(Boolean)
     )];
-  }, [setlist]);
+  }, [filteredSetlist]);
 
   // Fetch artwork for categories directly from the database
   useEffect(() => {
@@ -126,48 +140,97 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
 
   // Memoize expensive calculations to prevent recalculation on every render
   const categoryData = useMemo(() => {
-    return setlist.reduce((acc, entry) => {
-      const category = entry.songs?.song_category || 'undefined';
+    if (variant === 'setlist') {
+      // For setlist variant: count unique entry_song values globally (across all categories)
+      // If the same song appears multiple times, count it only once in its category
+      const seenSongs = new Set<string>();
       
-      // Count every entry
-      acc.counts[category] = (acc.counts[category] || 0) + 1;
-      
-      // Initialize songs array if it doesn't exist
-      if (!acc.songs[category]) {
-        acc.songs[category] = [];
-      }
-      
-      // Add song to category's song list with original artist if applicable
-      const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
-      const originalArtist = entry.songs?.song_originalartist;
-      
-      const songWithArtist = hasArtist && originalArtist
-        ? { 
-            song: entry.entry_song,
-            artist: originalArtist,
-            isSpecialCategory: true
-          }
-        : { 
-            song: entry.entry_song,
-            isSpecialCategory: false
-          };
-      
-      const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
-      
-      if (!songExists) {
-        acc.songs[category].push(songWithArtist);
-      }
-      
-      return acc;
-    }, { 
-      counts: {} as Record<string, number>, 
-      songs: {} as Record<string, any[]>
-    });
-  }, [setlist]);
+      return filteredSetlist.reduce((acc, entry) => {
+        const category = entry.songs?.song_category || 'undefined';
+        const songKey = entry.entry_song;
+        
+        // Only count if we haven't seen this song yet (globally unique)
+        if (!seenSongs.has(songKey)) {
+          seenSongs.add(songKey);
+          acc.counts[category] = (acc.counts[category] || 0) + 1;
+        }
+        
+        // Initialize songs array if it doesn't exist
+        if (!acc.songs[category]) {
+          acc.songs[category] = [];
+        }
+        
+        // Add song to category's song list with original artist if applicable
+        const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
+        const originalArtist = entry.songs?.song_originalartist;
+        
+        const songWithArtist = hasArtist && originalArtist
+          ? { 
+              song: entry.entry_song,
+              artist: originalArtist,
+              isSpecialCategory: true
+            }
+          : { 
+              song: entry.entry_song,
+              isSpecialCategory: false
+            };
+        
+        const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
+        
+        if (!songExists) {
+          acc.songs[category].push(songWithArtist);
+        }
+        
+        return acc;
+      }, { 
+        counts: {} as Record<string, number>, 
+        songs: {} as Record<string, any[]>
+      });
+    } else {
+      // For wted variant (default): count every entry
+      return filteredSetlist.reduce((acc, entry) => {
+        const category = entry.songs?.song_category || 'undefined';
+        
+        // Count every entry
+        acc.counts[category] = (acc.counts[category] || 0) + 1;
+        
+        // Initialize songs array if it doesn't exist
+        if (!acc.songs[category]) {
+          acc.songs[category] = [];
+        }
+        
+        // Add song to category's song list with original artist if applicable
+        const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
+        const originalArtist = entry.songs?.song_originalartist;
+        
+        const songWithArtist = hasArtist && originalArtist
+          ? { 
+              song: entry.entry_song,
+              artist: originalArtist,
+              isSpecialCategory: true
+            }
+          : { 
+              song: entry.entry_song,
+              isSpecialCategory: false
+            };
+        
+        const songExists = acc.songs[category].some(s => s.song === songWithArtist.song);
+        
+        if (!songExists) {
+          acc.songs[category].push(songWithArtist);
+        }
+        
+        return acc;
+      }, { 
+        counts: {} as Record<string, number>, 
+        songs: {} as Record<string, any[]>
+      });
+    }
+  }, [filteredSetlist, variant]);
 
   // Memoize category canonids calculation
   const categoryCanonIds = useMemo(() => {
-    return setlist.reduce((acc, entry) => {
+    return filteredSetlist.reduce((acc, entry) => {
       // Determine the correct category
       const category = entry.songs?.song_category || 'undefined';
       
@@ -182,7 +245,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
       }
       return acc;
     }, {} as Record<string, number>);
-  }, [setlist]);
+  }, [filteredSetlist]);
 
   // Memoize max count calculation
   const maxCount = useMemo(() => {
