@@ -255,7 +255,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
       </td>
 
       {/* Coach's Notes column */}
-      <td className="px-2 text-fifth text-[0.625rem] font-light max-w-[500px]">
+      <td className="px-2 text-fifth text-[0.625rem] [&_a]:text-[#a9682e] [&_a]:font-medium font-light max-w-[500px] leading-[0.625rem]">
         {setlistEntry.entry_coachnotes ? (
           <div dangerouslySetInnerHTML={{ __html: setlistEntry.entry_coachnotes }} />
         ) : (
