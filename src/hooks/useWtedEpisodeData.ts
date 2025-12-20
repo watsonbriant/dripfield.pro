@@ -199,15 +199,36 @@ export function useWtedEpisodes(showName: string | undefined) {
           .from('wted_episodes')
           .select('episode, order, uuid, show, artwork')
           .eq('show', showName)
-          .not('artwork', 'is', null)
           .order('order', { ascending: true });
 
         if (error) throw error;
-        // Filter to only episodes with artwork (non-null and non-empty)
-        const episodesWithArtwork = (data || []).filter(
-          episode => episode.artwork && episode.artwork.trim() !== ''
+
+        // Check which episodes have entries in wted_episode_entries
+        const episodesWithEntries = await Promise.all(
+          (data || []).map(async (episode) => {
+            const { count, error: entriesError } = await supabase
+              .from('wted_episode_entries')
+              .select('*', { count: 'exact', head: true })
+              .eq('episode', episode.uuid);
+
+            if (entriesError) {
+              console.error('Error checking episode entries:', entriesError);
+              return null;
+            }
+
+            // Only return episodes that have entries
+            if ((count || 0) > 0) {
+              return episode;
+            }
+            return null;
+          })
         );
-        setEpisodes(episodesWithArtwork);
+
+        // Filter out null values and set episodes
+        const validEpisodes = episodesWithEntries.filter(
+          (episode): episode is WtedEpisode => episode !== null
+        );
+        setEpisodes(validEpisodes);
       } catch (error) {
         console.error('Error fetching WTED episodes:', error);
         setEpisodes([]);

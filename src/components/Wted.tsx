@@ -15,6 +15,7 @@ interface WtedEpisode {
   order: number | null;
   uuid: string;
   artwork: string | null;
+  hasEntries: boolean;
 }
 
 export function Wted() {
@@ -60,15 +61,39 @@ export function Wted() {
             };
           }
 
+          // Check which episodes have entries in wted_episode_entries
+          const episodesWithEntries = await Promise.all(
+            (episodesData || []).map(async (episode) => {
+              const { count, error: entriesError } = await supabase
+                .from('wted_episode_entries')
+                .select('*', { count: 'exact', head: true })
+                .eq('episode', episode.uuid);
+
+              if (entriesError) {
+                console.error('Error checking episode entries:', entriesError);
+                return {
+                  episode: episode.episode,
+                  order: episode.order,
+                  uuid: episode.uuid,
+                  artwork: episode.artwork,
+                  hasEntries: false,
+                };
+              }
+
+              return {
+                episode: episode.episode,
+                order: episode.order,
+                uuid: episode.uuid,
+                artwork: episode.artwork,
+                hasEntries: (count || 0) > 0,
+              };
+            })
+          );
+
           return {
             show: showItem.show,
             order: showItem.order,
-            episodes: episodesData?.map(episode => ({
-              episode: episode.episode,
-              order: episode.order,
-              uuid: episode.uuid,
-              artwork: episode.artwork,
-            })) || []
+            episodes: episodesWithEntries,
           };
         }));
 
@@ -156,17 +181,21 @@ export function Wted() {
                           key={`${showItem.show}-${episode.episode}-${index}`}
                           className="text-[0.625rem] leading-[0.625rem] text-fifth font-light"
                         >
-                          {episode.artwork ? (
+                          {episode.hasEntries ? (
                             <>
                               <Link
                                 to={`/wted/${episode.uuid}`}
                                 className="font-medium hover:underline transition-colors"
                                 onMouseEnter={(e) => {
-                                  setHoveredEpisode(episode.uuid);
-                                  setMousePosition({ x: e.clientX, y: e.clientY });
+                                  if (episode.artwork) {
+                                    setHoveredEpisode(episode.uuid);
+                                    setMousePosition({ x: e.clientX, y: e.clientY });
+                                  }
                                 }}
                                 onMouseMove={(e) => {
-                                  setMousePosition({ x: e.clientX, y: e.clientY });
+                                  if (episode.artwork) {
+                                    setMousePosition({ x: e.clientX, y: e.clientY });
+                                  }
                                 }}
                                 onMouseLeave={() => {
                                   setHoveredEpisode(null);
@@ -174,7 +203,7 @@ export function Wted() {
                               >
                                 {episode.episode}
                               </Link>
-                              {hoveredEpisode === episode.uuid && (
+                              {hoveredEpisode === episode.uuid && episode.artwork && (
                                 <div
                                   className="fixed bg-fourth border border-fourth rounded-lg shadow-xl z-[9999]"
                                   style={{
