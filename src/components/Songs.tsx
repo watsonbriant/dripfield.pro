@@ -273,7 +273,7 @@ export function Songs() {
                     >
                       <Link 
                         to={`/song/${song.song_id}`}
-                        className="font-normal tracking-tight hover:underline transition-colors text-left text-fifth block"
+                        className="font-light tracking-tight hover:underline transition-colors text-left text-fifth block"
                       >
                         {song.song}
                       </Link>
