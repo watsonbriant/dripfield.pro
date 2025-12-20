@@ -124,8 +124,7 @@ export const getNavigationItems = (bugCount: number | null, openShowModal?: () =
         <span className="font-medium text-xs">Program Director</span>
       </div>
     ),
-    path: '/wted',
-    adminOnly: true
+    path: '/wted'
   },
   { 
     name: 'Submit', 
