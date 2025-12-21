@@ -112,11 +112,11 @@ export const WtedEpisodesDropdown: React.FC<WtedEpisodesDropdownProps> = ({
               key={episode.uuid}
               data-episode-id={episode.uuid}
               onClick={() => handleEpisodeSelect(episode.uuid)}
-              className={`w-full text-left px-2 py-0.5 text-xs font-semibold hover:bg-black/10 transition-colors ${
+              className={`w-full text-left px-2 py-1 text-xs leading-[0.875rem] font-semibold hover:bg-black/10 transition-colors ${
                 currentEpisodeId === episode.uuid ? 'bg-tertiary' : ''
               }`}
             >
-              <div className="truncate text-fifth">
+              <div className="break-words whitespace-normal text-fifth">
                 <span className="font-medium">{episode.episode}</span>
               </div>
             </button>
