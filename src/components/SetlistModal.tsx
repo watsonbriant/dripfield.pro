@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { formatInTimeZone } from 'date-fns-tz';
 import SetlistDisplay from './SetlistDisplay';
@@ -25,7 +26,7 @@ export default function SetlistModal({
 }: SetlistModalProps) {
     if (!isOpen) return null;
 
-    return (
+    const modalContent = (
         <div
             className="fixed inset-0 bg-black/80 flex items-center justify-center z-[50000] p-8 overflow-y-auto min-h-screen"
             style={{ 
@@ -124,4 +125,11 @@ export default function SetlistModal({
             </div>
         </div>
     );
+
+    // Use portal to render modal at document body level
+    if (typeof document !== 'undefined') {
+        return createPortal(modalContent, document.body);
+    }
+    
+    return null;
 }

@@ -26,14 +26,17 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
     const {
         averageRating,
         userRating,
+        userReview,
         isLoading,
         isSaving,
+        isSavingReview,
         ratingCount,
         reviews,
         isLoadingReviews,
         error,
         fetchReviews,
-        handleStarClick
+        handleStarClick,
+        handleSaveReview
     } = useRating({ showId, userId: user?.id || null, isVisible });
 
     // Handle star click - open reviews modal instead of directly saving
@@ -145,6 +148,7 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                     showId={showId}
                     userId={user?.id || null}
                     userRating={userRating}
+                    userReview={userReview}
                     onRatingSave={async (rating: number) => {
                         const success = await handleStarClick(rating);
                         if (success) {
@@ -153,7 +157,9 @@ const StarRating: React.FC<StarRatingProps> = ({ showId, isVisible, className = 
                         }
                         return success;
                     }}
+                    onReviewSave={handleSaveReview}
                     isSaving={isSaving}
+                    isSavingReview={isSavingReview}
                 />
             )}
         </>

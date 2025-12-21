@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Star } from 'lucide-react';
 import { formatInTimeZone } from 'date-fns-tz';
 import StarDisplay from './StarDisplay';
@@ -20,8 +21,11 @@ interface ReviewsModalProps {
     showId?: string;
     userId?: string | null;
     userRating?: number | null;
+    userReview?: string | null;
     onRatingSave?: (rating: number) => Promise<boolean>;
+    onReviewSave?: (review: string) => Promise<boolean>;
     isSaving?: boolean;
+    isSavingReview?: boolean;
 }
 
 const ReviewsModal: React.FC<ReviewsModalProps> = ({ 
@@ -35,12 +39,18 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
     showId,
     userId,
     userRating,
+    userReview,
     onRatingSave,
-    isSaving = false
+    onReviewSave,
+    isSaving = false,
+    isSavingReview = false
 }) => {
     const [isHovering, setIsHovering] = useState<boolean>(false);
     const [hoveredRating, setHoveredRating] = useState<number>(0);
     const [saveError, setSaveError] = useState<string | null>(null);
+    const [showReviewInput, setShowReviewInput] = useState<boolean>(false);
+    const [reviewText, setReviewText] = useState<string>(userReview || '');
+    const [reviewError, setReviewError] = useState<string | null>(null);
 
     const handleStarClick = async (rating: number) => {
         if (!userId || !onRatingSave) {
@@ -54,12 +64,59 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
         }
     };
 
+    // Sync reviewText with userReview when it changes
+    useEffect(() => {
+        setReviewText(userReview || '');
+    }, [userReview]);
+
+    // Validate review text (alphanumeric, spaces, and basic punctuation only)
+    const validateReview = (text: string): boolean => {
+        if (!text.trim()) return true; // Empty is valid
+        const alphanumericRegex = /^[a-zA-Z0-9\s.,!?'"()<>—–-]+$/;
+        return alphanumericRegex.test(text);
+    };
+
+    const handleReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        setReviewText(value);
+        // Clear error when user starts typing
+        if (reviewError) {
+            setReviewError(null);
+        }
+    };
+
+    const handleSaveReview = async () => {
+        if (!onReviewSave) return;
+        
+        setReviewError(null);
+        
+        // Validate before saving
+        if (!validateReview(reviewText)) {
+            setReviewError('Review can only contain letters, numbers, spaces, and basic punctuation');
+            return;
+        }
+        
+        const success = await onReviewSave(reviewText);
+        if (success) {
+            setShowReviewInput(false);
+        } else {
+            setReviewError('Failed to save review. Please try again.');
+        }
+    };
+
+    const handleCancelReview = () => {
+        setReviewText(userReview || '');
+        setReviewError(null);
+        setShowReviewInput(false);
+    };
+
     // Calculate which rating to display for stars (hover or user rating)
     const displayRating = isHovering ? hoveredRating : (userRating || 0);
-    return (
+    
+    const modalContent = (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[10000] p-3" onClick={onClose}>
             <div className="bg-primary border border-fourth max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-lg" onClick={e => e.stopPropagation()}>
-                <div className="p-2 border-b border-fourth relative">
+                <div className="p-2 border-b border-fourth relative bg-canvas">
                     <div>
                         <div>
                             <h3 className="text-base font-medium text-fifth">
@@ -113,7 +170,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                     {/* User rating section */}
                     {userId && (
                         <div className="mt-1 pt-1 border-t border-fourth">
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 flex-wrap">
                                 <span className="text-xs font-medium text-fifth">
                                     {userRating ? 'Your rating:' : 'Rate this show:'}
                                 </span>
@@ -141,10 +198,67 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                                         ({userRating} star{userRating !== 1 ? 's' : ''})
                                     </span>
                                 )}
+                                {!showReviewInput ? (
+                                    <button
+                                        onClick={() => {
+                                            if (!userRating) {
+                                                setSaveError('Please rate this show before leaving a review');
+                                                return;
+                                            }
+                                            setShowReviewInput(true);
+                                        }}
+                                        className="text-xs font-medium text-fifth bg-tertiary hover:bg-fourth hover:text-white border border-fourth rounded px-3 py-0.5 transition-colors"
+                                    >
+                                        {userReview ? 'Edit Review' : 'Write a Review'}
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={handleSaveReview}
+                                            disabled={isSavingReview}
+                                            className="text-xs font-medium text-white bg-fourth hover:bg-fourth/80 border border-fourth rounded px-3 py-0.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isSavingReview ? 'Saving...' : 'Save Review'}
+                                        </button>
+                                        <button
+                                            onClick={handleCancelReview}
+                                            disabled={isSavingReview}
+                                            className="text-xs font-medium text-fifth bg-tertiary hover:bg-tertiary/80 border border-fourth rounded px-3 py-0.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                )}
                             </div>
                             {saveError && (
                                 <div className="mt-2 text-xs text-red-400">
                                     {saveError}
+                                </div>
+                            )}
+                            
+                            {/* Review Textarea */}
+                            {showReviewInput && (
+                                <div className="mt-2 space-y-2">
+                                    <textarea
+                                        value={reviewText}
+                                        onChange={handleReviewChange}
+                                        placeholder="Write your review here..."
+                                        className="w-full text-[0.625rem] leading-[0.625rem] text-fifth bg-primary border border-fourth rounded p-1 resize-none focus:outline-none focus:border-fourth"
+                                        rows={4}
+                                        disabled={isSavingReview}
+                                    />
+                                    {reviewError && (
+                                        <div className="text-xs text-red-400">
+                                            {reviewError}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {/* Display existing review when not editing */}
+                            {userReview && !showReviewInput && (
+                                <div className="mt-2 text-[0.625rem] text-fifth leading-[0.625rem]">
+                                    <span className="font-medium pr-2 text-xs">Your review:</span> {userReview}
                                 </div>
                             )}
                         </div>
@@ -159,7 +273,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                     </button>
                 </div>
                 
-                <div className="overflow-y-auto max-h-[60vh] p-2">
+                <div className="overflow-y-auto overflow-x-hidden max-h-[60vh] p-2">
                     {error && (
                         <div className="bg-red-500/20 border border-red-500/50 rounded p-3 mb-3 text-red-400 text-sm">
                             {error}
@@ -174,11 +288,11 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                             No written reviews yet for this show.
                         </div>
                     ) : (
-                        <div className="space-y-1">
+                        <div className="space-y-1 w-full">
                             {reviews.map((review, index) => (
-                                <div key={index} className="border-b border-fourth last:border-b-0">
+                                <div key={index} className="border-b border-fourth last:border-b-0 min-w-0 w-full">
                                     <div className="flex items-center gap-3 mb-1">
-                                        <div className="flex items-center">
+                                        <div className="flex items-center flex-shrink-0">
                                             {[1, 2, 3, 4, 5].map((starNumber) => (
                                                 <Star
                                                     key={starNumber}
@@ -193,12 +307,12 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                                                 />
                                             ))}
                                         </div>
-                                        <span className="text-xs font-medium text-fourth">
+                                        <span className="text-xs font-medium text-fourth flex-shrink-0">
                                             {review.username}
                                         </span>
                                     </div>
                                     {review.review && (
-                                        <p className="text-fifth text-[0.625rem]">
+                                        <p className="text-fifth text-[0.625rem] leading-[0.625rem] break-words w-full max-w-full whitespace-normal" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                                             {review.review}
                                         </p>
                                     )}
@@ -210,6 +324,13 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
             </div>
         </div>
     );
+
+    // Use portal to render modal at document body level
+    if (typeof document !== 'undefined') {
+        return createPortal(modalContent, document.body);
+    }
+    
+    return null;
 };
 
 export default ReviewsModal;
