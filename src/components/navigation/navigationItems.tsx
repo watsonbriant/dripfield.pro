@@ -116,12 +116,12 @@ export const getNavigationItems = (bugCount: number | null, openShowModal?: () =
     path: '/joty'
   },
   { 
-    name: 'Program Director', 
-    icon: <img src={wlIcon} alt="Program Director" className="w-5 h-5" />,
+    name: 'WTED Program Director', 
+    icon: <img src={wlIcon} alt="WTED Program Director" className="w-5 h-5" />,
     desktopIcon: (
       <div className="flex items-center gap-1 px-1 py-0.5 bg-primary text-fourth rounded-lg border border-fourth transition-all duration-300 hover:bg-fourth hover:text-canvas hover:drop-shadow-[3px_3px_0px_rgba(244,155,29,1)]">
-        <img src={wlIcon} alt="Program Director" className="w-3 h-3 flex-shrink-0" />
-        <span className="font-medium text-xs">Program Director</span>
+        <img src={wlIcon} alt="WTED Program Director" className="w-3 h-3 flex-shrink-0" />
+        <span className="font-medium text-xs">WTED Program Director</span>
       </div>
     ),
     path: '/wted'

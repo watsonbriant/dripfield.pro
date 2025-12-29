@@ -61,8 +61,8 @@ export function Sidebar({
   }
   
   // For desktop: horizontal navigation
-  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, Program Director
-  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'Program Director'];
+  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, WTED Program Director
+  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'WTED Program Director'];
   const mainNavItems = mainNavItemNames
     .map(name => {
       const item = filteredNavigation.find(item => item.name === name && !item.mobileOnly);
@@ -74,9 +74,9 @@ export function Sidebar({
     })
     .filter((item): item is NavItem => item !== undefined);
   
-  // Get admin items: Admin Panel, Bug Tracker, Find (exclude Program Director since it's in main nav)
+  // Get admin items: Admin Panel, Bug Tracker, Find (exclude WTED Program Director since it's in main nav)
   const adminNavItems = filteredNavigation.filter(item => 
-    item.adminOnly && !item.mobileOnly && item.name !== 'Program Director'
+    item.adminOnly && !item.mobileOnly && item.name !== 'WTED Program Director'
   );
   
   // Get Submit button for right side (available to all users)
