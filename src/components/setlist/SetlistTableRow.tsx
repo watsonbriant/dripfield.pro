@@ -423,7 +423,7 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
         }}
       >
         <div 
-          className="w-4 h-4 rounded ml-auto"
+          className="w-4 h-4 rounded ml-auto border border-fourth"
           style={{ backgroundColor: getGuestColor(entry) }}
         />
         {!isMobile && hoveredPersonnel === entry.entry_id && createPortal(

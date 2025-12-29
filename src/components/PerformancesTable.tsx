@@ -131,9 +131,9 @@ const PerformancesTable: React.FC<PerformancesTableProps> = ({
                 <td className="px-2 text-fifth whitespace-nowrap font-light text-center">
                   {perf.entry_length ? formatLength(perf.entry_length) : ''}
                 </td>
-                <td className="px-2 py-0.5">
+                <td className="px-2">
                   <div 
-                    className="w-3 h-3 rounded mx-auto"
+                    className="w-4 h-4 rounded mx-auto border border-fourth"
                     style={{ backgroundColor: getGuestColor(perf) }}
                   />
                 </td>

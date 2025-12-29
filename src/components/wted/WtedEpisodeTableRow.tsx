@@ -232,7 +232,7 @@ export const WtedEpisodeTableRow: React.FC<WtedEpisodeTableRowProps> = ({
       >
         {setlistEntry.guests && setlistEntry.guests.length > 0 && (
           <div 
-            className="w-4 h-4 rounded ml-auto"
+            className="w-4 h-4 rounded ml-auto border border-fourth"
             style={{ backgroundColor: getGuestColor(setlistEntry, guestGroups) }}
           />
         )}

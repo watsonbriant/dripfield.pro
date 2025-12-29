@@ -9,11 +9,7 @@ interface TourCount {
   color: string;
 }
 
-const tourColors = [
-  '#3498DB', '#E74C3C', '#2ECC71', '#F39C12', 
-  '#9B59B6', '#FF6B81', '#F1C40F', '#34495E',
-  '#FFFFFF', '#000000'
-];
+const tourColors = ['#0bacc9', '#e4482f', '#fcb924', '#67a343', '#9e598f', '#be823a', '#f58ba2', '#7b6e66', '#ec7523', '#050608', '#fee4d3'];
 
 export function useToursData(currentYear: string) {
   const [tours, setTours] = useState<TourCount[]>([]);

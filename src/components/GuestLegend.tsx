@@ -30,7 +30,7 @@ const GuestLegend: React.FC<GuestLegendProps> = ({ guestGroups, onClose }) => {
         {guestGroups.map((group, index) => (
           <React.Fragment key={index}>
             <div 
-              className="w-3 h-3 rounded"
+              className="w-4 h-4 rounded border border-fourth"
               style={{ backgroundColor: group.color }}
             />
             <div className="text-fifth text-[0.625rem] flex items-center flex-wrap">
