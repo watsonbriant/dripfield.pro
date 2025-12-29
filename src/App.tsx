@@ -1,4 +1,5 @@
 import { useAuth } from './context/AuthContext';
+import { useSidebar, SidebarProvider } from './context/SidebarContext';
 import { supabase } from './lib/supabase';
 import { useState, useRef, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
@@ -43,7 +44,7 @@ import logo from './img/Logo7-2_Header.jpg';
 import logo2 from './img/Logo4_Text.jpg';
 
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
   const [showId, setShowId] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
@@ -68,6 +69,28 @@ function App() {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // Lock body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (isSidebarOpen && isMobile) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      // Lock body scroll
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        // Restore scroll position when sidebar closes
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isSidebarOpen, isMobile]);
 
   // Clear timeout on unmount
   useEffect(() => {
@@ -290,10 +313,11 @@ function App() {
           backgroundSize: 'auto'
         }}
       >
-        {/* Overlay - make sure it's behind the sidebar */}
+        {/* Overlay - make sure it's behind the sidebar but above dropdowns, and below header */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10 md:hidden"
+            className="fixed bg-black/50 backdrop-blur-sm z-[100] md:hidden"
+            style={{ top: '50px', left: 0, right: 0, bottom: 0 }}
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
@@ -301,7 +325,7 @@ function App() {
         {/* Mobile Sidebar - ensure it's above the overlay */}
         <div className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:hidden fixed w-64 h-[calc(100%)] top-[50px] z-[30000] transition-transform duration-300 ease-in-out`}>
+        } lg:hidden fixed w-64 h-[calc(100%-50px)] top-[50px] z-[30000] transition-transform duration-300 ease-in-out`}>
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)} 
             openShowModal={openShowModal}
@@ -316,7 +340,7 @@ function App() {
           className="flex-1 flex flex-col relative max-w-full min-w-0 w-full"
         >
           {/* Mobile-only header */}
-          <header className="z-20 bg-canvas border-b border-fourth p-2 lg:hidden shadow-xl">
+          <header className="z-[200] bg-canvas border-b border-fourth p-2 lg:hidden shadow-xl relative">
             <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full px-2">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -483,7 +507,9 @@ function AppWrapper() {
   return (
     <Router>
       <AuthProvider>
-        <App />
+        <SidebarProvider>
+          <App />
+        </SidebarProvider>
       </AuthProvider>
     </Router>
   );

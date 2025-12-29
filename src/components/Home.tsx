@@ -9,11 +9,13 @@ import { StatsSection } from './StatsSection';
 import { useShowsData } from '../hooks/useShowsData';
 import { useStatsData } from '../hooks/useStatsData';
 import { useShowMetadata } from '../hooks/useShowMetadata';
+import { useSidebar } from '../context/SidebarContext';
 import cover7Image from '../img/Cover7.png';
 
 export function Home() {
   const { year: yearParam } = useParams<{ year?: string }>();
   const navigate = useNavigate();
+  const { isSidebarOpen } = useSidebar();
   const [selectedYear, setSelectedYear] = useState<number | string>(() => {
     // Initialize from URL param if available, otherwise use current year
     if (yearParam) {
@@ -110,6 +112,13 @@ export function Home() {
       }
     }
   }, [yearParam]); // Note: intentionally not including selectedYear to avoid loops
+
+  // Close dropdown when sidebar opens
+  useEffect(() => {
+    if (isSidebarOpen) {
+      setIsYearDropdownOpen(false);
+    }
+  }, [isSidebarOpen]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -215,7 +224,8 @@ export function Home() {
                 <div className="relative pr-1" ref={yearDropdownRef}>
                   <button
                     onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)}
-                    className="relative flex items-center gap-2 text-white px-2 border border-fourth transition-colors text-sm font-semibold overflow-hidden"
+                    disabled={isSidebarOpen}
+                    className="relative flex items-center gap-2 text-white px-2 border border-fourth transition-colors text-sm font-semibold overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ backgroundColor: getHeaderBgColor() }}
                   >
                     <div className="absolute inset-0 bg-fourth pointer-events-none"></div>
@@ -223,7 +233,7 @@ export function Home() {
                     <ChevronDown className="w-3 h-3 relative z-10" />
                   </button>
                   
-                  {isYearDropdownOpen && (
+                  {isYearDropdownOpen && !isSidebarOpen && (
                     <div className="absolute right-0 bg-canvas text-fifth border border-fourth shadow-lg z-50 overflow-y-auto w-[100px] max-h-64">
                       {availableYears.map((year) => {
                         const yearValue = year === 'all-time' ? 'all-time' : year;
