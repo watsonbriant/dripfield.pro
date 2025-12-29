@@ -50,17 +50,19 @@ export function Sidebar({
 
   // For mobile: vertical sidebar
   if (isMobile) {
+    // Filter out "Jam of the Year" from mobile navigation
+    const mobileNavigation = filteredNavigation.filter(item => item.name !== 'Jam of the Year');
     return (
       <MobileSidebar 
-        navigation={filteredNavigation}
+        navigation={mobileNavigation}
         onNavigate={handleNavigation}
       />
     );
   }
   
   // For desktop: horizontal navigation
-  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, Jam of the Year, Program Director
-  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'Jam of the Year', 'Program Director'];
+  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, Program Director
+  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'Program Director'];
   const mainNavItems = mainNavItemNames
     .map(name => {
       const item = filteredNavigation.find(item => item.name === name && !item.mobileOnly);
