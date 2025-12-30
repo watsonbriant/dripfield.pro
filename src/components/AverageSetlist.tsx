@@ -49,11 +49,8 @@ export const AverageSetlist: React.FC<AverageSetlistProps> = ({ shows, type, tit
 
   return (
     <div className="bg-primary border border-fourth shadow-xl mt-4">
-      <div className="bg-tertiary text-fifth py-0.5 px-2 flex justify-between items-center">
+      <div className="bg-tertiary text-fifth py-0.5 px-2">
         <h2 className="text-sm font-semibold">{title}</h2>
-        <span className="text-[0.625rem] font-medium bg-fourth text-white px-1.5 rounded-full border border-fourth">
-          BETA
-        </span>
       </div>
       <div className="py-2">
         <SetlistDisplay setlist={averageSetlist} horizontalMargin="mx-2" />
