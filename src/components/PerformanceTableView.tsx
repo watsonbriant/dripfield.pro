@@ -243,7 +243,7 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                         if (onJOTYClick) {
                           onJOTYClick(year, perf.entry_id || null);
                         } else {
-                          navigate(`/joty/${year}`);
+                          window.location.href = 'http://jotyoftheyear.com';
                         }
                       }}
                     />

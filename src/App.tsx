@@ -43,6 +43,14 @@ import bgTile from './img/bg_tile.jpg';
 import logo from './img/Logo7-2_Header.jpg';
 import logo2 from './img/Logo4_Text.jpg';
 
+// Redirect component for /joty routes
+function JotyRedirect() {
+  useEffect(() => {
+    window.location.href = 'http://jotyoftheyear.com';
+  }, []);
+  return null;
+}
+
 function App() {
   const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
@@ -389,7 +397,7 @@ function App() {
                 <Route path="/discography" element={<Discography />} />
                 <Route path="/lists" element={<Lists />} />
                 <Route path="/lists/:listId" element={<ListInd />} />
-                <Route path="/joty/:year?" element={<Joty />} />
+                <Route path="/joty/:year?" element={<JotyRedirect />} />
                 <Route path="/wted" element={<Wted />} />
                 <Route path="/wted/:episodeId" element={<WtedEpisode />} />
                 <Route path="/submit" element={<Submit />} />

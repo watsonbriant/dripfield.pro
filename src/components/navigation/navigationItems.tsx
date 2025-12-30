@@ -113,7 +113,8 @@ export const getNavigationItems = (bugCount: number | null, openShowModal?: () =
         <span className="font-medium text-xs">Jam of the Year</span>
       </div>
     ),
-    path: '/joty'
+    path: '#',
+    action: () => window.location.href = 'http://jotyoftheyear.com'
   },
   { 
     name: 'WTED Program Director', 
