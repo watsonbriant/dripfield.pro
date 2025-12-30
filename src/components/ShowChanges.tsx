@@ -95,7 +95,7 @@ export default function ShowChanges({ showId, className = '', openModal, setOpen
                     </div>
                 )}
 
-                <div className="px-1 py-0.5">
+                <div className="px-1 py-1">
                     <ChangesList changes={changes} />
                 </div>
             </div>

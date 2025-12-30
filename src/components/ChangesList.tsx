@@ -15,7 +15,7 @@ export default function ChangesList({ changes }: ChangesListProps) {
     }
 
     return (
-        <div className="space-y-1">
+        <div className="space-y-1.5">
             {changes.map((change, index) => {
                 const { icon } = getChangeIcon(change.change_type);
 
@@ -27,7 +27,7 @@ export default function ChangesList({ changes }: ChangesListProps) {
                         <div className="flex-shrink-0">
                             {icon}
                         </div>
-                        <div className="text-fifth font-light [&_a]:font-medium text-[0.625rem] leading-[0.75rem]">
+                        <div className="text-fifth font-light [&_a]:font-medium text-[0.625rem] leading-[0.625rem]">
                             {renderChangeText(change.change)}
                         </div>
                     </div>
