@@ -245,11 +245,11 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
               },
               'TD': {
                 badge: <span className="bg-emerald-600 text-white px-1 py-0.5 rounded font-medium">TD</span>,
-                description: 'First known time the song was played in the current tour.'
+                description: 'Tour Debut — First known time the song was played in the current tour.'
               },
               'LIB': {
                 badge: <span className="bg-yellow-600 text-white px-1 py-0.5 rounded font-medium">LIB</span>,
-                description: 'First known time the song was played in more than a calendar year.'
+                description: 'Liberation — First known time the song was played in more than a calendar year.'
               }
             };
 
