@@ -6,15 +6,17 @@ interface SongPerformanceChartProps {
   performances: Performance[];
   selectedGroup: string | null;
   songName: string;
+  onJOTYClick?: (year: number, entryId: string | null) => void;
 }
 
-export function SongPerformanceChart({ performances, selectedGroup, songName }: SongPerformanceChartProps) {
+export function SongPerformanceChart({ performances, selectedGroup, songName, onJOTYClick }: SongPerformanceChartProps) {
   return (
     <div className="overflow-x-auto shadow-xl">
       {performances.length > 0 ? (
         <PerformanceChart 
           performances={performances} 
           selectedGroup={selectedGroup}
+          onJOTYClick={onJOTYClick}
         />
       ) : (
         <div className="bg-primary border border-fourth shadow-xl">

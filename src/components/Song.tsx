@@ -8,6 +8,7 @@ import { SongInfo } from './SongInfo';
 import { SongPlacementStats } from './SongPlacementStats';
 import { SongPerformanceChart } from './SongPerformanceChart';
 import { SongLyrics } from './SongLyrics';
+import JotyModal from './JotyModal';
 import { SongData, Performance, Stats, PlacementStat, LastPlayed } from '../types/song';
 
 
@@ -27,6 +28,11 @@ export function Song() {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [placementStats, setPlacementStats] = useState<PlacementStat[]>([]);
   const [lastPlayed, setLastPlayed] = useState<LastPlayed | null>(null);
+  
+  // State for JOTY modal
+  const [jotyModalOpen, setJotyModalOpen] = useState(false);
+  const [jotyYear, setJotyYear] = useState<number | null>(null);
+  const [jotyHighlightedEntryId, setJotyHighlightedEntryId] = useState<string | null>(null);
 
   const fetchPlacementStats = async (songName: string) => {
     try {
@@ -250,6 +256,7 @@ export function Song() {
         const { data: performanceData, error: performanceError } = await supabase
           .from('setlist_entries')
           .select(`
+            entry_id,
             entry_show,
             entry_length,
             entry_placement,
@@ -282,6 +289,7 @@ export function Song() {
         if (performanceError) throw performanceError;
       
         const processedPerformances = performanceData.map(perf => ({
+          entry_id: perf.entry_id,
           show_id: (perf.shows as any).show_id,
           show_date: (perf.shows as any).show_date,
           show_group: (perf.shows as any).show_group,
@@ -388,11 +396,30 @@ export function Song() {
             performances={performances}
             selectedGroup={selectedGroup}
             songName={song.song}
+            onJOTYClick={(year: number, entryId: string | null) => {
+              setJotyYear(year);
+              setJotyHighlightedEntryId(entryId);
+              setJotyModalOpen(true);
+            }}
           />
         </div>
 
         {song.song_lyrics && <SongLyrics lyrics={song.song_lyrics} />}
       </div>
+      
+      {/* JOTY Modal */}
+      {jotyYear !== null && (
+        <JotyModal
+          isOpen={jotyModalOpen}
+          onClose={() => {
+            setJotyModalOpen(false);
+            setJotyYear(null);
+            setJotyHighlightedEntryId(null);
+          }}
+          year={jotyYear}
+          highlightedEntryId={jotyHighlightedEntryId}
+        />
+      )}
     </div>
     </>
   );

@@ -174,9 +174,18 @@ export default function JotyModal({
                                 </td>
                                 <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
                                   {result.show_venue_location}
-                                  {result.show_subvenue && (
-                                    <span className="text-fifth/70 pl-2"> ({result.show_subvenue})</span>
-                                  )}
+                                  {result.show_subvenue && (() => {
+                                    const subvenue = result.show_subvenue;
+                                    const startsWithBracket = subvenue.startsWith('(') || subvenue.startsWith('[');
+                                    const endsWithBracket = subvenue.endsWith(')') || subvenue.endsWith(']');
+                                    const needsWrapping = !startsWithBracket && !endsWithBracket;
+                                    
+                                    return (
+                                      <span className="text-fifth/70 pl-2">
+                                        {needsWrapping ? ` (${subvenue})` : ` ${subvenue}`}
+                                      </span>
+                                    );
+                                  })()}
                                 </td>
                               </tr>
                             ))}

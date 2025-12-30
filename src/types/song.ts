@@ -11,6 +11,7 @@ export interface SongData {
 }
 
 export interface Performance {
+  entry_id?: string;
   show_id: string;
   show_date: string;
   show_group: string;

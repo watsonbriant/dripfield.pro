@@ -23,6 +23,7 @@ const tooltipStyles = `
 `;
 
 interface ChartPerformance {
+  entry_id?: string;
   show_date: string;
   show_id: string;
   entry_placement: string;
@@ -47,9 +48,10 @@ interface ChartPerformance {
 interface PerformanceChartProps {
   performances: ChartPerformance[];
   selectedGroup?: string | null;
+  onJOTYClick?: (year: number, entryId: string | null) => void;
 }
 
-const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selectedGroup }) => {
+const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selectedGroup, onJOTYClick }) => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -278,6 +280,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ performances, selec
             mousePosition={mousePosition}
             setHoveredPerformance={setHoveredPerformance}
             setMousePosition={setMousePosition}
+            onJOTYClick={onJOTYClick}
           />
         )}
 

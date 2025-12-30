@@ -6,6 +6,7 @@ import JOTYBadge from './JOTYBadge';
 import { placementColors, formatLength } from '../utils/performanceUtils';
 
 interface ChartPerformance {
+  entry_id?: string;
   show_date: string;
   show_id: string;
   entry_placement: string;
@@ -42,6 +43,7 @@ interface PerformanceTableViewProps {
   mousePosition: { x: number; y: number };
   setHoveredPerformance: (perf: any) => void;
   setMousePosition: (pos: { x: number; y: number }) => void;
+  onJOTYClick?: (year: number, entryId: string | null) => void;
 }
 
 const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
@@ -53,7 +55,8 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
   hoveredPerformance,
   mousePosition,
   setHoveredPerformance,
-  setMousePosition
+  setMousePosition,
+  onJOTYClick
 }) => {
   const navigate = useNavigate();
 
@@ -237,7 +240,11 @@ const PerformanceTableView: React.FC<PerformanceTableViewProps> = ({
                       compact={true}
                       onClick={() => {
                         const year = new Date(perf.show_date).getFullYear();
-                        navigate(`/joty/${year}`);
+                        if (onJOTYClick) {
+                          onJOTYClick(year, perf.entry_id || null);
+                        } else {
+                          navigate(`/joty/${year}`);
+                        }
                       }}
                     />
                   )}
