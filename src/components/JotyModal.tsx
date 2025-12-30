@@ -131,7 +131,7 @@ export default function JotyModal({
                 <p className="text-fifth">No JOTY data found for {year}.</p>
               </div>
             ) : (
-              <div className="space-y-4 p-2">
+              <div className="space-y-2 p-2">
                 {rounds.map((round) => (
                   <div key={round.joty_round} className="border border-fourth">
                     {/* Round Header */}
@@ -159,20 +159,20 @@ export default function JotyModal({
                                     : 'bg-canvas hover:bg-tertiary/40'
                                 }`}
                               >
-                                <td className="px-2 py-0.5 text-fifth whitespace-nowrap">
+                                <td className="px-2 text-fifth whitespace-nowrap">
                                   <span className="font-medium">{result.entry_song}</span>
                                   {result.entry_short && (
                                     <span className="text-red-600 ml-2 font-medium">[{result.entry_short}]</span>
                                   )}
                                 </td>
-                                <td className="px-2 py-0.5 text-fifth font-medium whitespace-nowrap text-center">
+                                <td className="px-2 text-fifth font-medium whitespace-nowrap text-center">
                                   {result.show_date ? formatInTimeZone(
                                     new Date(result.show_date),
                                     'UTC',
                                     'MM.dd.yy'
                                   ) : ''}
                                 </td>
-                                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
+                                <td className="px-2 text-fifth font-light whitespace-nowrap">
                                   {result.show_venue_location}
                                   {result.show_subvenue && (() => {
                                     const subvenue = result.show_subvenue;
