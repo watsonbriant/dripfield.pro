@@ -178,9 +178,6 @@ export default function JotyModal({
                                     <span className="text-fifth/70 pl-2"> ({result.show_subvenue})</span>
                                   )}
                                 </td>
-                                <td className="px-2 py-0.5 text-fifth font-light whitespace-nowrap">
-                                  {result.show_tour || ''}
-                                </td>
                               </tr>
                             ))}
                           </tbody>
