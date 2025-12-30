@@ -9,7 +9,7 @@ interface JOTYBadgeProps {
 export default function JOTYBadge({ round, compact = false, onClick }: JOTYBadgeProps) {
   const getBadgeStyles = () => {
     const baseStyles = `inline-flex items-center justify-center font-medium rounded-full ${
-      compact ? 'w-8 h-4 text-[10px]' : 'w-12 h-7 text-[11px]'
+      compact ? 'w-8 h-4 text-[10px]' : 'w-8 h-4 text-[10px]'
     } shadow-sm ${onClick ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`;
 
     switch (round) {

@@ -24,7 +24,7 @@ interface DisplaySetlistTableProps {
   onSongClick: (songName: string) => void;
   onLastShowClick: (showId: string) => void;
   onGuestClick: (guestId: string) => void;
-  onJOTYClick: (year: number) => void;
+  onJOTYClick: (year: number, entryId: string) => void;
   onNumberClick: (entryId: string) => void;
 }
 

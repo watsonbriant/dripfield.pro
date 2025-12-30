@@ -25,6 +25,7 @@ import { useYouTubeEmbed } from '../hooks/useYouTubeEmbed';
 import { useShowPositionInTour } from '../hooks/useShowPositionInTour';
 import { getGuestColor } from '../utils/setlistUtils';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
+import JotyModal from './JotyModal';
 import wlImage from '../img/WL.png';
 
 // Lazy load heavy components
@@ -80,6 +81,11 @@ export function Setlist() {
   // State for category hover highlighting
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   
+  // State for JOTY modal
+  const [jotyModalOpen, setJotyModalOpen] = useState(false);
+  const [jotyYear, setJotyYear] = useState<number | null>(null);
+  const [jotyHighlightedEntryId, setJotyHighlightedEntryId] = useState<string | null>(null);
+  
   // Wrap navigation handlers to clear embeds
   const handleTourSelect = useCallback((tourId: string) => {
     clearEmbed();
@@ -121,9 +127,11 @@ export function Setlist() {
     navigate(`/personnel/${guestId}`);
   }, [navigate]);
 
-  const handleJOTYClick = useCallback((year: number) => {
-    navigate(`/joty/${year}`);
-  }, [navigate]);
+  const handleJOTYClick = useCallback((year: number, entryId: string) => {
+    setJotyYear(year);
+    setJotyHighlightedEntryId(entryId);
+    setJotyModalOpen(true);
+  }, []);
 
   if (loading) {
     return (
@@ -578,6 +586,20 @@ export function Setlist() {
         tourId={show?.tour_id || ''}
         currentShowId={show?.show_id || ''}
       />
+      
+      {/* JOTY Modal */}
+      {jotyYear !== null && (
+        <JotyModal
+          isOpen={jotyModalOpen}
+          onClose={() => {
+            setJotyModalOpen(false);
+            setJotyYear(null);
+            setJotyHighlightedEntryId(null);
+          }}
+          year={jotyYear}
+          highlightedEntryId={jotyHighlightedEntryId}
+        />
+      )}
     </div>
     </>
   );

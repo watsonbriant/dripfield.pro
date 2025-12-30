@@ -39,7 +39,7 @@ interface SetlistTableRowProps {
   onSongClick: (songName: string) => void;
   onLastShowClick: (showId: string) => void;
   onGuestClick: (guestId: string) => void;
-  onJOTYClick: (year: number) => void;
+  onJOTYClick: (year: number, entryId: string) => void;
   onNumberClick: (entryId: string) => void;
 }
 
@@ -217,7 +217,7 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
                 compact={true}
                 onClick={() => {
                   const year = new Date(show.show_date).getFullYear();
-                  onJOTYClick(year);
+                  onJOTYClick(year, entry.entry_id);
                 }}
               />
             </div>
