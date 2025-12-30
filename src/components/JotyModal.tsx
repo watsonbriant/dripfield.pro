@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { formatInTimeZone } from 'date-fns-tz';
 import { useJotyData } from '../hooks/useJotyData';
 import JOTYBadge from './JOTYBadge';
@@ -92,12 +93,12 @@ export default function JotyModal({
             {/* Header Row */}
             <div className="flex items-center justify-between px-2 py-0.5">
               <h2 className="text-sm font-semibold">Jam of the Year {year}</h2>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <a href="https://www.osirispod.com/podcasts/always-almost-there/" target="_blank" rel="noopener noreferrer">
+              <div className="flex items-center gap-0.5 flex-shrink-0">
+                <a href="http://jotyoftheyear.com" target="_blank" rel="noopener noreferrer">
                   <img src={aatLogo} alt="Always Almost There" className="h-6 w-auto rounded-full hover:shadow-[0_0_0_1px_#3c1e40]" />
                 </a>
                 <a href="https://www.nugs.net/" target="_blank" rel="noopener noreferrer">
-                  <img src={nugsLogo} alt="nugs" className="h-6 w-auto rounded-full hover:shadow-[0_0_0_1px_#3c1e40]" />
+                  <img src={nugsLogo} alt="nugs" className="h-6 w-auto rounded-full hover:shadow-[0_0_0_1px_#3c1e40] mr-2" />
                 </a>
                 <button
                   onClick={onClose}
@@ -110,7 +111,7 @@ export default function JotyModal({
             {/* Subheader Row */}
             <div className="px-2 pb-1">
               <p className="text-[0.625rem] text-fifth font-light leading-[0.625rem]">
-                Jam of the Year is an annual bracket-style ranking initiative presented by Always Almost There and powered by nugs.
+                Jam of the Year is an annual bracket-style ranking initiative presented by <span className="font-medium">Always Almost There</span> and powered by <span className="font-medium">nugs</span>.
               </p>
             </div>
           </div>
@@ -160,16 +161,40 @@ export default function JotyModal({
                                 }`}
                               >
                                 <td className="px-2 text-fifth whitespace-nowrap">
-                                  <span className="font-medium">{result.entry_song}</span>
+                                  {result.song_id ? (
+                                    <Link
+                                      to={`/song/${result.song_id}`}
+                                      onClick={onClose}
+                                      className="font-medium hover:underline transition-colors"
+                                    >
+                                      {result.entry_song}
+                                    </Link>
+                                  ) : (
+                                    <span className="font-medium">{result.entry_song}</span>
+                                  )}
                                   {result.entry_short && (
                                     <span className="text-red-600 ml-2 font-medium">[{result.entry_short}]</span>
                                   )}
                                 </td>
                                 <td className="px-2 text-fifth font-medium whitespace-nowrap text-center">
-                                  {result.show_date ? formatInTimeZone(
-                                    new Date(result.show_date),
-                                    'UTC',
-                                    'MM.dd.yy'
+                                  {result.show_date && result.show_id ? (
+                                    <Link
+                                      to={`/setlist/${result.show_id}`}
+                                      onClick={onClose}
+                                      className="hover:underline transition-colors"
+                                    >
+                                      {formatInTimeZone(
+                                        new Date(result.show_date),
+                                        'UTC',
+                                        'MM.dd.yy'
+                                      )}
+                                    </Link>
+                                  ) : result.show_date ? (
+                                    formatInTimeZone(
+                                      new Date(result.show_date),
+                                      'UTC',
+                                      'MM.dd.yy'
+                                    )
                                   ) : ''}
                                 </td>
                                 <td className="px-2 text-fifth font-light whitespace-nowrap">

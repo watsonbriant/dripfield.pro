@@ -5,6 +5,8 @@ export interface JotyResult {
   entry_id: string;
   entry_song: string;
   entry_short: string | null;
+  song_id: string | null;
+  show_id: string | null;
   show_date: string;
   show_venue_location: string;
   show_tour: string | null;
@@ -73,7 +75,11 @@ export const useJotyData = (isOpen: boolean, year: number | null) => {
             entry_id,
             entry_song,
             entry_short,
+            songs:entry_song (
+              song_id
+            ),
             shows (
+              show_id,
               show_date,
               show_venue_location,
               show_tour,
@@ -130,6 +136,8 @@ export const useJotyData = (isOpen: boolean, year: number | null) => {
           entry_id: result.entry_id,
           entry_song: setlistEntry.entry_song,
           entry_short: setlistEntry.entry_short,
+          song_id: (setlistEntry.songs as any)?.song_id || null,
+          show_id: show.show_id || null,
           show_date: show.show_date || '',
           show_venue_location: show.show_venue_location || '',
           show_tour: show.show_tour,
