@@ -101,23 +101,23 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
     // Studio Releases: category_canonid <= 20
     const studioReleases = sortedCategories.filter(cat => cat.category_canonid <= 20);
     
-    // Live-Only Songs: category_canonid between 21 and 70, OR category_canonid = 98
+    // Live-Only Songs: category_canonid between 21 and 170, OR category_canonid = 298
     const liveOnlySongs = sortedCategories.filter(cat => 
-      (cat.category_canonid >= 21 && cat.category_canonid <= 70) || cat.category_canonid === 98
+      (cat.category_canonid >= 21 && cat.category_canonid <= 170) || cat.category_canonid === 298
     );
     
-    // Ted Tapes Songs/Jams: category_canonid between 71 and 97
+    // Ted Tapes Songs/Jams: category_canonid between 171 and 297
     const tedTapesSongs = sortedCategories.filter(cat => 
-      cat.category_canonid >= 71 && cat.category_canonid <= 97
+      cat.category_canonid >= 171 && cat.category_canonid <= 297
     );
     
-    // Cover Songs: category_canonid = 99 or 100
+    // Cover Songs: category_canonid = 299 or 300
     const coverSongs = sortedCategories.filter(cat => 
-      cat.category_canonid === 99 || cat.category_canonid === 100
+      cat.category_canonid === 299 || cat.category_canonid === 300
     );
     
-    // Side Projects: category_canonid > 100
-    const sideProjects = sortedCategories.filter(cat => cat.category_canonid > 100);
+    // Side Projects: category_canonid > 300
+    const sideProjects = sortedCategories.filter(cat => cat.category_canonid > 300);
     
     return { 
       studioReleases, 
@@ -213,7 +213,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
       : isStudioReleases
         ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-0 items-start -my-[1px]"
         : isTedTapes
-          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-2 gap-y-0 items-start -my-[1px]"
+          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-0 items-start -my-[1px]"
           : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-2 gap-y-0 items-start -my-[1px]";
     
     return (
@@ -242,7 +242,7 @@ const UserSongs: React.FC<UserSongsProps> = ({ userId }) => {
                       isLastInColumn ? 'border-b' : ''
                     } ${!isFirstInColumn ? '-mt-[1px]' : ''}`}
                   >
-                    <div className="bg-tertiary/50 text-fifth py-[3px] flex items-center justify-between">
+                    <div className="bg-tertiary/50 text-fifth py-[2px] flex items-center justify-between">
                       <h4 className="text-xs font-semibold text-fifth pl-2 leading-[0.75rem] pr-2">
                         {category.category}
                       </h4>
