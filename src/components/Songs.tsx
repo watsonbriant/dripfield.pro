@@ -222,7 +222,7 @@ export function Songs() {
       : isStudioReleases
         ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-0 items-start -my-[1px]"
         : isTedTapes
-          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-2 gap-y-0 items-start -my-[1px]"
+          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-0 items-start -my-[1px]"
           : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-2 gap-y-0 items-start -my-[1px]";
     
     return (
@@ -251,7 +251,7 @@ export function Songs() {
                     isLastInColumn ? 'border-b' : ''
                   } ${!isFirstInColumn ? '-mt-[1px]' : ''}`}
                 >
-                <div className="bg-tertiary/50 text-fifth py-[3px] flex items-center justify-between">
+                <div className="bg-tertiary/50 text-fifth py-[2px] flex items-center justify-between">
                   <h4 className="text-xs font-semibold text-fifth pl-2 leading-[0.75rem] pr-2">
                     {category.category}
                   </h4>
