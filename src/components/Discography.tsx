@@ -36,8 +36,17 @@ export function Discography() {
 
   // Function to get display name for category type groups
   const getCategoryTypeDisplayName = (categoryType: string): string => {
-    if (categoryType === 'Goose Misc' || categoryType === 'Ted Tapes') {
-      return 'Goose Miscellaneous';
+    if (categoryType === 'Goose') {
+      return 'Studio Releases';
+    }
+    if (categoryType === 'Goose Misc') {
+      return 'Live-Only Songs';
+    }
+    if (categoryType === 'Ted Tapes') {
+      return 'Ted Tapes Songs/Jams';
+    }
+    if (categoryType === 'Goose-adjacent') {
+      return 'Side Projects';
     }
     return categoryType;
   };
@@ -332,7 +341,7 @@ export function Discography() {
 
               {/* Albums Grid for this Category Type */}
               <div className={`grid gap-4 ${
-                categoryTypeDisplay === 'Goose Miscellaneous' || categoryTypeDisplay === 'Goose-adjacent'
+                categoryTypeDisplay === 'Studio Releases' || categoryTypeDisplay === 'Live-Only Songs' || categoryTypeDisplay === 'Side Projects' || categoryTypeDisplay === 'Ted Tapes Songs/Jams'
                   ? 'grid-cols-1 md:grid-cols-3 lg:grid-cols-6'
                   : 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4'
               }`}>
