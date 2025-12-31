@@ -162,23 +162,23 @@ export function Songs() {
     // Studio Releases: category_canonid <= 20
     const studioReleases = sortedCategories.filter(cat => cat.category_canonid <= 20);
     
-    // Live-Only Songs: category_canonid between 20 and 70, OR category_canonid = 98
+    // Live-Only Songs: category_canonid between 20 and 170, OR category_canonid = 298
     const liveOnlySongs = sortedCategories.filter(cat => 
-      (cat.category_canonid >= 21 && cat.category_canonid <= 70) || cat.category_canonid === 98
+      (cat.category_canonid >= 21 && cat.category_canonid <= 170) || cat.category_canonid === 298
     );
     
-    // Ted Tapes Songs/Jams: category_canonid between 71 and 97
+    // Ted Tapes Songs/Jams: category_canonid between 171 and 297
     const tedTapesSongs = sortedCategories.filter(cat => 
-      cat.category_canonid >= 71 && cat.category_canonid <= 97
+      cat.category_canonid >= 171 && cat.category_canonid <= 297
     );
     
-    // Cover Songs: category_canonid = 99 or 100
+    // Cover Songs: category_canonid = 299 or 300
     const coverSongs = sortedCategories.filter(cat => 
-      cat.category_canonid === 99 || cat.category_canonid === 100
+      cat.category_canonid === 299 || cat.category_canonid === 300
     );
     
-    // Side Projects: category_canonid > 100
-    const sideProjects = sortedCategories.filter(cat => cat.category_canonid > 100);
+    // Side Projects: category_canonid > 300
+    const sideProjects = sortedCategories.filter(cat => cat.category_canonid > 300);
     
     return { 
       studioReleases, 
