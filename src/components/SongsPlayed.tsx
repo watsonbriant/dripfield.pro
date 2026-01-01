@@ -439,7 +439,7 @@ export function SongsPlayed({
                   .map((song: any, index: number) => (
                     <div key={index}>
                       <span className="font-medium">{song.song}</span>
-                      {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory || selectedCategory || '') && (
+                      {song.artist && ['Cover Songs', 'Miscellaneous Covers'].includes(hoveredCategory || selectedCategory || '') && (
                         <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
                       )}
                       &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>

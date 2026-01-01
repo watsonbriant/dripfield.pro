@@ -161,7 +161,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
         }
         
         // Add song to category's song list with original artist if applicable
-        const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
+        const hasArtist = ['Cover Songs', 'Miscellaneous Covers'].includes(category);
         const originalArtist = entry.songs?.song_originalartist;
         
         const songWithArtist = hasArtist && originalArtist
@@ -200,7 +200,7 @@ const SongSpread: React.FC<SongSpreadProps> = ({ setlist, onCategoryHover, hideT
         }
         
         // Add song to category's song list with original artist if applicable
-        const hasArtist = ['Cover Songs', 'Live Collaborations'].includes(category);
+        const hasArtist = ['Cover Songs', 'Miscellaneous Covers'].includes(category);
         const originalArtist = entry.songs?.song_originalartist;
         
         const songWithArtist = hasArtist && originalArtist

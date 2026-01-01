@@ -134,7 +134,7 @@ export function Discography() {
           .order('category_canonid', { ascending: true })
           .not('category', 'ilike', '%Unreleased%')
           .not('category', 'eq', 'Cover Songs')
-          .not('category', 'eq', 'Live Collaborations');
+          .not('category', 'eq', 'Miscellaneous Covers');
 
         if (error) {
           console.error('Error fetching albums:', error);

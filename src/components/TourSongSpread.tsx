@@ -81,7 +81,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
           }
           
           // Add song to category's song list with original artist if applicable
-          const songWithArtist = ['Cover Songs', 'Live Collaborations'].includes(category) && entry.songs.song_originalartist
+          const songWithArtist = ['Cover Songs', 'Miscellaneous Covers'].includes(category) && entry.songs.song_originalartist
             ? { 
                 song: entry.entry_song,
                 artist: entry.songs.song_originalartist,
@@ -395,7 +395,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
             .map((song, index) => (
               <div key={index}>
                 <span className="font-medium text-[0.625rem]">{song.song}</span>
-                {song.artist && ['Cover Songs', 'Live Collaborations'].includes(hoveredCategory) && (
+                {song.artist && ['Cover Songs', 'Miscellaneous Covers'].includes(hoveredCategory) && (
                   <>&nbsp;&nbsp;<span className="font-light text-[0.625rem]">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
                 )}
                 &nbsp;&nbsp;<span className="font-light text-[0.625rem]">[{song.playCount}]</span>
@@ -416,7 +416,7 @@ const TourSongSpread: React.FC<TourSongSpreadProps> = ({ shows }) => {
               .map((song, index) => (
                 <div key={index}>
                   <span className="font-medium">{song.song}</span>
-                  {song.artist && ['Cover Songs', 'Live Collaborations'].includes(selectedCategory) && (
+                  {song.artist && ['Cover Songs', 'Miscellaneous Covers'].includes(selectedCategory) && (
                     <>&nbsp;&nbsp;<span className="font-light">[{song.artist === '[Traditional]' ? 'Traditional' : song.artist}]</span></>
                   )}
                   &nbsp;&nbsp;<span className="font-light">[{song.playCount}]</span>
