@@ -64,8 +64,8 @@ export function HomeShowTable({ title, shows, loading, emptyMessage, showsWithSe
             {title}
           </h3>
         </div>
-        <div className="text-center py-12">
-          <p className="text-fifth">{emptyMessage || "No shows found."}</p>
+        <div className="text-center py-2">
+          <p className="text-fifth text-xs">{emptyMessage || "No shows found."}</p>
         </div>
       </div>
     );
