@@ -16,8 +16,9 @@ export function Home() {
   const { year: yearParam } = useParams<{ year?: string }>();
   const navigate = useNavigate();
   const { isSidebarOpen } = useSidebar();
-  const [selectedYear, setSelectedYear] = useState<number | string>(() => {
-    // Initialize from URL param if available, otherwise use 2025
+  
+  // Derive selectedYear directly from URL param (URL is the single source of truth)
+  const selectedYear = useMemo(() => {
     if (yearParam) {
       if (yearParam === 'all-time') {
         return 'all-time';
@@ -27,9 +28,9 @@ export function Home() {
         return yearNum;
       }
     }
-    // return new Date().getFullYear();
-    return 2025;
-  });
+    return 2025; // Default fallback
+  }, [yearParam]);
+  
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const yearDropdownRef = useRef<HTMLDivElement>(null);
   
@@ -73,47 +74,13 @@ export function Home() {
     return years;
   }, []);
 
-  // Sync URL when selectedYear changes
+  // Handle initial navigation when on root or /home without year
   useEffect(() => {
-    const yearValue = selectedYear === 'all-time' ? 'all-time' : selectedYear.toString();
     const currentPath = window.location.pathname;
-    
-    // Always update URL to include the year
-    if (currentPath === '/' || currentPath === '/home' || !currentPath.startsWith('/home/')) {
-      // If on root or /home without year, navigate to /home/year
-      navigate(`/home/${yearValue}`, { replace: true });
-    } else if (currentPath.startsWith('/home/')) {
-      // Extract current year from URL
-      const urlYear = currentPath.split('/home/')[1];
-      // Only update if the year has changed
-      if (urlYear !== yearValue) {
-        navigate(`/home/${yearValue}`, { replace: true });
-      }
+    if ((currentPath === '/' || currentPath === '/home') && !yearParam) {
+      navigate(`/home/2025`, { replace: true });
     }
-  }, [selectedYear, navigate]);
-
-  // Sync selectedYear when URL param changes
-  useEffect(() => {
-    if (yearParam) {
-      if (yearParam === 'all-time') {
-        if (selectedYear !== 'all-time') {
-          setSelectedYear('all-time');
-        }
-      } else {
-        const yearNum = parseInt(yearParam, 10);
-        if (!isNaN(yearNum) && selectedYear !== yearNum) {
-          setSelectedYear(yearNum);
-        }
-      }
-    } else {
-      // If no year param, default to 2025 (only if not already set)
-      // const currentYear = new Date().getFullYear();
-      const currentYear = 2025;
-      if (selectedYear !== currentYear && selectedYear !== 'all-time') {
-        setSelectedYear(currentYear);
-      }
-    }
-  }, [yearParam]); // Note: intentionally not including selectedYear to avoid loops
+  }, [yearParam, navigate]);
 
   // Close dropdown when sidebar opens
   useEffect(() => {
@@ -147,7 +114,8 @@ export function Home() {
   }, []);
 
   const handleYearChange = (year: number | string) => {
-    setSelectedYear(year);
+    const yearValue = year === 'all-time' ? 'all-time' : year.toString();
+    navigate(`/home/${yearValue}`, { replace: true });
     setIsYearDropdownOpen(false);
   };
 
@@ -260,7 +228,10 @@ export function Home() {
             </div>
             <StatsSection
               selectedYear={selectedYear}
-              setSelectedYear={setSelectedYear}
+              setSelectedYear={() => {
+                // This is a no-op since showYearSelector is false
+                // Year changes are handled by handleYearChange in the dropdown
+              }}
               topSongs={topSongs}
               showOpeners={showOpeners}
               setOpeners={setOpeners}
