@@ -17,7 +17,7 @@ export function Home() {
   const navigate = useNavigate();
   const { isSidebarOpen } = useSidebar();
   const [selectedYear, setSelectedYear] = useState<number | string>(() => {
-    // Initialize from URL param if available, otherwise use current year
+    // Initialize from URL param if available, otherwise use 2025
     if (yearParam) {
       if (yearParam === 'all-time') {
         return 'all-time';
@@ -27,7 +27,8 @@ export function Home() {
         return yearNum;
       }
     }
-    return new Date().getFullYear();
+    // return new Date().getFullYear();
+    return 2025;
   });
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const yearDropdownRef = useRef<HTMLDivElement>(null);
@@ -68,7 +69,7 @@ export function Home() {
 
   // Available years for dropdown
   const availableYears = useMemo(() => {
-    const years = ['all-time', ...Array.from({ length: 12 }, (_, i) => 2025 - i)];
+    const years = ['all-time', ...Array.from({ length: 13 }, (_, i) => 2026 - i)];
     return years;
   }, []);
 
@@ -105,8 +106,9 @@ export function Home() {
         }
       }
     } else {
-      // If no year param, default to current year (only if not already set)
-      const currentYear = new Date().getFullYear();
+      // If no year param, default to 2025 (only if not already set)
+      // const currentYear = new Date().getFullYear();
+      const currentYear = 2025;
       if (selectedYear !== currentYear && selectedYear !== 'all-time') {
         setSelectedYear(currentYear);
       }
