@@ -1,4 +1,4 @@
-import { useState, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ArrowRight, Link as LinkIcon, Pencil, Loader2, Info } from 'lucide-react';
@@ -26,6 +26,7 @@ import { useShowPositionInTour } from '../hooks/useShowPositionInTour';
 import { getGuestColor } from '../utils/setlistUtils';
 import SongTourPerformancesModal from './SongTourPerformancesModal';
 import JotyModal from './JotyModal';
+import { supabase } from '../lib/supabase';
 import wlImage from '../img/WL.png';
 
 // Lazy load heavy components
@@ -85,6 +86,43 @@ export function Setlist() {
   const [jotyModalOpen, setJotyModalOpen] = useState(false);
   const [jotyYear, setJotyYear] = useState<number | null>(null);
   const [jotyHighlightedEntryId, setJotyHighlightedEntryId] = useState<string | null>(null);
+  
+  // State to track if show has releases
+  const [hasReleases, setHasReleases] = useState(false);
+  const [releasesLoading, setReleasesLoading] = useState(true);
+  
+  // Check if show has releases
+  useEffect(() => {
+    const checkReleases = async () => {
+      if (!showId) {
+        setHasReleases(false);
+        setReleasesLoading(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('releases_shows')
+          .select('release_id')
+          .eq('show_id', showId)
+          .limit(1);
+        
+        if (error) {
+          console.error('Error checking releases:', error);
+          setHasReleases(false);
+        } else {
+          setHasReleases((data?.length || 0) > 0);
+        }
+      } catch (error) {
+        console.error('Error checking releases:', error);
+        setHasReleases(false);
+      } finally {
+        setReleasesLoading(false);
+      }
+    };
+    
+    checkReleases();
+  }, [showId]);
   
   // Wrap navigation handlers to clear embeds
   const handleTourSelect = useCallback((tourId: string) => {
@@ -376,7 +414,7 @@ export function Setlist() {
         </div>
 
         {/* Two Column Layout */}
-        {setlist && setlist.length > 0 ? (
+        {(setlist && setlist.length > 0) || (hasReleases && !releasesLoading) ? (
           <div className="flex border-t border-fourth -mt-[1px]">
             {/* Left Column - 200px wide */}
             <div className="w-[200px] flex-shrink-0 -mt-[1px] pt-2 border-r border-t border-fourth bg-canvas/60 relative z-0 lg:z-auto">
