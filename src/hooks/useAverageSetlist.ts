@@ -496,7 +496,9 @@ export function useAverageSetlist(
             const setnum = entry.entry_setnum;
 
             const basePoints = SET_POINTS[set] || 0;
-            const points = basePoints + setnum;
+            // Special case: Set 1, position 1 = 1 point
+            // All other Set 1 positions remain as basePoints + setnum (102, 103, etc.)
+            const points = (set === '1' && setnum === 1) ? 1 : basePoints + setnum;
 
             if (!showPoints.has(showId)) {
               showPoints.set(showId, []);
