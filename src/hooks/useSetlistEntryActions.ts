@@ -159,8 +159,8 @@ export const useSetlistEntryActions = () => {
           }
         }
         
-        // Update statistics after successful insert
-        await updateStatistics();
+        // Refresh table data immediately after insert and guest associations
+        onSave(); // Trigger refetch of entries
       } else {
         // Update existing entry
         
@@ -188,10 +188,10 @@ export const useSetlistEntryActions = () => {
         
         // Save guest associations
         await saveGuestAssociations(entryToSave.entry_id, selectedGuestIds);
+        
+        // Refresh table data immediately after update and guest associations
+        onSave(); // Trigger refetch of entries
       }
-      
-      // Refresh table data immediately after database operations
-      onSave(); // Trigger refetch of entries
       
       // Update statistics in background (RPC call)
       await updateStatistics();
