@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 
 interface Tour {
@@ -105,7 +106,7 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
         <ChevronDown className="w-4 h-4" />
       </button>
 
-      {isDropdownOpen && (
+      {isDropdownOpen && typeof document !== 'undefined' && createPortal(
         <div 
           ref={dropdownListRef}
           className="fixed bg-canvas border border-fourth shadow-lg z-[200] lg:z-[10000] overflow-y-auto w-64 max-h-96 space-y-0 -mt-[9px] gap-0"
@@ -125,7 +126,8 @@ export const TourDropdown: React.FC<TourDropdownProps> = ({
               <span className="text-fifth">{tour.tour}</span>
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
