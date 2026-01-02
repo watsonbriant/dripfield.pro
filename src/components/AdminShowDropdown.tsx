@@ -12,6 +12,7 @@ interface AdminShowDropdownProps {
     onShowSelect: (show: ShowData) => void;
     loading: boolean;
     loadingProgress: number;
+    selectedShow?: ShowData | null;
 }
 
 export const AdminShowDropdown: React.FC<AdminShowDropdownProps> = ({
@@ -22,9 +23,12 @@ export const AdminShowDropdown: React.FC<AdminShowDropdownProps> = ({
     filteredShows,
     onShowSelect,
     loading,
-    loadingProgress
+    loadingProgress,
+    selectedShow
 }) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const selectedShowRef = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -35,6 +39,22 @@ export const AdminShowDropdown: React.FC<AdminShowDropdownProps> = ({
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, onToggle]);
+
+    // Scroll to selected show when dropdown opens
+    useEffect(() => {
+        if (isOpen && selectedShow && selectedShowRef.current && scrollContainerRef.current) {
+            // Small delay to ensure DOM is rendered
+            setTimeout(() => {
+                if (selectedShowRef.current && scrollContainerRef.current) {
+                    selectedShowRef.current.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }
+            }, 100);
+        }
+    }, [isOpen, selectedShow]);
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -60,7 +80,7 @@ export const AdminShowDropdown: React.FC<AdminShowDropdownProps> = ({
                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                         </div>
                     </div>
-                    <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+                    <div ref={scrollContainerRef} className="max-h-64 overflow-y-auto divide-y divide-black/10">
                         {loading && loadingProgress < 100 ? (
                             <div className="flex flex-col justify-center items-center p-3 h-16">
                                 <div className="flex items-center justify-center space-x-2">
@@ -75,8 +95,11 @@ export const AdminShowDropdown: React.FC<AdminShowDropdownProps> = ({
                                 {filteredShows.map((show) => (
                                     <button
                                         key={show.show_id}
+                                        ref={selectedShow && show.show_id === selectedShow.show_id ? selectedShowRef : null}
                                         onClick={() => onShowSelect(show)}
-                                        className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
+                                        className={`w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors ${
+                                            selectedShow && show.show_id === selectedShow.show_id ? 'bg-tertiary/40' : ''
+                                        }`}
                                     >
                                         {(() => {
                                             const { dateStr, canonIdStr, locationStr } = getShowDisplayData(show);

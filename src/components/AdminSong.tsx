@@ -109,6 +109,7 @@ export const AdminSong: React.FC = () => {
             isOpen={isDropdownOpen}
             setIsOpen={setIsDropdownOpen}
             onSongSelect={handleSongSelect}
+            selectedSong={selectedSong}
           />
         </div>
       </div>

@@ -43,24 +43,10 @@ export const AdminMedia: React.FC = () => {
   const [hoveredReleaseId, setHoveredReleaseId] = useState<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
   const headerRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const showDataLoadedRef = useRef(false);
 
   const { allShows, loading, loadingProgress } = useShowData();
   const { showReleases, loadingReleases, fetchShowReleases } = useShowReleases();
-
-  // Filtered shows for dropdown
-  const filteredShows = useMemo(() => {
-    return allShows.filter(show => {
-      const searchLower = searchTerm.toLowerCase();
-      const dateStr = formatDate(show.show_date);
-      return (
-        dateStr.includes(searchLower) ||
-        show.show_canonid?.toString().includes(searchLower) ||
-        show.show_group.toLowerCase().includes(searchLower) ||
-        show.show_venue_location?.toLowerCase().includes(searchLower) ||
-        show.show_subvenue.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [allShows, searchTerm]);
 
   // Fetch setlist entries for selected show
   const fetchSetlistEntries = async (showId: string) => {
@@ -132,11 +118,112 @@ export const AdminMedia: React.FC = () => {
     }
   };
 
+  // Load the selected show from localStorage after shows are loaded
+  useEffect(() => {
+    if (allShows.length > 0 && !showDataLoadedRef.current) {
+      showDataLoadedRef.current = true;
+      try {
+        const storedShowId = localStorage.getItem('adminSelectedShowId');
+        if (storedShowId) {
+          const storedShow = allShows.find(show => show.show_id === storedShowId);
+          if (storedShow) {
+            setSelectedShow(storedShow);
+            Promise.all([
+              fetchSetlistEntries(storedShow.show_id),
+              fetchShowReleases(storedShow.show_id),
+              fetchMediaEntries(storedShow.show_id)
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring selected show from localStorage:', error);
+      }
+    }
+  }, [allShows, fetchShowReleases]);
+
+  // Sync selected show when localStorage changes (from other tabs/components)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'adminSelectedShowId' && e.newValue) {
+        const newShowId = e.newValue;
+        if (!selectedShow || selectedShow.show_id !== newShowId) {
+          const newShow = allShows.find(show => show.show_id === newShowId);
+          if (newShow) {
+            setSelectedShow(newShow);
+            Promise.all([
+              fetchSetlistEntries(newShow.show_id),
+              fetchShowReleases(newShow.show_id),
+              fetchMediaEntries(newShow.show_id)
+            ]);
+          }
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [selectedShow, allShows, fetchShowReleases]);
+
+  // Handle visibility change to reload data and sync selected show
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // Check if the selected show has changed in localStorage
+        try {
+          const storedShowId = localStorage.getItem('adminSelectedShowId');
+          if (storedShowId && (!selectedShow || selectedShow.show_id !== storedShowId)) {
+            const storedShow = allShows.find(show => show.show_id === storedShowId);
+            if (storedShow) {
+              setSelectedShow(storedShow);
+              Promise.all([
+                fetchSetlistEntries(storedShow.show_id),
+                fetchShowReleases(storedShow.show_id),
+                fetchMediaEntries(storedShow.show_id)
+              ]);
+            }
+          } else if (selectedShow) {
+            Promise.all([
+              fetchSetlistEntries(selectedShow.show_id),
+              fetchShowReleases(selectedShow.show_id),
+              fetchMediaEntries(selectedShow.show_id)
+            ]);
+          }
+        } catch (error) {
+          console.error('Error syncing selected show:', error);
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [selectedShow, allShows, fetchShowReleases]);
+
+  // Filtered shows for dropdown
+  const filteredShows = useMemo(() => {
+    return allShows.filter(show => {
+      const searchLower = searchTerm.toLowerCase();
+      const dateStr = formatDate(show.show_date);
+      return (
+        dateStr.includes(searchLower) ||
+        show.show_canonid?.toString().includes(searchLower) ||
+        show.show_group.toLowerCase().includes(searchLower) ||
+        show.show_venue_location?.toLowerCase().includes(searchLower) ||
+        show.show_subvenue.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [allShows, searchTerm]);
+
   // Handle show selection
   const handleShowSelect = async (show: ShowData) => {
     setSelectedShow(show);
     setIsDropdownOpen(false);
     setSearchTerm('');
+    
+    // Save the selected show ID to localStorage
+    try {
+      localStorage.setItem('adminSelectedShowId', show.show_id);
+    } catch (error) {
+      console.error('Error saving selected show to localStorage:', error);
+    }
+    
     await Promise.all([
       fetchSetlistEntries(show.show_id),
       fetchShowReleases(show.show_id),
@@ -291,6 +378,7 @@ export const AdminMedia: React.FC = () => {
           onShowSelect={handleShowSelect}
           loading={loading}
           loadingProgress={loadingProgress}
+          selectedShow={selectedShow}
         />
       </div>
 

@@ -85,6 +85,7 @@ export const AdminSetlist: React.FC = () => {
         loading={loading}
         loadingProgress={loadingProgress}
         onShowSelect={handleShowSelect}
+        selectedShow={selectedShow}
       />
 
       {selectedShow && (

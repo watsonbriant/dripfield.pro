@@ -110,6 +110,7 @@ export const AdminSubvenue: React.FC = () => {
                         loading={loading}
                         loadingProgress={loadingProgress}
                         allVenues={allVenues}
+                        selectedSubvenue={selectedSubvenue}
                     />
                 </div>
             </div>

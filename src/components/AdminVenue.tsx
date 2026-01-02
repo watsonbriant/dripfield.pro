@@ -90,6 +90,7 @@ export const AdminVenue: React.FC = () => {
                         onVenueSelect={handleVenueSelectWithDropdown}
                         loading={loading}
                         loadingProgress={loadingProgress}
+                        selectedVenue={selectedVenue}
                     />
                 </div>
             </div>

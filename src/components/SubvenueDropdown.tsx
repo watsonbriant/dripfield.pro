@@ -13,6 +13,7 @@ interface SubvenueDropdownProps {
     loading: boolean;
     loadingProgress: number;
     allVenues: VenueData[];
+    selectedSubvenue?: SubvenueData | null;
 }
 
 const getSubvenueDisplayText = (subvenue: SubvenueData, allVenues: VenueData[]) => {
@@ -35,9 +36,12 @@ export const SubvenueDropdown: React.FC<SubvenueDropdownProps> = ({
     onSubvenueSelect,
     loading,
     loadingProgress,
-    allVenues
+    allVenues,
+    selectedSubvenue
 }) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const selectedSubvenueRef = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -48,6 +52,21 @@ export const SubvenueDropdown: React.FC<SubvenueDropdownProps> = ({
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, onClose]);
+
+    // Scroll to selected subvenue when dropdown opens
+    useEffect(() => {
+        if (isOpen && selectedSubvenue && selectedSubvenueRef.current && scrollContainerRef.current) {
+            setTimeout(() => {
+                if (selectedSubvenueRef.current && scrollContainerRef.current) {
+                    selectedSubvenueRef.current.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }
+            }, 100);
+        }
+    }, [isOpen, selectedSubvenue]);
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -73,7 +92,7 @@ export const SubvenueDropdown: React.FC<SubvenueDropdownProps> = ({
                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                         </div>
                     </div>
-                    <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+                    <div ref={scrollContainerRef} className="max-h-64 overflow-y-auto divide-y divide-black/10">
                         {loading && loadingProgress < 100 ? (
                             <div className="flex flex-col justify-center items-center p-3 h-16">
                                 <div className="flex items-center justify-center space-x-2">
@@ -85,15 +104,21 @@ export const SubvenueDropdown: React.FC<SubvenueDropdownProps> = ({
                             </div>
                         ) : (
                             <>
-                                {filteredSubvenues.map((subvenue) => (
-                                    <button
-                                        key={subvenue.subvenue}
-                                        onClick={() => onSubvenueSelect(subvenue)}
-                                        className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
-                                    >
-                                        {getSubvenueDisplayText(subvenue, allVenues)}
-                                    </button>
-                                ))}
+                                {filteredSubvenues.map((subvenue) => {
+                                    const isSelected = selectedSubvenue && subvenue.subvenue === selectedSubvenue.subvenue;
+                                    return (
+                                        <button
+                                            key={subvenue.subvenue}
+                                            ref={isSelected ? selectedSubvenueRef : null}
+                                            onClick={() => onSubvenueSelect(subvenue)}
+                                            className={`w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors ${
+                                                isSelected ? 'bg-tertiary/40' : ''
+                                            }`}
+                                        >
+                                            {getSubvenueDisplayText(subvenue, allVenues)}
+                                        </button>
+                                    );
+                                })}
                                 {filteredSubvenues.length === 0 && !loading && (
                                     <div className="px-2 py-0.5 text-xs text-fifth text-center">
                                         No subvenues found

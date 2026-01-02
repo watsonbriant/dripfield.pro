@@ -114,8 +114,11 @@ const ShowDropdown: React.FC<{
   loading: boolean;
   loadingProgress: number;
   onShowSelect: (show: ShowData) => void;
-}> = ({ shows, searchTerm, setSearchTerm, isDropdownOpen, setIsDropdownOpen, loading, loadingProgress, onShowSelect }) => {
+  selectedShow?: ShowData | null;
+}> = ({ shows, searchTerm, setSearchTerm, isDropdownOpen, setIsDropdownOpen, loading, loadingProgress, onShowSelect, selectedShow }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const selectedShowRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -126,6 +129,22 @@ const ShowDropdown: React.FC<{
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen, setIsDropdownOpen]);
+
+  // Scroll to selected show when dropdown opens
+  useEffect(() => {
+    if (isDropdownOpen && selectedShow && selectedShowRef.current && scrollContainerRef.current) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        if (selectedShowRef.current && scrollContainerRef.current) {
+          selectedShowRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 100);
+    }
+  }, [isDropdownOpen, selectedShow]);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -140,7 +159,7 @@ const ShowDropdown: React.FC<{
             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
           </div>
         </div>
-        <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+        <div ref={scrollContainerRef} className="max-h-64 overflow-y-auto divide-y divide-black/10">
           {loading && loadingProgress < 100 ? (
             <div className="flex flex-col justify-center items-center p-3 h-16">
               <div className="flex items-center justify-center space-x-2">
@@ -153,7 +172,14 @@ const ShowDropdown: React.FC<{
           ) : (
             <>
               {shows.map((show) => (
-                <button key={show.show_id} onClick={() => onShowSelect(show)} className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors">
+                <button
+                  key={show.show_id}
+                  ref={selectedShow && show.show_id === selectedShow.show_id ? selectedShowRef : null}
+                  onClick={() => onShowSelect(show)}
+                  className={`w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors ${
+                    selectedShow && show.show_id === selectedShow.show_id ? 'bg-tertiary/40' : ''
+                  }`}
+                >
                   {(() => {
                     const { dateStr, canonIdStr, locationStr } = getShowDisplayData(show);
                     return (
@@ -219,7 +245,7 @@ export const AdminChanges: React.FC = () => {
     if (shows.length > 0 && !showDataLoadedRef.current) {
       showDataLoadedRef.current = true;
       try {
-        const storedShowId = localStorage.getItem('adminChangesSelectedShowId');
+        const storedShowId = localStorage.getItem('adminSelectedShowId');
         if (storedShowId) {
           const storedShow = shows.find(show => show.show_id === storedShowId);
           if (storedShow) {
@@ -233,16 +259,48 @@ export const AdminChanges: React.FC = () => {
     }
   }, [shows]);
 
-  // Handle visibility change to reload data if needed when returning to this tab
+  // Sync selected show when localStorage changes (from other tabs/components)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'adminSelectedShowId' && e.newValue) {
+        const newShowId = e.newValue;
+        if (!selectedShow || selectedShow.show_id !== newShowId) {
+          const newShow = shows.find(show => show.show_id === newShowId);
+          if (newShow) {
+            setSelectedShow(newShow);
+            fetchShowChanges(newShowId);
+          }
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [selectedShow, shows]);
+
+  // Handle visibility change to reload data and sync selected show
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && selectedShow) {
-        fetchShowChanges(selectedShow.show_id);
+      if (document.visibilityState === 'visible') {
+        // Check if the selected show has changed in localStorage
+        try {
+          const storedShowId = localStorage.getItem('adminSelectedShowId');
+          if (storedShowId && (!selectedShow || selectedShow.show_id !== storedShowId)) {
+            const storedShow = shows.find(show => show.show_id === storedShowId);
+            if (storedShow) {
+              setSelectedShow(storedShow);
+              fetchShowChanges(storedShowId);
+            }
+          } else if (selectedShow) {
+            fetchShowChanges(selectedShow.show_id);
+          }
+        } catch (error) {
+          console.error('Error syncing selected show:', error);
+        }
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [selectedShow]);
+  }, [selectedShow, shows]);
 
   // Format date as MM.DD.YY
   const formatDate = (dateString: string): string => {
@@ -272,7 +330,7 @@ export const AdminChanges: React.FC = () => {
     setIsDropdownOpen(false);
     setSearchTerm('');
     try {
-      localStorage.setItem('adminChangesSelectedShowId', show.show_id);
+      localStorage.setItem('adminSelectedShowId', show.show_id);
     } catch (error) {
       console.error('Error saving selected show to localStorage:', error);
     }
@@ -317,7 +375,8 @@ export const AdminChanges: React.FC = () => {
           setIsDropdownOpen={setIsDropdownOpen} 
           loading={showsLoading} 
           loadingProgress={loadingProgress} 
-          onShowSelect={handleShowSelect} 
+          onShowSelect={handleShowSelect}
+          selectedShow={selectedShow}
         />
       </div>
 

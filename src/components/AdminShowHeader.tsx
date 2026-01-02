@@ -62,6 +62,7 @@ export const AdminShowHeader: React.FC<AdminShowHeaderProps> = ({
                         onShowSelect={onShowSelect}
                         loading={loading}
                         loadingProgress={loadingProgress}
+                        selectedShow={selectedShow}
                     />
                 </div>
             </div>

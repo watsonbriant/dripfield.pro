@@ -9,6 +9,7 @@ interface MainHeaderProps {
   loading: boolean;
   loadingProgress: number;
   onShowSelect: (show: ShowData) => void;
+  selectedShow?: ShowData | null;
 }
 
 export const MainHeader: React.FC<MainHeaderProps> = ({
@@ -16,7 +17,8 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
   shows,
   loading,
   loadingProgress,
-  onShowSelect
+  onShowSelect,
+  selectedShow
 }) => {
   return (
     <div className="flex items-center justify-between mb-2">
@@ -29,6 +31,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
         loading={loading}
         loadingProgress={loadingProgress}
         onShowSelect={onShowSelect}
+        selectedShow={selectedShow}
       />
     </div>
   );

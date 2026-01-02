@@ -12,6 +12,7 @@ interface VenueDropdownProps {
     onVenueSelect: (venue: VenueData) => void;
     loading: boolean;
     loadingProgress: number;
+    selectedVenue?: VenueData | null;
 }
 
 const getVenueDisplayText = (venue: VenueData) => {
@@ -32,9 +33,12 @@ export const VenueDropdown: React.FC<VenueDropdownProps> = ({
     filteredVenues,
     onVenueSelect,
     loading,
-    loadingProgress
+    loadingProgress,
+    selectedVenue
 }) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const selectedVenueRef = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -45,6 +49,21 @@ export const VenueDropdown: React.FC<VenueDropdownProps> = ({
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, onClose]);
+
+    // Scroll to selected venue when dropdown opens
+    useEffect(() => {
+        if (isOpen && selectedVenue && selectedVenueRef.current && scrollContainerRef.current) {
+            setTimeout(() => {
+                if (selectedVenueRef.current && scrollContainerRef.current) {
+                    selectedVenueRef.current.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }
+            }, 100);
+        }
+    }, [isOpen, selectedVenue]);
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -70,7 +89,7 @@ export const VenueDropdown: React.FC<VenueDropdownProps> = ({
                             <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                         </div>
                     </div>
-                    <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+                    <div ref={scrollContainerRef} className="max-h-64 overflow-y-auto divide-y divide-black/10">
                         {loading && loadingProgress < 100 ? (
                             <div className="flex flex-col justify-center items-center p-3 h-16">
                                 <div className="flex items-center justify-center space-x-2">
@@ -82,15 +101,21 @@ export const VenueDropdown: React.FC<VenueDropdownProps> = ({
                             </div>
                         ) : (
                             <>
-                                {filteredVenues.map((venue) => (
-                                    <button
-                                        key={`${venue.venue}-${venue.venue_location}`}
-                                        onClick={() => onVenueSelect(venue)}
-                                        className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
-                                    >
-                                        {getVenueDisplayText(venue)}
-                                    </button>
-                                ))}
+                                {filteredVenues.map((venue) => {
+                                    const isSelected = selectedVenue && venue.venue === selectedVenue.venue && venue.venue_location === selectedVenue.venue_location;
+                                    return (
+                                        <button
+                                            key={`${venue.venue}-${venue.venue_location}`}
+                                            ref={isSelected ? selectedVenueRef : null}
+                                            onClick={() => onVenueSelect(venue)}
+                                            className={`w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors ${
+                                                isSelected ? 'bg-tertiary/40' : ''
+                                            }`}
+                                        >
+                                            {getVenueDisplayText(venue)}
+                                        </button>
+                                    );
+                                })}
                                 {filteredVenues.length === 0 && !loading && (
                                     <div className="px-2 py-0.5 text-xs text-fifth text-center">
                                         No venues found

@@ -23,6 +23,8 @@ export const AdminGuest: React.FC = () => {
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
   const [isNewGuest, setIsNewGuest] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const selectedGuestRef = useRef<HTMLButtonElement | null>(null);
   const mountedRef = useRef(false);
   
   const guestCategories = [
@@ -41,6 +43,21 @@ export const AdminGuest: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Scroll to selected guest when dropdown opens
+  useEffect(() => {
+    if (isDropdownOpen && selectedGuest && selectedGuestRef.current && scrollContainerRef.current) {
+      setTimeout(() => {
+        if (selectedGuestRef.current && scrollContainerRef.current) {
+          selectedGuestRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 100);
+    }
+  }, [isDropdownOpen, selectedGuest]);
 
   // Only fetch data once on mount
   useEffect(() => {
@@ -199,12 +216,15 @@ export const AdminGuest: React.FC = () => {
                     <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
                   </div>
                 </div>
-                <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+                <div ref={scrollContainerRef} className="max-h-64 overflow-y-auto divide-y divide-black/10">
                   {filteredGuests.map((guest) => (
                     <button
                       key={guest.guest_id}
+                      ref={selectedGuest && guest.guest_id === selectedGuest.guest_id ? selectedGuestRef : null}
                       onClick={() => handleGuestSelect(guest)}
-                      className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
+                      className={`w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors ${
+                        selectedGuest && guest.guest_id === selectedGuest.guest_id ? 'bg-tertiary/40' : ''
+                      }`}
                     >
                       {guest.guest}
                     </button>

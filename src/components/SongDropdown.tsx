@@ -17,6 +17,7 @@ interface SongDropdownProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   onSongSelect: (song: SongData) => void;
+  selectedSong?: SongData | null;
 }
 
 export const SongDropdown: React.FC<SongDropdownProps> = ({
@@ -25,9 +26,12 @@ export const SongDropdown: React.FC<SongDropdownProps> = ({
   setSearchTerm,
   isOpen,
   setIsOpen,
-  onSongSelect
+  onSongSelect,
+  selectedSong
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const selectedSongRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,6 +42,21 @@ export const SongDropdown: React.FC<SongDropdownProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [setIsOpen]);
+
+  // Scroll to selected song when dropdown opens
+  useEffect(() => {
+    if (isOpen && selectedSong && selectedSongRef.current && scrollContainerRef.current) {
+      setTimeout(() => {
+        if (selectedSongRef.current && scrollContainerRef.current) {
+          selectedSongRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 100);
+    }
+  }, [isOpen, selectedSong]);
 
   const filteredSongs = songs.filter(song =>
     song.song.toLowerCase().includes(searchTerm.toLowerCase())
@@ -67,12 +86,15 @@ export const SongDropdown: React.FC<SongDropdownProps> = ({
               <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-fifth/60" />
             </div>
           </div>
-          <div className="max-h-64 overflow-y-auto divide-y divide-black/10">
+          <div ref={scrollContainerRef} className="max-h-64 overflow-y-auto divide-y divide-black/10">
             {filteredSongs.map((song) => (
               <button
                 key={song.song_id}
+                ref={selectedSong && song.song_id === selectedSong.song_id ? selectedSongRef : null}
                 onClick={() => onSongSelect(song)}
-                className="w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors"
+                className={`w-full text-left px-2 py-1 font-light text-xs text-fifth hover:bg-tertiary/40 transition-colors ${
+                  selectedSong && song.song_id === selectedSong.song_id ? 'bg-tertiary/40' : ''
+                }`}
               >
                 {song.song}
               </button>
