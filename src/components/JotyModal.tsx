@@ -133,7 +133,9 @@ export default function JotyModal({
               </div>
             ) : (
               <div className="space-y-2 p-2">
-                {rounds.map((round) => (
+                {rounds
+                  .filter((round) => round.results.length > 0)
+                  .map((round) => (
                   <div key={round.joty_round} className="border border-fourth">
                     {/* Round Header */}
                     <div className="bg-fourth px-2 pt-0.5 pb-1 flex items-center gap-2">
@@ -147,81 +149,75 @@ export default function JotyModal({
                     </div>
                     
                     {/* Results Table */}
-                    {round.results.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="w-full border-collapse min-w-max">
-                          <tbody>
-                            {round.results.map((result) => (
-                              <tr
-                                key={result.entry_id}
-                                className={`text-[0.625rem] transition-colors ${
-                                  result.entry_id === highlightedEntryId
-                                    ? 'bg-tertiary/80 hover:bg-tertiary/40'
-                                    : 'bg-canvas hover:bg-tertiary/40'
-                                }`}
-                              >
-                                <td className="px-2 text-fifth whitespace-nowrap">
-                                  {result.song_id ? (
-                                    <Link
-                                      to={`/song/${result.song_id}`}
-                                      onClick={onClose}
-                                      className="font-medium hover:underline transition-colors"
-                                    >
-                                      {result.entry_song}
-                                    </Link>
-                                  ) : (
-                                    <span className="font-medium">{result.entry_song}</span>
-                                  )}
-                                  {result.entry_short && (
-                                    <span className="text-red-600 ml-2 font-medium">[{result.entry_short}]</span>
-                                  )}
-                                </td>
-                                <td className="px-2 text-fifth font-medium whitespace-nowrap text-center">
-                                  {result.show_date && result.show_id ? (
-                                    <Link
-                                      to={`/setlist/${result.show_id}`}
-                                      onClick={onClose}
-                                      className="hover:underline transition-colors"
-                                    >
-                                      {formatInTimeZone(
-                                        new Date(result.show_date),
-                                        'UTC',
-                                        'MM.dd.yy'
-                                      )}
-                                    </Link>
-                                  ) : result.show_date ? (
-                                    formatInTimeZone(
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse min-w-max">
+                        <tbody>
+                          {round.results.map((result) => (
+                            <tr
+                              key={result.entry_id}
+                              className={`text-[0.625rem] transition-colors ${
+                                result.entry_id === highlightedEntryId
+                                  ? 'bg-tertiary/80 hover:bg-tertiary/40'
+                                  : 'bg-canvas hover:bg-tertiary/40'
+                              }`}
+                            >
+                              <td className="px-2 text-fifth whitespace-nowrap">
+                                {result.song_id ? (
+                                  <Link
+                                    to={`/song/${result.song_id}`}
+                                    onClick={onClose}
+                                    className="font-medium hover:underline transition-colors"
+                                  >
+                                    {result.entry_song}
+                                  </Link>
+                                ) : (
+                                  <span className="font-medium">{result.entry_song}</span>
+                                )}
+                                {result.entry_short && (
+                                  <span className="text-red-600 ml-2 font-medium">[{result.entry_short}]</span>
+                                )}
+                              </td>
+                              <td className="px-2 text-fifth font-medium whitespace-nowrap text-center">
+                                {result.show_date && result.show_id ? (
+                                  <Link
+                                    to={`/setlist/${result.show_id}`}
+                                    onClick={onClose}
+                                    className="hover:underline transition-colors"
+                                  >
+                                    {formatInTimeZone(
                                       new Date(result.show_date),
                                       'UTC',
                                       'MM.dd.yy'
-                                    )
-                                  ) : ''}
-                                </td>
-                                <td className="px-2 text-fifth font-light whitespace-nowrap">
-                                  {result.show_venue_location}
-                                  {result.show_subvenue && (() => {
-                                    const subvenue = result.show_subvenue;
-                                    const startsWithBracket = subvenue.startsWith('(') || subvenue.startsWith('[');
-                                    const endsWithBracket = subvenue.endsWith(')') || subvenue.endsWith(']');
-                                    const needsWrapping = !startsWithBracket && !endsWithBracket;
-                                    
-                                    return (
-                                      <span className="text-fifth/70 pl-2">
-                                        {needsWrapping ? ` (${subvenue})` : ` ${subvenue}`}
-                                      </span>
-                                    );
-                                  })()}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="px-2 py-2 text-center text-fifth text-xs">
-                        No entries for this round
-                      </div>
-                    )}
+                                    )}
+                                  </Link>
+                                ) : result.show_date ? (
+                                  formatInTimeZone(
+                                    new Date(result.show_date),
+                                    'UTC',
+                                    'MM.dd.yy'
+                                  )
+                                ) : ''}
+                              </td>
+                              <td className="px-2 text-fifth font-light whitespace-nowrap">
+                                {result.show_venue_location}
+                                {result.show_subvenue && (() => {
+                                  const subvenue = result.show_subvenue;
+                                  const startsWithBracket = subvenue.startsWith('(') || subvenue.startsWith('[');
+                                  const endsWithBracket = subvenue.endsWith(')') || subvenue.endsWith(']');
+                                  const needsWrapping = !startsWithBracket && !endsWithBracket;
+                                  
+                                  return (
+                                    <span className="text-fifth/70 pl-2">
+                                      {needsWrapping ? ` (${subvenue})` : ` ${subvenue}`}
+                                    </span>
+                                  );
+                                })()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 ))}
               </div>
