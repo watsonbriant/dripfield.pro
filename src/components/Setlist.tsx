@@ -82,6 +82,10 @@ export function Setlist() {
   // State for category hover highlighting
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   
+  // State for release hover highlighting
+  const [hoveredReleaseId, setHoveredReleaseId] = useState<string | null>(null);
+  const [releaseToEntriesMap, setReleaseToEntriesMap] = useState<Map<string, Set<string>>>(new Map());
+  
   // State for JOTY modal
   const [jotyModalOpen, setJotyModalOpen] = useState(false);
   const [jotyYear, setJotyYear] = useState<number | null>(null);
@@ -139,6 +143,57 @@ export function Setlist() {
   const handleCategoryHover = useCallback((category: string | null) => {
     setHoveredCategory(category);
   }, []);
+
+  // Handle release hover from ReleaseContainer
+  const handleReleaseHover = useCallback((releaseId: string | null) => {
+    setHoveredReleaseId(releaseId);
+  }, []);
+
+  // Build mapping of release_id -> Set<entry_id> from setlist_entry_media
+  useEffect(() => {
+    const buildReleaseMapping = async () => {
+      if (!showId || !setlist || setlist.length === 0) {
+        setReleaseToEntriesMap(new Map());
+        setHoveredReleaseId(null); // Clear hover state when show changes
+        return;
+      }
+
+      try {
+        const entryIds = setlist.map(entry => entry.entry_id);
+        
+        const { data: mediaData, error } = await supabase
+          .from('setlist_entry_media')
+          .select('setlist_entry_id, release_id')
+          .in('setlist_entry_id', entryIds);
+
+        if (error) {
+          console.error('Error fetching setlist_entry_media:', error);
+          setReleaseToEntriesMap(new Map());
+          return;
+        }
+
+        // Build map: release_id -> Set<entry_id>
+        const map = new Map<string, Set<string>>();
+        if (mediaData) {
+          for (const media of mediaData) {
+            if (!media.release_id || !media.setlist_entry_id) continue;
+            
+            if (!map.has(media.release_id)) {
+              map.set(media.release_id, new Set());
+            }
+            map.get(media.release_id)!.add(media.setlist_entry_id);
+          }
+        }
+        
+        setReleaseToEntriesMap(map);
+      } catch (error) {
+        console.error('Error building release mapping:', error);
+        setReleaseToEntriesMap(new Map());
+      }
+    };
+
+    buildReleaseMapping();
+  }, [showId, setlist]);
 
   // Hooks for DisplaySetlistTable
   const isMobileTable = useMobileDetection();
@@ -485,6 +540,7 @@ export function Setlist() {
                   className={scrollToReleases ? 'highlight-releases' : ''}
                   onYouTubeEmbed={handleYouTubeEmbed}
                   onYouTubeLoading={handleYouTubeLoading}
+                  onReleaseHover={handleReleaseHover}
                 />
               )}
             </div>
@@ -512,6 +568,8 @@ export function Setlist() {
                   getGuestColor={(entry) => getGuestColor(entry, guestGroups)}
                   hoverStates={hoverStates}
                   hoveredCategory={hoveredCategory}
+                  hoveredReleaseId={hoveredReleaseId}
+                  releaseToEntriesMap={releaseToEntriesMap}
                   onSongClick={handleSongClick}
                   onLastShowClick={handleLastShowClick}
                   onGuestClick={handleGuestClick}

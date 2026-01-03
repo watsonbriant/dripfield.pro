@@ -92,9 +92,10 @@ interface ReleaseContainerProps {
   className?: string;
   onYouTubeEmbed?: (release: Release | null) => void;
   onYouTubeLoading?: (loading: boolean) => void;
+  onReleaseHover?: (releaseId: string | null) => void;
 }
 
-const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOnMount = false, className = "", onYouTubeEmbed, onYouTubeLoading }) => {
+const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOnMount = false, className = "", onYouTubeEmbed, onYouTubeLoading, onReleaseHover }) => {
   const [releases, setReleases] = useState<Release[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [embeddedReleaseIndex, setEmbeddedReleaseIndex] = useState<number | null>(null);
@@ -217,6 +218,10 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
       if (onYouTubeLoading) {
         onYouTubeLoading(false);
       }
+      // Clear release hover when showId changes
+      if (onReleaseHover) {
+        onReleaseHover(null);
+      }
       
       try {
         // Updated query to join tables and include release_order
@@ -317,12 +322,22 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                 {/* Square artwork */}
                 <div className="flex-shrink-0">
                   {release?.release_link ? (
-                    release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
+                      release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
                       <div 
                         onClick={(e) => handleStreamingClick(e, release, index)}
                         className="cursor-pointer"
-                        onMouseEnter={() => setHoveredReleaseIndex(index)}
-                        onMouseLeave={() => setHoveredReleaseIndex(null)}
+                        onMouseEnter={() => {
+                          setHoveredReleaseIndex(index);
+                          if (onReleaseHover) {
+                            onReleaseHover(release.release_id);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredReleaseIndex(null);
+                          if (onReleaseHover) {
+                            onReleaseHover(null);
+                          }
+                        }}
                       >
                         <img 
                           src={release.release_artwork} 
@@ -341,8 +356,18 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="block"
-                        onMouseEnter={() => setHoveredReleaseIndex(index)}
-                        onMouseLeave={() => setHoveredReleaseIndex(null)}
+                        onMouseEnter={() => {
+                          setHoveredReleaseIndex(index);
+                          if (onReleaseHover) {
+                            onReleaseHover(release.release_id);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredReleaseIndex(null);
+                          if (onReleaseHover) {
+                            onReleaseHover(null);
+                          }
+                        }}
                       >
                         <img 
                           src={release.release_artwork} 
@@ -377,8 +402,18 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                         <h3 
                           onClick={(e) => handleStreamingClick(e, release, index)}
                           className="text-xs font-medium text-white cursor-pointer hover:underline leading-[0.75rem]"
-                          onMouseEnter={() => setHoveredReleaseIndex(index)}
-                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                          onMouseEnter={() => {
+                            setHoveredReleaseIndex(index);
+                            if (onReleaseHover) {
+                              onReleaseHover(release.release_id);
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredReleaseIndex(null);
+                            if (onReleaseHover) {
+                              onReleaseHover(null);
+                            }
+                          }}
                         >
                           {renderDisplayName(release?.release_displayname, release?.release)}
                         </h3>
@@ -388,8 +423,18 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-xs font-medium leading-[0.75rem] text-white hover:underline block"
-                          onMouseEnter={() => setHoveredReleaseIndex(index)}
-                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                          onMouseEnter={() => {
+                            setHoveredReleaseIndex(index);
+                            if (onReleaseHover) {
+                              onReleaseHover(release.release_id);
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredReleaseIndex(null);
+                            if (onReleaseHover) {
+                              onReleaseHover(null);
+                            }
+                          }}
                         >
                           {renderDisplayName(release?.release_displayname, release?.release)}
                         </a>
@@ -401,12 +446,22 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                     )}
                   {release?.release_link && (
                     <div className="flex items-center">
-                      {release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
+                      {                      release.release_service?.toLowerCase() === 'bandcamp' || release.release_service?.toLowerCase() === 'youtube' ? (
                         <div 
                           onClick={(e) => handleStreamingClick(e, release, index)}
                           className="flex items-center gap-1 text-white hover:underline font-normal text-[0.625rem] transition-colors cursor-pointer"
-                          onMouseEnter={() => setHoveredReleaseIndex(index)}
-                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                          onMouseEnter={() => {
+                            setHoveredReleaseIndex(index);
+                            if (onReleaseHover) {
+                              onReleaseHover(release.release_id);
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredReleaseIndex(null);
+                            if (onReleaseHover) {
+                              onReleaseHover(null);
+                            }
+                          }}
                         >
                           {getServiceIcon(release.release_service, hoveredReleaseIndex === index)}
                           {release.release_service || "Streaming Service"}
@@ -417,8 +472,18 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 text-white hover:underline font-normal text-[0.625rem] transition-colors"
-                          onMouseEnter={() => setHoveredReleaseIndex(index)}
-                          onMouseLeave={() => setHoveredReleaseIndex(null)}
+                          onMouseEnter={() => {
+                            setHoveredReleaseIndex(index);
+                            if (onReleaseHover) {
+                              onReleaseHover(release.release_id);
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredReleaseIndex(null);
+                            if (onReleaseHover) {
+                              onReleaseHover(null);
+                            }
+                          }}
                         >
                           {getServiceIcon(release.release_service, hoveredReleaseIndex === index)}
                           {release.release_service || "Streaming Service"}

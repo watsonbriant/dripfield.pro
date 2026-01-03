@@ -21,6 +21,8 @@ interface DisplaySetlistTableProps {
     setHoveredPersonnel: (id: string | null) => void;
   };
   hoveredCategory: string | null;
+  hoveredReleaseId: string | null;
+  releaseToEntriesMap: Map<string, Set<string>>;
   onSongClick: (songName: string) => void;
   onLastShowClick: (showId: string) => void;
   onGuestClick: (guestId: string) => void;
@@ -37,6 +39,8 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
     getGuestColor,
   hoverStates,
   hoveredCategory,
+  hoveredReleaseId,
+  releaseToEntriesMap,
   onSongClick,
   onLastShowClick,
   onGuestClick,
@@ -101,6 +105,8 @@ export const DisplaySetlistTable: React.FC<DisplaySetlistTableProps> = ({
                 getGuestColor={getGuestColor}
                 hoverStates={hoverStates}
                 hoveredCategory={hoveredCategory}
+                hoveredReleaseId={hoveredReleaseId}
+                releaseToEntriesMap={releaseToEntriesMap}
                 onSongClick={onSongClick}
                 onLastShowClick={onLastShowClick}
                 onGuestClick={onGuestClick}

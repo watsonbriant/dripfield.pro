@@ -36,6 +36,8 @@ interface SetlistTableRowProps {
     setHoveredPersonnel: (id: string | null) => void;
   };
   hoveredCategory: string | null;
+  hoveredReleaseId: string | null;
+  releaseToEntriesMap: Map<string, Set<string>>;
   onSongClick: (songName: string) => void;
   onLastShowClick: (showId: string) => void;
   onGuestClick: (guestId: string) => void;
@@ -56,6 +58,8 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
   getGuestColor,
   hoverStates,
   hoveredCategory,
+  hoveredReleaseId,
+  releaseToEntriesMap,
   onSongClick,
   onLastShowClick,
   onGuestClick,
@@ -108,9 +112,20 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
     }
   }
 
-  // Determine if this row should be dimmed or highlighted based on hovered category
-  const shouldDimRow = hoveredCategory && entry.song_category !== hoveredCategory;
-  const shouldHighlightRow = hoveredCategory && entry.song_category === hoveredCategory;
+  // Determine if this row should be dimmed or highlighted based on hovered release or category
+  // Release hover takes precedence over category hover
+  let shouldDimRow = false;
+  let shouldHighlightRow = false;
+  
+  if (hoveredReleaseId) {
+    const entryIdsForRelease = releaseToEntriesMap.get(hoveredReleaseId);
+    const isEntryInRelease = entryIdsForRelease?.has(entry.entry_id) || false;
+    shouldHighlightRow = isEntryInRelease;
+    shouldDimRow = !isEntryInRelease;
+  } else if (hoveredCategory) {
+    shouldDimRow = entry.song_category !== hoveredCategory;
+    shouldHighlightRow = entry.song_category === hoveredCategory;
+  }
   
   elements.push(
     <tr 
