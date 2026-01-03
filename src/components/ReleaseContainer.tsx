@@ -513,7 +513,7 @@ const ReleaseContainer: React.FC<ReleaseContainerProps> = ({ showId, highlightOn
                       width: 'min(245px, 100%)', 
                       height: '330px' 
                     }}
-                    src={`https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/`}
+                    src={`https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=large/bgcol=181818/linkcol=ffffff/tracklist=false/transparent=true/`}
                     seamless
                     title={release.release_displayname || release.release}
                   />
