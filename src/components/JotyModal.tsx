@@ -91,7 +91,7 @@ export default function JotyModal({
           {/* Fixed Header */}
           <div className="bg-tertiary text-fifth border-b border-fourth flex-shrink-0">
             {/* Header Row */}
-            <div className="flex items-center justify-between px-2 py-0.5">
+            <div className="flex items-center justify-between pl-2 pr-0.5 py-0.5">
               <h2 className="text-sm font-semibold">Jam of the Year {year}</h2>
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 <a href="http://jotyoftheyear.com" target="_blank" rel="noopener noreferrer">

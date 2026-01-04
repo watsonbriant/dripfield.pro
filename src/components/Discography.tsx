@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { Search } from 'lucide-react';
 import { Modal } from './Modal';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface Album {
   title: string;
@@ -25,13 +26,22 @@ interface GroupedAlbums {
 
 export function Discography() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [albums, setAlbums] = React.useState<Album[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [adminLoading, setAdminLoading] = React.useState(true);
+  const [discographyCategories, setDiscographyCategories] = React.useState<{ category: string }[]>([]);
+  const [discographyItems, setDiscographyItems] = React.useState<{ displayname: string; artwork: string | null; canon_id: number }[]>([]);
+  const [hoveredItem, setHoveredItem] = React.useState<string | null>(null);
+  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const albumRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const previousUserIdRef = useRef<string | undefined>();
+  const previousIsAdminRef = useRef<boolean | undefined>();
 
 
   // Function to get display name for category type groups
@@ -87,6 +97,102 @@ export function Discography() {
 
     return grouped;
   };
+
+  // Check admin status
+  React.useEffect(() => {
+    const currentUserId = user?.id;
+    if (previousUserIdRef.current === currentUserId) {
+      return; // Skip if user ID hasn't changed
+    }
+    
+    previousUserIdRef.current = currentUserId;
+    
+    async function checkAdminStatus() {
+      if (!user) {
+        if (previousIsAdminRef.current !== false) {
+          previousIsAdminRef.current = false;
+          setIsAdmin(false);
+        }
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single();
+        
+        if (error) {
+          console.error('Error checking admin status:', error);
+          if (previousIsAdminRef.current !== false) {
+            previousIsAdminRef.current = false;
+            setIsAdmin(false);
+          }
+          return;
+        }
+        
+        const newIsAdmin = data?.is_admin || false;
+        if (previousIsAdminRef.current !== newIsAdmin) {
+          previousIsAdminRef.current = newIsAdmin;
+          setIsAdmin(newIsAdmin);
+        }
+      } catch (error) {
+        console.error('Error in admin check:', error);
+        if (previousIsAdminRef.current !== false) {
+          previousIsAdminRef.current = false;
+          setIsAdmin(false);
+        }
+      }
+    }
+    
+    checkAdminStatus();
+  }, [user]);
+
+  // Fetch discography data for admin view
+  React.useEffect(() => {
+    if (!isAdmin) {
+      setAdminLoading(false);
+      return;
+    }
+
+    async function fetchDiscographyData() {
+      try {
+        setAdminLoading(true);
+        
+        // Fetch discography_categories where category = "Studio Albums"
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('discography_categories')
+          .select('category')
+          .eq('category', 'Studio Albums');
+
+        if (categoriesError) {
+          console.error('Error fetching discography categories:', categoriesError);
+        } else {
+          setDiscographyCategories(categoriesData || []);
+        }
+
+        // Fetch discography items where category = "Studio Albums", sorted by canon_id
+        const { data: itemsData, error: itemsError } = await supabase
+          .from('discography')
+          .select('displayname, artwork, canon_id')
+          .eq('category', 'Studio Albums')
+          .order('canon_id', { ascending: true });
+
+        if (itemsError) {
+          console.error('Error fetching discography items:', itemsError);
+        } else {
+          setDiscographyItems(itemsData || []);
+        }
+      } catch (error) {
+        console.error('Error fetching discography data:', error);
+      } finally {
+        setAdminLoading(false);
+      }
+    }
+
+    fetchDiscographyData();
+  }, [isAdmin]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -205,6 +311,108 @@ export function Discography() {
     return getCategoryTypeSortOrder(firstAlbumA.categoryType) - getCategoryTypeSortOrder(firstAlbumB.categoryType);
   });
 
+  // If admin, show admin discography view
+  if (isAdmin) {
+    return (
+      <>
+        <Helmet>
+          <title>Discography — Dripfield.pro</title>
+        </Helmet>
+        <div className="max-w-[1280px]">
+          <div className="mb-4 shadow-xl">
+            <div className="bg-primary border border-fourth">
+              <div className="bg-tertiary text-fifth pr-1 py-0.5 flex justify-between items-center">
+                <h1 className="text-sm font-semibold pl-2">
+                  Discography
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          {adminLoading ? (
+            <div className="text-center py-12 bg-primary border border-fourth rounded-lg p-3">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-150"></div>
+                <div className="w-4 h-4 rounded-lg bg-[#594e5f] animate-pulse delay-300"></div>
+              </div>
+              <p className="text-fifth mt-4">Loading discography...</p>
+            </div>
+          ) : (
+            <div className="pb-8">
+              {discographyCategories.map((category) => (
+                <div key={category.category} className="mb-8">
+                  {/* Category Header - similar to Songs.tsx */}
+                  <div className="bg-primary border border-fourth shadow-xl">
+                    <div className="bg-fourth text-white px-2 py-0.5">
+                      <h3 className="text-sm font-semibold">
+                        {category.category}
+                      </h3>
+                    </div>
+                  </div>
+                  
+                  {/* Discography Items */}
+                  <div className="bg-primary border-l border-r border-b border-fourth">
+                    <div className="p-2">
+                      {discographyItems.length > 0 ? (
+                        <ul className="space-y-1">
+                          {discographyItems.map((item, index) => (
+                            <li
+                              key={`${item.displayname}-${item.canon_id}-${index}`}
+                              className="text-[0.625rem] leading-[0.625rem] text-fifth font-light"
+                            >
+                              <span
+                                className="font-medium hover:underline transition-colors cursor-pointer"
+                                onMouseEnter={(e) => {
+                                  if (item.artwork) {
+                                    setHoveredItem(`${item.displayname}-${item.canon_id}`);
+                                    setMousePosition({ x: e.clientX, y: e.clientY });
+                                  }
+                                }}
+                                onMouseMove={(e) => {
+                                  if (item.artwork) {
+                                    setMousePosition({ x: e.clientX, y: e.clientY });
+                                  }
+                                }}
+                                onMouseLeave={() => {
+                                  setHoveredItem(null);
+                                }}
+                              >
+                                {item.displayname}
+                              </span>
+                              {hoveredItem === `${item.displayname}-${item.canon_id}` && item.artwork && (
+                                <div
+                                  className="fixed bg-fourth border border-fourth rounded-lg shadow-xl z-[9999]"
+                                  style={{
+                                    left: `${mousePosition.x + 10}px`,
+                                    top: `${mousePosition.y - 10}px`
+                                  }}
+                                >
+                                  <img
+                                    src={item.artwork}
+                                    alt={item.displayname}
+                                    className="max-h-[60px] rounded-lg"
+                                  />
+                                </div>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-xs text-fifth/70 italic">No items found</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
+
+  // Otherwise, show the current discography view for all users
   return (
     <>
       <Helmet>
