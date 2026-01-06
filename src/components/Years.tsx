@@ -177,7 +177,7 @@ export function Years() {
         </div>
 
         {/* Right Side: Tours and Filters stacked vertically */}
-        <div className="w-full lg:w-[260px] flex-shrink-0 space-y-4">
+        <div className="w-full lg:w-auto lg:flex-shrink-0 space-y-4">
           <ToursSection 
             tours={tours}
             currentYear={currentYear}

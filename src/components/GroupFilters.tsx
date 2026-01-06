@@ -52,7 +52,7 @@ export function GroupFilters({
           <div className="space-y-0.5">
             {groups.map((groupData) => (
               <div key={groupData.group} className="text-fifth text-xs flex items-center">
-                <div className="flex-1 text-left leading-tight ml-2 font-light">
+                <div className="flex-1 text-left leading-tight mx-2 font-light">
                   <button
                     onClick={() => onToggleGroup(groupData.group)}
                     className="font-medium hover:underline transition-colors"

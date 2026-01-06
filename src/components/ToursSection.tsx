@@ -45,7 +45,7 @@ export function ToursSection({ tours, currentYear, loading }: ToursSectionProps)
                   backgroundColor: tour.color
                 }}
               />
-              <div className="flex-1 text-left leading-tight ml-2 my-0.5 font-light">
+              <div className="flex-1 text-left leading-tight mx-2 my-0.5 font-light">
                 <Link 
                   to={`/tours/${tour.tour_id}`}
                   className="hover:underline transition-colors font-medium text-left inline leading-[0.75rem]"
