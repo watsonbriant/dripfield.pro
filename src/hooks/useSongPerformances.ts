@@ -166,7 +166,7 @@ export const useSongPerformances = (isOpen: boolean, songName: string, tourId: s
           .join(',');
         
         if (!acc[guestKey]) {
-          const colors = ['#0bacc9', '#e4482f', '#fcb924', '#67a343', '#9e598f', '#be823a', '#f58ba2', '#7b6e66', '#ec7523', '#050608', '#fee4d3'];
+          const colors = ['#0bacc9', '#e4482f', '#fcb924', '#67a343', '#9e598f', '#be823a', '#f58ba2', '#7b6e66', '#ec7523', '#050608', '#fee4d3', '#5a2c08', '#8ecfbb'];
           const existingColors = Object.values(acc).map(g => g.color);
           const availableColors = colors.filter(color => !existingColors.includes(color));
           const color = availableColors[0] || colors[Object.keys(acc).length % colors.length];
