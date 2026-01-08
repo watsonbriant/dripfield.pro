@@ -34,8 +34,9 @@ export function Discography() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [adminLoading, setAdminLoading] = React.useState(true);
+  const [useAdminView, setUseAdminView] = React.useState(true);
   const [discographyCategories, setDiscographyCategories] = React.useState<{ category: string }[]>([]);
-  const [discographyItems, setDiscographyItems] = React.useState<{ displayname: string; artwork: string | null; canon_id: number }[]>([]);
+  const [discographyItems, setDiscographyItems] = React.useState<{ displayname: string; artwork: string | null; canon_id: number; category: string }[]>([]);
   const [hoveredItem, setHoveredItem] = React.useState<string | null>(null);
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -149,6 +150,11 @@ export function Discography() {
     checkAdminStatus();
   }, [user]);
 
+  // Reset admin view toggle based on admin status
+  React.useEffect(() => {
+    setUseAdminView(isAdmin);
+  }, [isAdmin]);
+
   // Fetch discography data for admin view
   React.useEffect(() => {
     if (!isAdmin) {
@@ -160,23 +166,35 @@ export function Discography() {
       try {
         setAdminLoading(true);
         
-        // Fetch discography_categories where category = "Studio Albums"
+        // Fetch discography_categories where category = "Studio Albums", "Singles", "Live Albums", or "Jam Compilations"
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('discography_categories')
           .select('category')
-          .eq('category', 'Studio Albums');
+          .in('category', ['Studio Albums', 'Singles', 'Live Albums', 'Jam Compilations']);
 
         if (categoriesError) {
           console.error('Error fetching discography categories:', categoriesError);
         } else {
-          setDiscographyCategories(categoriesData || []);
+          // Sort categories to ensure "Studio Albums" comes first, then "Singles", then "Live Albums", then "Jam Compilations"
+          const sortedCategories = (categoriesData || []).sort((a, b) => {
+            if (a.category === 'Studio Albums') return -1;
+            if (b.category === 'Studio Albums') return 1;
+            if (a.category === 'Singles') return -1;
+            if (b.category === 'Singles') return 1;
+            if (a.category === 'Live Albums') return -1;
+            if (b.category === 'Live Albums') return 1;
+            if (a.category === 'Jam Compilations') return -1;
+            if (b.category === 'Jam Compilations') return 1;
+            return 0;
+          });
+          setDiscographyCategories(sortedCategories);
         }
 
-        // Fetch discography items where category = "Studio Albums", sorted by canon_id
+        // Fetch discography items where category = "Studio Albums", "Singles", "Live Albums", or "Jam Compilations", sorted by canon_id
         const { data: itemsData, error: itemsError } = await supabase
           .from('discography')
-          .select('displayname, artwork, canon_id')
-          .eq('category', 'Studio Albums')
+          .select('displayname, artwork, canon_id, category')
+          .in('category', ['Studio Albums', 'Singles', 'Live Albums', 'Jam Compilations'])
           .order('canon_id', { ascending: true });
 
         if (itemsError) {
@@ -311,8 +329,8 @@ export function Discography() {
     return getCategoryTypeSortOrder(firstAlbumA.categoryType) - getCategoryTypeSortOrder(firstAlbumB.categoryType);
   });
 
-  // If admin, show admin discography view
-  if (isAdmin) {
+  // If admin and using admin view, show admin discography view
+  if (isAdmin && useAdminView) {
     return (
       <>
         <Helmet>
@@ -325,6 +343,15 @@ export function Discography() {
                 <h1 className="text-sm font-semibold pl-2">
                   Discography
                 </h1>
+                {isAdmin && (
+                  <button
+                    onClick={() => setUseAdminView(false)}
+                    className="text-xs px-2 py-0.5 rounded border border-fourth bg-canvas hover:bg-primary transition-colors font-medium"
+                    title="Switch to regular view"
+                  >
+                    Regular View
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -340,71 +367,78 @@ export function Discography() {
             </div>
           ) : (
             <div className="pb-8">
-              {discographyCategories.map((category) => (
-                <div key={category.category} className="mb-8">
-                  {/* Category Header - similar to Songs.tsx */}
-                  <div className="bg-primary border border-fourth shadow-xl">
-                    <div className="bg-fourth text-white px-2 py-0.5">
-                      <h3 className="text-sm font-semibold">
-                        {category.category}
-                      </h3>
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-4">
+                {discographyCategories.map((category) => {
+                  // Filter items for the current category
+                  const categoryItems = discographyItems.filter(item => item.category === category.category);
                   
-                  {/* Discography Items */}
-                  <div className="bg-primary border-l border-r border-b border-fourth">
-                    <div className="p-2">
-                      {discographyItems.length > 0 ? (
-                        <ul className="space-y-1">
-                          {discographyItems.map((item, index) => (
-                            <li
-                              key={`${item.displayname}-${item.canon_id}-${index}`}
-                              className="text-[0.625rem] leading-[0.625rem] text-fifth font-light"
-                            >
-                              <span
-                                className="font-medium hover:underline transition-colors cursor-pointer"
-                                onMouseEnter={(e) => {
-                                  if (item.artwork) {
-                                    setHoveredItem(`${item.displayname}-${item.canon_id}`);
-                                    setMousePosition({ x: e.clientX, y: e.clientY });
-                                  }
-                                }}
-                                onMouseMove={(e) => {
-                                  if (item.artwork) {
-                                    setMousePosition({ x: e.clientX, y: e.clientY });
-                                  }
-                                }}
-                                onMouseLeave={() => {
-                                  setHoveredItem(null);
-                                }}
-                              >
-                                {item.displayname}
-                              </span>
-                              {hoveredItem === `${item.displayname}-${item.canon_id}` && item.artwork && (
-                                <div
-                                  className="fixed bg-fourth border border-fourth rounded-lg shadow-xl z-[9999]"
-                                  style={{
-                                    left: `${mousePosition.x + 10}px`,
-                                    top: `${mousePosition.y - 10}px`
-                                  }}
+                  return (
+                    <div key={category.category}>
+                      {/* Category Header - similar to Songs.tsx */}
+                      <div className="bg-primary border border-fourth shadow-xl">
+                        <div className="bg-fourth text-white px-2 py-0.5">
+                          <h3 className="text-sm font-semibold">
+                            {category.category}
+                          </h3>
+                        </div>
+                      </div>
+                      
+                      {/* Discography Items */}
+                      <div className="bg-primary border-l border-r border-b border-fourth">
+                        <div className="p-2">
+                          {categoryItems.length > 0 ? (
+                            <ul className="space-y-1">
+                              {categoryItems.map((item, index) => (
+                                <li
+                                  key={`${item.displayname}-${item.canon_id}-${index}`}
+                                  className="text-[0.625rem] leading-[0.625rem] text-fifth font-light"
                                 >
-                                  <img
-                                    src={item.artwork}
-                                    alt={item.displayname}
-                                    className="max-h-[60px] rounded-lg"
-                                  />
-                                </div>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-xs text-fifth/70 italic">No items found</p>
-                      )}
+                                  <span
+                                    className="font-medium hover:underline transition-colors cursor-pointer"
+                                    onMouseEnter={(e) => {
+                                      if (item.artwork) {
+                                        setHoveredItem(`${item.displayname}-${item.canon_id}`);
+                                        setMousePosition({ x: e.clientX, y: e.clientY });
+                                      }
+                                    }}
+                                    onMouseMove={(e) => {
+                                      if (item.artwork) {
+                                        setMousePosition({ x: e.clientX, y: e.clientY });
+                                      }
+                                    }}
+                                    onMouseLeave={() => {
+                                      setHoveredItem(null);
+                                    }}
+                                  >
+                                    {item.displayname}
+                                  </span>
+                                  {hoveredItem === `${item.displayname}-${item.canon_id}` && item.artwork && (
+                                    <div
+                                      className="fixed bg-fourth border border-fourth rounded-lg shadow-xl z-[9999]"
+                                      style={{
+                                        left: `${mousePosition.x + 10}px`,
+                                        top: `${mousePosition.y - 10}px`
+                                      }}
+                                    >
+                                      <img
+                                        src={item.artwork}
+                                        alt={item.displayname}
+                                        className="max-h-[60px] rounded-lg"
+                                      />
+                                    </div>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-xs text-fifth/70 italic">No items found</p>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -425,7 +459,17 @@ export function Discography() {
             <h1 className="text-sm font-semibold pl-2">
               Discography
             </h1>
-            <div className="relative" ref={dropdownRef}>
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                <button
+                  onClick={() => setUseAdminView(true)}
+                  className="text-xs px-2 py-0.5 rounded border border-fourth bg-canvas hover:bg-primary transition-colors font-medium"
+                  title="Switch to admin view"
+                >
+                  Admin View
+                </button>
+              )}
+              <div className="relative" ref={dropdownRef}>
               <div className="md:hidden">
                 <div className="relative">
                   <button
@@ -514,6 +558,7 @@ export function Discography() {
                   </div>
                 </div>
               )}
+              </div>
             </div>
           </div>
         </div>
