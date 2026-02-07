@@ -2,7 +2,7 @@ import { useAuth } from './context/AuthContext';
 import { useSidebar, SidebarProvider } from './context/SidebarContext';
 import { supabase } from './lib/supabase';
 import { useState, useRef, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { Home } from './components/Home';
 import { Years } from './components/Years';
@@ -37,6 +37,7 @@ import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 import { Joty } from './components/Joty';
 import { Wted } from './components/Wted';
 import { WtedEpisode } from './components/WtedEpisode';
+import { WL } from './components/WL/WL';
 import sparklePic from './img/sparkle.png';
 import bgTile from './img/bg_tile.jpg';
 
@@ -57,7 +58,9 @@ function App() {
   const [showId, setShowId] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+  const isWLRoute = location.pathname === '/wl';
   const [username, setUsername] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   
@@ -266,8 +269,9 @@ function App() {
     <div 
       className="flex flex-col min-h-screen lg:min-w-[1500px] min-w-0 max-w-full overflow-x-hidden"
     >
-      {/* Header with integrated navigation - Only shown on desktop */}
-      <div className="hidden lg:block">
+      {/* Header with integrated navigation - Only shown on desktop - Hidden on WL route */}
+      {!isWLRoute && (
+        <div className="hidden lg:block">
         <header className="z-20 bg-canvas border-b border-fourth md:sticky md:top-0 shadow-xl">
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)}
@@ -308,21 +312,22 @@ function App() {
             rightSideElements={<UserMenu />}
           />
         </header>
-      </div>
+        </div>
+      )}
 
       {/* Content container */}
       <div 
         className="flex-1 flex overflow-x-hidden max-w-full"
-        style={{
+        style={!isWLRoute ? {
           backgroundImage: `url(${bgTile})`,
           backgroundRepeat: 'repeat',
           backgroundAttachment: 'scroll',
           backgroundPosition: '0 0',
           backgroundSize: 'auto'
-        }}
+        } : undefined}
       >
-        {/* Overlay - make sure it's behind the sidebar but above dropdowns, and below header */}
-        {isSidebarOpen && (
+        {/* Overlay - make sure it's behind the sidebar but above dropdowns, and below header - Hidden on WL route */}
+        {!isWLRoute && isSidebarOpen && (
           <div
             className="fixed bg-black/50 backdrop-blur-sm z-[100] md:hidden"
             style={{ top: '50px', left: 0, right: 0, bottom: 0 }}
@@ -330,10 +335,11 @@ function App() {
           />
         )}
 
-        {/* Mobile Sidebar - ensure it's above the overlay */}
-        <div className={`${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:hidden fixed w-64 h-[calc(100%-50px)] top-[50px] z-[30000] transition-transform duration-300 ease-in-out`}>
+        {/* Mobile Sidebar - ensure it's above the overlay - Hidden on WL route */}
+        {!isWLRoute && (
+          <div className={`${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:hidden fixed w-64 h-[calc(100%-50px)] top-[50px] z-[30000] transition-transform duration-300 ease-in-out`}>
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)} 
             openShowModal={openShowModal}
@@ -341,14 +347,16 @@ function App() {
             onClose={() => setIsSidebarOpen(false)}
             isMobile={true}
           />
-        </div>
+          </div>
+        )}
 
         {/* Main content wrapper */}
         <div 
           className="flex-1 flex flex-col relative max-w-full min-w-0 w-full"
         >
-          {/* Mobile-only header */}
-          <header className="z-[200] bg-canvas border-b border-fourth p-2 lg:hidden shadow-xl relative">
+          {/* Mobile-only header - Hidden on WL route */}
+          {!isWLRoute && (
+            <header className="z-[200] bg-canvas border-b border-fourth p-2 lg:hidden shadow-xl relative">
             <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full px-2">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -376,6 +384,7 @@ function App() {
               </div>
             </div>
           </header>
+          )}
 
           {/* Main content */}
           <main className="flex-1 w-full max-w-full min-w-0 overflow-x-hidden flex flex-col">
@@ -429,18 +438,25 @@ function App() {
                     <Bugs />
                   </ProtectedRoute>
                 } />
+                <Route path="/wl" element={
+                  <ProtectedRoute adminOnly>
+                    <WL />
+                  </ProtectedRoute>
+                } />
                 <Route path="/setlistgame" element={<SetlistGame />} />
                 <Route path="/setlistgame/tour/:tourId" element={<TourDetailsPage />} />
                 <Route path="/setlistgame/:showId" element={<SetlistGameShowPage />} />
               </Routes>
             </div>
             
-            {/* Footer */}
-            <footer className="text-center text-fifth/70 text-[0.625rem] leading-[0.75rem] mt-4">
+            {/* Footer - Hidden on WL route */}
+            {!isWLRoute && (
+              <footer className="text-center text-fifth/70 text-[0.625rem] leading-[0.75rem] mt-4">
               <div className="bg-primary lg:max-w-none max-w-[1280px] lg:mx-0 mx-auto px-4 py-1 border-t border-fourth">
                 <p>All statistical information and computations copyright ©2022-2026, Brian Watson and Dripfield.pro. No portion of this website's content may be reproduced without permission. Song lyrics and titles are the copyright of No Coincidence Records, Factory Underground Records, and their respective publishers, including Lantern Collective, Master Cat Music, Gong Gang, Potato Party, Space Panther Music, and Spun Haus Productions. Show posters and artwork are the copyright of their respective artists.</p>
               </div>
             </footer>
+            )}
           </main>
         </div>
       </div>

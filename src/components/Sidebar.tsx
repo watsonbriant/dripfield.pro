@@ -50,8 +50,10 @@ export function Sidebar({
 
   // For mobile: vertical sidebar
   if (isMobile) {
-    // Filter out "Jam of the Year" from mobile navigation
-    const mobileNavigation = filteredNavigation.filter(item => item.name !== 'Jam of the Year');
+    // Filter out "Jam of the Year" and "WTED Program Director" from mobile navigation
+    const mobileNavigation = filteredNavigation.filter(item => 
+      item.name !== 'Jam of the Year' && item.name !== 'WTED Program Director'
+    );
     return (
       <MobileSidebar 
         navigation={mobileNavigation}
@@ -61,8 +63,9 @@ export function Sidebar({
   }
   
   // For desktop: horizontal navigation
-  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game, WTED Program Director
-  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'WTED Program Director'];
+  // Get main nav items: Tours, Songs, Personnel, Venues, Discography, Lists, Setlist Game
+  // const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game', 'WTED Program Director'];
+  const mainNavItemNames = ['Tours', 'Songs', 'Personnel', 'Venues', 'Discography', 'Lists', 'Setlist Game'];
   const mainNavItems = mainNavItemNames
     .map(name => {
       const item = filteredNavigation.find(item => item.name === name && !item.mobileOnly);
@@ -74,7 +77,7 @@ export function Sidebar({
     })
     .filter((item): item is NavItem => item !== undefined);
   
-  // Get admin items: Admin Panel, Bug Tracker, Find (exclude WTED Program Director since it's in main nav)
+  // Get admin items: Admin Panel, Bug Tracker, Find (exclude WTED Program Director)
   const adminNavItems = filteredNavigation.filter(item => 
     item.adminOnly && !item.mobileOnly && item.name !== 'WTED Program Director'
   );
