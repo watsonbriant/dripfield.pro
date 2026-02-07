@@ -267,7 +267,7 @@ function App() {
 
   return (
     <div 
-      className="flex flex-col min-h-screen lg:min-w-[1500px] min-w-0 max-w-full overflow-x-hidden"
+      className={`flex flex-col min-h-screen min-w-0 max-w-full overflow-x-hidden ${isWLRoute ? 'lg:min-w-7xl' : 'lg:min-w-[1500px]'}`}
     >
       {/* Header with integrated navigation - Only shown on desktop - Hidden on WL route */}
       {!isWLRoute && (
@@ -388,7 +388,7 @@ function App() {
 
           {/* Main content */}
           <main className="flex-1 w-full max-w-full min-w-0 overflow-x-hidden flex flex-col">
-            <div className="flex-1 p-4">
+            <div className={`flex-1 ${!isWLRoute ? 'p-4' : ''}`}>
               <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Home />} />

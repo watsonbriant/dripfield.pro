@@ -2,26 +2,27 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { User, ChevronDown } from 'lucide-react';
+import { User, ChevronDown, BoomBox, MessageSquare, ListMusic, CircleHelp, Link as LinkIcon, Menu, X } from 'lucide-react';
 import sparklePic from '../../img/sparkle.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
+import wlCommunityLogo from '../../img/wl/wl-community-logo.png';
 
 export function WLHeader() {
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const navMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [sparkle, setSparkle] = useState({ show: false, x: 0, y: 0 });
   const sparkleTimeoutRef = useRef<number | null>(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   // Handle window resize to detect mobile
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024);
     };
     
     window.addEventListener('resize', handleResize);
@@ -34,6 +35,9 @@ export function WLHeader() {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+      }
+      if (navMenuRef.current && !navMenuRef.current.contains(event.target as Node)) {
+        setIsNavMenuOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -113,37 +117,144 @@ export function WLHeader() {
   const displayText = username || (user?.email ? user.email.split('@')[0] : 'User');
 
   return (
-    <header className="bg-canvas border-b border-fourth shadow-xl">
-      <div className="max-w-[1500px] mx-auto px-4 py-2">
-        <div className="flex items-center justify-between">
-          {/* Logo/Title Section */}
-          <div className="flex items-center gap-4">
-            <Link
-              to="/wl"
-              className="text-lg font-bold text-fifth hover:text-tertiary transition-colors"
-            >
-              WL - New Site Design
-            </Link>
-          </div>
+    <>
+      {/* Overlay for mobile menu */}
+      {isNavMenuOpen && isMobile && (
+        <div
+          className="fixed bg-black/50 backdrop-blur-sm z-[100] lg:hidden"
+          style={{ top: 0, left: 0, right: 0, bottom: 0 }}
+          onClick={() => setIsNavMenuOpen(false)}
+        />
+      )}
 
-          {/* Right Side - User Menu & Actions */}
-          <div className="flex items-center">
+      {/* Mobile Navigation Menu - slides in from left */}
+      <div className={`${
+        isNavMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:hidden fixed w-64 h-full top-0 z-[30000] transition-transform duration-300 ease-in-out bg-canvas border-r border-fourth`}>
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-4 border-b border-fourth">
+            <h2 className="text-lg font-semibold text-fifth">Menu</h2>
+            <button
+              onClick={() => setIsNavMenuOpen(false)}
+              className="p-1 rounded-md hover:bg-tertiary/20 transition-colors"
+            >
+              <X className="w-6 h-6 text-fifth" />
+            </button>
+          </div>
+          <nav className="flex-1 px-2 py-4 overflow-y-auto">
+            <button
+              className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
+              onClick={() => setIsNavMenuOpen(false)}
+            >
+              <BoomBox className="w-5 h-5 flex-shrink-0 text-fifth" />
+              <span className="text-sm font-medium text-fifth">WTED Goose Radio</span>
+            </button>
+            <button
+              className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
+              onClick={() => setIsNavMenuOpen(false)}
+            >
+              <MessageSquare className="w-5 h-5 flex-shrink-0 text-fifth" />
+              <span className="text-sm font-medium text-fifth">Community Forum</span>
+            </button>
+            <button
+              className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
+              onClick={() => setIsNavMenuOpen(false)}
+            >
+              <ListMusic className="w-5 h-5 flex-shrink-0 text-fifth" />
+              <span className="text-sm font-medium text-fifth">Setlist Archive</span>
+            </button>
+            <button
+              className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
+              onClick={() => setIsNavMenuOpen(false)}
+            >
+              <CircleHelp className="w-5 h-5 flex-shrink-0 text-fifth" />
+              <span className="text-sm font-medium text-fifth">Goose 101</span>
+            </button>
+            <button
+              className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 rounded-md"
+              onClick={() => setIsNavMenuOpen(false)}
+            >
+              <LinkIcon className="w-5 h-5 flex-shrink-0 text-fifth" />
+              <span className="text-sm font-medium text-fifth">Links</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <header className="bg-wl-green border-b border-fourth shadow-xl relative z-10">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Mobile: Hamburger on left, Desktop: Logo on left */}
+            <div className="flex items-center gap-4">
+              {/* Mobile Hamburger Menu Button */}
+              <button
+                onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
+                className="lg:hidden inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey transition-colors focus:outline-none border border-fourth"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              
+              {/* Logo/Title Section - Hidden on mobile, shown on desktop */}
+              <Link
+                to="/wl"
+                className="hidden lg:flex items-center gap-2 text-lg font-semibold leading-tight text-fifth hover:text-tertiary transition-colors"
+              >
+                <img 
+                  src={wlCommunityLogo} 
+                  alt="Wysteria Lane Community Logo" 
+                  className="h-8 w-auto"
+                />
+                Wysteria Lane
+              </Link>
+            </div>
+
+            {/* Mobile: Centered Logo/Title */}
+            <div className="lg:hidden flex-1 flex justify-center">
+              <Link
+                to="/wl"
+                className="flex items-center gap-2 text-lg font-semibold leading-tight text-fifth hover:text-tertiary transition-colors"
+              >
+                <img 
+                  src={wlCommunityLogo} 
+                  alt="Wysteria Lane Community Logo" 
+                  className="h-8 w-auto"
+                />
+                Wysteria Lane
+              </Link>
+            </div>
+
+            {/* Center Navigation Buttons - Desktop Only */}
+            <div className="hidden lg:flex items-center gap-2">
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+                <BoomBox className="w-4 h-4 flex-shrink-0" />
+                <span className="font-medium text-sm">WTED Goose Radio</span>
+              </button>
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+                <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                <span className="font-medium text-sm">Community Forum</span>
+              </button>
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+                <ListMusic className="w-4 h-4 flex-shrink-0" />
+                <span className="font-medium text-sm">Setlist Archive</span>
+              </button>
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+                <CircleHelp className="w-4 h-4 flex-shrink-0" />
+                <span className="font-medium text-sm">Goose 101</span>
+              </button>
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+                <LinkIcon className="w-4 h-4 flex-shrink-0" />
+                <span className="font-medium text-sm">Links</span>
+              </button>
+            </div>
+
+            {/* Right Side - User Menu & Actions */}
+            <div className="flex items-center">
             {!user ? (
               <>
                 <Link
-                  to="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
-                  }}
-                  className="relative px-1.5 py-0.5 text-sm font-medium text-white bg-fourth hover:bg-tertiary hover:text-fifth rounded-lg transition-colors border border-fourth mr-2 hidden md:block"
-                >
-                  Donate
-                </Link>
-                <Link
                   to="/login"
                   state={{ from: location }}
-                  className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-tertiary text-fourth font-medium hover:bg-fourth hover:text-white transition-colors focus:outline-none border border-fourth"
+                  className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey hover:text-white transition-colors focus:outline-none border border-fourth"
                   onClick={(e) => {
                     // Only show sparkle on non-mobile
                     if (!isMobile) {
@@ -182,39 +293,17 @@ export function WLHeader() {
               </>
             ) : (
               <>
-                <a
-                  href="https://x.com/dripfieldpro"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mx-2 text-white hover:border border border-fifth hidden md:block hover:border-fourth rounded-lg px-1 hover:text-white hover:bg-fourth bg-fifth transition-colors transition-all duration-300 hover:drop-shadow-[2px_2px_0px_rgba(244,155,29,1)]"
-                >
-                  <FontAwesomeIcon
-                    icon={faXTwitter}
-                    size="1x"
-                  />
-                </a>
-
-                <Link
-                  to="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.open('https://www.paypal.com/donate/?hosted_button_id=RGT26R3CG44YJ', '_blank');
-                  }}
-                  className={`relative px-1.5 py-0.5 text-sm font-medium text-fifth bg-fourth text-white hover:bg-tertiary hover:text-fifth rounded-lg transition-colors border border-fifth mr-2 hidden md:block`}
-                >
-                  Donate
-                </Link>
                 <div className="relative" ref={menuRef}>
                   <button
                     type="button"
-                    className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-tertiary text-fourth font-medium hover:bg-fourth hover:text-white transition-colors focus:outline-none border border-fourth"
+                    className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey hover:text-white transition-colors focus:outline-none border border-fourth"
                     onClick={handleButtonClick}
                   >
                     {/* Show User icon on mobile, username on desktop */}
-                    <span className="md:hidden">
+                    <span className="lg:hidden">
                       <User className="w-5 h-5" />
                     </span>
-                    <span className="hidden md:inline text-sm">
+                    <span className="hidden lg:inline text-sm">
                       {displayText}
                     </span>
                     <ChevronDown className="w-4 h-4" />
@@ -235,20 +324,6 @@ export function WLHeader() {
                   
                   {isOpen && (
                     <div className="absolute right-0 mt-2 bg-canvas border border-fourth rounded-lg shadow-lg z-50 overflow-y-auto w-24 font-medium">
-                      <Link
-                        to="/profile"
-                        className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-tertiary hover:underline transition-colors block"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        My Stats
-                      </Link>
-                      <Link
-                        to="/settings"
-                        className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-tertiary hover:underline transition-colors block"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Settings
-                      </Link>
                       <button
                         className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-tertiary hover:underline transition-colors block"
                         onClick={handleSignOut}
@@ -264,6 +339,7 @@ export function WLHeader() {
         </div>
       </div>
     </header>
+    </>
   );
 }
 
