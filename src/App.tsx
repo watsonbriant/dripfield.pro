@@ -38,6 +38,7 @@ import { Joty } from './components/Joty';
 import { Wted } from './components/Wted';
 import { WtedEpisode } from './components/WtedEpisode';
 import { WL } from './components/WL/WL';
+import { Goose101 } from './components/WL/Goose101';
 import sparklePic from './img/sparkle.png';
 import bgTile from './img/bg_tile.jpg';
 
@@ -60,7 +61,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const isWLRoute = location.pathname === '/wl';
+  const isWLRoute = location.pathname.startsWith('/wl');
   const [username, setUsername] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   
@@ -441,6 +442,11 @@ function App() {
                 <Route path="/wl" element={
                   <ProtectedRoute adminOnly>
                     <WL />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wl/goose101" element={
+                  <ProtectedRoute adminOnly>
+                    <Goose101 />
                   </ProtectedRoute>
                 } />
                 <Route path="/setlistgame" element={<SetlistGame />} />

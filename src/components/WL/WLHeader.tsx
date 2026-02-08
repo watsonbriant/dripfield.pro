@@ -122,34 +122,42 @@ export function WLHeader() {
             </button>
           </div>
           <nav className="flex-1 px-2 py-4 overflow-y-auto">
-            <button
+            <a
+              href="https://www.wtedradio.com/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
               onClick={() => setIsNavMenuOpen(false)}
             >
               <BoomBox className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">WTED Goose Radio</span>
-            </button>
-            <button
+            </a>
+            <a
+              href="https://community.wysterialane.org/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
               onClick={() => setIsNavMenuOpen(false)}
             >
               <MessageSquare className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">Community Forum</span>
-            </button>
-            <button
+            </a>
+            <Link
+              to="/"
               className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
               onClick={() => setIsNavMenuOpen(false)}
             >
               <ListMusic className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">Setlist Archive</span>
-            </button>
-            <button
+            </Link>
+            <Link
+              to="/wl/goose101"
               className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
               onClick={() => setIsNavMenuOpen(false)}
             >
               <CircleHelp className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">Goose 101</span>
-            </button>
+            </Link>
             <button
               className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 rounded-md"
               onClick={() => setIsNavMenuOpen(false)}
@@ -169,7 +177,7 @@ export function WLHeader() {
               {/* Mobile Hamburger Menu Button */}
               <button
                 onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
-                className="lg:hidden inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey transition-colors focus:outline-none border border-fourth"
+                className="lg:hidden inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey transition-colors focus:outline-none"
               >
                 <Menu className="w-5 h-5" />
               </button>
@@ -205,22 +213,38 @@ export function WLHeader() {
 
             {/* Center Navigation Buttons - Desktop Only */}
             <div className="hidden lg:flex items-center gap-3">
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
+              <a 
+                href="https://www.wtedradio.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+              >
                 <BoomBox className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">WTED Goose Radio</span>
-              </button>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
+              </a>
+              <a 
+                href="https://community.wysterialane.org/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+              >
                 <MessageSquare className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Community Forum</span>
-              </button>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
+              </a>
+              <Link
+                to="/"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+              >
                 <ListMusic className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Setlist Archive</span>
-              </button>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
+              </Link>
+              <Link 
+                to="/wl/goose101"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+              >
                 <CircleHelp className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Goose 101</span>
-              </button>
+              </Link>
               <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
                 <LinkIcon className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Links</span>
