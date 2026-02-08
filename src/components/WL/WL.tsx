@@ -51,7 +51,7 @@ export function WL() {
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="First"
                       required
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange"
+                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange shadow-xl"
                     />
                   </div>
                   <div className="flex-1">
@@ -61,7 +61,7 @@ export function WL() {
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Last"
                       required
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange"
+                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange shadow-xl"
                     />
                   </div>
                 </div>
@@ -78,7 +78,7 @@ export function WL() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   required
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange shadow-xl"
                 />
               </div>
 
@@ -92,7 +92,7 @@ export function WL() {
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Comment or Message"
                   rows={6}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange resize-y"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wl-orange resize-y shadow-xl"
                 />
               </div>
 
@@ -100,7 +100,7 @@ export function WL() {
               <div className="flex justify-center">
                 <button
                   type="submit"
-                  className="bg-wl-orange hover:bg-wl-light-orange text-wl-black font-medium px-6 py-2 rounded transition-colors hover:scale-105 transition-transform duration-300"
+                  className="bg-wl-orange hover:bg-wl-light-orange text-wl-black font-medium px-6 py-2 rounded transition-all duration-300 shadow-xl hover:scale-105"
                 >
                   Submit
                 </button>

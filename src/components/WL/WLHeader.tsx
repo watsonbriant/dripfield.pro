@@ -217,7 +217,7 @@ export function WLHeader() {
                 href="https://www.wtedradio.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
               >
                 <BoomBox className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">WTED Goose Radio</span>
@@ -226,21 +226,21 @@ export function WLHeader() {
                 href="https://community.wysterialane.org/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
               >
                 <MessageSquare className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Community Forum</span>
               </a>
               <Link
                 to="/"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
               >
                 <ListMusic className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Setlist Archive</span>
               </Link>
               <Link 
                 to="/wl/goose101"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
               >
                 <CircleHelp className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Goose 101</span>
