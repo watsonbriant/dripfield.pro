@@ -100,7 +100,7 @@ export function WL() {
               <div className="flex justify-center">
                 <button
                   type="submit"
-                  className="bg-wl-orange hover:bg-wl-light-orange text-white font-medium px-6 py-2 rounded transition-colors"
+                  className="bg-wl-orange hover:bg-wl-light-orange text-wl-black font-medium px-6 py-2 rounded transition-colors hover:scale-105 transition-transform duration-300"
                 >
                   Submit
                 </button>
