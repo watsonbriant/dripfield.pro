@@ -122,16 +122,14 @@ export function WLHeader() {
             </button>
           </div>
           <nav className="flex-1 px-2 py-4 overflow-y-auto">
-            <a
-              href="https://www.wtedradio.com/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/wl/wted"
               className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
               onClick={() => setIsNavMenuOpen(false)}
             >
               <BoomBox className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">WTED Goose Radio</span>
-            </a>
+            </Link>
             <a
               href="https://community.wysterialane.org/"
               target="_blank"
@@ -213,15 +211,13 @@ export function WLHeader() {
 
             {/* Center Navigation Buttons - Desktop Only */}
             <div className="hidden lg:flex items-center gap-3">
-              <a 
-                href="https://www.wtedradio.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              <Link 
+                to="/wl/wted"
                 className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
               >
                 <BoomBox className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">WTED Goose Radio</span>
-              </a>
+              </Link>
               <a 
                 href="https://community.wysterialane.org/" 
                 target="_blank" 

@@ -39,6 +39,7 @@ import { Wted } from './components/Wted';
 import { WtedEpisode } from './components/WtedEpisode';
 import { WL } from './components/WL/WL';
 import { Goose101 } from './components/WL/Goose101';
+import { WTED } from './components/WL/WTED';
 import sparklePic from './img/sparkle.png';
 import bgTile from './img/bg_tile.jpg';
 
@@ -447,6 +448,11 @@ function App() {
                 <Route path="/wl/goose101" element={
                   <ProtectedRoute adminOnly>
                     <Goose101 />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wl/wted" element={
+                  <ProtectedRoute adminOnly>
+                    <WTED />
                   </ProtectedRoute>
                 } />
                 <Route path="/setlistgame" element={<SetlistGame />} />
