@@ -204,24 +204,24 @@ export function WLHeader() {
             </div>
 
             {/* Center Navigation Buttons - Desktop Only */}
-            <div className="hidden lg:flex items-center gap-2">
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+            <div className="hidden lg:flex items-center gap-3">
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
                 <BoomBox className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">WTED Goose Radio</span>
               </button>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
                 <MessageSquare className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Community Forum</span>
               </button>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
                 <ListMusic className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Setlist Archive</span>
               </button>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
                 <CircleHelp className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Goose 101</span>
               </button>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-light-orange text-wl-black rounded-lg border border-wl-black transition-all duration-300 hover:bg-wl-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)]">
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
                 <LinkIcon className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Links</span>
               </button>
@@ -276,7 +276,7 @@ export function WLHeader() {
                 <div className="relative" ref={menuRef}>
                   <button
                     type="button"
-                    className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey hover:text-white transition-colors focus:outline-none border border-fourth"
+                    className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey hover:text-white transition-colors focus:outline-none"
                     onClick={handleButtonClick}
                   >
                     {/* Show User icon on mobile, username on desktop */}
@@ -290,9 +290,9 @@ export function WLHeader() {
                   </button>
                   
                   {isOpen && (
-                    <div className="absolute right-0 mt-2 bg-canvas border border-fourth rounded-lg shadow-lg z-50 overflow-y-auto w-24 font-medium">
+                    <div className="absolute right-0 mt-2 bg-wl-light-orange rounded-lg shadow-lg z-50 overflow-y-auto w-24 font-medium">
                       <button
-                        className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-tertiary hover:underline transition-colors block"
+                        className="w-full text-left px-2 py-0.5 text-[0.625rem] hover:bg-wl-orange hover:underline transition-colors block"
                         onClick={handleSignOut}
                       >
                         Sign Out
