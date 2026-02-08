@@ -4,7 +4,7 @@ import { WLFooter } from './WLFooter';
 
 export function WL() {
   return (
-    <div className="flex flex-col min-h-screen bg-black">
+    <div className="flex flex-col min-h-screen bg-wl-dark-green">
       <WLHeader />
       
       <main className="flex-1 p-4">

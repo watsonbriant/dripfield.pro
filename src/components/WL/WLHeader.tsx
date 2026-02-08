@@ -83,27 +83,7 @@ export function WLHeader() {
     fetchUsername();
   }, [user]);
 
-  const handleButtonClick = (e: React.MouseEvent) => {
-    // Only show sparkle on non-mobile
-    if (!isMobile) {
-      // Get click position relative to the button
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      // Show sparkle
-      setSparkle({ show: true, x, y });
-      
-      // Hide sparkle after animation completes
-      if (sparkleTimeoutRef.current) {
-        window.clearTimeout(sparkleTimeoutRef.current);
-      }
-      
-      sparkleTimeoutRef.current = window.setTimeout(() => {
-        setSparkle({ show: false, x: 0, y: 0 });
-      }, 500); // Animation duration
-    }
-
+  const handleButtonClick = () => {
     // Toggle menu
     setIsOpen(!isOpen);
   };
@@ -197,12 +177,12 @@ export function WLHeader() {
               {/* Logo/Title Section - Hidden on mobile, shown on desktop */}
               <Link
                 to="/wl"
-                className="hidden lg:flex items-center gap-2 text-lg font-semibold leading-tight text-fifth hover:text-tertiary transition-colors"
+                className="hidden lg:flex items-center gap-2 text-lg font-semibold leading-tight text-fifth transition-colors group no-underline hover:no-underline"
               >
                 <img 
                   src={wlCommunityLogo} 
                   alt="Wysteria Lane Community Logo" 
-                  className="h-8 w-auto"
+                  className="h-8 w-auto transition-transform duration-200 group-hover:scale-110"
                 />
                 Wysteria Lane
               </Link>
@@ -212,12 +192,12 @@ export function WLHeader() {
             <div className="lg:hidden flex-1 flex justify-center">
               <Link
                 to="/wl"
-                className="flex items-center gap-2 text-lg font-semibold leading-tight text-fifth hover:text-tertiary transition-colors"
+                className="flex items-center gap-2 text-lg font-semibold leading-tight text-fifth transition-colors group no-underline hover:no-underline"
               >
                 <img 
                   src={wlCommunityLogo} 
                   alt="Wysteria Lane Community Logo" 
-                  className="h-8 w-auto"
+                  className="h-8 w-auto transition-transform duration-200 group-hover:scale-110"
                 />
                 Wysteria Lane
               </Link>
@@ -307,19 +287,6 @@ export function WLHeader() {
                       {displayText}
                     </span>
                     <ChevronDown className="w-4 h-4" />
-                    
-                    {/* Sparkle effect - only on desktop */}
-                    {sparkle.show && !isMobile && (
-                      <img 
-                        src={sparklePic}
-                        alt=""
-                        className="sparkle absolute pointer-events-none"
-                        style={{
-                          left: `${sparkle.x - 10}px`,
-                          top: `${sparkle.y - 10}px`,
-                        }}
-                      />
-                    )}
                   </button>
                   
                   {isOpen && (
