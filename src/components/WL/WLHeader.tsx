@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { User, ChevronDown, BoomBox, MessageSquare, ListMusic, CircleHelp, Link as LinkIcon, Menu, X } from 'lucide-react';
@@ -13,11 +13,11 @@ export function WLHeader() {
   const [username, setUsername] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navMenuRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const location = useLocation();
   const [sparkle, setSparkle] = useState({ show: false, x: 0, y: 0 });
   const sparkleTimeoutRef = useRef<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const isWTEDRoute = location.pathname.startsWith('/wl/wted');
 
   // Handle window resize to detect mobile
   useEffect(() => {
@@ -130,6 +130,46 @@ export function WLHeader() {
               <BoomBox className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">WTED Goose Radio</span>
             </Link>
+            {/* WTED Submenu - Only visible when on WTED routes */}
+            {isWTEDRoute && (
+              <>
+                <Link
+                  to="/wl/wted"
+                  className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
+                  onClick={() => setIsNavMenuOpen(false)}
+                >
+                  WTED Info
+                </Link>
+                <Link
+                  to="/wl/wted/gorps"
+                  className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
+                  onClick={() => setIsNavMenuOpen(false)}
+                >
+                  GORPs and Contributors
+                </Link>
+                <Link
+                  to="/wl/wted/shows"
+                  className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
+                  onClick={() => setIsNavMenuOpen(false)}
+                >
+                  Shows and More
+                </Link>
+                <Link
+                  to="/wl/wted/aboutus"
+                  className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
+                  onClick={() => setIsNavMenuOpen(false)}
+                >
+                  About Us and FAQ
+                </Link>
+                <Link
+                  to="/wl/wted/support"
+                  className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
+                  onClick={() => setIsNavMenuOpen(false)}
+                >
+                  Support WTED
+                </Link>
+              </>
+            )}
             <a
               href="https://community.wysterialane.org/"
               target="_blank"
@@ -325,6 +365,46 @@ export function WLHeader() {
           </div>
         </div>
       </div>
+      
+      {/* Secondary Navigation - Only visible on WTED routes, hidden on mobile */}
+      {isWTEDRoute && (
+        <div className="hidden lg:block bg-wl-light-orange">
+          <div className="max-w-7xl mx-auto px-4 py-0.5">
+            <nav className="flex flex-wrap items-center justify-center gap-1 lg:gap-2">
+              <Link
+                to="/wl/wted"
+                className="px-2 py-0.5 rounded-lg text-xs font-medium transition-all duration-300 no-underline hover:no-underline bg-wl-dark-green text-wl-white hover:bg-wl-dark-grey hover:scale-105"
+              >
+                WTED Info
+              </Link>
+              <Link
+                to="/wl/wted/gorps"
+                className="px-2 py-0.5 rounded-lg text-xs font-medium transition-all duration-300 no-underline hover:no-underline bg-wl-dark-green text-wl-white hover:bg-wl-dark-grey hover:scale-105"
+              >
+                GORPs and Contributors
+              </Link>
+              <Link
+                to="/wl/wted/shows"
+                className="px-2 py-0.5 rounded-lg text-xs font-medium transition-all duration-300 no-underline hover:no-underline bg-wl-dark-green text-wl-white hover:bg-wl-dark-grey hover:scale-105"
+              >
+                Shows and More
+              </Link>
+              <Link
+                to="/wl/wted/aboutus"
+                className="px-2 py-0.5 rounded-lg text-xs font-medium transition-all duration-300 no-underline hover:no-underline bg-wl-dark-green text-wl-white hover:bg-wl-dark-grey hover:scale-105"
+              >
+                About Us and FAQ
+              </Link>
+              <Link
+                to="/wl/wted/support"
+                className="px-2 py-0.5 rounded-lg text-xs font-medium transition-all duration-300 no-underline hover:no-underline bg-wl-dark-green text-wl-white hover:bg-wl-dark-grey hover:scale-105"
+              >
+                Support WTED
+              </Link>
+            </nav>
+          </div>
+        </div>
+      )}
       
       {/* Radio Player - Persistent across WL routes */}
       <div className="bg-[#65b3a0]">

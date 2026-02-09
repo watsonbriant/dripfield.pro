@@ -119,6 +119,14 @@ export function WTED() {
 
   return (
     <div ref={containerRef} className="flex flex-col h-full bg-wl-dark-green">
+      {/* Add CSS for list item padding */}
+      <style>{`
+        .radioco_history20 ul li {
+          padding-bottom: 10px;
+          padding-left: 1.5rem;
+          text-indent: -1.5rem;
+        }
+      `}</style>
       <main className="flex-1">
         <div className="max-w-7xl mx-auto">
           <div className="m-8">
@@ -197,8 +205,38 @@ export function WTED() {
             
             <hr className="border-wl-orange my-6 clear-both" />
             
-            {/* Radio.co history script will render content here */}
-            <div ref={historyContainerRef} id="radio-co-history" className="radio-co-history-container text-wl-white font-medium"></div>
+            {/* Two-column layout: Request widget (left) and Recently Played Tracks (right) */}
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Left column: Request widget */}
+              <div className="flex-1">
+                <h2 className="text-wl-white text-lg font-bold mb-4 text-center">Request a Song</h2>
+                <iframe
+                  src="https://embed.radio.co/request/w2255950.html"
+                  width="100%"
+                  allow="autoplay"
+                  scrolling="no"
+                  className="shadow-xl w-full"
+                  style={{
+                    border: 'none',
+                    overflow: 'hidden',
+                    height: '500px'
+                  }}
+                ></iframe>
+              </div>
+              
+              {/* Horizontal divider - visible on mobile, hidden on desktop */}
+              <hr className="border-wl-orange my-0 lg:hidden" />
+              
+              {/* Vertical divider - hidden on mobile, visible on desktop */}
+              <div className="hidden lg:block border-l border-wl-orange"></div>
+              
+              {/* Right column: Recently Played Tracks */}
+              <div className="flex-1">
+                <h2 className="text-wl-white text-lg font-bold mb-4 text-center">Recently Played Tracks</h2>
+                {/* Radio.co history script will render content here */}
+                <div ref={historyContainerRef} id="radio-co-history" className="radio-co-history-container text-wl-white font-base leading-[1rem]"></div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

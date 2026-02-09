@@ -40,6 +40,10 @@ import { WtedEpisode } from './components/WtedEpisode';
 import { WL } from './components/WL/WL';
 import { Goose101 } from './components/WL/Goose101';
 import { WTED } from './components/WL/WTED';
+import { WTEDGorps } from './components/WL/WTEDGorps';
+import { WTEDShows } from './components/WL/WTEDShows';
+import { WTEDAboutUs } from './components/WL/WTEDAboutUs';
+import { WTEDSupport } from './components/WL/WTEDSupport';
 import { WLHeader } from './components/WL/WLHeader';
 import { WLFooter } from './components/WL/WLFooter';
 import sparklePic from './img/sparkle.png';
@@ -458,6 +462,26 @@ function App() {
                 <Route path="/wl/wted" element={
                   <ProtectedRoute adminOnly>
                     <WTED />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wl/wted/gorps" element={
+                  <ProtectedRoute adminOnly>
+                    <WTEDGorps />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wl/wted/shows" element={
+                  <ProtectedRoute adminOnly>
+                    <WTEDShows />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wl/wted/aboutus" element={
+                  <ProtectedRoute adminOnly>
+                    <WTEDAboutUs />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wl/wted/support" element={
+                  <ProtectedRoute adminOnly>
+                    <WTEDSupport />
                   </ProtectedRoute>
                 } />
                 <Route path="/setlistgame" element={<SetlistGame />} />
