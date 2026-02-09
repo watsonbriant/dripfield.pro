@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { User, ChevronDown, BoomBox, MessageSquare, ListMusic, CircleHelp, Link as LinkIcon, Menu, X } from 'lucide-react';
+import { User, ChevronDown, ChevronRight, BoomBox, MessageSquare, ListMusic, CircleHelp, Link as LinkIcon, Menu, X } from 'lucide-react';
 import sparklePic from '../../img/sparkle.png';
 import wlCommunityLogo from '../../img/wl/wl-community-logo.png';
 
@@ -14,9 +14,11 @@ export function WLHeader() {
   const menuRef = useRef<HTMLDivElement>(null);
   const navMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const [sparkle, setSparkle] = useState({ show: false, x: 0, y: 0 });
   const sparkleTimeoutRef = useRef<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isWTEDExpanded, setIsWTEDExpanded] = useState(false);
   const isWTEDRoute = location.pathname.startsWith('/wl/wted');
 
   // Handle window resize to detect mobile
@@ -38,6 +40,7 @@ export function WLHeader() {
       }
       if (navMenuRef.current && !navMenuRef.current.contains(event.target as Node)) {
         setIsNavMenuOpen(false);
+        setIsWTEDExpanded(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -98,19 +101,13 @@ export function WLHeader() {
 
   return (
     <>
-      {/* Overlay for mobile menu */}
-      {isNavMenuOpen && isMobile && (
-        <div
-          className="fixed bg-black/50 backdrop-blur-sm z-[100] lg:hidden"
-          style={{ top: 0, left: 0, right: 0, bottom: 0 }}
-          onClick={() => setIsNavMenuOpen(false)}
-        />
-      )}
-
-      {/* Mobile Navigation Menu - slides in from left */}
-      <div className={`${
-        isNavMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:hidden fixed w-64 h-full top-0 z-[30000] transition-transform duration-300 ease-in-out bg-canvas border-r border-fourth`}>
+      {/* Mobile Navigation Menu - slides in from left (rendered first so overlay doesn't block it) */}
+      <div
+        ref={navMenuRef}
+        className={`${
+          isNavMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:hidden fixed w-64 h-full top-0 left-0 z-[30000] transition-transform duration-300 ease-in-out bg-canvas border-r border-fourth`}
+      >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 border-b border-fourth">
             <h2 className="text-lg font-semibold text-fifth">Menu</h2>
@@ -122,52 +119,72 @@ export function WLHeader() {
             </button>
           </div>
           <nav className="flex-1 px-2 py-4 overflow-y-auto">
-            <Link
-              to="/wl/wted"
-              className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 last:border-b-0 rounded-md"
-              onClick={() => setIsNavMenuOpen(false)}
+            <button
+              type="button"
+              className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 rounded-md"
+              onClick={() => setIsWTEDExpanded(!isWTEDExpanded)}
             >
               <BoomBox className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">WTED Goose Radio</span>
-            </Link>
-            {/* WTED Submenu - Only visible when on WTED routes */}
-            {isWTEDRoute && (
+              {isWTEDExpanded ? (
+                <ChevronDown className="w-4 h-4 ml-auto text-fifth" />
+              ) : (
+                <ChevronRight className="w-4 h-4 ml-auto text-fifth" />
+              )}
+            </button>
+            {/* WTED Submenu - visible when expanded */}
+            {isWTEDExpanded && (
               <>
-                <Link
-                  to="/wl/wted"
+                <button
+                  type="button"
                   className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
-                  onClick={() => setIsNavMenuOpen(false)}
+                  onClick={() => {
+                    navigate('/wl/wted');
+                    setIsNavMenuOpen(false);
+                  }}
                 >
                   WTED Info
-                </Link>
-                <Link
-                  to="/wl/wted/gorps"
+                </button>
+                <button
+                  type="button"
                   className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
-                  onClick={() => setIsNavMenuOpen(false)}
+                  onClick={() => {
+                    navigate('/wl/wted/gorps');
+                    setIsNavMenuOpen(false);
+                  }}
                 >
                   GORPs and Contributors
-                </Link>
-                <Link
-                  to="/wl/wted/shows"
+                </button>
+                <button
+                  type="button"
                   className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
-                  onClick={() => setIsNavMenuOpen(false)}
+                  onClick={() => {
+                    navigate('/wl/wted/shows');
+                    setIsNavMenuOpen(false);
+                  }}
                 >
                   Shows and More
-                </Link>
-                <Link
-                  to="/wl/wted/aboutus"
+                </button>
+                <button
+                  type="button"
                   className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
-                  onClick={() => setIsNavMenuOpen(false)}
+                  onClick={() => {
+                    navigate('/wl/wted/aboutus');
+                    setIsNavMenuOpen(false);
+                  }}
                 >
                   About Us and FAQ
-                </Link>
-                <Link
-                  to="/wl/wted/support"
+                </button>
+                <button
+                  type="button"
                   className="w-full text-left px-6 py-2 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 border-b border-fourth/30 text-sm text-fifth/80"
-                  onClick={() => setIsNavMenuOpen(false)}
+                  onClick={() => {
+                    navigate('/wl/wted/support');
+                    setIsNavMenuOpen(false);
+                  }}
                 >
                   Support WTED
-                </Link>
+                </button>
               </>
             )}
             <a
@@ -207,6 +224,14 @@ export function WLHeader() {
         </div>
       </div>
 
+      {/* Overlay for mobile menu - only covers area to the right of sidebar so sidebar stays clickable */}
+      {isNavMenuOpen && isMobile && (
+        <div
+          className="fixed top-0 left-64 bottom-0 right-0 bg-black/50 backdrop-blur-sm z-[29000] lg:hidden"
+          onClick={() => setIsNavMenuOpen(false)}
+        />
+      )}
+
       <header className="bg-[#65b3a0] shadow-xl relative z-10">
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
@@ -214,7 +239,11 @@ export function WLHeader() {
             <div className="flex items-center gap-4">
               {/* Mobile Hamburger Menu Button */}
               <button
-                onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
+                onClick={() => {
+                  const nextOpen = !isNavMenuOpen;
+                  setIsNavMenuOpen(nextOpen);
+                  if (nextOpen && isWTEDRoute) setIsWTEDExpanded(true);
+                }}
                 className="lg:hidden inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-wl-dark-green text-wl-white font-medium hover:bg-wl-dark-grey transition-colors focus:outline-none"
               >
                 <Menu className="w-5 h-5" />
@@ -341,7 +370,7 @@ export function WLHeader() {
                   >
                     {/* Show User icon on mobile, username on desktop */}
                     <span className="lg:hidden">
-                      <User className="w-5 h-5" />
+                      <User className="w-4 h-4" />
                     </span>
                     <span className="hidden lg:inline text-sm">
                       {displayText}
