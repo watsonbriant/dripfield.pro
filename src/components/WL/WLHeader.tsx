@@ -167,7 +167,7 @@ export function WLHeader() {
         </div>
       </div>
 
-      <header className="bg-wl-green shadow-xl relative z-10">
+      <header className="bg-[#65b3a0] shadow-xl relative z-10">
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             {/* Mobile: Hamburger on left, Desktop: Logo on left */}
@@ -213,7 +213,7 @@ export function WLHeader() {
             <div className="hidden lg:flex items-center gap-3">
               <Link 
                 to="/wl/wted"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] hover:scale-105 no-underline hover:no-underline"
               >
                 <BoomBox className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">WTED Goose Radio</span>
@@ -222,26 +222,26 @@ export function WLHeader() {
                 href="https://community.wysterialane.org/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] hover:scale-105 no-underline hover:no-underline"
               >
                 <MessageSquare className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Community Forum</span>
               </a>
               <Link
                 to="/"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] hover:scale-105 no-underline hover:no-underline"
               >
                 <ListMusic className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Setlist Archive</span>
               </Link>
               <Link 
                 to="/wl/goose101"
-                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105 no-underline hover:no-underline"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] hover:scale-105 no-underline hover:no-underline"
               >
                 <CircleHelp className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Goose 101</span>
               </Link>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] shadow-xl hover:scale-105">
+              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] hover:scale-105">
                 <LinkIcon className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Links</span>
               </button>
@@ -323,6 +323,18 @@ export function WLHeader() {
               </>
             )}
           </div>
+        </div>
+      </div>
+      
+      {/* Radio Player - Persistent across WL routes */}
+      <div className="bg-[#65b3a0]">
+        <div className="max-w-7xl mx-auto">
+          <iframe 
+            src="https://www.coreyterrell.com/assets/external/radio.html" 
+            title="WTED Radio" 
+            frameBorder="0" 
+            style={{ width: '100%', height: '66px' }}
+          ></iframe>
         </div>
       </div>
     </header>

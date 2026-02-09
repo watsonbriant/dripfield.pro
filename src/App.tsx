@@ -40,6 +40,8 @@ import { WtedEpisode } from './components/WtedEpisode';
 import { WL } from './components/WL/WL';
 import { Goose101 } from './components/WL/Goose101';
 import { WTED } from './components/WL/WTED';
+import { WLHeader } from './components/WL/WLHeader';
+import { WLFooter } from './components/WL/WLFooter';
 import sparklePic from './img/sparkle.png';
 import bgTile from './img/bg_tile.jpg';
 
@@ -271,6 +273,9 @@ function App() {
     <div 
       className={`flex flex-col min-h-screen min-w-0 max-w-full overflow-x-hidden ${isWLRoute ? 'lg:min-w-7xl' : 'lg:min-w-[1500px]'}`}
     >
+      {/* WL Header - Persistent across WL routes */}
+      {isWLRoute && <WLHeader />}
+      
       {/* Header with integrated navigation - Only shown on desktop - Hidden on WL route */}
       {!isWLRoute && (
         <div className="hidden lg:block">
@@ -354,7 +359,7 @@ function App() {
 
         {/* Main content wrapper */}
         <div 
-          className="flex-1 flex flex-col relative max-w-full min-w-0 w-full"
+          className={`flex-1 flex flex-col relative max-w-full min-w-0 w-full ${isWLRoute ? 'min-h-0' : ''}`}
         >
           {/* Mobile-only header - Hidden on WL route */}
           {!isWLRoute && (
@@ -389,8 +394,8 @@ function App() {
           )}
 
           {/* Main content */}
-          <main className="flex-1 w-full max-w-full min-w-0 overflow-x-hidden flex flex-col">
-            <div className={`flex-1 ${!isWLRoute ? 'p-4' : ''}`}>
+          <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-hidden flex flex-col ${isWLRoute ? 'min-h-0' : ''}`}>
+            <div className={`flex-1 ${!isWLRoute ? 'p-4' : ''} ${isWLRoute ? 'min-h-0' : ''}`}>
               <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Home />} />
@@ -470,6 +475,9 @@ function App() {
             </footer>
             )}
           </main>
+          
+          {/* WL Footer - Persistent across WL routes */}
+          {isWLRoute && <WLFooter />}
         </div>
       </div>
 

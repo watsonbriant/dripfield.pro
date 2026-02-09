@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { WLHeader } from './WLHeader';
-import { WLFooter } from './WLFooter';
 
 export function Goose101() {
   const [activeSection, setActiveSection] = useState<number | null>(null);
@@ -91,7 +89,7 @@ export function Goose101() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-wl-dark-green">
+    <div className="flex flex-col h-full bg-wl-dark-green">
       <style>{`
         .nav-scroll::-webkit-scrollbar {
           display: none;
@@ -101,8 +99,6 @@ export function Goose101() {
           scrollbar-width: none;
         }
       `}</style>
-      <WLHeader />
-      
       <main className="flex-1 relative">
         <div className="max-w-7xl mx-auto flex relative">
           {/* Section Navigation - Fixed vertical on left, constrained to main content area */}
@@ -187,7 +183,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -224,7 +220,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -261,7 +257,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -322,7 +318,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -393,7 +389,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -430,7 +426,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -467,7 +463,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -502,7 +498,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -537,7 +533,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -572,7 +568,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -625,7 +621,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -660,7 +656,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -695,7 +691,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -730,7 +726,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -765,7 +761,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -807,7 +803,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -842,7 +838,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -899,7 +895,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -960,7 +956,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                   <iframe 
                     width="560" 
@@ -971,7 +967,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -1006,7 +1002,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -1041,7 +1037,7 @@ export function Goose101() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
-                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105"
+                    className="w-full max-w-2xl aspect-video rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 mx-auto"
                   ></iframe>
                 </div>
                 <div className="clear-both"></div>
@@ -1050,8 +1046,6 @@ export function Goose101() {
           </div>
         </div>
       </main>
-      
-      <WLFooter />
     </div>
   );
 }

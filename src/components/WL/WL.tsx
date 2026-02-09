@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { WLHeader } from './WLHeader';
-import { WLFooter } from './WLFooter';
 import goosePressImage from '../../img/wl/Goose_Press_STL2025_0422_143639-6948_ALIVE.jpg';
 
 export function WL() {
@@ -19,9 +17,7 @@ export function WL() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-wl-dark-green">
-      <WLHeader />
-      
+    <div className="flex flex-col h-full bg-wl-dark-green">
       <main className="flex-1">
         <div className="max-w-7xl mx-auto">
           <div className="m-8">
@@ -109,8 +105,6 @@ export function WL() {
           </div>
         </div>
       </main>
-      
-      <WLFooter />
     </div>
   );
 }
