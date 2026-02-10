@@ -5,7 +5,7 @@ export function WTEDGorps() {
         <div className="max-w-7xl mx-auto">
           <div className="m-8">
             <h1 className="text-wl-white text-xl font-bold text-center">Goose Obsessed Radio Personalities (GORPs) & Station Contributors</h1>
-            <p className="text-wl-white text-left mt-4">
+            <p className="text-wl-white text-left leading-[1.25rem] mt-4">
               Our community of contributors is part of what makes WTED Goose Radio a great source of detailed history, background, and trivia surrounding some of the best Goose performances in their catalog. Our Goose Jockeys and GORPs are featured so you can learn more about their background and history with the band below. Want to join their ranks? Join the{' '}
               <a
                 href="https://community.WysteriaLane.org/"
