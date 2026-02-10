@@ -44,6 +44,7 @@ import { WTEDGorps } from './components/WL/WTEDGorps';
 import { WTEDShows } from './components/WL/WTEDShows';
 import { WTEDAboutUs } from './components/WL/WTEDAboutUs';
 import { WTEDSupport } from './components/WL/WTEDSupport';
+import { WTLinks } from './components/WL/WTLinks';
 import { WLHeader } from './components/WL/WLHeader';
 import { WLFooter } from './components/WL/WLFooter';
 import sparklePic from './img/sparkle.png';
@@ -457,6 +458,11 @@ function App() {
                 <Route path="/wl/goose101" element={
                   <ProtectedRoute adminOnly>
                     <Goose101 />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wl/links" element={
+                  <ProtectedRoute adminOnly>
+                    <WTLinks />
                   </ProtectedRoute>
                 } />
                 <Route path="/wl/wted" element={

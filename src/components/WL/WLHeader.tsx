@@ -213,13 +213,14 @@ export function WLHeader() {
               <CircleHelp className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">Goose 101</span>
             </Link>
-            <button
+            <Link
+              to="/wl/links"
               className="w-full text-left px-3 py-3 hover:bg-tertiary/20 hover:underline transition-colors flex items-center gap-3 rounded-md"
               onClick={() => setIsNavMenuOpen(false)}
             >
               <LinkIcon className="w-5 h-5 flex-shrink-0 text-fifth" />
               <span className="text-sm font-medium text-fifth">Links</span>
-            </button>
+            </Link>
           </nav>
         </div>
       </div>
@@ -310,10 +311,13 @@ export function WLHeader() {
                 <CircleHelp className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Goose 101</span>
               </Link>
-              <button className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] hover:scale-105">
+              <Link
+                to="/wl/links"
+                className="flex items-center gap-1 px-1 py-0.5 bg-wl-orange text-wl-black rounded-lg transition-all duration-300 hover:bg-wl-light-orange hover:drop-shadow-[3px_3px_0px_rgba(31,31,31,1)] hover:scale-105 no-underline hover:no-underline"
+              >
                 <LinkIcon className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium text-sm">Links</span>
-              </button>
+              </Link>
             </div>
 
             {/* Right Side - User Menu & Actions */}
