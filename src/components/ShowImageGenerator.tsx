@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Share, X, Copy } from 'lucide-react';
 import { formatInTimeZone } from 'date-fns-tz';
+import bgTile from '../img/bg_tile.jpg';
 import logoImage from '../img/Logo7-2_Header.jpg';
-import backgroundImage from '../img/bg.jpg';
 import { SetlistEntry, Show } from '../utils/imageGeneratorUtils';
-import { renderShowImage } from '../utils/canvasRenderer';
+import { renderShowImageRebuild } from '../utils/canvasRenderer';
 
 interface ShowImageGeneratorProps {
     show: Show;
@@ -24,7 +24,10 @@ const ShowImageGenerator: React.FC<ShowImageGeneratorProps> = ({
 
     const handleGenerateImage = async () => {
         try {
-            const imageUrl = await renderShowImage(show, setlist, logoImage, backgroundImage);
+            // Dynamic dimensions - starting size for step 1 (tiled background only)
+            const width = 800;
+            const height = 600;
+            const imageUrl = await renderShowImageRebuild(show, setlist, bgTile, logoImage, width, height);
             setGeneratedImageUrl(imageUrl);
             setShowModal(true);
         } catch (err) {

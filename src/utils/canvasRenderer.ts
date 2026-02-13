@@ -9,6 +9,154 @@ import {
     getEncoreLabel 
 } from './imageGeneratorUtils';
 
+const LINE_HEIGHT = 60;
+
+const renderTextLinesCentered = (
+    ctx: CanvasRenderingContext2D,
+    lines: string[],
+    centerX: number,
+    currentY: number,
+    font: string
+): number => {
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#000000';
+    for (const line of lines) {
+        ctx.fillText(line, centerX, currentY);
+        currentY += LINE_HEIGHT;
+    }
+    return currentY;
+};
+
+/** Rebuild: renders show image with dynamic dimensions. Step 1: tiled bg. Step 2: logo. Step 3: show info. */
+export const renderShowImageRebuild = async (
+    show: Show,
+    _setlist: SetlistEntry[],
+    backgroundTileSrc: string,
+    logoSrc: string,
+    width: number,
+    _height: number
+): Promise<string> => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Failed to get canvas context');
+
+    const [tileImg, logoImg] = await Promise.all([
+        new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error('Failed to load background tile'));
+            img.src = backgroundTileSrc;
+        }),
+        new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error('Failed to load logo'));
+            img.src = logoSrc;
+        })
+    ]);
+
+    const maxTextWidth = Math.min(700, width - 100);
+    const centerX = width / 2;
+    const containerPadding = 10;
+    const containerWidth = maxTextWidth + (containerPadding * 2);
+    const containerX = (width - containerWidth) / 2;
+    const cornerRadius = 18;
+
+    // Measure show info container height
+    const dateFont = '500 36px "Rubik", "Inter", system-ui, sans-serif';
+    const groupFont = '500 28px "Rubik", "Inter", system-ui, sans-serif';
+    const detailFont = '20px "Rubik", "Inter", system-ui, sans-serif';
+    const subvenueFont = '500 24px "Rubik", "Inter", system-ui, sans-serif';
+    const locationFont = '20px "Rubik", "Inter", system-ui, sans-serif';
+
+    const formattedDate = formatInTimeZone(new Date(show.show_date), 'UTC', 'MM.dd.yy');
+    const dateLines = wrapText(ctx, formattedDate, maxTextWidth, dateFont);
+    const groupLines = wrapText(ctx, show.show_group, maxTextWidth, groupFont);
+    const subvenueLines = wrapText(ctx, show.show_subvenue || '', maxTextWidth, subvenueFont);
+    const locationLines = wrapText(ctx, show.show_venue_location || '', maxTextWidth, locationFont);
+    const detailLines = show.show_detail ? wrapText(ctx, show.show_detail, maxTextWidth, detailFont) : [];
+
+    let showInfoHeight = (containerPadding * 2);
+    showInfoHeight += dateLines.length * LINE_HEIGHT;
+    showInfoHeight += groupLines.length * LINE_HEIGHT - 20;
+    showInfoHeight += subvenueLines.length * LINE_HEIGHT - 25;
+    showInfoHeight += locationLines.length * LINE_HEIGHT - 33;
+    if (show.show_detail) {
+        showInfoHeight += detailLines.length * LINE_HEIGHT;
+    }
+
+    // Logo layout
+    const logoWidth = Math.min(600, width - 100);
+    const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+    const logoPadding = 10;
+    const logoY = 50;
+    const logoContainerWidth = logoWidth + (logoPadding * 2);
+    const logoContainerHeight = logoHeight + (logoPadding * 2);
+    const logoContainerX = (width - logoContainerWidth) / 2;
+    const logoContainerY = logoY - logoPadding;
+    const logoX = (width - logoWidth) / 2;
+    const logoBottom = logoContainerY + logoContainerHeight;
+
+    const textSpacing = 80;
+    const showInfoStartY = logoBottom + textSpacing;
+    const showInfoContainerY = showInfoStartY - 50;
+    const contentBottom = showInfoContainerY + showInfoHeight;
+
+    const finalHeight = contentBottom + 30;
+    canvas.width = width;
+    canvas.height = finalHeight;
+
+    const pattern = ctx.createPattern(tileImg, 'repeat');
+    if (!pattern) throw new Error('Failed to create background pattern');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, width, finalHeight);
+
+    // Logo container
+    ctx.fillStyle = 'rgb(254, 229, 188)';
+    drawRoundedRect(ctx, logoContainerX, logoContainerY, logoContainerWidth, logoContainerHeight, cornerRadius, true, false);
+    ctx.strokeStyle = '#4e4e4e';
+    ctx.lineWidth = 1;
+    drawRoundedRect(ctx, logoContainerX, logoContainerY, logoContainerWidth, logoContainerHeight, cornerRadius, false, true);
+    ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
+
+    // Show info container
+    ctx.fillStyle = 'rgb(224, 220, 195)';
+    drawRoundedRect(ctx, containerX, showInfoContainerY, containerWidth, showInfoHeight, cornerRadius, true, false);
+    ctx.strokeStyle = '#4e4e4e';
+    ctx.lineWidth = 1;
+    drawRoundedRect(ctx, containerX, showInfoContainerY, containerWidth, showInfoHeight, cornerRadius, false, true);
+
+    let textY = showInfoContainerY + 50;
+    textY = renderTextLinesCentered(ctx, dateLines, centerX, textY, dateFont);
+    textY -= 20;
+    textY = renderTextLinesCentered(ctx, groupLines, centerX, textY, groupFont);
+    textY -= 25;
+    textY = renderTextLinesCentered(ctx, subvenueLines, centerX, textY, subvenueFont);
+    textY -= 33;
+    textY = renderTextLinesCentered(ctx, locationLines, centerX, textY, locationFont);
+    if (show.show_detail) {
+        textY = renderTextLinesCentered(ctx, detailLines, centerX, textY, detailFont);
+    }
+
+    // Border around entire image (border-fourth: #4e4e4e)
+    ctx.strokeStyle = '#4e4e4e';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0.5, 0.5, width - 1, finalHeight - 1);
+
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(async (blob) => {
+            if (blob) {
+                resolve(URL.createObjectURL(blob));
+            } else {
+                reject(new Error('Failed to create blob'));
+            }
+        }, 'image/png');
+    });
+};
+
 export const renderShowImage = async (
     show: Show,
     setlist: SetlistEntry[],

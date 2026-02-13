@@ -18,6 +18,7 @@
     "@types/react-beautiful-dnd": "^13.1.8",
     "date-fns-tz": "^3.2.0",
     "dom-to-image": "^2.6.0",
+    "html2canvas": "^1.4.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.477.0",
     "mapbox-gl": "^2.15.0",
