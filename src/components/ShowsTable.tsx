@@ -36,6 +36,7 @@ interface ShowsTableProps {
   showRatings: Record<string, number>;
   showsWithSetlists: Set<string>;
   showsWithReleases: Set<string>;
+  showsWithRadioIds: Set<string>;
   currentYear: string;
   selectedGroups: string[];
   onClearFilters: () => void;
@@ -49,6 +50,7 @@ export function ShowsTable({
   showRatings,
   showsWithSetlists,
   showsWithReleases,
+  showsWithRadioIds,
   currentYear,
   selectedGroups,
   onClearFilters,
@@ -202,6 +204,7 @@ export function ShowsTable({
                 showRatings={showRatings}
                 showsWithSetlists={showsWithSetlists}
                 showsWithReleases={showsWithReleases}
+                showsWithRadioIds={showsWithRadioIds}
               />
             ))}
           </tbody>

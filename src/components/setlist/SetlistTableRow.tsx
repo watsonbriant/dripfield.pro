@@ -1,7 +1,8 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { MoveRight } from 'lucide-react';
+import { MoveRight, Check } from 'lucide-react';
 import { SetlistEntry, Show } from '../../types/setlist';
+import wtedImage from '../../img/WTED.png';
 import { 
   getPlacementColor, 
   formatLength, 
@@ -43,6 +44,9 @@ interface SetlistTableRowProps {
   onGuestClick: (guestId: string) => void;
   onJOTYClick: (year: number, entryId: string) => void;
   onNumberClick: (entryId: string) => void;
+  showRadioColumn?: boolean;
+  onWtedRequest?: (entryId: string, radioId: string) => void;
+  wtedSuccessEntryId?: string | null;
 }
 
 export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
@@ -64,7 +68,10 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
   onLastShowClick,
   onGuestClick,
   onJOTYClick,
-  onNumberClick
+  onNumberClick,
+  showRadioColumn = false,
+  onWtedRequest,
+  wtedSuccessEntryId = null
 }) => {
   const {
     mousePosition,
@@ -80,6 +87,9 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
   const nextEntry = index < setlist.length - 1 ? setlist[index + 1] : null;
   const prevEntry = index > 0 ? setlist[index - 1] : null;
 
+  const baseColSpan = show.show_canonid !== null ? 8 : 5;
+  const fullColSpan = baseColSpan + (showRadioColumn ? 1 : 0);
+
   const elements = [];
 
   if (!hasSinglePlacementType) {
@@ -88,7 +98,7 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
         elements.push(
           <tr key={`encore-${entry.entry_id}`}>
             <td 
-              colSpan={show.show_canonid !== null ? 8 : 5}
+              colSpan={fullColSpan}
               className="text-fifth text-[0.625rem] px-4 bg-red-800/30 font-medium text-center border-y border-fourth"
             >
               {getEncoreLabel(entry.entry_set)}
@@ -102,7 +112,7 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
       elements.push(
         <tr key={`setbreak-${entry.entry_id}`}>
           <td 
-            colSpan={show.show_canonid !== null ? 8 : 5}
+            colSpan={fullColSpan}
             className="text-fifth text-[0.625rem] px-4 bg-gray-300 font-medium text-center border-y border-fourth"
           >
             Set Break
@@ -276,6 +286,55 @@ export const SetlistTableRow: React.FC<SetlistTableRowProps> = ({
           document.body
         )}
       </td>
+  
+      {/* Radio / WTED column */}
+      {showRadioColumn && (
+        <td
+          className="px-1 text-center whitespace-nowrap cursor-pointer"
+          onClick={() => {
+            if (entry.radio_id && onWtedRequest) {
+              onWtedRequest(entry.entry_id, entry.radio_id);
+            }
+          }}
+          onMouseEnter={(e) => {
+            if (!isMobile && entry.radio_id) {
+              setHoveredEntry(entry.entry_id + '_radio');
+              setMousePosition({ x: e.clientX, y: e.clientY });
+            }
+          }}
+          onMouseMove={(e) => {
+            if (!isMobile) {
+              setMousePosition({ x: e.clientX, y: e.clientY });
+            }
+          }}
+          onMouseLeave={() => {
+            if (!isMobile) {
+              setHoveredEntry(null);
+            }
+          }}
+        >
+          {entry.radio_id ? (
+            wtedSuccessEntryId === entry.entry_id ? (
+              <Check className="w-4 h-4 mx-auto bg-green-500 rounded text-white" strokeWidth={2.5} />
+            ) : (
+              <img src={wtedImage} alt="WTED" className="w-4 h-4 mx-auto" />
+            )
+          ) : null}
+          {!isMobile && hoveredEntry === entry.entry_id + '_radio' && entry.radio_id && createPortal(
+            <div 
+              className="fixed text-[0.625rem] leading-[0.75rem] font-normal bg-canvas text-fifth px-2 py-1 rounded border border-fourth shadow-lg min-w-max pointer-events-none"
+              style={{
+                left: `${mousePosition.x + 10}px`,
+                top: `${mousePosition.y - 10}px`,
+                zIndex: 99999
+              }}
+            >
+              <span className="font-medium">Request this song on WTED Goose Radio.</span>
+            </div>,
+            document.body
+          )}
+        </td>
+      )}
   
       {/* Duration column */}
       <td className="px-2 text-fifth text-center font-light text-xs whitespace-nowrap">

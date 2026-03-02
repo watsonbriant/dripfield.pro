@@ -6,6 +6,7 @@ import { Show } from '../types/tourTypes';
 import { getRarityColor, getGapColor } from '../utils/tourUtils';
 import { sortData } from '../utils/sortingUtils';
 import wlImage from '../img/WL.png';
+import wtedImage from '../img/WTED.png';
 
 interface TourShowsTableProps {
   shows: Show[];
@@ -18,6 +19,7 @@ interface TourShowsTableProps {
   attendeeCounts: Record<string, number>;
   showsWithSetlists: Set<string>;
   showsWithReleases: Set<string>;
+  showsWithRadioIds: Set<string>;
 }
 
 export function TourShowsTable({
@@ -30,7 +32,8 @@ export function TourShowsTable({
   showRatings,
   attendeeCounts,
   showsWithSetlists,
-  showsWithReleases
+  showsWithReleases,
+  showsWithRadioIds
 }: TourShowsTableProps) {
   const [tooltipState, setTooltipState] = useState<{
     isVisible: boolean;
@@ -144,6 +147,17 @@ export function TourShowsTable({
         </div>
       )
     },
+    { 
+      key: 'wted', 
+      label: (
+        <div
+          onMouseEnter={(e) => updateTooltip('WTED Goose Radio', e.currentTarget)}
+          onMouseLeave={hideTooltip}
+        >
+          <img src={wtedImage} alt="WTED" className="w-[12px] h-[12px]" />
+        </div>
+      )
+    },
     { key: 'show_detail', label: 'Detail' }
   ];
 
@@ -166,7 +180,7 @@ export function TourShowsTable({
                 {columns.map(({ key, label }) => (
                   <th
                     key={key}
-                    onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? onSort(key) : null}
+                    onClick={() => key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' && key !== 'wted' ? onSort(key) : null}
                     onMouseEnter={(e) => {
                       if (key === 'show_gap') {
                         updateTooltip('Average Show Gap', e.currentTarget);
@@ -181,9 +195,9 @@ export function TourShowsTable({
                     }}
                     className={`${key === 'show_length' || key === 'show_rarity' || key === 'show_date' || key === 'rating' || key === 'attendees' ? 'text-center' : 'text-left'}
                       text-sm font-medium text-fifth whitespace-nowrap 
-                      ${key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' ? 'px-2 cursor-pointer hover:bg-black/10' : key === 'setlist' || key === 'releases' ? 'w-8 px-1 text-center' : 'w-8 px-1 text-center'}`}
+                      ${key !== 'attended' && key !== 'setlist' && key !== 'releases' && key !== 'wl_link' && key !== 'wted' ? 'px-2 cursor-pointer hover:bg-black/10' : key === 'setlist' || key === 'releases' ? 'w-8 px-1 text-center' : 'w-8 px-1 text-center'}`}
                   >
-                    <div className={`flex items-center ${key === 'show_length' || key === 'attended' || key === 'show_rarity' || key === 'show_gap' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'attendees' || key === 'releases' || key === 'wl_link' ? 'justify-center' : ''} gap-1`}>
+                    <div className={`flex items-center ${key === 'show_length' || key === 'attended' || key === 'show_rarity' || key === 'show_gap' || key === 'show_date' || key === 'rating' || key === 'setlist' || key === 'attendees' || key === 'releases' || key === 'wl_link' || key === 'wted' ? 'justify-center' : ''} gap-1`}>
                       {label}
                     </div>
                   </th>
@@ -350,6 +364,20 @@ export function TourShowsTable({
                         >
                           <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
                         </button>
+                      </div>
+                    )}
+                  </td>
+                  <td className="text-center align-middle">
+                    {showsWithRadioIds.has(show.show_id) && (
+                      <div className="flex justify-center items-center h-full">
+                        <Link
+                          to={`/setlist/${show.show_id}`}
+                          className="hover:opacity-80 rounded transition-all p-[1px] inline-block"
+                          onMouseEnter={(e) => updateTooltip('WTED Goose Radio', e.currentTarget)}
+                          onMouseLeave={hideTooltip}
+                        >
+                          <img src={wtedImage} alt="WTED" className="w-[12px] h-[12px]" />
+                        </Link>
                       </div>
                     )}
                   </td>

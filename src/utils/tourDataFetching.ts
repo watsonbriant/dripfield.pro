@@ -123,6 +123,20 @@ export const fetchShowsWithReleases = async (showIds: string[]) => {
   return new Set(allReleaseShows.map(item => item.show_id));
 };
 
+export const fetchShowsWithRadioIds = async (showIds: string[]) => {
+  if (showIds.length === 0) return new Set<string>();
+
+  const { data, error } = await supabase
+    .from('setlist_entries')
+    .select('entry_show')
+    .in('entry_show', showIds)
+    .not('radio_id', 'is', null);
+
+  if (error) throw error;
+
+  return new Set(data?.map(item => item.entry_show).filter(Boolean) || []);
+};
+
 export const fetchShowRatings = async (showIds: string[]) => {
   const { data, error } = await supabase
     .from('show_ratings')

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowUp, ArrowDown, Check, FileMusic, Users, Star, AudioLines } from 'lucide-react';
 import wlImage from '../img/WL.png';
+import wtedImage from '../img/WTED.png';
 import { useAuth } from '../context/AuthContext';
 
 interface TableHeaderProps {
@@ -154,6 +155,15 @@ export function TableHeader({ sortColumn, sortDirection, onSort }: TableHeaderPr
             onMouseLeave={hideTooltip}
           >
             <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
+          </div>
+        </th>
+        <th className="px-1 text-center text-sm font-medium text-fifth">
+          <div 
+            className="flex justify-center items-center"
+            onMouseEnter={(e) => updateTooltip('WTED Goose Radio', e.currentTarget)}
+            onMouseLeave={hideTooltip}
+          >
+            <img src={wtedImage} alt="WTED" className="w-[12px] h-[12px]" />
           </div>
         </th>
         <th 

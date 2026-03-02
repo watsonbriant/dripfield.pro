@@ -10,6 +10,7 @@ import { AdminReleases } from './AdminReleases';
 import { AdminMedia } from './AdminMedia';
 import { AdminVenue } from './AdminVenue';
 import { AdminSubvenue } from './AdminSubvenue';
+import { AdminWted } from './AdminWted';
 import { supabase } from '../lib/supabase';
 
 export function Admin() {
@@ -34,7 +35,7 @@ export function Admin() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   
   // Memoize tabs array to prevent re-creation on each render
-  const tabs = useMemo(() => ['Setlist', 'Artist', 'Song', 'Guest', 'Show', 'Changes', 'Releases', 'Media', 'Venue', 'Subvenue'], []);
+  const tabs = useMemo(() => ['Setlist', 'Artist', 'Song', 'Guest', 'Show', 'Changes', 'Releases', 'Media', 'Venue', 'Subvenue', 'WTED'], []);
 
   // Fetch user count on component mount
   useEffect(() => {
@@ -193,6 +194,12 @@ export function Admin() {
         return (
           <div className="bg-primary border border-fourth">
             <AdminSubvenue />
+          </div>
+        );
+      case 'WTED':
+        return (
+          <div className="bg-primary border border-fourth">
+            <AdminWted />
           </div>
         );
       default:

@@ -31,6 +31,7 @@ export function Tours() {
     hasGuestAppearances,
     uniqueSongCount,
     showsWithSetlists,
+    showsWithRadioIds,
     attendeeCounts,
     showRatings,
     showsWithReleases,
@@ -193,6 +194,7 @@ export function Tours() {
           attendeeCounts={attendeeCounts}
           showsWithSetlists={showsWithSetlists}
           showsWithReleases={showsWithReleases}
+          showsWithRadioIds={showsWithRadioIds}
         />
 
               {hasSlotEntries && (

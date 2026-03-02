@@ -2,13 +2,15 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { User, MoveRight } from 'lucide-react';
 import { Show, SetlistEntry } from '../../types/setlist';
+import wtedImage from '../../img/WTED2.png';
 
 interface SetlistTableHeaderProps {
   show: Show | undefined;
   setlist?: SetlistEntry[];
+  showRadioColumn?: boolean;
 }
 
-export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, setlist = [] }) => {
+export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, setlist = [], showRadioColumn = false }) => {
   const [hoveredLastHeader, setHoveredLastHeader] = useState(false);
   const [lastTooltipPosition, setLastTooltipPosition] = useState<{ x: number; y: number } | null>(null);
   const lastHeaderRef = useRef<HTMLTableCellElement | null>(null);
@@ -16,6 +18,10 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
   const [hoveredSongHeader, setHoveredSongHeader] = useState(false);
   const [songTooltipPosition, setSongTooltipPosition] = useState<{ x: number; y: number } | null>(null);
   const songHeaderRef = useRef<HTMLTableCellElement | null>(null);
+
+  const [hoveredWtedHeader, setHoveredWtedHeader] = useState(false);
+  const [wtedTooltipPosition, setWtedTooltipPosition] = useState<{ x: number; y: number } | null>(null);
+  const wtedHeaderRef = useRef<HTMLTableCellElement | null>(null);
 
   // Update Last tooltip position on scroll/resize
   useEffect(() => {
@@ -56,6 +62,26 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
       window.removeEventListener('resize', updatePosition);
     };
   }, [hoveredSongHeader, songTooltipPosition]);
+
+  // Update WTED tooltip position on scroll/resize
+  useEffect(() => {
+    if (!hoveredWtedHeader || !wtedTooltipPosition) return;
+
+    const updatePosition = () => {
+      if (wtedHeaderRef.current) {
+        const rect = wtedHeaderRef.current.getBoundingClientRect();
+        setWtedTooltipPosition({ x: rect.right + 4, y: rect.top });
+      }
+    };
+
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [hoveredWtedHeader, wtedTooltipPosition]);
 
   // Analyze setlist to determine which items to show in tooltip
   const tooltipItems = useMemo(() => {
@@ -185,6 +211,33 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
           >
             Song
           </th>
+          {showRadioColumn && (
+            <th
+              ref={wtedHeaderRef}
+              className="font-semibold px-1 py-0.5 text-center whitespace-nowrap cursor-pointer"
+              onMouseEnter={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                setWtedTooltipPosition({ x: rect.right + 4, y: rect.top });
+                setHoveredWtedHeader(true);
+              }}
+              onMouseLeave={() => {
+                setHoveredWtedHeader(false);
+                setWtedTooltipPosition(null);
+              }}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                if (hoveredWtedHeader) {
+                  setHoveredWtedHeader(false);
+                  setWtedTooltipPosition(null);
+                } else {
+                  setWtedTooltipPosition({ x: rect.right + 4, y: rect.top });
+                  setHoveredWtedHeader(true);
+                }
+              }}
+            >
+              <img src={wtedImage} alt="WTED" className="w-4 h-4 mx-auto" />
+            </th>
+          )}
           <th className="font-semibold px-2 py-0.5 text-center whitespace-nowrap">Time</th>
           {show?.show_canonid !== null && (
             <>
@@ -284,6 +337,25 @@ export const SetlistTableHeader: React.FC<SetlistTableHeaderProps> = ({ show, se
               );
             });
           })()}
+        </div>,
+        document.body
+      )}
+
+      {/* WTED Header Tooltip Portal */}
+      {showRadioColumn && hoveredWtedHeader && wtedTooltipPosition && createPortal(
+        <div 
+          className="fixed text-[0.625rem] leading-[0.75rem] font-normal bg-canvas text-fifth rounded border border-fourth shadow-lg whitespace-normal pointer-events-none"
+          style={{ 
+            left: `${wtedTooltipPosition.x}px`,
+            top: `${wtedTooltipPosition.y}px`,
+            width: 'max-content',
+            maxWidth: '160px',
+            zIndex: 99999
+          }}
+        >
+          <div className="px-1 leading-[0.625rem] py-0.5">
+            <span className="font-medium">Use the icons below to request songs on WTED Goose Radio.</span>
+          </div>
         </div>,
         document.body
       )}

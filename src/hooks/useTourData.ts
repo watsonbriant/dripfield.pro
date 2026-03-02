@@ -10,6 +10,7 @@ import {
   fetchAttendeeCounts, 
   fetchShowsWithSetlists, 
   fetchShowsWithReleases, 
+  fetchShowsWithRadioIds,
   fetchShowRatings, 
   fetchMainTourData, 
   fetchPlacementData 
@@ -40,6 +41,7 @@ export function useTourData() {
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
   const [showRatings, setShowRatings] = useState<Record<string, number>>({});
   const [showsWithReleases, setShowsWithReleases] = useState<Set<string>>(new Set());
+  const [showsWithRadioIds, setShowsWithRadioIds] = useState<Set<string>>(new Set());
 
   // Loading states
   const [isLoading, setIsLoading] = useState(true);
@@ -177,6 +179,25 @@ export function useTourData() {
     
     if (shows.length > 0) {
       fetchUserShowsWithReleases();
+    }
+  }, [shows, currentTour]);
+
+  // Fetch shows with radio IDs
+  useEffect(() => {
+    async function fetchUserShowsWithRadioIds() {
+      if (!currentTour || shows.length === 0) return;
+
+      try {
+        const showIds = shows.map(s => s.show_id);
+        const radioSet = await fetchShowsWithRadioIds(showIds);
+        setShowsWithRadioIds(radioSet);
+      } catch (error) {
+        console.error('Error fetching shows with radio IDs:', error);
+      }
+    }
+
+    if (shows.length > 0) {
+      fetchUserShowsWithRadioIds();
     }
   }, [shows, currentTour]);
 
@@ -318,6 +339,7 @@ export function useTourData() {
     attendeeCounts,
     showRatings,
     showsWithReleases,
+    showsWithRadioIds,
     isLoading,
     
     // Setters

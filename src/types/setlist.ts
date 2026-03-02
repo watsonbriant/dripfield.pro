@@ -40,6 +40,7 @@ export interface SetlistEntry {
   entry_coachnotes: string | null;
   entry_setorder: number;
   entry_show: string;
+  radio_id?: string | null;
   song_tour_count: string | null;
   last_count: string | null;
   song_id: string;

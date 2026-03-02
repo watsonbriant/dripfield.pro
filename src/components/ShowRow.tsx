@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Check, FileMusic, Users, Star, AudioLines } from 'lucide-react';
 import wlImage from '../img/WL.png';
+import wtedImage from '../img/WTED.png';
 
 interface Show {
   show_iscanon: boolean;
@@ -39,6 +40,7 @@ interface ShowRowProps {
   showRatings: Record<string, number>;
   showsWithSetlists: Set<string>;
   showsWithReleases: Set<string>;
+  showsWithRadioIds: Set<string>;
 }
 
 export function ShowRow({
@@ -48,7 +50,8 @@ export function ShowRow({
   attendeeCounts,
   showRatings,
   showsWithSetlists,
-  showsWithReleases
+  showsWithReleases,
+  showsWithRadioIds
 }: ShowRowProps) {
   const { user } = useAuth();
   const [hoveredTour, setHoveredTour] = useState<string | null>(null);
@@ -259,6 +262,20 @@ export function ShowRow({
             >
               <img src={wlImage} alt="WysteriaLane" className="w-[12px] h-[12px]" />
             </button>
+          </div>
+        )}
+      </td>
+      <td className="text-center align-middle">
+        {showsWithRadioIds.has(show.show_id) && (
+          <div className="flex justify-center items-center h-full">
+            <Link
+              to={`/setlist/${show.show_id}`}
+              className="hover:opacity-80 rounded transition-all p-[1px] inline-block"
+              onMouseEnter={(e) => updateTooltip('WTED Goose Radio', e.currentTarget)}
+              onMouseLeave={hideTooltip}
+            >
+              <img src={wtedImage} alt="WTED" className="w-[12px] h-[12px]" />
+            </Link>
           </div>
         )}
       </td>

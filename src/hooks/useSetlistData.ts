@@ -93,6 +93,7 @@ export function useSetlistData(showId: string | undefined) {
             entry_coachnotes,
             entry_setorder,
             entry_show,
+            radio_id,
             song_tour_count,
             last_count,
             last_show_id,

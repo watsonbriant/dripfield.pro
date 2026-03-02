@@ -48,7 +48,7 @@ export function Years() {
   const { groups } = useGroupsData(shows);
   const { attendeeCounts } = useAttendeeData(filteredShows);
   const { showRatings } = useShowRatings(filteredShows);
-  const { showsWithSetlists, showsWithReleases } = useShowMetadata(shows, currentYear);
+  const { showsWithSetlists, showsWithReleases, showsWithRadioIds } = useShowMetadata(shows, currentYear);
 
   const loading = yearsLoading || showsLoading;
 
@@ -167,6 +167,7 @@ export function Years() {
                 showRatings={showRatings}
                 showsWithSetlists={showsWithSetlists}
                 showsWithReleases={showsWithReleases}
+                showsWithRadioIds={showsWithRadioIds}
                 currentYear={currentYear}
                 selectedGroups={selectedGroups}
                 onClearFilters={clearGroupFilters}

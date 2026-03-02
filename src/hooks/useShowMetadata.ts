@@ -8,6 +8,7 @@ interface Show {
 export function useShowMetadata(shows: Show[], currentYear: string) {
   const [showsWithSetlists, setShowsWithSetlists] = useState<Set<string>>(new Set());
   const [showsWithReleases, setShowsWithReleases] = useState<Set<string>>(new Set());
+  const [showsWithRadioIds, setShowsWithRadioIds] = useState<Set<string>>(new Set());
 
   // Fetch shows with setlists
   useEffect(() => {
@@ -82,5 +83,31 @@ export function useShowMetadata(shows: Show[], currentYear: string) {
     }
   }, [shows, currentYear]);
 
-  return { showsWithSetlists, showsWithReleases };
+  // Fetch shows with radio_id in setlist_entries
+  useEffect(() => {
+    async function fetchShowsWithRadioIds() {
+      if (!currentYear || shows.length === 0) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('setlist_entries')
+          .select('entry_show')
+          .in('entry_show', shows.map(s => s.show_id))
+          .not('radio_id', 'is', null);
+
+        if (error) throw error;
+
+        const radioSet = new Set(data?.map(item => item.entry_show).filter(Boolean) || []);
+        setShowsWithRadioIds(radioSet);
+      } catch (error) {
+        console.error('Error fetching shows with radio IDs:', error);
+      }
+    }
+
+    if (shows.length > 0) {
+      fetchShowsWithRadioIds();
+    }
+  }, [shows, currentYear]);
+
+  return { showsWithSetlists, showsWithReleases, showsWithRadioIds };
 }
