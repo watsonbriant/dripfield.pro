@@ -166,16 +166,16 @@ export function Discography() {
       try {
         setAdminLoading(true);
         
-        // Fetch discography_categories where category = "Studio Albums", "Singles", "Live Albums", "Jam Compilations", or "Side Projects"
+        // Fetch discography_categories where category = "Studio Albums", "Singles", "Live Albums", "Compilations", or "Side Projects"
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('discography_categories')
           .select('category')
-          .in('category', ['Studio Albums', 'Singles', 'Live Albums', 'Jam Compilations', 'Side Projects']);
+          .in('category', ['Studio Albums', 'Singles', 'Live Albums', 'Compilations', 'Side Projects']);
 
         if (categoriesError) {
           console.error('Error fetching discography categories:', categoriesError);
         } else {
-          // Sort categories to ensure "Studio Albums" comes first, then "Singles", then "Live Albums", then "Jam Compilations", then "Side Projects"
+          // Sort categories to ensure "Studio Albums" comes first, then "Singles", then "Live Albums", then "Compilations", then "Side Projects"
           const sortedCategories = (categoriesData || []).sort((a, b) => {
             if (a.category === 'Studio Albums') return -1;
             if (b.category === 'Studio Albums') return 1;
@@ -183,8 +183,8 @@ export function Discography() {
             if (b.category === 'Singles') return 1;
             if (a.category === 'Live Albums') return -1;
             if (b.category === 'Live Albums') return 1;
-            if (a.category === 'Jam Compilations') return -1;
-            if (b.category === 'Jam Compilations') return 1;
+            if (a.category === 'Compilations') return -1;
+            if (b.category === 'Compilations') return 1;
             if (a.category === 'Side Projects') return -1;
             if (b.category === 'Side Projects') return 1;
             return 0;
@@ -192,11 +192,11 @@ export function Discography() {
           setDiscographyCategories(sortedCategories);
         }
 
-        // Fetch discography items where category = "Studio Albums", "Singles", "Live Albums", "Jam Compilations", or "Side Projects", sorted by canon_id
+        // Fetch discography items where category = "Studio Albums", "Singles", "Live Albums", "Compilations", or "Side Projects", sorted by canon_id
         const { data: itemsData, error: itemsError } = await supabase
           .from('discography')
           .select('displayname, artwork, canon_id, category')
-          .in('category', ['Studio Albums', 'Singles', 'Live Albums', 'Jam Compilations', 'Side Projects'])
+          .in('category', ['Studio Albums', 'Singles', 'Live Albums', 'Compilations', 'Side Projects'])
           .order('canon_id', { ascending: true });
 
         if (itemsError) {
