@@ -75,7 +75,7 @@ export function useTourData() {
 
         // If no tour in URL, redirect
         if (!tour) {
-          const winter2025 = data.find(t => t.tour === '2025 Holiday Run');
+          const winter2025 = data.find(t => t.tour === '2026 Spring');
           if (winter2025) {
             navigate(`/tours/${winter2025.tour_id}`, { replace: true });
           }
@@ -91,7 +91,7 @@ export function useTourData() {
           setCurrentTourShowFields(tourData.tour_showfields || false);
         } else {
           // Invalid tour_id - redirect
-          const winter2025 = data.find(t => t.tour === '2025 Holiday Run');
+          const winter2025 = data.find(t => t.tour === '2026 Spring');
           if (winter2025) {
             navigate(`/tours/${winter2025.tour_id}`, { replace: true });
           }

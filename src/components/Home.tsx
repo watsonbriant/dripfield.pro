@@ -78,7 +78,7 @@ export function Home() {
   useEffect(() => {
     const currentPath = window.location.pathname;
     if ((currentPath === '/' || currentPath === '/home') && !yearParam) {
-      navigate(`/home/2025`, { replace: true });
+      navigate(`/home/2026`, { replace: true });
     }
   }, [yearParam, navigate]);
 
