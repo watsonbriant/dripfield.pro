@@ -1,3 +1,66 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+
+const DRIPFIELD_X_URL = 'https://x.com/dripfieldpro';
+const WYSTERIA_COMMUNITY_URL = 'https://community.wysterialane.org';
+
+export const Signup: React.FC = () => {
+  return (
+    <>
+      <Helmet>
+        <title>Register an Account — Dripfield.pro</title>
+      </Helmet>
+      <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl pb-4">
+          <h1 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">
+            Create a New Account
+          </h1>
+          <p className="text-xs text-fifth px-2 mb-4 leading-relaxed">
+            Account creation is temporarily disabled while we upgrade our database provider. Stay
+            up-to-date with our progress by following us on X{' '}
+            <a
+              href={DRIPFIELD_X_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-fifth hover:underline"
+            >
+              @dripfieldpro
+            </a>
+            .
+          </p>
+          <p className="text-xs text-fifth px-2 mb-4 leading-relaxed text-center">
+            <a
+              href={WYSTERIA_COMMUNITY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-fifth hover:underline"
+            >
+              Join us at the Wysteria Lane Community.
+            </a>
+          </p>
+          <div className="text-center">
+            <Link
+              to="/login"
+              className="inline-block px-2 py-0.5 text-fifth rounded-full font-medium transition-colors bg-tertiary hover:bg-tertiary/70 border border-fourth text-xs"
+            >
+              Back to Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Signup;
+
+/*
+ * ---------------------------------------------------------------------------
+ * REACTIVATE ACCOUNT CREATION: remove the Signup component above (and the
+ * DRIPFIELD_X_URL / WYSTERIA_COMMUNITY_URL constants) and uncomment the block below.
+ * ---------------------------------------------------------------------------
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -12,7 +75,7 @@ export const Signup: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  
+
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -20,69 +83,57 @@ export const Signup: React.FC = () => {
     e.preventDefault();
     setError(null);
     setMessage(null);
-    
-    // Validate username
+
     if (!username.trim()) {
       setError('Username is required');
       return;
     }
-    
-    // Validate passwords match
+
     if (password !== confirmPassword) {
       setError("Passwords don't match");
       return;
     }
-    
-    // Validate password strength
+
     if (password.length < 8) {
       setError('Password must be at least 8 characters');
       return;
     }
-    
+
     setLoading(true);
 
     try {
-      // Check if username is already taken
       const { data: existingUser, error: usernameError } = await supabase
         .from('profiles')
         .select('id')
         .eq('username', username)
         .single();
-      
+
       if (existingUser) {
         setError('Username already taken. Please choose another.');
         setLoading(false);
         return;
       }
 
-      // Register the user
       const { error, data } = await signUp(email, password);
-      
+
       if (error) throw error;
-      
-      // Create profile with username
+
       if (data?.user && data?.session) {
-        // Make sure we're using the client with the active session
         const supabaseWithAuth = supabase.auth.setSession(data.session);
-        
-        // Now attempt the upsert with the established session
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: data.user.id,
-            username: username,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          });
-          
+
+        const { error: profileError } = await supabase.from('profiles').upsert({
+          id: data.user.id,
+          username: username,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+
         if (profileError) throw profileError;
       }
-      
-      // If user needs to confirm their email
+
       if (data?.user && !data.session) {
         setMessage('Check your email for a confirmation link');
       } else {
-        // Automatically signed in
         navigate('/');
       }
     } catch (err: any) {
@@ -98,125 +149,126 @@ export const Signup: React.FC = () => {
         <title>Register an Account — Dripfield.pro</title>
       </Helmet>
       <div className="max-w-[1280px] mx-auto">
-      <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
-        <h1 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">Create a New Account</h1>
+        <div className="max-w-md mx-auto bg-primary border border-fourth shadow-xl">
+          <h1 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">Create a New Account</h1>
 
-        {message ? (
-          <div className="p-4 bg-green-100 rounded-lg border border-green-300 mb-4">
-            <p className="text-sm text-green-800 font-medium">{message}</p>
-            <div className="mt-4">
-              <Link
-                to="/login"
-                className="w-full px-4 py-2 text-fifth rounded-full font-medium transition-colors bg-tertiary hover:bg-tertiary/70 flex justify-center border border-fourth"
-              >
-                Back to Login
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-2">
-            {error && (
-              <p className="mt-2 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300">{error}</p>
-            )}
-            
-            <div className="px-2">
-              <label htmlFor="email" className="block text-xs font-medium text-fifth mb-1">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
-                placeholder="Enter email"
-              />
-            </div>
-
-            <div className="px-2">
-              <label htmlFor="username" className="block text-xs font-medium text-fifth mb-1">
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                autoComplete="username"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value.slice(0, 16))}
-                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
-                placeholder="Choose a username"
-                maxLength={16}
-              />
-              <p className="text-xs text-fifth/50 mt-1">(maximum 16 characters)</p>
-            </div>
-
-            <div className="px-2">
-              <label htmlFor="password" className="block text-xs font-medium text-fifth mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
-                placeholder="Create password"
-              />
-            </div>
-
-            <div className="px-2">
-              <label htmlFor="confirmPassword" className="block text-xs font-medium text-fifth mb-1">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
-                placeholder="Confirm password"
-              />
-            </div>
-
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                disabled={loading}
-                className={`px-2 py-0.5 text-sm rounded-lg font-medium transition-colors border border-fourth ${
-                  loading
-                  ? 'bg-tertiary/50 cursor-not-allowed'
-                  : 'bg-tertiary hover:bg-tertiary/80'
-                } text-fifth`}
-              >
-                {loading ? 'Creating account...' : 'Sign up'}
-              </button>
-            </div>
-            
-            <div className="mt-4 text-center">
-              <p className="text-fifth/70 text-xs mb-1 font-light">
-                Already have an account?{' '}
-                <Link to="/login" className="font-medium text-fifth hover:underline">
-                  Login
+          {message ? (
+            <div className="p-4 bg-green-100 rounded-lg border border-green-300 mb-4">
+              <p className="text-sm text-green-800 font-medium">{message}</p>
+              <div className="mt-4">
+                <Link
+                  to="/login"
+                  className="w-full px-4 py-2 text-fifth rounded-full font-medium transition-colors bg-tertiary hover:bg-tertiary/70 flex justify-center border border-fourth"
+                >
+                  Back to Login
                 </Link>
-              </p>
+              </div>
             </div>
-          </form>
-        )}
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-2">
+              {error && (
+                <p className="mt-2 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-300">{error}</p>
+              )}
+
+              <div className="px-2">
+                <label htmlFor="email" className="block text-xs font-medium text-fifth mb-1">
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  placeholder="Enter email"
+                />
+              </div>
+
+              <div className="px-2">
+                <label htmlFor="username" className="block text-xs font-medium text-fifth mb-1">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.slice(0, 16))}
+                  className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  placeholder="Choose a username"
+                  maxLength={16}
+                />
+                <p className="text-xs text-fifth/50 mt-1">(maximum 16 characters)</p>
+              </div>
+
+              <div className="px-2">
+                <label htmlFor="password" className="block text-xs font-medium text-fifth mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  placeholder="Create password"
+                />
+              </div>
+
+              <div className="px-2">
+                <label htmlFor="confirmPassword" className="block text-xs font-medium text-fifth mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-2 py-1 rounded-lg border border-fourth/20 bg-canvas text-fifth placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-tertiary text-xs"
+                  placeholder="Confirm password"
+                />
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`px-2 py-0.5 text-sm rounded-lg font-medium transition-colors border border-fourth ${
+                    loading ? 'bg-tertiary/50 cursor-not-allowed' : 'bg-tertiary hover:bg-tertiary/80'
+                  } text-fifth`}
+                >
+                  {loading ? 'Creating account...' : 'Sign up'}
+                </button>
+              </div>
+
+              <div className="mt-4 text-center">
+                <p className="text-fifth/70 text-xs mb-1 font-light">
+                  Already have an account?{' '}
+                  <Link to="/login" className="font-medium text-fifth hover:underline">
+                    Login
+                  </Link>
+                </p>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 };
 
 export default Signup;
+
+ * ---------------------------------------------------------------------------
+ */
