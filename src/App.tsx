@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase';
 import { useState, useRef, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
+import { MergeAnnouncementBanner } from './components/navigation/MergeAnnouncementBanner';
 import { Home } from './components/Home';
 import { Years } from './components/Years';
 import { Tours } from './components/Tours';
@@ -33,6 +34,7 @@ import { Settings } from './components/Settings';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { UserMenu } from './components/UserMenu';
 import { Submit } from './components/Submit';
+import { New } from './components/New';
 import { SetlistGameShowPage } from './components/SetlistGameShowPage';
 import { Joty } from './components/Joty';
 import { Wted } from './components/Wted';
@@ -70,6 +72,7 @@ function App() {
   const location = useLocation();
   const { user } = useAuth();
   const isWLRoute = location.pathname.startsWith('/wl');
+  const isNewRoute = location.pathname === '/new';
   const [username, setUsername] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   
@@ -276,7 +279,7 @@ function App() {
 
   return (
     <div 
-      className={`flex flex-col min-h-screen min-w-0 max-w-full overflow-x-hidden ${isWLRoute ? 'lg:min-w-7xl' : 'lg:min-w-[1500px]'}`}
+      className={`flex flex-col min-h-screen min-w-0 max-w-full overflow-x-hidden ${isWLRoute ? 'lg:min-w-7xl' : isNewRoute ? '' : 'lg:min-w-[1500px]'}`}
     >
       {/* WL Header - Persistent across WL routes */}
       {isWLRoute && <WLHeader />}
@@ -342,7 +345,7 @@ function App() {
         {!isWLRoute && isSidebarOpen && (
           <div
             className="fixed bg-black/50 backdrop-blur-sm z-[100] md:hidden"
-            style={{ top: '50px', left: 0, right: 0, bottom: 0 }}
+            style={{ top: '92px', left: 0, right: 0, bottom: 0 }}
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
@@ -351,7 +354,7 @@ function App() {
         {!isWLRoute && (
           <div className={`${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } lg:hidden fixed w-64 h-[calc(100%-50px)] top-[50px] z-[30000] transition-transform duration-300 ease-in-out`}>
+          } lg:hidden fixed w-64 h-[calc(100%-92px)] top-[92px] z-[30000] transition-transform duration-300 ease-in-out`}>
           <Sidebar 
             onNavigate={() => setIsSidebarOpen(false)} 
             openShowModal={openShowModal}
@@ -368,8 +371,9 @@ function App() {
         >
           {/* Mobile-only header - Hidden on WL route */}
           {!isWLRoute && (
-            <header className="z-[200] bg-canvas border-b border-fourth p-2 lg:hidden shadow-xl relative">
-            <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full px-2">
+            <header className="z-[200] bg-canvas border-b border-fourth lg:hidden shadow-xl relative">
+            <MergeAnnouncementBanner />
+            <div className="relative flex items-center justify-center max-w-[1280px] mx-auto w-full px-2 p-2">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 className="absolute left-2 p-1 rounded-md bg-tertiary hover:bg-primary text-fifth transition-colors border border-fifth"
@@ -422,6 +426,7 @@ function App() {
                 <Route path="/wted" element={<Wted />} />
                 <Route path="/wted/:episodeId" element={<WtedEpisode />} />
                 <Route path="/submit" element={<Submit />} />
+                <Route path="/new" element={<New />} />
                 
                 {/* Authentication routes */}
                 <Route path="/login" element={<Login />} />

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { NavItem } from './navigationItems';
 import sparklePic from '../../img/sparkle.png';
 import { useYearsDataForYears } from '../../hooks/useYearsDataForYears';
+import { MergeAnnouncementBanner } from './MergeAnnouncementBanner';
 
 interface DesktopNavigationProps {
   mainNavItems: NavItem[];
@@ -109,6 +110,7 @@ export const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
 
   return (
     <div className="w-full bg-canvas">
+      <MergeAnnouncementBanner />
       <div className="flex items-center w-full px-4 py-1">
         {/* Left side: Logo */}
         <div className="flex-shrink-0 mr-2">
