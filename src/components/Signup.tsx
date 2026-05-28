@@ -16,29 +16,13 @@ export const Signup: React.FC = () => {
           <h1 className="text-base font-semibold bg-tertiary text-fifth px-2 py-0.5 mb-2">
             Create a New Account
           </h1>
-          <p className="text-xs text-fifth px-2 mb-4 leading-relaxed">
-            Account creation is temporarily disabled while we upgrade our database provider. Stay
-            up-to-date with our progress by following us on X{' '}
-            <a
-              href={DRIPFIELD_X_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-fifth hover:underline"
-            >
-              @dripfieldpro
-            </a>
-            .
-          </p>
-          <p className="text-xs text-fifth px-2 mb-4 leading-relaxed text-center">
-            <a
-              href={WYSTERIA_COMMUNITY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-fifth hover:underline"
-            >
-              Join us at the Wysteria Lane Community.
-            </a>
-          </p>
+          <Link
+            to="/new"
+            className="block w-full no-underline hover:no-underline bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-center px-3 py-2 text-xs sm:text-sm font-semibold transition-colors shadow-[inset_0_-2px_0_rgba(0,0,0,0.15)] border-b-2 border-red-800 mb-4"
+          >
+            Account creation is disabled as we are merging with Wysteria Lane Community.{' '}
+            <span className="underline font-bold">Click here for more information.</span>
+          </Link>
           <div className="text-center">
             <Link
               to="/login"
