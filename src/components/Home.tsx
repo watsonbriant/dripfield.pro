@@ -28,7 +28,7 @@ export function Home() {
         return yearNum;
       }
     }
-    return 2025; // Default fallback
+    return 2026; // Default fallback
   }, [yearParam]);
   
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
