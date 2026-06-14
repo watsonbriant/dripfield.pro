@@ -31,7 +31,7 @@ interface SubmissionDetails {
 }
 
 export function SetlistGame() {
-  const [activeLeague] = useState("2026 Summer");
+  const [activeLeague] = useState("2026 Summer [First Leg]");
   const { user } = useAuth();
   const [activeSongSelectionShow, setActiveSongSelectionShow] = useState<GameShow | null>(null);
   const [showScoringModal, setShowScoringModal] = useState(false);
