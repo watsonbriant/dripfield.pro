@@ -67,6 +67,22 @@
 }
 
 @font-face {
+  font-family: 'CookConthic';
+  src: url('./fonts/cookconthic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NimbusMonoBold';
+  src: url('./fonts/nimbus-mono.bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Rubik';
   src: url('./fonts/Rubik-Regular.ttf') format('truetype');
   font-weight: 400;
@@ -218,6 +234,20 @@ body {
   html {
     font-size: 15px;
   }
+}
+
+@keyframes deactivatedCommunityFlash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.deactivated-community-btn {
+  animation: deactivatedCommunityFlash 1.2s ease-in-out infinite;
 }
 
 /* Sparkle animation */

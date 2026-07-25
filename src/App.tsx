@@ -2,9 +2,10 @@ import { useAuth } from './context/AuthContext';
 import { useSidebar, SidebarProvider } from './context/SidebarContext';
 import { supabase } from './lib/supabase';
 import { useState, useRef, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { MergeAnnouncementBanner } from './components/navigation/MergeAnnouncementBanner';
+import { DeactivatedHome } from './components/DeactivatedHome';
 import { Home } from './components/Home';
 import { Years } from './components/Years';
 import { Tours } from './components/Tours';
@@ -582,12 +583,42 @@ function App() {
   );
 }
 
+/**
+ * Temporary site gate: only `/` is reachable, everyone is signed out.
+ * Legacy app UI remains below as `LegacyApp` (not deleted).
+ */
+function DeactivatedApp() {
+  const location = useLocation();
+  const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    void supabase.auth.signOut();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      void signOut();
+    }
+  }, [user, signOut]);
+
+  if (location.pathname !== '/') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <DeactivatedHome />;
+}
+
+/** Full legacy site — kept intact; not mounted while deactivated. */
+export function LegacyApp() {
+  return <App />;
+}
+
 function AppWrapper() {
   return (
     <Router>
       <AuthProvider>
         <SidebarProvider>
-          <App />
+          <DeactivatedApp />
         </SidebarProvider>
       </AuthProvider>
     </Router>
