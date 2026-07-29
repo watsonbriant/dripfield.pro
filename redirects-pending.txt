@@ -16,7 +16,7 @@
 #   - /years/:year and /tours/:tour use UUIDs
 #   - from=dripfield triggers the move popup on wtedradio.com (not on jotyoftheyear.com)
 
-/ https://wtedradio.com/archive?from=dripfield 301
+/ /index.html 200
 /home https://wtedradio.com/archive?from=dripfield 301
 /home/:year https://wtedradio.com/archive/stats?year=:year&from=dripfield 301
 /years https://wtedradio.com/archive/years?from=dripfield 301

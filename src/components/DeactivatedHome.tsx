@@ -1,44 +1,79 @@
+import { useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import duckImage from '../img/deactivated-home-duck.png';
+import wtedLogo from '../img/wted-sa-cropped-2.png';
+import './DeactivatedHome.css';
+
+const REDIRECT_URL = 'https://wtedradio.com/archive';
+const COUNTDOWN_SECONDS = 10;
 
 export function DeactivatedHome() {
+  const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN_SECONDS);
+
+  const goNow = useCallback(() => {
+    window.location.assign(REDIRECT_URL);
+  }, []);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(intervalId);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (secondsLeft === 0) {
+      window.location.assign(REDIRECT_URL);
+    }
+  }, [secondsLeft]);
+
   return (
     <>
       <Helmet>
-        <title>Dripfield.pro → WTED Archives</title>
+        <title>Dripfield.pro is now WTED Archives</title>
       </Helmet>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#ff0] px-6">
-        <div className="flex flex-col items-center text-center text-[#ed0091]">
-          <img
-            src={duckImage}
-            alt=""
-            className="mb-6 h-auto w-[min(72vw,280px)] select-none"
-            draggable={false}
-          />
-          <p
-            className="text-4xl sm:text-5xl md:text-6xl leading-tight"
-            style={{ fontFamily: 'CookConthic, sans-serif' }}
-          >
-            <span className="line-through decoration-[#ed0091] decoration-[3px]">
-              Dripfield.pro
-            </span>
-            {' → WTED Archives'}
-          </p>
-          <p
-            className="mt-3 text-3xl sm:text-4xl md:text-5xl leading-tight"
-            style={{ fontFamily: 'CookConthic, sans-serif' }}
-          >
-            July 29th
-          </p>
-          <a
-            href="https://community.wysterialane.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="deactivated-community-btn mt-8 inline-block bg-[#ed0091] px-5 pt-2 pb-1 text-lg sm:text-xl text-[#ff0] no-underline rounded-none"
-            style={{ fontFamily: 'NimbusMonoBold, monospace' }}
-          >
-            COMMUNITY
-          </a>
+      <div className="df-splash" role="presentation">
+        <div
+          className="df-splash-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="df-splash-heading"
+          aria-describedby="df-splash-body"
+        >
+          <div className="df-splash-head">
+            <h1 id="df-splash-heading">Dripfield.pro is now WTED Archives</h1>
+          </div>
+          <div className="df-splash-body">
+            <div id="df-splash-body" className="df-splash-copy">
+              <img
+                src={wtedLogo}
+                alt="WTED Archives"
+                className="df-splash-logo"
+                width={110}
+                height={110}
+              />
+              <p>
+                Dripfield.pro has a new home on WTEDRadio.com, and has been
+                rebranded to WTED Archives. All of the data, features, and
+                functionality of Dripfield.pro has been brought over to WTED
+                Archives, including your personal stats.
+              </p>
+            </div>
+            <p className="df-splash-countdown" aria-live="polite">
+              Redirecting in {secondsLeft} second{secondsLeft === 1 ? '' : 's'}…
+            </p>
+            <div className="df-splash-actions">
+              <button type="button" className="df-splash-btn" onClick={goNow}>
+                Continue
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>

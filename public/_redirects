@@ -1,5 +1,5 @@
-# Wednesday cutover: cp public/_redirects.go-live public/_redirects && deploy
-/ https://wtedradio.com/archive?from=dripfield 301
+# Serve splash page at / (client redirects after countdown). Do not force-redirect /.
+/ /index.html 200
 /home https://wtedradio.com/archive?from=dripfield 301
 /home/:year https://wtedradio.com/archive/stats?year=:year&from=dripfield 301
 /years https://wtedradio.com/archive/years?from=dripfield 301
